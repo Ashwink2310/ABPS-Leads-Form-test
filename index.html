@@ -1,199 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>ABPS Lead Capture</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --brand: #0056b3; --accent: #00a878; --bg: #f0f4f8; --card: #ffffff; --border: #d0d9e4; --text: #1a2332; --radius: 12px; }
-  body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
-  header { background: var(--brand); color: #fff; padding: 20px; text-align: center; }
-  .section { background: var(--card); border-radius: var(--radius); margin: 16px 12px; box-shadow: 0 1px 6px rgba(0,0,0,.08); padding: 16px; }
-  .section-header { font-weight: 700; text-transform: uppercase; margin-bottom: 15px; color: var(--brand); font-size: 0.9rem; }
-  label.field-label { display: block; font-size: .75rem; font-weight: 600; color: #666; margin: 14px 0 6px; text-transform: uppercase; }
-  input, select, textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
-  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  :root {
+    --brand: #0056b3; --brand-dk: #003d82; --accent: #00a878; --warn: #e84545;
+    --bg: #f0f4f8; --card: #ffffff; --border: #d0d9e4; --text: #1a2332;
+    --muted: #6b7a8d; --radius: 12px;
+  }
+  body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
+  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,.2); }
+  .section { background: var(--card); border-radius: var(--radius); margin: 16px 12px; box-shadow: 0 1px 6px rgba(0,0,0,.08); overflow: hidden; }
+  .section-header { background: var(--brand); color: #fff; padding: 10px 16px; font-size: .85rem; font-weight: 700; text-transform: uppercase; }
+  .section-body { padding: 16px; }
+  label.field-label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 14px 0 6px; }
+  input, select, textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: .9rem; background: #fff; color: var(--text); }
+  textarea { min-height: 72px; resize: vertical; }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .pill-group input { display: none; }
-  .pill-group label { padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 20px; font-size: .8rem; cursor: pointer; background: #fff; }
-  .pill-group input:checked + label { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .pill-group label { padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 20px; font-size: .8rem; cursor: pointer; transition: all .15s; background: #fff; }
+  .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
   .other-input { margin-top: 8px; display: none; }
-  .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+  .toggle-input-group { display: flex; gap: 8px; align-items: center; }
+  .no-btn { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; cursor: pointer; font-weight: 600; font-size: .8rem; white-space: nowrap; }
+  .no-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; }
   .btn-ai { background: var(--accent); color: #fff; }
-  .btn-sub { background: var(--brand); color: #fff; }
-  #techSummary { color: red; font-weight: 500; }
+  .btn-sub { background: var(--brand); color: #fff; font-size: 1.1rem; }
+  .btn:disabled { opacity: .6; cursor: not-allowed; }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .action-item { background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+  .card-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .card-box { flex: 1; border: 2px dashed var(--border); border-radius: 10px; padding: 20px 10px; text-align: center; font-size: .8rem; cursor: pointer; color: var(--muted); transition: border-color .15s; }
+  .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  #success-screen { display: none; text-align: center; padding: 60px 20px; background: #fff; border-radius: var(--radius); margin: 20px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+  .vendor-sub { margin-top: 15px; border-left: 3px solid var(--brand); padding-left: 15px; }
+  .capacity-group { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 6px; }
 </style>
 </head>
 <body>
 
-<header><h1>ABPS Lead App</h1></header>
+<header>
+  <h1>ABPS Lead App</h1>
+</header>
 
-<div id="success-screen" style="display:none; text-align:center; padding:50px;">
-  <div style="font-size:4rem;">✅</div>
-  <h2>Submitted!</h2>
-  <p id="success-ref" style="font-weight:bold; color:var(--brand);"></p>
+<div id="success-screen">
+  <div style="font-size:4rem;margin-bottom:20px;">✅</div>
+  <h2 style="margin-bottom:10px;">Submission Successful!</h2>
+  <p id="success-ref" style="font-weight:bold;color:var(--brand);margin-bottom:30px;"></p>
   <button class="btn btn-sub" onclick="location.reload()">➕ Add New Lead</button>
 </div>
 
-<div id="main-form">
+<div id="main-form-container">
+
+  <!-- SECTION 1 — Business Card -->
   <div class="section">
-    <div class="section-header">Section 1 — Business Card(s)</div>
-    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-      <div onclick="document.getElementById('card-front').click()" style="flex:1; border:2px dashed #ccc; padding:15px; text-align:center; font-size: 0.8rem;" id="front-status">Front Side</div>
-      <div onclick="document.getElementById('card-back').click()" style="flex:1; border:2px dashed #ccc; padding:15px; text-align:center; font-size: 0.8rem;" id="back-status">Back Side (Opt)</div>
+    <div class="section-header">Section 1 — Business Card</div>
+    <div class="section-body">
+      <div class="card-row">
+        <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
+        <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
+      </div>
+      <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
+      <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
+      <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>✨ Parse Card(s) with AI</button>
+
+      <label class="field-label">Name</label><input type="text" id="f-name" />
+      <label class="field-label">Company</label><input type="text" id="f-company" />
+      <label class="field-label">Position</label><input type="text" id="f-position" />
+      <label class="field-label">Phone</label><input type="tel" id="f-phone" />
+      <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
+      <label class="field-label">Email</label><input type="email" id="f-email" />
+      <label class="field-label">Website</label><input type="url" id="f-website" />
+      <label class="field-label">Address</label><textarea id="f-address"></textarea>
     </div>
-    <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
-    <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
-    <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>✨ Parse Card(s)</button>
-    
-    <label class="field-label">Name</label><input type="text" id="f-name">
-    <label class="field-label">Company</label><input type="text" id="f-company">
-    <label class="field-label">Phone</label><input type="text" id="f-phone">
-    <label class="field-label">Alt Phone</label><input type="text" id="f-altphone">
-    <label class="field-label">Email</label><input type="text" id="f-email">
-    <label class="field-label">Website</label><input type="text" id="f-website">
-    <label class="field-label">Address</label><textarea id="f-address"></textarea>
   </div>
 
+  <!-- SECTION 2 — Meeting Details -->
   <div class="section">
     <div class="section-header">Section 2 — Meeting Details</div>
-    <label class="field-label">Date of Meeting</label><input type="date" id="m-date">
-    <label class="field-label">Time of Meeting</label><input type="time" id="m-time">
-    <label class="field-label">ABPS Business Vertical</label>
-    <div class="pill-group">
-      <input type="radio" name="bv" value="Industrial" id="bv1" onchange="toggleOtherText(this, 'bvOther')"><label for="bv1">Industrial</label>
-      <input type="radio" name="bv" value="Power" id="bv2" onchange="toggleOtherText(this, 'bvOther')"><label for="bv2">Power</label>
-      <input type="radio" name="bv" value="Renewable" id="bv3" onchange="toggleOtherText(this, 'bvOther')"><label for="bv3">Renewable</label>
-      <input type="radio" name="bv" value="Other" id="bv4" onchange="toggleOtherText(this, 'bvOther')"><label for="bv4">Other</label>
+    <div class="section-body">
+      <label class="field-label">Date of Meeting</label>
+      <input type="date" id="meetingDate" />
+      <label class="field-label">Time of Meeting</label>
+      <input type="time" id="meetingTime" />
+
+      <label class="field-label">Meeting Venue</label>
+      <div class="pill-group">
+        <input type="radio" name="meetingVenue" value="Exhibition" id="mv1" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv1">Exhibition</label>
+        <input type="radio" name="meetingVenue" value="Customer Place" id="mv2" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv2">Customer Place</label>
+        <input type="radio" name="meetingVenue" value="ABPS Office" id="mv3" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv3">ABPS Office</label>
+        <input type="radio" name="meetingVenue" value="Other" id="mv4" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv4">Other</label>
+      </div>
+      <input type="text" id="meetingVenueOther" class="other-input" placeholder="Specify other venue..." />
+
+      <label class="field-label">Venue Name / City</label>
+      <input type="text" id="venueName" />
+
+      <label class="field-label">Additional Meeting Details (if any)</label>
+      <textarea id="additionalMeetingDetails" placeholder="Any extra notes..."></textarea>
     </div>
-    <input type="text" id="bvOther" class="other-input" placeholder="Specify Vertical...">
   </div>
 
+  <!-- SECTION 3 — Technical Details -->
+  <div class="section">
+    <div class="section-header">Section 3 — Technical Details</div>
+    <div class="section-body">
+      <label class="field-label">Business Vertical</label>
+      <div class="pill-group">
+        <input type="radio" name="businessVertical" value="Industrial" id="bv1" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv1">Industrial</label>
+        <input type="radio" name="businessVertical" value="Power" id="bv2" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv2">Power</label>
+        <input type="radio" name="businessVertical" value="Renewable" id="bv3" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv3">Renewable</label>
+        <input type="radio" name="businessVertical" value="Other" id="bv4" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv4">Other</label>
+      </div>
+      <input type="text" id="businessVerticalOther" class="other-input" placeholder="Specify..." />
+
+      <label class="field-label">Type of Industry</label>
+      <input type="text" id="industry" />
+
+      <label class="field-label">Qualification (Multiple)</label>
+      <div class="pill-group">
+        <input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label>
+        <input type="checkbox" name="qualification" value="EPC" id="q2" onchange="handleQualChange()"><label for="q2">EPC</label>
+        <input type="checkbox" name="qualification" value="Govt/PSU" id="q3" onchange="handleQualChange()"><label for="q3">Govt/PSU</label>
+        <input type="checkbox" name="qualification" value="Consultant" id="q4" onchange="handleQualChange()"><label for="q4">Consultant</label>
+        <input type="checkbox" name="qualification" value="Developer" id="q5" onchange="handleQualChange()"><label for="q5">Developer</label>
+        <input type="checkbox" name="qualification" value="Electrical Contractor" id="q6" onchange="handleQualChange()"><label for="q6">Electrical Contractor</label>
+        <input type="checkbox" name="qualification" value="Dealer" id="q7" onchange="handleQualChange()"><label for="q7">Dealer</label>
+        <input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label>
+        <input type="checkbox" name="qualification" value="Others" id="q9" onchange="handleQualChange()"><label for="q9">Others</label>
+      </div>
+      <input type="text" id="qualificationOther" class="other-input" placeholder="Specify other qualification..." />
+
+      <div id="vendor-fields" style="display:none;" class="vendor-sub">
+        <label class="field-label">Type of Vendor (Multiple)</label>
+        <div class="pill-group">
+          <input type="checkbox" name="vendorType" value="Raw Materials supplier" id="vt1"><label for="vt1">Raw Materials</label>
+          <input type="checkbox" name="vendorType" value="MC Supplier" id="vt2"><label for="vt2">MC Supplier</label>
+          <input type="checkbox" name="vendorType" value="Capital Goods Supplier" id="vt3"><label for="vt3">Capital Goods</label>
+          <input type="checkbox" name="vendorType" value="Others" id="vto" onchange="toggleOtherCheck(this,'vtoText')"><label for="vto">Others</label>
+        </div>
+        <input type="text" id="vtoText" class="other-input" placeholder="Specify other vendor type..." />
+
+        <label class="field-label">Name of Materials</label>
+        <input type="text" id="materialsName" />
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 — Area of Concerns -->
   <div class="section">
     <div class="section-header">Section 4 — Area of Concerns</div>
-    <label class="field-label">Voltage Level (Multi)</label>
-    <div class="pill-group">
-      <input type="checkbox" name="vl" value="440V" id="v1"><label for="v1">440V</label>
-      <input type="checkbox" name="vl" value="660V" id="v2"><label for="v2">660V</label>
-      <input type="checkbox" name="vl" value="3.3KV" id="v3"><label for="v3">3.3KV</label>
-      <input type="checkbox" name="vl" value="11KV" id="v4"><label for="v4">11KV</label>
-      <input type="checkbox" name="vl" value="33KV" id="v5"><label for="v5">33KV</label>
+    <div class="section-body">
+      <label class="field-label">Low Power Factor Issue</label>
+      <div class="toggle-input-group"><button class="no-btn" data-target="lpi" onclick="toggleNo(this)">No</button><input type="text" id="lpi" oninput="clearNo(this)" /></div>
+
+      <label class="field-label">High Electricity Bill Issue</label>
+      <div class="toggle-input-group"><button class="no-btn" data-target="hbi" onclick="toggleNo(this)">No</button><input type="text" id="hbi" oninput="clearNo(this)" /></div>
+
+      <label class="field-label">Harmonics Issue</label>
+      <div class="toggle-input-group"><button class="no-btn" data-target="hi" onclick="toggleNo(this)">No</button><input type="text" id="hi" oninput="clearNo(this)" /></div>
+
+      <label class="field-label">Transformer Heating / Breakdown Issue</label>
+      <div class="toggle-input-group"><button class="no-btn" data-target="thi" onclick="toggleNo(this)">No</button><input type="text" id="thi" oninput="clearNo(this)" /></div>
+
+      <label class="field-label">Grid Stability Issue</label>
+      <div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
+
+      <label class="field-label">Existing System Details</label>
+      <textarea id="esd" placeholder="Provide system overview..."></textarea>
+
+      <label class="field-label">Voltage Level (Multi)</label>
+      <div class="pill-group">
+        <input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label>
+        <input type="checkbox" name="voltage" value="660V" id="vl11"><label for="vl11">660V</label>
+        <input type="checkbox" name="voltage" value="3.3KV" id="vl2"><label for="vl2">3.3KV</label>
+        <input type="checkbox" name="voltage" value="6.6KV" id="vl3"><label for="vl3">6.6KV</label>
+        <input type="checkbox" name="voltage" value="11KV" id="vl4"><label for="vl4">11KV</label>
+        <input type="checkbox" name="voltage" value="22KV" id="vl5"><label for="vl5">22KV</label>
+        <input type="checkbox" name="voltage" value="33KV" id="vl6"><label for="vl6">33KV</label>
+        <input type="checkbox" name="voltage" value="66KV" id="vl7"><label for="vl7">66KV</label>
+        <input type="checkbox" name="voltage" value="132KV" id="vl8"><label for="vl8">132KV</label>
+        <input type="checkbox" name="voltage" value="220KV" id="vl9"><label for="vl9">220KV</label>
+        <input type="checkbox" name="voltage" value="400KV" id="vl10"><label for="vl10">400KV</label>
+      </div>
+
+      <label class="field-label">Capacity Details</label>
+      <div class="capacity-group">
+        <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" />
+        <input type="text" id="rdMva" placeholder="Running Demand (MVA)" />
+        <input type="text" id="avgPf" placeholder="Monthly Average Power Factor" />
+      </div>
+
+      <label class="field-label">Problem Observed</label>
+      <input type="text" id="problemObserved" />
+
+      <label class="field-label">Technical Discussion Summary</label>
+      <textarea id="techSummary"></textarea>
     </div>
-    <label class="field-label">Technical Discussion Summary</label>
-    <textarea id="techSummary" placeholder="Summary will appear in Red..."></textarea>
   </div>
 
+  <!-- SECTION 5 — Requirement -->
   <div class="section">
-    <div class="section-header">Section 5 — Products Discussed</div>
-    <div class="pill-group">
-      <input type="checkbox" name="prod" value="APFC" id="p1"><label for="p1">APFC</label>
-      <input type="checkbox" name="prod" value="RTPFC" id="p2"><label for="p2">RTPFC</label>
-      <input type="checkbox" name="prod" value="Harmonic Filter" id="p3"><label for="p3">Filter</label>
-      <input type="checkbox" name="prod" value="SVG" id="p4"><label for="p4">SVG</label>
-      <input type="checkbox" name="prod" value="MV Capacitor Bank" id="p5"><label for="p5">MV Cap</label>
-      <input type="checkbox" name="prod" value="Reactor" id="p6"><label for="p6">Reactor</label>
-      <input type="checkbox" name="prod" value="Others" id="p7" onchange="toggleOtherCheck(this, 'prodOther')"><label for="p7">Others</label>
+    <div class="section-header">Section 5 — Requirement</div>
+    <div class="section-body">
+      <label class="field-label">Existing Project</label><input type="text" id="epInput" />
+      <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
+
+      <label class="field-label">Products Discussed</label>
+      <div class="pill-group">
+        <input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label>
+        <input type="checkbox" name="prod" value="RPTFC" id="pd6"><label for="pd6">RPTFC</label>
+        <input type="checkbox" name="prod" value="Harmonic Filter" id="pd2"><label for="pd2">Harmonic Filter</label>
+        <input type="checkbox" name="prod" value="SVG" id="pd3"><label for="pd3">SVG</label>
+        <input type="checkbox" name="prod" value="MV Capacitor Bank" id="pd4"><label for="pd4">MV Capacitor Bank</label>
+        <input type="checkbox" name="prod" value="Reactor" id="pd5"><label for="pd5">Reactor</label>
+        <input type="checkbox" name="prod" value="Others" id="pdo" onchange="toggleOtherCheck(this,'pdoText')"><label for="pdo">Others</label>
+      </div>
+      <input type="text" id="pdoText" class="other-input" placeholder="Specify other product..." />
+
+      <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
+      <label class="field-label">Expected Tender / RFQ Date</label><input type="date" id="tenderDate" />
+      <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
+      <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
+
+      <label class="field-label">Approx Business Potential (Single Select)</label>
+      <div class="pill-group">
+        <input type="radio" name="pot" value="<10L" id="bp1"><label for="bp1">&lt; 10L</label>
+        <input type="radio" name="pot" value="10-50L" id="bp2"><label for="bp2">10-50L</label>
+        <input type="radio" name="pot" value="50L-2cr" id="bp3"><label for="bp3">50L-2cr</label>
+        <input type="radio" name="pot" value=">2cr" id="bp4"><label for="bp4">&gt; 2cr</label>
+      </div>
     </div>
-    <input type="text" id="prodOther" class="other-input" placeholder="Specify Products...">
   </div>
 
+  <!-- SECTION 6 — Action Plan -->
   <div class="section">
     <div class="section-header">Section 6 — Action Plan</div>
-    <label class="field-label">Send Company Profile</label><select id="a1"><option>No</option><option>Yes</option></select>
-    <label class="field-label">Send Technical Presentation</label><select id="a2"><option>No</option><option>Yes</option></select>
-    <label class="field-label">Arrange Site Visit</label><select id="a3"><option>No</option><option>Yes</option></select>
-    <label class="field-label">Get Enquiry</label><select id="a4"><option>No</option><option>Yes</option></select>
-    <label class="field-label">Send Budgetary Offer</label><select id="a5"><option>No</option><option>Yes</option></select>
-    <label class="field-label">Send Techno-Commercial Offer</label><select id="a6"><option>No</option><option>Yes</option></select>
-    <label class="field-label">Follow-Up Required</label><select id="a7"><option>No</option><option>Yes</option></select>
-    <label class="field-label">Next Follow-Up Date</label><input type="date" id="nextDate">
+    <div class="section-body">
+      <div class="action-grid">
+        <div class="action-item"><label class="field-label">Send Company Profile</label><select id="act1"><option>No</option><option>Yes</option></select></div>
+        <div class="action-item"><label class="field-label">Send Technical Presentation</label><select id="act2"><option>No</option><option>Yes</option></select></div>
+        <div class="action-item"><label class="field-label">Arrange Site Visit</label><select id="act3"><option>No</option><option>Yes</option></select></div>
+        <div class="action-item"><label class="field-label">Get Enquiry</label><select id="act4"><option>No</option><option>Yes</option></select></div>
+        <div class="action-item"><label class="field-label">Send Budgetary Offer</label><select id="act5"><option>No</option><option>Yes</option></select></div>
+        <div class="action-item"><label class="field-label">Send Techno-Commercial Offer</label><select id="act6"><option>No</option><option>Yes</option></select></div>
+      </div>
+      <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
+      <label class="field-label">Next Follow-Up Date</label><input type="date" id="nextDate" />
+    </div>
   </div>
 
+  <!-- SECTION 7 — Engineer Info -->
   <div class="section">
     <div class="section-header">Section 7 — Engineer Info</div>
-    <select id="engName">
-      <option>Mohammad Asraf</option><option>Alok Kumar</option><option>Aritra Roy</option>
-      <option>Debarshi Mukharjee</option><option>Pavan</option>
-    </select>
+    <div class="section-body">
+      <label class="field-label">Your Name</label>
+      <select id="engName">
+        <option value="">— Select —</option>
+        <option>Mohammad Asraf</option>
+        <option>Alok Kumar</option>
+        <option>Aritra Roy</option>
+        <option>Debarshi Mukharjee</option>
+        <option>Pavan</option>
+      </select>
+    </div>
   </div>
 
-  <div style="padding: 12px;"><button class="btn btn-sub" id="sub-btn" onclick="submitLead()">📤 Submit Lead</button></div>
+  <div style="padding: 0 12px 40px;">
+    <button class="btn btn-sub" id="submit-btn" onclick="submitLead()">📤 Submit Lead</button>
+  </div>
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzdKWMiffVHYUCl2PoIyeiupmbL79SXVdQ-5yByvqi0VyCCf1X50Vb5uUrUUX9Mhfz2CQ/exec";
-const CLOUD_NAME = "dcdhahrhz";
-const UPLOAD_PRESET = "ABPS Leads Form";
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+const GAS_URL      = "https://script.google.com/macros/s/AKfycbxBN1eDUx5jHGDK8Z01iaXqT53QIDykBVtdXii9Tz8U7gm2NbhSKmG6OK9trr3CW57AGA/exec";        // ← Replace with your GAS Web App URL
+const CLOUD_NAME   = "dcdhahrhz";              // ← Your Cloudinary cloud name
+const UPLOAD_PRESET = "ABPS Leads Form";       // ← Your Cloudinary unsigned upload preset
 
+// ── Card file state ─────────────────────────────────────────────────────────
 let fileFront = null, fileBack = null;
 
-document.getElementById('card-front').onchange = (e) => { fileFront = e.target.files[0]; document.getElementById('front-status').innerHTML = "Front ✅"; document.getElementById('parse-btn').disabled = false; };
-document.getElementById('card-back').onchange = (e) => { fileBack = e.target.files[0]; document.getElementById('back-status').innerHTML = "Back ✅"; };
+document.getElementById('card-front').onchange = (e) => {
+  fileFront = e.target.files[0];
+  document.getElementById('front-box').textContent = "Front ✅";
+  document.getElementById('front-box').classList.add('done');
+  document.getElementById('parse-btn').disabled = false;
+};
+document.getElementById('card-back').onchange = (e) => {
+  fileBack = e.target.files[0];
+  document.getElementById('back-box').textContent = "Back ✅";
+  document.getElementById('back-box').classList.add('done');
+};
 
-function toggleOtherText(r, id) { document.getElementById(id).style.display = (r.value === 'Other') ? 'block' : 'none'; }
-function toggleOtherCheck(c, id) { document.getElementById(id).style.display = c.checked ? 'block' : 'none'; }
-
-async function parseCard() {
-  const btn = document.getElementById('parse-btn'); btn.innerText = "Parsing...";
-  const getBase64 = (file) => new Promise((res) => { const r = new FileReader(); r.onload = () => res(r.result.split(',')[1]); r.readAsDataURL(file); });
-  
-  const img1 = await getBase64(fileFront);
-  const img2 = fileBack ? await getBase64(fileBack) : null;
-
-  const r = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'parse', image:img1, imageBack:img2 }) });
-  const j = await r.json();
-  if(j.candidates) {
-    const d = JSON.parse(j.candidates[0].content.parts[0].text.replace(/```json|```/g, ""));
-    document.getElementById('f-name').value = d.name || "";
-    document.getElementById('f-company').value = d.company || "";
-    document.getElementById('f-phone').value = d.phone || "";
-    document.getElementById('f-altphone').value = d.altPhone || "";
-    document.getElementById('f-email').value = d.email || "";
-    document.getElementById('f-address').value = d.address || "";
-  }
-  btn.innerText = "✨ Parse Card(s)";
+// ── UI helpers ───────────────────────────────────────────────────────────────
+function toggleOtherText(r, id) {
+  document.getElementById(id).style.display = (r.value === 'Other') ? 'block' : 'none';
+}
+function toggleOtherCheck(c, id) {
+  document.getElementById(id).style.display = c.checked ? 'block' : 'none';
+}
+function handleQualChange() {
+  document.getElementById('vendor-fields').style.display =
+    document.getElementById('q8').checked ? 'block' : 'none';
+  document.getElementById('qualificationOther').style.display =
+    document.getElementById('q9').checked ? 'block' : 'none';
+}
+function toggleNo(btn) {
+  const i = document.getElementById(btn.dataset.target);
+  const act = btn.classList.toggle('active');
+  i.value = act ? "No" : "";
+  i.disabled = act;
+}
+function clearNo(i) {
+  const b = document.querySelector(`button[data-target="${i.id}"]`);
+  if (b) b.classList.remove('active');
 }
 
+// ── Parse card via GAS → Gemini ─────────────────────────────────────────────
+async function parseCard() {
+  const btn = document.getElementById('parse-btn');
+  btn.innerHTML = '<div class="spinner"></div> Parsing...';
+  btn.disabled = true;
+
+  const getB64 = (f) => new Promise((res, rej) => {
+    const rd = new FileReader();
+    rd.onload = () => res(rd.result.split(',')[1]);
+    rd.onerror = () => rej(new Error("Read failed"));
+    rd.readAsDataURL(f);
+  });
+
+  try {
+    const img1 = await getB64(fileFront);
+    const img2 = fileBack ? await getB64(fileBack) : null;
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'parse', image: img1, imageBack: img2 })
+    });
+    const j = await res.json();
+
+    // GAS returns raw Gemini response; parse the JSON out of it
+    const raw = j.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+    const d = JSON.parse(raw);
+
+    document.getElementById('f-name').value     = d.name     || "";
+    document.getElementById('f-company').value  = d.company  || "";
+    document.getElementById('f-position').value = d.position || "";
+    document.getElementById('f-phone').value    = d.phone    || "";
+    document.getElementById('f-altphone').value = d.altPhone || "";
+    document.getElementById('f-email').value    = d.email    || "";
+    document.getElementById('f-website').value  = d.website  || "";
+    document.getElementById('f-address').value  = d.address  || "";
+  } catch (e) {
+    alert("Parsing failed. Please fill in manually.\n" + e.message);
+  } finally {
+    btn.innerHTML = '✨ Parse Card(s) with AI';
+    btn.disabled = false;
+  }
+}
+
+// ── Cloudinary upload helper ─────────────────────────────────────────────────
+async function uploadToCloudinary(file) {
+  if (!file) return "";
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', UPLOAD_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+    method: 'POST', body: fd
+  });
+  const d = await res.json();
+  return d.secure_url || "";
+}
+
+// ── Submit ───────────────────────────────────────────────────────────────────
 async function submitLead() {
-  const btn = document.getElementById('sub-btn'); btn.disabled = true; btn.innerText = "Saving...";
-  const upload = async (f) => { if(!f) return ""; const fd = new FormData(); fd.append('file', f); fd.append('upload_preset', UPLOAD_PRESET); const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {method:'POST', body:fd}); const d = await res.json(); return d.secure_url; };
-  
-  const url1 = await upload(fileFront);
-  const url2 = await upload(fileBack);
-  const urls = [url1, url2].filter(u => u).join(", ");
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Saving...';
 
   const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
-  const getRadio = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
+  const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
 
-  const fields = {
-    engineerName: document.getElementById('engName').value,
-    name: document.getElementById('f-name').value,
-    company: document.getElementById('f-company').value,
-    phone: document.getElementById('f-phone').value,
-    altPhone: document.getElementById('f-altphone').value,
-    email: document.getElementById('f-email').value,
-    address: document.getElementById('f-address').value,
-    meetingDate: document.getElementById('m-date').value,
-    meetingTime: document.getElementById('m-time').value,
-    businessVertical: getRadio('bv') === 'Other' ? document.getElementById('bvOther').value : getRadio('bv'),
-    voltage: getChecks('vl'),
-    techSummary: document.getElementById('techSummary').value,
-    products: [...getChecks('prod').filter(p => p !== 'Others'), document.getElementById('prodOther').value].filter(v => v),
-    sendProfile: document.getElementById('a1').value,
-    sendPresentation: document.getElementById('a2').value,
-    arrangeVisit: document.getElementById('a3').value,
-    getEnquiry: document.getElementById('a4').value,
-    sendBudgetary: document.getElementById('a5').value,
-    sendTechno: document.getElementById('a6').value,
-    followUpRequired: document.getElementById('a7').value,
-    nextDate: document.getElementById('nextDate').value
-  };
+  try {
+    // Upload card images to Cloudinary first
+    const [url1, url2] = await Promise.all([
+      uploadToCloudinary(fileFront),
+      uploadToCloudinary(fileBack)
+    ]);
+    const imageUrl = [url1, url2].filter(u => u).join(", ");
 
-  const res = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'submit', fields, imageUrl: urls }) });
-  const j = await res.json();
-  if(j.success) {
-    document.getElementById('main-form').style.display = 'none';
-    document.getElementById('success-screen').style.display = 'block';
-    document.getElementById('success-ref').innerText = "Lead ID: " + j.leadRef;
+    // Qualification: combine checked values, replacing "Others" text with the typed value
+    const qualChecked = getChecks('qualification');
+    const qualFinal = qualChecked.map(v => v === 'Others'
+      ? (document.getElementById('qualificationOther').value || 'Others')
+      : v
+    );
+
+    // Vendor type: combine checked values, replacing "Others" text with typed value
+    const vtChecked = getChecks('vendorType');
+    const vtFinal = vtChecked.map(v => v === 'Others'
+      ? (document.getElementById('vtoText').value || 'Others')
+      : v
+    );
+
+    // Products: replace "Others" with typed value
+    const prodChecked = getChecks('prod');
+    const prodFinal = prodChecked.map(v => v === 'Others'
+      ? (document.getElementById('pdoText').value || 'Others')
+      : v
+    );
+
+    // Meeting Venue
+    const venueRaw = getRadio('meetingVenue');
+    const meetingVenue = venueRaw === 'Other'
+      ? document.getElementById('meetingVenueOther').value
+      : venueRaw;
+
+    // Business Vertical
+    const bvRaw = getRadio('businessVertical');
+    const businessVertical = bvRaw === 'Other'
+      ? document.getElementById('businessVerticalOther').value
+      : bvRaw;
+
+    const fields = {
+      engineerName:          document.getElementById('engName').value,
+      // Section 1
+      name:                  document.getElementById('f-name').value,
+      company:               document.getElementById('f-company').value,
+      position:              document.getElementById('f-position').value,
+      phone:                 document.getElementById('f-phone').value,
+      altPhone:              document.getElementById('f-altphone').value,
+      email:                 document.getElementById('f-email').value,
+      website:               document.getElementById('f-website').value,
+      address:               document.getElementById('f-address').value,
+      // Section 2
+      meetingDate:           document.getElementById('meetingDate').value,
+      meetingTime:           document.getElementById('meetingTime').value,
+      meetingVenue:          meetingVenue,
+      venueName:             document.getElementById('venueName').value,
+      additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
+      // Section 3
+      businessVertical:      businessVertical,
+      industry:              document.getElementById('industry').value,
+      qualification:         qualFinal,
+      vendorType:            vtFinal,
+      materialsName:         document.getElementById('materialsName').value,
+      // Section 4
+      lpi:                   document.getElementById('lpi').value,
+      hbi:                   document.getElementById('hbi').value,
+      hi:                    document.getElementById('hi').value,
+      thi:                   document.getElementById('thi').value,
+      gsi:                   document.getElementById('gsi').value,
+      esd:                   document.getElementById('esd').value,
+      voltage:               getChecks('voltage'),
+      cdMva:                 document.getElementById('cdMva').value,
+      rdMva:                 document.getElementById('rdMva').value,
+      avgPf:                 document.getElementById('avgPf').value,
+      problemObserved:       document.getElementById('problemObserved').value,
+      techSummary:           document.getElementById('techSummary').value,
+      // Section 5
+      existingProject:       document.getElementById('epInput').value,
+      upcomingProject:       document.getElementById('upInput').value,
+      products:              prodFinal,
+      approxReq:             document.getElementById('approxReq').value,
+      tenderDate:            document.getElementById('tenderDate').value,
+      orderTimeline:         document.getElementById('orderTimeline').value,
+      competitors:           document.getElementById('competitors').value,
+      potential:             getRadio('pot'),
+      // Section 6
+      sendProfile:           document.getElementById('act1').value,
+      sendPresentation:      document.getElementById('act2').value,
+      arrangeVisit:          document.getElementById('act3').value,
+      getEnquiry:            document.getElementById('act4').value,
+      sendBudgetary:         document.getElementById('act5').value,
+      sendTechno:            document.getElementById('act6').value,
+      followUpRequired:      document.getElementById('act7').value,
+      nextDate:              document.getElementById('nextDate').value,
+    };
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'submit', fields, imageUrl })
+    });
+    const d = await res.json();
+
+    if (d.success) {
+      document.getElementById('main-form-container').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+      document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef;
+      window.scrollTo(0, 0);
+    } else {
+      alert("Submission failed: " + (d.error || "Unknown error"));
+    }
+  } catch (e) {
+    alert("Submission failed. Please check your connection.\n" + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '📤 Submit Lead';
   }
 }
 </script>
