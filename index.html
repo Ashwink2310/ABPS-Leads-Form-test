@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>ABPS Lead Capture & Management Portal</title>
+<title>ABPS Lead Capture Portal</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -13,14 +13,12 @@
   }
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
   
-  /* Auth Screen Layout Styles */
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
   .auth-logo { font-size: 2.5rem; margin-bottom: 10px; }
   .auth-title { font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 5px; }
   .auth-subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 25px; }
   
-  /* Main Application Styles */
   header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,.2); display: flex; justify-content: space-between; align-items: center; }
   header h1 { font-size: 1.2rem; }
   .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.6); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
@@ -64,25 +62,25 @@
 
 <div id="auth-container">
   <div class="auth-card">
-    <div class="auth-logo">🛡️</div>
-    <div class="auth-title">ABPS Systems</div>
-    <div class="auth-subtitle">Internal Personnel Access Authorization</div>
+    <div class="auth-logo">🔒</div>
+    <div class="auth-title">ABPS Portal</div>
+    <div class="auth-subtitle">Internal Personnel Gateway</div>
     
     <div style="text-align: left;">
-      <label class="field-label">Enterprise ID / Username</label>
-      <input type="text" id="auth-user" placeholder="e.g. demo.engineer" required />
+      <label class="field-label">Username</label>
+      <input type="text" id="auth-user" placeholder="Enter username..." required />
       
       <label class="field-label">Password</label>
-      <input type="password" id="auth-pass" placeholder="••••••••" required />
+      <input type="password" id="auth-pass" placeholder="Enter password..." required />
       
-      <button class="btn btn-sub" id="login-btn" onclick="executeLogin()" style="margin-top: 25px;">Secure Verification Login</button>
+      <button class="btn btn-sub" id="login-btn" onclick="executeLogin()" style="margin-top: 25px;">Login</button>
     </div>
   </div>
 </div>
 
 <div id="app-container" style="display: none;">
   <header>
-    <h1>ABPS CRM Gateway</h1>
+    <h1>ABPS Lead Capture</h1>
     <button class="logout-btn" onclick="executeLogout()">Sign Out</button>
   </header>
 
@@ -310,20 +308,18 @@
 
 <script>
 // ── CONFIG ─────────────────────────────────────────────────────────────────
-const GAS_URL       = "https://script.google.com/macros/s/AKfycbx8yXZ_rEw_IZbDYupXyKn0U2_oCzbN9OzcACe-e4UkvjtZ1tBkfH8Va4cVG0DitozsVA/exec";
+const GAS_URL       = "https://script.google.com/macros/s/AKfycbzI-Et6ucKsWgQTOG3k8mI0qIsmmtLOOSzOSGTuqVaHvk-TRwBwDNeu6OEIIPV0ToFLtw/exec";
 const CLOUD_NAME    = "dcdhahrhz";
 const UPLOAD_PRESET = "ABPS Leads Form";
 
-// ── Authentication Initialization Check ─────────────────────────────────────
+// ── Authentication Check ───────────────────────────────────────────────────
 window.onload = function() {
   const token = localStorage.getItem("sessionToken");
   const expires = localStorage.getItem("sessionExpiry");
   
   if (token && expires && new Date() < new Date(expires)) {
-    // Current valid session state exists
     showAppView();
   } else {
-    // Clear dead variables and enforce log-in challenge
     executeLogout();
   }
 };
@@ -334,7 +330,7 @@ async function executeLogin() {
   const loginBtn = document.getElementById("login-btn");
 
   if (!userField.value || !passField.value) {
-    alert("Please complete all system credentials parameters.");
+    alert("Please enter username and password parameters.");
     return;
   }
 
@@ -365,7 +361,7 @@ async function executeLogin() {
     alert("Connection to authorization nodes timed out.\n" + err.message);
   } finally {
     loginBtn.disabled = false;
-    loginBtn.innerHTML = "Secure Verification Login";
+    loginBtn.innerHTML = "Login";
   }
 }
 
@@ -379,10 +375,6 @@ function executeLogout() {
 function showAppView() {
   document.getElementById("auth-container").style.display = "none";
   document.getElementById("app-container").style.display = "block";
-  
-  // Set default engineer name option if matched to login session user
-  const loggedUser = localStorage.getItem("sessionUser");
-  // Basic display clean mapping if matching select text patterns later
 }
 
 // ── Card file state ─────────────────────────────────────────────────────────
