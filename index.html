@@ -9,54 +9,76 @@
   :root {
     --brand: #0056b3; --brand-dk: #003d82; --accent: #00a878; --warn: #e84545;
     --bg: #f8fafc; --card: #ffffff; --border: #cbd5e1; --text: #0f172a;
-    --muted: #64748b; --radius: 8px;
+    --muted: #64748b; --radius: 12px;
   }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
   
-  /* Auth Screen Layout Styles */
+  /* Auth Screen Layout */
   #auth-container { max-width: 420px; margin: 80px auto; padding: 24px; background: #fff; border-radius: var(--radius); box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
   .auth-toggle-links { font-size: 0.85rem; color: var(--brand); text-align: center; margin-top: 16px; cursor: pointer; text-decoration: underline; }
 
-  /* App Dashboard Layout Components */
+  /* App Dashboard Components */
   #app-portal { display: none; }
-  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
-  .nav-tabs { display: flex; background: #e2e8f0; padding: 6px; gap: 4px; justify-content: space-around; }
+  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+  .nav-tabs { display: flex; background: #e2e8f0; padding: 6px; gap: 4px; justify-content: space-around; position: sticky; top: 58px; z-index: 99; }
   .tab-link { padding: 10px 16px; border: none; background: none; font-weight: 600; font-size: 0.85rem; color: var(--muted); border-radius: 6px; cursor: pointer; flex: 1; text-align: center;}
   .tab-link.active { background: #fff; color: var(--brand); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
   
   .view-panel { display: none; padding: 16px 12px; max-width: 800px; margin: 0 auto; }
   .view-panel.active { display: block; }
 
-  /* Universal Interface Components */
+  /* UI Architecture Elements */
   .section { background: var(--card); border-radius: var(--radius); border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); overflow: hidden; }
   .section-header { background: #f1f5f9; color: var(--text); padding: 12px 16px; font-size: .85rem; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
   .section-body { padding: 16px; }
   
-  label.field-label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 12px 0 4px; }
-  input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: .9rem; background: #fff; }
+  label.field-label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 14px 0 4px; }
+  input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: .9rem; background: #fff; color: var(--text); }
+  textarea { min-height: 72px; resize: vertical; }
   
-  .search-box-container { display: flex; gap: 8px; margin-bottom: 16px; }
-  .btn { padding: 12px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
-  .btn-primary { background: var(--brand); color: #fff; }
-  .btn-secondary { background: #e2e8f0; color: var(--text); }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .pill-group input { display: none; }
+  .pill-group label { padding: 8px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: .8rem; cursor: pointer; transition: all .15s; background: #fff; }
+  .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .other-input { margin-top: 8px; display: none; }
+  .toggle-input-group { display: flex; gap: 8px; align-items: center; }
   
-  /* CRM Data Result Lists & Cards */
-  .data-item-card { background: #fff; padding: 14px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 8px; cursor: pointer; transition: transform 0.1s; }
-  .data-item-card:hover { transform: translateY(-1px); border-color: var(--brand); }
+  .no-btn { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: #fff; cursor: pointer; font-weight: 600; font-size: .8rem; white-space: nowrap; }
+  .no-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
   
+  .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; }
+  .btn-ai { background: var(--accent); color: #fff; }
+  .btn-sub { background: var(--brand); color: #fff; font-size: 1.1rem; }
+  .btn:disabled { opacity: .6; cursor: not-allowed; }
+  
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .action-item { background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0; }
+  .card-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .card-box { flex: 1; border: 2px dashed var(--border); border-radius: 10px; padding: 20px 10px; text-align: center; font-size: .8rem; cursor: pointer; color: var(--muted); transition: border-color .15s; }
+  .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  
+  /* CRM Engine Styles */
+  .data-item-card { background: #fff; padding: 14px; border-radius: var(--radius); border: 1px solid #e2e8f0; margin-bottom: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+  .data-item-card:hover { border-color: var(--brand); background: #fafafa; }
   .badge { display: inline-block; padding: 2px 6px; font-size: 0.75rem; font-weight: bold; border-radius: 4px; background: #f1f5f9; color: var(--muted); }
-  .timeline-event { border-left: 2px solid var(--brand); padding-left: 12px; margin-bottom: 14px; position: relative; }
+  .timeline-event { border-left: 3px solid var(--brand); padding-left: 14px; margin-bottom: 16px; position: relative; padding-top: 2px; }
+  .vendor-sub { margin-top: 15px; border-left: 3px solid var(--brand); padding-left: 15px; }
+  .capacity-group { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 6px; }
+  #success-screen { display: none; text-align: center; padding: 60px 20px; background: #fff; border-radius: var(--radius); margin: 20px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 </style>
 </head>
 <body>
 
-<!-- ── AUTHENTICATION MANAGEMENT LAYOUT LAYER ───────────────────────────────── -->
+<!-- ── AUTHENTICATION LAYER ── -->
 <div id="auth-container">
   <div id="login-box">
     <h2 style="margin-bottom:16px; color:var(--brand-dk)">ABPS Portal Access</h2>
     <label class="field-label">Username</label><input type="text" id="auth-user" />
     <label class="field-label">Password</label><input type="password" id="auth-pass" />
-    <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="executeLogin()">Sign In</button>
+    <button class="btn btn-sub" style="width:100%; margin-top:20px;" onclick="executeLogin()">Sign In</button>
     <p class="auth-toggle-links" onclick="toggleAuthView('forgot')">Forgot Password?</p>
     <p class="auth-toggle-links" onclick="toggleAuthView('register')">Request System Account Token</p>
   </div>
@@ -65,7 +87,7 @@
     <h2 style="margin-bottom:16px;">Account Recovery</h2>
     <p style="font-size:0.85rem; color:var(--muted); margin-bottom:12px;">Enter your registered employee email profile destination to parse identity key links.</p>
     <label class="field-label">Email Address</label><input type="email" id="recovery-email" />
-    <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="triggerPasswordReset()">Send Reset Token</button>
+    <button class="btn btn-sub" style="width:100%; margin-top:20px;" onclick="triggerPasswordReset()">Send Reset Token</button>
     <p class="auth-toggle-links" onclick="toggleAuthView('login')">Return to Authentication Panel</p>
   </div>
 
@@ -77,63 +99,263 @@
   </div>
 </div>
 
-<!-- ── CRM APPLICATION COMPONENT PORTAL SUITE ────────────────────────────────── -->
+<!-- ── MAIN APPLICATION SUITE ── -->
 <div id="app-portal">
   <header>
-    <h3>ABPS Platform Engine</h3>
-    <span id="user-profile-badge" style="font-size:0.85rem; opacity:0.9;"></span>
-    <button class="badge" style="cursor:pointer;" onclick="executeLogout()">Sign Out</button>
+    <h2>ABPS Lead Capture</h2>
+    <span id="user-profile-badge" style="font-size:0.85rem; font-weight:600; background:rgba(255,255,255,0.2); padding:4px 8px; border-radius:4px;"></span>
+    <button class="badge" style="cursor:pointer; padding:6px 10px;" onclick="executeLogout()">Sign Out</button>
   </header>
 
   <nav class="nav-tabs">
-    <button class="tab-link active" onclick="switchTab('capture-panel')">Lead Capture</button>
-    <button class="tab-link" onclick="switchTab('search-panel')">Search Records</button>
+    <button class="tab-link active" id="tab-cap" onclick="switchTab('capture-panel')">Lead Capture</button>
+    <button class="tab-link" id="tab-src" onclick="switchTab('search-panel')">Search Records</button>
   </nav>
 
-  <!-- PANEL 1: RECORD CAPTURE INTERFACE FRAME (Your Legacy Capture Form) -->
-  <div id="capture-panel" class="view-panel active">
-     <!-- [Inject your current Section 1 through Section 7 layout definitions cleanly here] -->
-     <p style="padding:20px; text-align:center; color:var(--muted);">[Integrate form structure nodes safely here]</p>
+  <!-- SUCCESS SCREEN SUB-VIEW -->
+  <div id="success-screen">
+    <div style="font-size:4rem;margin-bottom:20px;">✅</div>
+    <h2 style="margin-bottom:10px;">Submission Successful!</h2>
+    <p id="success-ref" style="font-weight:bold;color:var(--brand);margin-bottom:30px;"></p>
+    <button class="btn btn-sub" onclick="resetFormState()">➕ Add New Lead</button>
   </div>
 
-  <!-- PANEL 2: COMPREHENSIVE QUERY & LIFECYCLE MANAGEMENT PANEL -->
-  <div id="search-panel" class="view-panel">
-    <div class="section">
-      <div class="section-header">Database Filter Execution Framework</div>
-      <div class="section-body">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
-          <div>
-            <label class="field-label">Filter Protocol Class Target</label>
-            <select id="search-type-class">
-              <option value="company">Company Name Index</option>
-              <option value="status">Workflow Pipeline Status</option>
-              <option value="engineer">Assigned Accounts Owner</option>
-            </select>
+  <div id="main-form-container">
+    <!-- PANEL 1: RECORD CAPTURE INTERFACE FRAME -->
+    <div id="capture-panel" class="view-panel active">
+      <!-- SECTION 1 — Business Card -->
+      <div class="section">
+        <div class="section-header">Section 1 — Business Card</div>
+        <div class="section-body">
+          <div class="card-row">
+            <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
+            <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
           </div>
-          <div>
-            <label class="field-label">Query Search Parameter</label>
-            <input type="text" id="search-string-input" placeholder="Enter keywords..." />
+          <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
+          <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
+          <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>✨ Parse Card(s) with AI</button>
+
+          <label class="field-label">Name</label><input type="text" id="f-name" />
+          <label class="field-label">Company</label><input type="text" id="f-company" />
+          <label class="field-label">Position</label><input type="text" id="f-position" />
+          <label class="field-label">Phone</label><input type="tel" id="f-phone" />
+          <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
+          <label class="field-label">Email</label><input type="email" id="f-email" />
+          <label class="field-label">Website</label><input type="url" id="f-website" />
+          <label class="field-label">Address</label><textarea id="f-address"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 2 — Meeting Details -->
+      <div class="section">
+        <div class="section-header">Section 2 — Meeting Details</div>
+        <div class="section-body">
+          <label class="field-label">Date of Meeting</label><input type="date" id="meetingDate" />
+          <label class="field-label">Time of Meeting</label><input type="time" id="meetingTime" />
+          <label class="field-label">Meeting Venue</label>
+          <div class="pill-group">
+            <input type="radio" name="meetingVenue" value="Exhibition" id="mv1" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv1">Exhibition</label>
+            <input type="radio" name="meetingVenue" value="Customer Place" id="mv2" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv2">Customer Place</label>
+            <input type="radio" name="meetingVenue" value="ABPS Office" id="mv3" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv3">ABPS Office</label>
+            <input type="radio" name="meetingVenue" value="Other" id="mv4" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv4">Other</label>
+          </div>
+          <input type="text" id="meetingVenueOther" class="other-input" placeholder="Specify other venue..." />
+          <label class="field-label">Venue Name / City</label><input type="text" id="venueName" />
+          <label class="field-label">Additional Meeting Details (if any)</label><textarea id="additionalMeetingDetails" placeholder="Any extra notes..."></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 3 — Technical Details -->
+      <div class="section">
+        <div class="section-header">Section 3 — Technical Details</div>
+        <div class="section-body">
+          <label class="field-label">ABPS Business Vertical</label>
+          <div class="pill-group">
+            <input type="radio" name="businessVertical" value="Industrial" id="bv1" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv1">Industrial</label>
+            <input type="radio" name="businessVertical" value="Power" id="bv2" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv2">Power</label>
+            <input type="radio" name="businessVertical" value="Renewable" id="bv3" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv3">Renewable</label>
+            <input type="radio" name="businessVertical" value="Other" id="bv4" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv4">Other</label>
+          </div>
+          <input type="text" id="businessVerticalOther" class="other-input" placeholder="Specify..." />
+          <label class="field-label">Type of Industry</label><input type="text" id="industry" />
+          <label class="field-label">Qualification (Multiple)</label>
+          <div class="pill-group">
+            <input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label>
+            <input type="checkbox" name="qualification" value="EPC" id="q2" onchange="handleQualChange()"><label for="q2">EPC</label>
+            <input type="checkbox" name="qualification" value="Govt/PSU" id="q3" onchange="handleQualChange()"><label for="q3">Govt/PSU</label>
+            <input type="checkbox" name="qualification" value="Consultant" id="q4" onchange="handleQualChange()"><label for="q4">Consultant</label>
+            <input type="checkbox" name="qualification" value="Developer" id="q5" onchange="handleQualChange()"><label for="q5">Developer</label>
+            <input type="checkbox" name="qualification" value="Electrical Contractor" id="q6" onchange="handleQualChange()"><label for="q6">Electrical Contractor</label>
+            <input type="checkbox" name="qualification" value="Dealer" id="q7" onchange="handleQualChange()"><label for="q7">Dealer</label>
+            <input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label>
+            <input type="checkbox" name="qualification" value="Others" id="q9" onchange="handleQualChange()"><label for="q9">Others</label>
+          </div>
+          <input type="text" id="qualificationOther" class="other-input" placeholder="Specify other qualification..." />
+
+          <div id="vendor-fields" style="display:none;" class="vendor-sub">
+            <label class="field-label">Type of Vendor (Multiple)</label>
+            <div class="pill-group">
+              <input type="checkbox" name="vendorType" value="Raw Materials supplier" id="vt1"><label for="vt1">Raw Materials</label>
+              <input type="checkbox" name="vendorType" value="MC Supplier" id="vt2"><label for="vt2">MC Supplier</label>
+              <input type="checkbox" name="vendorType" value="Capital Goods Supplier" id="vt3"><label for="vt3">Capital Goods</label>
+              <input type="checkbox" name="vendorType" value="Others" id="vto" onchange="toggleOtherCheck(this,'vtoText')"><label for="vto">Others</label>
+            </div>
+            <input type="text" id="vtoText" class="other-input" placeholder="Specify other vendor type..." />
+            <label class="field-label">Name of Materials</label><input type="text" id="materialsName" />
           </div>
         </div>
-        <button class="btn btn-primary" style="width:100%;" onclick="runDatabaseQuery()">Execute Target Database Fetch</button>
+      </div>
+
+      <!-- SECTION 4 — Area of Concerns -->
+      <div class="section">
+        <div class="section-header">Section 4 — Area of Concerns</div>
+        <div class="section-body">
+          <label class="field-label">Low Power Factor Issue</label>
+          <div class="toggle-input-group"><button class="no-btn" data-target="lpi" onclick="toggleNo(this)">No</button><input type="text" id="lpi" oninput="clearNo(this)" /></div>
+          <label class="field-label">High Electricity Bill Issue</label>
+          <div class="toggle-input-group"><button class="no-btn" data-target="hbi" onclick="toggleNo(this)">No</button><input type="text" id="hbi" oninput="clearNo(this)" /></div>
+          <label class="field-label">Harmonics Issue</label>
+          <div class="toggle-input-group"><button class="no-btn" data-target="hi" onclick="toggleNo(this)">No</button><input type="text" id="hi" oninput="clearNo(this)" /></div>
+          <label class="field-label">Transformer Heating / Breakdown Issue</label>
+          <div class="toggle-input-group"><button class="no-btn" data-target="thi" onclick="toggleNo(this)">No</button><input type="text" id="thi" oninput="clearNo(this)" /></div>
+          <label class="field-label">Grid Stability Issue</label>
+          <div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
+          
+          <label class="field-label">Existing System Details</label><textarea id="esd" placeholder="Provide system overview..."></textarea>
+          
+          <label class="field-label">Voltage Level (Multi)</label>
+          <div class="pill-group">
+            <input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label>
+            <input type="checkbox" name="voltage" value="660V" id="vl11"><label for="vl11">660V</label>
+            <input type="checkbox" name="voltage" value="3.3KV" id="vl2"><label for="vl2">3.3KV</label>
+            <input type="checkbox" name="voltage" value="6.6KV" id="vl3"><label for="vl3">6.6KV</label>
+            <input type="checkbox" name="voltage" value="11KV" id="vl4"><label for="vl4">11KV</label>
+            <input type="checkbox" name="voltage" value="22KV" id="vl5"><label for="vl5">22KV</label>
+            <input type="checkbox" name="voltage" value="33KV" id="vl6"><label for="vl6">33KV</label>
+            <input type="checkbox" name="voltage" value="66KV" id="vl7"><label for="vl7">66KV</label>
+            <input type="checkbox" name="voltage" value="132KV" id="vl8"><label for="vl8">132KV</label>
+            <input type="checkbox" name="voltage" value="220KV" id="vl9"><label for="vl9">220KV</label>
+            <input type="checkbox" name="voltage" value="400KV" id="vl10"><label for="vl10">400KV</label>
+          </div>
+          
+          <label class="field-label">Capacity Details</label>
+          <div class="capacity-group">
+            <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" />
+            <input type="text" id="rdMva" placeholder="Running Demand (MVA)" />
+            <input type="text" id="avgPf" placeholder="Monthly Average Power Factor" />
+          </div>
+          <label class="field-label">Problem Observed</label><input type="text" id="problemObserved" />
+          <label class="field-label">Technical Discussion Summary</label><textarea id="techSummary"></textarea>
+        </div>
+      </div>
+
+      <!-- SECTION 5 — Requirement -->
+      <div class="section">
+        <div class="section-header">Section 5 — Requirement</div>
+        <div class="section-body">
+          <label class="field-label">Existing Project</label><input type="text" id="epInput" />
+          <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
+          <label class="field-label">Products Discussed</label>
+          <div class="pill-group">
+            <input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label>
+            <input type="checkbox" name="prod" value="RPTFC" id="pd6"><label for="pd6">RPTFC</label>
+            <input type="checkbox" name="prod" value="Harmonic Filter" id="pd2"><label for="pd2">Harmonic Filter</label>
+            <input type="checkbox" name="prod" value="SVG" id="pd3"><label for="pd3">SVG</label>
+            <input type="checkbox" name="prod" value="MV Capacitor Bank" id="pd4"><label for="pd4">MV Capacitor Bank</label>
+            <input type="checkbox" name="prod" value="Reactor" id="pd5"><label for="pd5">Reactor</label>
+            <input type="checkbox" name="prod" value="Others" id="pdo" onchange="toggleOtherCheck(this,'pdoText')"><label for="pdo">Others</label>
+          </div>
+          <input type="text" id="pdoText" class="other-input" placeholder="Specify other product..." />
+          
+          <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
+          <label class="field-label">Expected Tender / RFQ Date</label><input type="date" id="tenderDate" />
+          <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
+          <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
+          
+          <label class="field-label">Approx Business Potential (Single Select)</label>
+          <div class="pill-group">
+            <input type="radio" name="pot" value="<10L" id="bp1"><label for="bp1">&lt; 10L</label>
+            <input type="radio" name="pot" value="10-50L" id="bp2"><label for="bp2">10-50L</label>
+            <input type="radio" name="pot" value="50L-2cr" id="bp3"><label for="bp3">50L-2cr</label>
+            <input type="radio" name="pot" value=">2cr" id="bp4"><label for="bp4">&gt; 2cr</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 6 — Action Plan -->
+      <div class="section">
+        <div class="section-header">Section 6 — Action Plan</div>
+        <div class="section-body">
+          <div class="action-grid">
+            <div class="action-item"><label class="field-label">Send Company Profile</label><select id="act1"><option>No</option><option>Yes</option></select></div>
+            <div class="action-item"><label class="field-label">Send Technical Presentation</label><select id="act2"><option>No</option><option>Yes</option></select></div>
+            <div class="action-item"><label class="field-label">Arrange Site Visit</label><select id="act3"><option>No</option><option>Yes</option></select></div>
+            <div class="action-item"><label class="field-label">Get Enquiry</label><select id="act4"><option>No</option><option>Yes</option></select></div>
+            <div class="action-item"><label class="field-label">Send Budgetary Offer</label><select id="act5"><option>No</option><option>Yes</option></select></div>
+            <div class="action-item"><label class="field-label">Send Techno-Commercial Offer</label><select id="act6"><option>No</option><option>Yes</option></select></div>
+          </div>
+          <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
+          <label class="field-label">Next Follow-Up Date</label><input type="date" id="nextDate" />
+        </div>
+      </div>
+
+      <div style="padding: 0 0 40px;">
+        <button class="btn btn-sub" id="submit-btn" onclick="submitLeadForm()">📤 Submit Lead</button>
       </div>
     </div>
 
-    <!-- Query Results Display Target Mount Node -->
-    <div id="query-results-mount"></div>
-    
-    <!-- Detail Sub-Display Mount View Area Container -->
-    <div id="focused-lead-inspection-card" class="section" style="display:none;">
-      <!-- JavaScript processes generate interactive contextual update structures below safely -->
+    <!-- PANEL 2: QUERY & LIFECYCLE MANAGEMENT PANEL -->
+    <div id="search-panel" class="view-panel">
+      <div class="section">
+        <div class="section-header">Database Query Framework</div>
+        <div class="section-body">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+            <div>
+              <label class="field-label">Filter Criteria Target</label>
+              <select id="search-type-class">
+                <option value="company">Company Name</option>
+                <option value="status">Pipeline Status</option>
+                <option value="engineer">Assigned Engineer</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Query Search Parameters</label>
+              <input type="text" id="search-string-input" placeholder="Search keywords..." />
+            </div>
+          </div>
+          <button class="btn btn-sub" style="margin-top:4px;" onclick="runDatabaseQuery()">Run System Search Query</button>
+        </div>
+      </div>
+
+      <div id="query-results-mount"></div>
+      
+      <div id="focused-lead-inspection-card" class="section" style="display:none;"></div>
     </div>
   </div>
 </div>
 
 <script>
-const GAS_BACKEND_ENDPOINT = "https://script.google.com/macros/s/AKfycbwe3mcD8poAJFZtdvqbWS2Len6yEq0-sujClEFh-s8MJXIlNEICDO6VpD0w9zD29BPo8w/exec";
-let currentActiveSessionToken = null;
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwe3mcD8poAJFZtdvqbWS2Len6yEq0-sujClEFh-s8MJXIlNEICDO6VpD0w9zD29BPo8w/exec";
+const CLOUD_NAME = "dcdhahrhz";
+const UPLOAD_PRESET = "ABPS Leads Form";
 
-// ── SCREEN ROUTING LOGIC ENGINE ──────────────────────────────────────────────
+let currentActiveSessionToken = null;
+let fileFront = null, fileBack = null;
+
+// ── CAPTURE FILE SELECTION STATE TRACKERS ──
+document.getElementById('card-front').onchange = (e) => {
+  fileFront = e.target.files[0];
+  document.getElementById('front-box').textContent = "Front Side ✅";
+  document.getElementById('front-box').classList.add('done');
+  document.getElementById('parse-btn').disabled = false;
+};
+document.getElementById('card-back').onchange = (e) => {
+  fileBack = e.target.files[0];
+  document.getElementById('back-box').textContent = "Back Side ✅";
+  document.getElementById('back-box').classList.add('done');
+};
+
+// ── VIEW ROUTING ENGINE LINKS ──
 function toggleAuthView(targetScreenId) {
   document.getElementById('login-box').style.display = targetScreenId === 'login' ? 'block' : 'none';
   document.getElementById('forgot-box').style.display = targetScreenId === 'forgot' ? 'block' : 'none';
@@ -145,16 +367,36 @@ function switchTab(targetTabPanelId) {
   document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
   
   document.getElementById(targetTabPanelId).classList.add('active');
-  event.target.classList.add('active');
+  if(targetTabPanelId === 'capture-panel') document.getElementById('tab-cap').classList.add('active');
+  if(targetTabPanelId === 'search-panel') document.getElementById('tab-src').classList.add('active');
 }
 
-// ── AUTHENTICATION EXECUTION ACTIONS ─────────────────────────────────────────
+// ── UI INTERACTION DECORATOR METHODS ──
+function toggleOtherText(r, id) { document.getElementById(id).style.display = (r.value === 'Other') ? 'block' : 'none'; }
+function toggleOtherCheck(c, id) { document.getElementById(id).style.display = c.checked ? 'block' : 'none'; }
+function handleQualChange() {
+  document.getElementById('vendor-fields').style.display = document.getElementById('q8').checked ? 'block' : 'none';
+  document.getElementById('qualificationOther').style.display = document.getElementById('q9').checked ? 'block' : 'none';
+}
+function toggleNo(btn) {
+  const i = document.getElementById(btn.dataset.target);
+  const act = btn.classList.toggle('active');
+  i.value = act ? "No" : "";
+  i.disabled = act;
+}
+function clearNo(i) {
+  const b = document.querySelector(`button[data-target="${i.id}"]`);
+  if (b) b.classList.remove('active');
+}
+
+// ── AUTHENTICATION AND AUTHORIZATION ACTIONS ──
 async function executeLogin() {
   const u = document.getElementById('auth-user').value;
   const p = document.getElementById('auth-pass').value;
-  
+  if(!u || !p) return alert("Credentials cannot be left empty.");
+
   try {
-    const res = await fetch(GAS_BACKEND_ENDPOINT, {
+    const res = await fetch(GAS_URL, {
       method: 'POST',
       body: JSON.stringify({ action: 'login', username: u, password: p })
     });
@@ -163,12 +405,12 @@ async function executeLogin() {
       currentActiveSessionToken = data.token;
       document.getElementById('auth-container').style.display = 'none';
       document.getElementById('app-portal').style.display = 'block';
-      document.getElementById('user-profile-badge').textContent = `User Context: ${data.username}`;
+      document.getElementById('user-profile-badge').textContent = `User: ${data.username}`;
     } else {
-      alert("Verification Failed: " + data.error);
+      alert("Validation Failed: " + data.error);
     }
   } catch(e) {
-    alert("System Gateway Access Error: " + e.message);
+    alert("System API Communication Interrupted: " + e.message);
   }
 }
 
@@ -178,46 +420,186 @@ function executeLogout() {
   document.getElementById('auth-container').style.display = 'block';
 }
 
-// ── CRM PIPELINE SEARCH ENGINE INTERACTIONS ──────────────────────────────────
+// ── PARSE LOGIC PASS THRU ──
+async function parseCard() {
+  const btn = document.getElementById('parse-btn');
+  btn.innerHTML = '<div class="spinner"></div> Processing OCR Data...';
+  btn.disabled = true;
+
+  const getB64 = (f) => new Promise((res, r) => {
+    const rd = new FileReader();
+    rd.onload = () => res(rd.result.split(',')[1]);
+    rd.readAsDataURL(f);
+  });
+
+  try {
+    const img1 = await getB64(fileFront);
+    const img2 = fileBack ? await getB64(fileBack) : null;
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'parse', image: img1, imageBack: img2 })
+    });
+    const j = await res.json();
+    const raw = j.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+    const d = JSON.parse(raw);
+
+    document.getElementById('f-name').value = d.name || "";
+    document.getElementById('f-company').value = d.company || "";
+    document.getElementById('f-position').value = d.position || "";
+    document.getElementById('f-phone').value = d.phone || "";
+    document.getElementById('f-altphone').value = d.altPhone || "";
+    document.getElementById('f-email').value = d.email || "";
+    document.getElementById('f-website').value = d.website || "";
+    document.getElementById('f-address').value = d.address || "";
+  } catch (e) {
+    alert("Card parse fallback engaged. Please populate data strings manually.");
+  } finally {
+    btn.innerHTML = '✨ Parse Card(s) with AI';
+    btn.disabled = false;
+  }
+}
+
+async function uploadToCloudinary(file) {
+  if (!file) return "";
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', UPLOAD_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+  const d = await res.json();
+  return d.secure_url || "";
+}
+
+// ── SUBMIT PIPELINE HOOK ──
+async function submitLeadForm() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Committing Record...';
+
+  const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
+  const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
+
+  try {
+    const [url1, url2] = await Promise.all([uploadToCloudinary(fileFront), uploadToCloudinary(fileBack)]);
+    const imageUrl = [url1, url2].filter(u => u).join(", ");
+
+    const fields = {
+      name: document.getElementById('f-name').value,
+      company: document.getElementById('f-company').value,
+      position: document.getElementById('f-position').value,
+      phone: document.getElementById('f-phone').value,
+      altPhone: document.getElementById('f-altphone').value,
+      email: document.getElementById('f-email').value,
+      website: document.getElementById('f-website').value,
+      address: document.getElementById('f-address').value,
+      meetingDate: document.getElementById('meetingDate').value,
+      meetingTime: document.getElementById('meetingTime').value,
+      meetingVenue: getRadio('meetingVenue') === 'Other' ? document.getElementById('meetingVenueOther').value : getRadio('meetingVenue'),
+      venueName: document.getElementById('venueName').value,
+      additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
+      businessVertical: getRadio('businessVertical') === 'Other' ? document.getElementById('businessVerticalOther').value : getRadio('businessVertical'),
+      industry: document.getElementById('industry').value,
+      qualification: getChecks('qualification').map(v => v === 'Others' ? document.getElementById('qualificationOther').value : v),
+      vendorType: getChecks('vendorType').map(v => v === 'Others' ? document.getElementById('vtoText').value : v),
+      materialsName: document.getElementById('materialsName').value,
+      lpi: document.getElementById('lpi').value,
+      hbi: document.getElementById('hbi').value,
+      hi: document.getElementById('hi').value,
+      thi: document.getElementById('thi').value,
+      gsi: document.getElementById('gsi').value,
+      esd: document.getElementById('esd').value,
+      voltage: getChecks('voltage'),
+      cdMva: document.getElementById('cdMva').value,
+      rdMva: document.getElementById('rdMva').value,
+      avgPf: document.getElementById('avgPf').value,
+      problemObserved: document.getElementById('problemObserved').value,
+      techSummary: document.getElementById('techSummary').value,
+      existingProject: document.getElementById('epInput').value,
+      upcomingProject: document.getElementById('upInput').value,
+      products: getChecks('prod').map(v => v === 'Others' ? document.getElementById('pdoText').value : v),
+      approxReq: document.getElementById('approxReq').value,
+      tenderDate: document.getElementById('tenderDate').value,
+      orderTimeline: document.getElementById('orderTimeline').value,
+      competitors: document.getElementById('competitors').value,
+      potential: getRadio('pot'),
+      sendProfile: document.getElementById('act1').value,
+      sendPresentation: document.getElementById('act2').value,
+      arrangeVisit: document.getElementById('act3').value,
+      getEnquiry: document.getElementById('act4').value,
+      sendBudgetary: document.getElementById('act5').value,
+      sendTechno: document.getElementById('act6').value,
+      followUpRequired: document.getElementById('act7').value,
+      nextDate: document.getElementById('nextDate').value
+    };
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'submit', token: currentActiveSessionToken, fields, imageUrl })
+    });
+    const d = await res.json();
+
+    if(d.success) {
+      document.getElementById('main-form-container').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+      document.getElementById('success-ref').textContent = "Assigned Lead Index ID Reference: " + d.leadRef;
+      window.scrollTo(0,0);
+    } else {
+      alert("Error committing: " + d.error);
+    }
+  } catch(e) {
+    alert("Network pipeline exception: " + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '📤 Submit Lead';
+  }
+}
+
+function resetFormState() {
+  document.getElementById('success-screen').style.display = 'none';
+  document.getElementById('main-form-container').style.display = 'block';
+  location.reload();
+}
+
+// ── CRM ENGINE DATA SEARCH OPERATIONS ──
 async function runDatabaseQuery() {
   const type = document.getElementById('search-type-class').value;
   const query = document.getElementById('search-string-input').value;
   const targetMount = document.getElementById('query-results-mount');
   
-  targetMount.innerHTML = '<p style="padding:12px; color:var(--muted);">Processing storage lookup arrays...</p>';
+  targetMount.innerHTML = '<p style="padding:12px; color:var(--muted);">Executing remote database collection parsing array query...</p>';
   
   try {
-    const res = await fetch(GAS_BACKEND_ENDPOINT, {
+    const res = await fetch(GAS_URL, {
       method: 'POST',
       body: JSON.stringify({ action: 'searchLeads', token: currentActiveSessionToken, searchType: type, query: query })
     });
     const rData = await res.json();
     
-    if(!rData.success) return targetMount.innerHTML = `<p style="color:var(--warn);">${rData.error}</p>`;
-    if(rData.data.length === 0) return targetMount.innerHTML = `<p style="padding:12px; color:var(--muted);">No matching index tracks returned.</p>`;
+    if(!rData.success) return targetMount.innerHTML = `<p style="color:var(--warn); padding:12px;">${rData.error}</p>`;
+    if(rData.data.length === 0) return targetMount.innerHTML = `<p style="padding:12px; color:var(--muted);">No matching entity records parsed.</p>`;
     
     targetMount.innerHTML = rData.data.map(item => `
       <div class="data-item-card" onclick="loadInspectedLeadRecord('${item.leadRef}')">
         <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <strong>${item.company}</strong>
+          <strong>Company: ${item.company}</strong>
           <span class="badge">${item.leadRef}</span>
         </div>
-        <p style="font-size:0.85rem; color:var(--muted);">${item.name} | ${item.position}</p>
-        <p style="font-size:0.8rem; color:var(--brand); margin-top:4px;">Assigned Representative: ${item.engineerName}</p>
+        <p style="font-size:0.85rem; color:var(--muted);">${item.name} — ${item.position}</p>
+        <p style="font-size:0.8rem; color:var(--brand); margin-top:6px; font-weight:600;">Account Architect: ${item.engineerName}</p>
       </div>
     `).join('');
   } catch(e) {
-    targetMount.innerHTML = `<p style="color:var(--warn);">Search layer broken: ${e.message}</p>`;
+    targetMount.innerHTML = `<p style="color:var(--warn); padding:12px;">Search infrastructure break: ${e.message}</p>';`;
   }
 }
 
 async function loadInspectedLeadRecord(leadRefId) {
   const cardContainer = document.getElementById('focused-lead-inspection-card');
   cardContainer.style.display = "block";
-  cardContainer.innerHTML = '<p style="padding:16px;">Hydrating linked sub-entities...</p>';
-  
+  cardContainer.innerHTML = '<p style="padding:16px; color:var(--muted);">Compiling history sub-arrays...</p>';
+  window.scrollTo(0, cardContainer.offsetTop - 20);
+
   try {
-    const res = await fetch(GAS_BACKEND_ENDPOINT, {
+    const res = await fetch(GAS_URL, {
       method: 'POST',
       body: JSON.stringify({ action: 'getLeadDetails', token: currentActiveSessionToken, leadId: leadRefId })
     });
@@ -227,73 +609,129 @@ async function loadInspectedLeadRecord(leadRefId) {
     
     // Core Layout Generation with Multi-Log Context Engine Mapping
     cardContainer.innerHTML = `
-      <div class="section-header" style="background:var(--brand); color:#fff;">File View Dashboard: ${r.lead[0]}</div>
+      <div class="section-header" style="background:var(--brand-dk); color:#fff; font-weight:700;">Record Dashboard File: ${r.lead[0]}</div>
       <div class="section-body">
-        <h3 style="margin-bottom:6px;">${r.lead[4]}</h3>
-        <p style="font-size:0.9rem; margin-bottom:12px;">Contact: <strong>${r.lead[3]}</strong> (${r.lead[5]})</p>
+        <h3 style="margin-bottom:6px; color:var(--brand);">${r.lead[4]}</h3>
+        <p style="font-size:0.9rem;">Primary Contact: <strong>${r.lead[3]}</strong> (${r.lead[5]})</p>
+        <p style="font-size:0.85rem; color:var(--muted); margin-top:2px;">Phone: ${r.lead[6]} | Email: ${r.lead[8]}</p>
         
-        <hr style="margin:12px 0; border:0; border-top:1px solid #e2e8f0;" />
+        <hr style="margin:14px 0; border:0; border-top:1px solid #e2e8f0;" />
         
         <!-- Workflow Mutators Interface -->
-        <label class="field-label">Alter Allocation Status Context</label>
+        <h4 style="margin-bottom:8px; font-size:0.9rem;">Modify System Parameters Matrix</h4>
+        
+        <label class="field-label">Reassign Pipeline Status</label>
         <select id="update-target-status-val">
-          <option value="New Lead">New Lead Baseline</option>
+          <option value="New Lead Baseline">New Lead Baseline</option>
           <option value="Technical Presentation Pitch">Technical Presentation Pitch</option>
           <option value="Budgetary Offer Estimation">Budgetary Offer Estimation</option>
           <option value="Negotiation Closing Sequence">Negotiation Closing Sequence</option>
           <option value="Closed Lost File Archive">Closed Lost File Archive</option>
         </select>
+
+        <label class="field-label">Reassign Engineer Context Owner</label>
+        <select id="update-target-engineer-val">
+          <option value="">— Unchanged —</option>
+          <option value="Alok Kumar">Alok Kumar</option>
+          <option value="Debarshi Mukharjee">Debarshi Mukharjee</option>
+          <option value="H.K. Pawar">H.K. Pawar</option>
+          <option value="Aritra Roy">Aritra Roy</option>
+          <option value="Mohammad Asraf">Mohammad Asraf</option>
+          <option value="Pavan">Pavan</option>
+        </select>
         
-        <label class="field-label">Required Operation Audit Tracking Log Comment</label>
-        <input type="text" id="update-action-remark" placeholder="Enter mandatory modification explanation remarks..." />
+        <label class="field-label">Mandatory Audit Change Remarks Statement</label>
+        <input type="text" id="update-action-remark" placeholder="Provide documentation reasoning metrics..." />
         
-        <button class="btn btn-primary" style="margin-top:8px; font-size:0.8rem;" onclick="commitWorkflowChanges('${r.lead[0]}')">Commit Properties Modifications</button>
+        <button class="btn btn-primary" style="margin-top:12px; padding:10px; font-size:0.85rem; width:auto;" onclick="commitWorkflowChanges('${r.lead[0]}')">Commit Changes</button>
         
-        <hr style="margin:16px 0; border:0; border-top:1px solid #cbd5e1;" />
+        <hr style="margin:20px 0; border:0; border-top:1px solid #cbd5e1;" />
         
-        <h4>Interaction Log History Sequence Timeline</h4>
+        <!-- Append Sequential Log Entries Interaction -->
+        <h4 style="margin-bottom:8px;">Append New Sequential Follow-Up Event Log</h4>
+        <label class="field-label">Meeting Interactions/Discussion Log Notes</label>
+        <textarea id="new-followup-notes" placeholder="Summarize outcomes context..."></textarea>
+        
+        <label class="field-label">Next Scheduled Follow-Up Date Target</label>
+        <input type="date" id="new-followup-nextdate" />
+        
+        <button class="btn btn-ai" style="margin-top:10px; padding:10px; font-size:0.85rem; width:auto;" onclick="submitNewFollowUpLogRow('${r.lead[0]}')">Save Follow-Up Interaction</button>
+
+        <hr style="margin:20px 0; border:0; border-top:1px solid #cbd5e1;" />
+
+        <h4 style="margin-bottom:12px;">Interaction Log History Sequence Timeline</h4>
         <div style="margin-top:12px;">
           ${r.history.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem;">No existing sequential event logs recorded.</p>' : r.history.map(h => `
             <div class="timeline-event">
-              <span style="font-size:0.7rem; color:var(--muted); font-weight:bold;">${h.timestamp} via ${h.user}</span>
-              <p style="font-size:0.85rem; margin-top:2px;">${h.notes}</p>
-              <p style="font-size:0.75rem; color:var(--brand); margin-top:2px;">Target Schedule Hook: ${h.nextDate}</p>
+              <span style="font-size:0.75rem; color:var(--muted); font-weight:700;">Date Execution: ${h.timestamp} — Logged by: ${h.user}</span>
+              <p style="font-size:0.85rem; margin-top:4px; color:var(--text); line-height:1.4;">${h.notes}</p>
+              <p style="font-size:0.8rem; color:var(--brand); margin-top:4px; font-weight:600;">Next Target Deadline: ${h.nextDate}</p>
             </div>
           `).join('')}
         </div>
       </div>
     `;
   } catch(e) {
-    cardContainer.innerHTML = `<p style="padding:16px; color:var(--warn);">Failed to safely open index trace data: ${e.message}</p>`;
+    cardContainer.innerHTML = `<p style="padding:16px; color:var(--warn);">Failed to safely structure trace map index data: ${e.message}</p>`;
   }
 }
 
 async function commitWorkflowChanges(leadId) {
-  const newStatus = document.getElementById('update-target-status-val').value;
+  const status = document.getElementById('update-target-status-val').value;
+  const engineer = document.getElementById('update-target-engineer-val').value;
   const remarks = document.getElementById('update-action-remark').value;
   
-  if(!remarks) return alert("Enterprise Audit Policy Error: Verification description comment can not be blank.");
+  if(!remarks) return alert("System Operation Audit Error: Remarks are required to patch entries.");
   
   try {
-    const res = await fetch(GAS_BACKEND_ENDPOINT, {
+    const res = await fetch(GAS_URL, {
       method: 'POST',
       body: JSON.stringify({
         action: 'updateLeadStatus',
         token: currentActiveSessionToken,
         leadId: leadId,
-        newStatus: newStatus,
+        newStatus: status,
+        newEngineer: engineer || null,
         remarks: remarks
       })
     });
     const d = await res.json();
     if(d.success) {
-      alert("Audit trace committed successfully.");
+      alert("Operational records updated cleanly.");
+      loadInspectedLeadRecord(leadId);
+    } else {
+      alert("Error mutating row state: " + d.error);
+    }
+  } catch(e) {
+    alert("Communication Failure: " + e.message);
+  }
+}
+
+async function submitNewFollowUpLogRow(leadId) {
+  const notes = document.getElementById('new-followup-notes').value;
+  const nextDate = document.getElementById('new-followup-nextdate').value;
+
+  if(!notes || !nextDate) return alert("Validation Mismatch: Discussion notes and target deadlines are mandatory.");
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'addFollowUp',
+        token: currentActiveSessionToken,
+        leadId: leadId,
+        followUpFields: { notes, nextDate, customQuestions: {} }
+      })
+    });
+    const d = await res.json();
+    if(d.success) {
+      alert("Sub-tier sequential follow-up data entry append processed successfully.");
       loadInspectedLeadRecord(leadId);
     } else {
       alert(d.error);
     }
   } catch(e) {
-    alert("Communication Failure: " + e.message);
+    alert("Failed to submit follow-up block array parameters: " + e.message);
   }
 }
 </script>
