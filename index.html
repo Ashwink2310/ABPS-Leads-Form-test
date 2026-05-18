@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>ABPS Enterprise CRM Portal</title>
+<title>ABPS Enterprise Portal — Access Validation Mode</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -13,19 +13,21 @@
   }
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
   
-  /* Authentication Gate Overlay UI */
+  /* Authentication Container Layer */
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
   .auth-logo { font-size: 2.5rem; margin-bottom: 10px; }
   .auth-title { font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 5px; }
   .auth-subtitle { font-size: 0.85rem; color: var(--muted); margin-bottom: 25px; }
+  label.field-label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 14px 0 6px; }
+  input { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: .9rem; background: #fff; color: var(--text); }
   
   header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,.2); display: flex; justify-content: space-between; align-items: center; }
   header h1 { font-size: 1.2rem; }
   .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.6); color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
   .logout-btn:hover { background: rgba(255,255,255,0.1); }
   
-  /* Navigation Control Dashboard Grid Styles */
+  /* Dashboard Controls Layout */
   .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 14px; padding: 20px 14px; }
   @media(min-width: 600px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
   .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 22px; border-radius: var(--radius); text-align: left; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.04); transition: transform 0.2s, border-color 0.2s; position: relative; }
@@ -37,41 +39,20 @@
   .lock-badge { position: absolute; top: 15px; right: 15px; font-size: 1rem; color: var(--warn); display: none; }
   .menu-card.locked .lock-badge { display: block; }
 
+  /* Demo Panel Layout Viewports */
+  .workspace-panel { background: var(--card); border-radius: var(--radius); margin: 20px 12px; padding: 30px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+  .demo-badge { font-size: 3.5rem; margin-bottom: 15px; }
+  .demo-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+  .demo-text { font-size: 0.95rem; color: var(--muted); margin-bottom: 25px; }
+  
   .back-nav-container { padding: 12px 12px 0; }
-  .back-btn { background: #6b7a8d; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-
-  .section { background: var(--card); border-radius: var(--radius); margin: 16px 12px; box-shadow: 0 1px 6px rgba(0,0,0,.08); overflow: hidden; }
-  .section-header { background: var(--brand); color: #fff; padding: 10px 16px; font-size: .85rem; font-weight: 700; text-transform: uppercase; }
-  .section-body { padding: 16px; }
-  label.field-label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 14px 0 6px; }
-  input, select, textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: .9rem; background: #fff; color: var(--text); }
-  textarea { min-height: 72px; resize: vertical; }
+  .back-btn { background: #6b7a8d; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
   
-  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-  .pill-group input { display: none; }
-  .pill-group label { padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 20px; font-size: .8rem; cursor: pointer; transition: all .15s; background: #fff; }
-  .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
-  .other-input { margin-top: 8px; display: none; }
-  .toggle-input-group { display: flex; gap: 8px; align-items: center; }
-  .no-btn { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: #fff; cursor: pointer; font-weight: 600; font-size: .8rem; white-space: nowrap; }
-  .no-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
-  
-  .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; }
-  .btn-ai { background: var(--accent); color: #fff; }
-  .btn-sub { background: var(--brand); color: #fff; font-size: 1.1rem; }
+  .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; }
+  .btn-sub { background: var(--brand); color: #fff; margin-top: 15px; }
   .btn:disabled { opacity: .6; cursor: not-allowed; }
-  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  
-  .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-  .action-item { background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
-  .card-row { display: flex; gap: 10px; margin-bottom: 10px; }
-  .card-box { flex: 1; border: 2px dashed var(--border); border-radius: 10px; padding: 20px 10px; text-align: center; font-size: .8rem; cursor: pointer; color: var(--muted); transition: border-color .15s; }
-  .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
-  
-  #success-screen { display: none; text-align: center; padding: 60px 20px; background: #fff; border-radius: var(--radius); margin: 20px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-  .vendor-sub { margin-top: 15px; border-left: 3px solid var(--brand); padding-left: 15px; }
-  .capacity-group { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -89,7 +70,7 @@
       <label class="field-label">Password</label>
       <input type="password" id="auth-pass" placeholder="Enter password..." required />
       
-      <button class="btn btn-sub" id="login-btn" onclick="executeLogin()" style="margin-top: 25px;">Login</button>
+      <button class="btn btn-sub" id="login-btn" onclick="executeLogin()">Login</button>
     </div>
   </div>
 </div>
@@ -102,31 +83,31 @@
 
   <div id="dashboard-view">
     <h2 style="padding: 20px 14px 5px; font-size: 1.3rem;">Welcome Back</h2>
-    <p style="padding: 0 14px 10px; font-size: 0.85rem; color: var(--muted);">Select an authorized system module to begin:</p>
+    <p style="padding: 0 14px 10px; font-size: 0.85rem; color: var(--muted);">Select an authorized system module section to enter:</p>
     
     <div class="dashboard-grid">
       <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')">
         <span class="lock-badge">🔒</span>
         <div class="menu-title">📷 Enter Card Details</div>
-        <div class="menu-desc">Scan and parse processing lead business card logs using Gemini AI metrics.</div>
+        <div class="menu-desc">Scan, auto-parse, or manually submit business cards using Gemini AI.</div>
       </div>
       
       <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')">
         <span class="lock-badge">🔒</span>
         <div class="menu-title">🏢 Search by Company Name</div>
-        <div class="menu-desc">Query entries by corporation title to update metrics and run follow-up streams.</div>
+        <div class="menu-desc">Query entries by corporation title to view history, edit, or add follow-ups.</div>
       </div>
       
       <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')">
         <span class="lock-badge">🔒</span>
         <div class="menu-title">📊 Search by Status</div>
-        <div class="menu-desc">Filter client metrics by operational sales lifecycle parameters.</div>
+        <div class="menu-desc">Filter lead entries across operational pipelines and lifecycle assignments.</div>
       </div>
       
       <div class="menu-card" id="mod-engineer" onclick="navigateToModule('searchEngineer')">
         <span class="lock-badge">🔒</span>
         <div class="menu-title">👷 Search by Assigned Engineer</div>
-        <div class="menu-desc">Review client accounts distributed across active personnel pipelines.</div>
+        <div class="menu-desc">Review client listings grouped by active managing engineer portfolios.</div>
       </div>
     </div>
   </div>
@@ -137,197 +118,36 @@
     </div>
     
     <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
-      <div id="success-screen">
-        <div style="font-size:4rem;margin-bottom:20px;">✅</div>
-        <h2 style="margin-bottom:10px;">Submission Successful!</h2>
-        <p id="success-ref" style="font-weight:bold;color:var(--brand);margin-bottom:30px;"></p>
-        <button class="btn btn-sub" onclick="resetFormState()">➕ Add New Lead</button>
-      </div>
-
-      <div id="main-form-container">
-        <div class="section">
-          <div class="section-header">Section 1 — Business Card</div>
-          <div class="section-body">
-            <div class="card-row">
-              <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
-              <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
-            </div>
-            <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
-            <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
-            <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>✨ Parse Card(s) with AI</button>
-
-            <label class="field-label">Name</label><input type="text" id="f-name" />
-            <label class="field-label">Company</label><input type="text" id="f-company" />
-            <label class="field-label">Position</label><input type="text" id="f-position" />
-            <label class="field-label">Phone</label><input type="tel" id="f-phone" />
-            <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
-            <label class="field-label">Email</label><input type="email" id="f-email" />
-            <label class="field-label">Website</label><input type="url" id="f-website" />
-            <label class="field-label">Address</label><textarea id="f-address"></textarea>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-header">Section 2 — Meeting Details</div>
-          <div class="section-body">
-            <label class="field-label">Date of Meeting</label><input type="date" id="meetingDate" />
-            <label class="field-label">Time of Meeting</label><input type="time" id="meetingTime" />
-            <label class="field-label">Meeting Venue</label>
-            <div class="pill-group">
-              <input type="radio" name="meetingVenue" value="Exhibition" id="mv1" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv1">Exhibition</label>
-              <input type="radio" name="meetingVenue" value="Customer Place" id="mv2" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv2">Customer Place</label>
-              <input type="radio" name="meetingVenue" value="ABPS Office" id="mv3" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv3">ABPS Office</label>
-              <input type="radio" name="meetingVenue" value="Other" id="mv4" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv4">Other</label>
-            </div>
-            <input type="text" id="meetingVenueOther" class="other-input" placeholder="Specify other venue..." />
-            <label class="field-label">Venue Name / City</label><input type="text" id="venueName" />
-            <label class="field-label">Additional Meeting Details (if any)</label><textarea id="additionalMeetingDetails"></textarea>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-header">Section 3 — Technical Details</div>
-          <div class="section-body">
-            <label class="field-label">ABPS Business Vertical</label>
-            <div class="pill-group">
-              <input type="radio" name="businessVertical" value="Industrial" id="bv1" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv1">Industrial</label>
-              <input type="radio" name="businessVertical" value="Power" id="bv2" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv2">Power</label>
-              <input type="radio" name="businessVertical" value="Renewable" id="bv3" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv3">Renewable</label>
-              <input type="radio" name="businessVertical" value="Other" id="bv4" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv4">Other</label>
-            </div>
-            <input type="text" id="businessVerticalOther" class="other-input" placeholder="Specify..." />
-            <label class="field-label">Type of Industry</label><input type="text" id="industry" />
-            <label class="field-label">Qualification (Multiple)</label>
-            <div class="pill-group">
-              <input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label>
-              <input type="checkbox" name="qualification" value="EPC" id="q2" onchange="handleQualChange()"><label for="q2">EPC</label>
-              <input type="checkbox" name="qualification" value="Govt/PSU" id="q3" onchange="handleQualChange()"><label for="q3">Govt/PSU</label>
-              <input type="checkbox" name="qualification" value="Consultant" id="q4" onchange="handleQualChange()"><label for="q4">Consultant</label>
-              <input type="checkbox" name="qualification" value="Developer" id="q5" onchange="handleQualChange()"><label for="q5">Developer</label>
-              <input type="checkbox" name="qualification" value="Electrical Contractor" id="q6" onchange="handleQualChange()"><label for="q6">Electrical Contractor</label>
-              <input type="checkbox" name="qualification" value="Dealer" id="q7" onchange="handleQualChange()"><label for="q7">Dealer</label>
-              <input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label>
-              <input type="checkbox" name="qualification" value="Others" id="q9" onchange="handleQualChange()"><label for="q9">Others</label>
-            </div>
-            <input type="text" id="qualificationOther" class="other-input" placeholder="Specify other qualification..." />
-            <div id="vendor-fields" style="display:none;" class="vendor-sub">
-              <label class="field-label">Type of Vendor (Multiple)</label>
-              <div class="pill-group">
-                <input type="checkbox" name="vendorType" value="Raw Materials supplier" id="vt1"><label for="vt1">Raw Materials</label>
-                <input type="checkbox" name="vendorType" value="MC Supplier" id="vt2"><label for="vt2">MC Supplier</label>
-                <input type="checkbox" name="vendorType" value="Capital Goods Supplier" id="vt3"><label for="vt3">Capital Goods</label>
-                <input type="checkbox" name="vendorType" value="Others" id="vto" onchange="toggleOtherCheck(this,'vtoText')"><label for="vto">Others</label>
-              </div>
-              <input type="text" id="vtoText" class="other-input" placeholder="Specify other vendor type..." />
-              <label class="field-label">Name of Materials</label><input type="text" id="materialsName" />
-            </div>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-header">Section 4 — Area of Concerns</div>
-          <div class="section-body">
-            <label class="field-label">Low Power Factor Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="lpi" onclick="toggleNo(this)">No</button><input type="text" id="lpi" oninput="clearNo(this)" /></div>
-            <label class="field-label">High Electricity Bill Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hbi" onclick="toggleNo(this)">No</button><input type="text" id="hbi" oninput="clearNo(this)" /></div>
-            <label class="field-label">Harmonics Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hi" onclick="toggleNo(this)">No</button><input type="text" id="hi" oninput="clearNo(this)" /></div>
-            <label class="field-label">Transformer Heating Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="thi" onclick="toggleNo(this)">No</button><input type="text" id="thi" oninput="clearNo(this)" /></div>
-            <label class="field-label">Grid Stability Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
-            <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
-            <label class="field-label">Voltage Level (Multi)</label>
-            <div class="pill-group">
-              <input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label>
-              <input type="checkbox" name="voltage" value="11KV" id="vl4"><label for="vl4">11KV</label>
-              <input type="checkbox" name="voltage" value="33KV" id="vl6"><label for="vl6">33KV</label>
-            </div>
-            <label class="field-label">Capacity Details</label>
-            <div class="capacity-group">
-              <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" />
-              <input type="text" id="rdMva" placeholder="Running Demand (MVA)" />
-              <input type="text" id="avgPf" placeholder="Monthly Average Power Factor" />
-            </div>
-            <label class="field-label">Problem Observed</label><input type="text" id="problemObserved" />
-            <label class="field-label">Technical Discussion Summary</label><textarea id="techSummary"></textarea>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-header">Section 5 — Requirement</div>
-          <div class="section-body">
-            <label class="field-label">Existing Project</label><input type="text" id="epInput" />
-            <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
-            <label class="field-label">Products Discussed</label>
-            <div class="pill-group">
-              <input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label>
-              <input type="checkbox" name="prod" value="SVG" id="pd3"><label for="pd3">SVG</label>
-              <input type="checkbox" name="prod" value="Others" id="pdo" onchange="toggleOtherCheck(this,'pdoText')"><label for="pdo">Others</label>
-            </div>
-            <input type="text" id="pdoText" class="other-input" placeholder="Specify other product..." />
-            <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
-            <label class="field-label">Expected Tender / RFQ Date</label><input type="date" id="tenderDate" />
-            <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
-            <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
-            <label class="field-label">Approx Business Potential</label>
-            <div class="pill-group">
-              <input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label>
-              <input type="radio" name="pot" value="10-50L" id="bp2"><label for="bp2">10-50L</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-header">Section 6 — Action Plan</div>
-          <div class="section-body">
-            <div class="action-grid">
-              <div class="action-item"><label class="field-label">Send Profile</label><select id="act1"><option>No</option><option>Yes</option></select></div>
-              <div class="action-item"><label class="field-label">Send Techno</label><select id="act6"><option>No</option><option>Yes</option></select></div>
-            </div>
-            <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
-            <label class="field-label">Next Follow-Up Date</label><input type="date" id="nextDate" />
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-header">Section 7 — Engineer Info</div>
-          <div class="section-body">
-            <label class="field-label">Your Name</label>
-            <select id="engName">
-              <option value="">— Select —</option>
-              <option>Alok Kumar</option>
-              <option>Pavan</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="padding: 0 12px 40px;">
-          <button class="btn btn-sub" id="submit-btn" onclick="submitLead()">📤 Submit Lead</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="workspace-searchCompany" class="workspace-panel" style="display: none; padding: 20px 12px;">
-      <h3>Company Search Sub-System Module</h3>
-      <p style="color: var(--muted); margin-top: 10px;">Pipeline workspace initialized. Query forms will be injected here.</p>
+      <div class="demo-badge">📷</div>
+      <div class="demo-title">Enter Card Details Module</div>
+      <div class="demo-text">This is the placeholder staging view for card scanning and parsing forms. Access confirmed!</div>
     </div>
     
-    <div id="workspace-searchStatus" class="workspace-panel" style="display: none; padding: 20px 12px;">
-      <h3>Status Filter Sub-System Module</h3>
-      <p style="color: var(--muted); margin-top: 10px;">Pipeline workspace initialized. Operational layout metrics will be injected here.</p>
+    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;">
+      <div class="demo-badge">🏢</div>
+      <div class="demo-title">Search by Company Name Module</div>
+      <div class="demo-text">This is the placeholder staging view for company history searching and log mutations. Access confirmed!</div>
     </div>
     
-    <div id="workspace-searchEngineer" class="workspace-panel" style="display: none; padding: 20px 12px;">
-      <h3>Engineer Pipeline Sub-System Module</h3>
-      <p style="color: var(--muted); margin-top: 10px;">Pipeline workspace initialized. Personnel metrics layout will be injected here.</p>
+    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;">
+      <div class="demo-badge">📊</div>
+      <div class="demo-title">Search by Status Module</div>
+      <div class="demo-text">This is the placeholder staging view for filtering pipeline entries by project status tracking parameters. Access confirmed!</div>
+    </div>
+    
+    <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;">
+      <div class="demo-badge">👷</div>
+      <div class="demo-title">Search by Assigned Engineer Module</div>
+      <div class="demo-text">This is the placeholder staging view for viewing client accounts distributed by personnel assignments. Access confirmed!</div>
     </div>
   </div>
 </div>
 
 <script>
-// ── CONFIG ─────────────────────────────────────────────────────────────────
+// ── SYSTEM ARCHITECTURE HUB CONFIGURATION ──────────────────────────────────────
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwEibMlUgkr4fK_FlO4hBLQPIH6DLOVlsew4bEkleAaq0A83aWrxMa2rxUQnUFz_mb1fg/exec";
-const CLOUD_NAME = "dcdhahrhz";
-const UPLOAD_PRESET = "ABPS Leads Form";
 
-// Runtime application system access map state
+// Global operational state maps
 let userPermissions = {
   cardDetails: false,
   searchCompany: false,
@@ -335,7 +155,7 @@ let userPermissions = {
   searchEngineer: false
 };
 
-// ── Authentication Check ───────────────────────────────────────────────────
+// ── Application Startup Lifecycles ──────────────────────────────────────────
 window.onload = function() {
   const token = localStorage.getItem("sessionToken");
   const expires = localStorage.getItem("sessionExpiry");
@@ -355,12 +175,12 @@ async function executeLogin() {
   const loginBtn = document.getElementById("login-btn");
 
   if (!userField.value || !passField.value) {
-    alert("Please complete credential fields.");
+    alert("Please fill in all parameter fields.");
     return;
   }
 
   loginBtn.disabled = true;
-  loginBtn.innerHTML = '<div class="spinner"></div> Authenticating...';
+  loginBtn.innerHTML = '<div class="spinner"></div> Verifying...';
 
   try {
     const response = await fetch(GAS_URL, {
@@ -379,10 +199,10 @@ async function executeLogin() {
       userPermissions = result.permissions;
       showAppView();
     } else {
-      alert("Authentication Denied: " + result.error);
+      alert("Access Denied: " + result.error);
     }
   } catch (err) {
-    alert("Connection to authentication node failed.\n" + err.message);
+    alert("Critical network handshake exception.\n" + err.message);
   } finally {
     loginBtn.disabled = false;
     loginBtn.innerHTML = "Login";
@@ -402,7 +222,7 @@ function showAppView() {
   document.getElementById("dashboard-view").style.display = "block";
   document.getElementById("module-workspace-container").style.display = "none";
   
-  // Render visual locks on dashboard menu keys based on matrix parameters
+  // Update visual locked layout treatments dynamically based on row permissions values
   updateMenuCardVisuals("mod-card", userPermissions.cardDetails);
   updateMenuCardVisuals("mod-company", userPermissions.searchCompany);
   updateMenuCardVisuals("mod-status", userPermissions.searchStatus);
@@ -411,26 +231,27 @@ function showAppView() {
 
 function updateMenuCardVisuals(elementId, hasAccess) {
   const card = document.getElementById(elementId);
-  if (hasAccess) {
-    card.classList.remove("locked");
-  } else {
-    card.classList.add("locked");
+  if (card) {
+    if (hasAccess) {
+      card.classList.remove("locked");
+    } else {
+      card.classList.add("locked");
+    }
   }
 }
 
-// ── Dashboard Navigation Controls ──────────────────────────────────────────
+// ── Application Routing Engines ───────────────────────────────────────────
 function navigateToModule(moduleKey) {
-  // Enforce runtime verification check protection block
+  // Enforce rigid client-side interface click block gates
   if (!userPermissions[moduleKey]) {
-    alert("Access Denied: You do not have permissions to access this specific module. Contact system Administrator.");
+    alert("System Security Block: You do not have permission parameters enabled to access this section module. Please contact your administrator.");
     return;
   }
   
-  // Update view panel states
   document.getElementById("dashboard-view").style.display = "none";
   document.getElementById("module-workspace-container").style.display = "block";
   
-  // Hide all panels, display active selection
+  // Switch visual states of sub panels smoothly
   const panels = document.querySelectorAll(".workspace-panel");
   panels.forEach(p => p.style.display = "none");
   
@@ -439,183 +260,6 @@ function navigateToModule(moduleKey) {
 
 function returnToDashboard() {
   showAppView();
-}
-
-function resetFormState() {
-  document.getElementById("success-screen").style.display = "none";
-  document.getElementById("main-form-container").style.display = "block";
-  // Reset image file status states
-  fileFront = null; fileBack = null;
-  document.getElementById("front-box").textContent = "📷 Front Side";
-  document.getElementById("front-box").classList.remove("done");
-  document.getElementById("back-box").textContent = "📷 Back Side (Opt)";
-  document.getElementById("back-box").classList.remove("done");
-  document.getElementById("parse-btn").disabled = true;
-}
-
-// ── Card file picking hooks ──────────────────────────────────────────────────
-let fileFront = null, fileBack = null;
-
-document.getElementById('card-front').onchange = (e) => {
-  fileFront = e.target.files[0];
-  document.getElementById('front-box').textContent = "Front ✅";
-  document.getElementById('front-box').classList.add('done');
-  document.getElementById('parse-btn').disabled = false;
-};
-document.getElementById('card-back').onchange = (e) => {
-  fileBack = e.target.files[0];
-  document.getElementById('back-box').textContent = "Back ✅";
-  document.getElementById('back-box').classList.add('done');
-};
-
-// ── UI Helpers ───────────────────────────────────────────────────────────────
-function toggleOtherText(r, id) { document.getElementById(id).style.display = (r.value === 'Other') ? 'block' : 'none'; }
-function toggleOtherCheck(c, id) { document.getElementById(id).style.display = c.checked ? 'block' : 'none'; }
-function handleQualChange() {
-  document.getElementById('vendor-fields').style.display = document.getElementById('q8').checked ? 'block' : 'none';
-  document.getElementById('qualificationOther').style.display = document.getElementById('q9').checked ? 'block' : 'none';
-}
-function toggleNo(btn) {
-  const i = document.getElementById(btn.dataset.target);
-  const act = btn.classList.toggle('active');
-  i.value = act ? "No" : ""; i.disabled = act;
-}
-function clearNo(i) {
-  const b = document.querySelector(`button[data-target="${i.id}"]`);
-  if (b) b.classList.remove('active');
-}
-
-// ── Parse card via GAS → Gemini ─────────────────────────────────────────────
-async function parseCard() {
-  const btn = document.getElementById('parse-btn');
-  btn.innerHTML = '<div class="spinner"></div> Parsing...';
-  btn.disabled = true;
-
-  const getB64 = (f) => new Promise((res, rej) => {
-    const rd = new FileReader();
-    rd.onload = () => res(rd.result.split(',')[1]);
-    rd.onerror = () => rej(new Error("Read failed"));
-    rd.readAsDataURL(f);
-  });
-
-  try {
-    const img1 = await getB64(fileFront);
-    const img2 = fileBack ? await getB64(fileBack) : null;
-
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'parse', image: img1, imageBack: img2 })
-    });
-    const j = await res.json();
-    const raw = j.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
-    const d = JSON.parse(raw);
-
-    document.getElementById('f-name').value     = d.name     || "";
-    document.getElementById('f-company').value  = d.company  || "";
-    document.getElementById('f-position').value = d.position || "";
-    document.getElementById('f-phone').value    = d.phone    || "";
-    document.getElementById('f-altphone').value = d.altPhone || "";
-    document.getElementById('f-email').value    = d.email    || "";
-    document.getElementById('f-website').value  = d.website  || "";
-    document.getElementById('f-address').value  = d.address  || "";
-  } catch (e) {
-    alert("Parsing failed. Fill manually.\n" + e.message);
-  } finally {
-    btn.innerHTML = '✨ Parse Card(s) with AI';
-    btn.disabled = false;
-  }
-}
-
-// ── Cloudinary upload helper ─────────────────────────────────────────────────
-async function uploadToCloudinary(file) {
-  if (!file) return "";
-  const fd = new FormData();
-  fd.append('file', file);
-  fd.append('upload_preset', UPLOAD_PRESET);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
-  const d = await res.json();
-  return d.secure_url || "";
-}
-
-// ── Submit Lead Data ──────────────────────────────────────────────────────────
-async function submitLead() {
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Saving...';
-
-  const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
-  const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
-
-  try {
-    const [url1, url2] = await Promise.all([uploadToCloudinary(fileFront), uploadToCloudinary(fileBack)]);
-    const imageUrl = [url1, url2].filter(u => u).join(", ");
-
-    const fields = {
-      engineerName: document.getElementById('engName').value,
-      name: document.getElementById('f-name').value,
-      company: document.getElementById('f-company').value,
-      position: document.getElementById('f-position').value,
-      phone: document.getElementById('f-phone').value,
-      altPhone: document.getElementById('f-altphone').value,
-      email: document.getElementById('f-email').value,
-      website: document.getElementById('f-website').value,
-      address: document.getElementById('f-address').value,
-      meetingDate: document.getElementById('meetingDate').value,
-      meetingTime: document.getElementById('meetingTime').value,
-      meetingVenue: getRadio('meetingVenue') === 'Other' ? document.getElementById('meetingVenueOther').value : getRadio('meetingVenue'),
-      venueName: document.getElementById('venueName').value,
-      additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
-      businessVertical: getRadio('businessVertical') === 'Other' ? document.getElementById('businessVerticalOther').value : getRadio('businessVertical'),
-      industry: document.getElementById('industry').value,
-      qualification: getChecks('qualification'),
-      vendorType: getChecks('vendorType'),
-      materialsName: document.getElementById('materialsName').value,
-      lpi: document.getElementById('lpi').value,
-      hbi: document.getElementById('hbi').value,
-      hi: document.getElementById('hi').value,
-      thi: document.getElementById('thi').value,
-      gsi: document.getElementById('gsi').value,
-      esd: document.getElementById('esd').value,
-      voltage: getChecks('voltage'),
-      cdMva: document.getElementById('cdMva').value,
-      rdMva: document.getElementById('rdMva').value,
-      avgPf: document.getElementById('avgPf').value,
-      problemObserved: document.getElementById('problemObserved').value,
-      techSummary: document.getElementById('techSummary').value,
-      existingProject: document.getElementById('epInput').value,
-      upcomingProject: document.getElementById('upInput').value,
-      products: getChecks('prod'),
-      approxReq: document.getElementById('approxReq').value,
-      tenderDate: document.getElementById('tenderDate').value,
-      orderTimeline: document.getElementById('orderTimeline').value,
-      competitors: document.getElementById('competitors').value,
-      potential: getRadio('pot'),
-      sendProfile: document.getElementById('act1').value,
-      sendTechno: document.getElementById('act6').value,
-      followUpRequired: document.getElementById('act7').value,
-      nextDate: document.getElementById('nextDate').value,
-    };
-
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'submit', fields, imageUrl })
-    });
-    const d = await res.json();
-
-    if (d.success) {
-      document.getElementById('main-form-container').style.display = 'none';
-      document.getElementById('success-screen').style.display = 'block';
-      document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef;
-      window.scrollTo(0, 0);
-    } else {
-      alert("Submission failed: " + d.error);
-    }
-  } catch (e) {
-    alert("Network transactional submission exception error.\n" + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '📤 Submit Lead';
-  }
 }
 </script>
 </body>
