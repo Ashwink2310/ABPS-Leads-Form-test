@@ -398,7 +398,7 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyLhov-sKDajlicweCQcZup3JXhQhu7eRdhTPt_fTzcEvPEPqNXA3cwtP9zUAd5zLQhzA/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbze2hfqViL8bbOVeULuCAAwl4LKaFyrLJf3CHV74wZSj1Pual3bQj4_NjW0LjwpnbsJ-w/exec"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false, searchQualification: false };
 let cachedEngineers = [];
@@ -462,21 +462,56 @@ async function executeLogin() {
 function executeLogout() { localStorage.clear(); document.getElementById("app-container").style.display = "none"; document.getElementById("auth-container").style.display = "flex"; }
 
 async function showAppView() {
-  document.getElementById("auth-container").style.display = "none"; document.getElementById("app-container").style.display = "block";
-  document.getElementById("dashboard-view").style.display = "block"; document.getElementById("module-workspace-container").style.display = "none";
-  document.getElementById("display-full-name").textContent = localStorage.getItem("userFirstName") + " " + localStorage.getItem("userLastName");
+  // 1. Set main display visibility
+  document.getElementById("auth-container").style.display = "none"; 
+  document.getElementById("app-container").style.display = "block";
+  document.getElementById("dashboard-view").style.display = "block"; 
+  document.getElementById("module-workspace-container").style.display = "none";
+  
+  // 2. Set user identity headers
+  document.getElementById("display-full-name").textContent = localStorage.getItem("userFirstName");
   document.getElementById("display-username").textContent = "@" + localStorage.getItem("sessionUser");
   
-  ["mod-card","mod-company","mod-qualification","mod-status","mod-engineer"].forEach(id => {
-    let key = id === "mod-card" ? "cardDetails" : id === "mod-company" ? "searchCompany" : id === "mod-qualification" ? "searchQualification" : id === "mod-status" ? "searchStatus" : "searchEngineer";
-    document.getElementById(id).classList.toggle("locked", !userPermissions[key]);
+  // 3. Map permission keys to menu IDs
+  // These keys MUST match the keys returned from the handleLogin() function in Code.gs
+  const menuMap = {
+    "mod-card": "cardDetails",
+    "mod-company": "searchCompany",
+    "mod-qualification": "searchQualification",
+    "mod-status": "searchStatus",
+    "mod-engineer": "searchEngineer"
+  };
+
+  // 4. Toggle lock styles based on permission object
+  Object.keys(menuMap).forEach(id => {
+    const el = document.getElementById(id);
+    if(el) {
+      const permissionKey = menuMap[id];
+      const isAllowed = userPermissions[permissionKey];
+      
+      el.classList.toggle("locked", !isAllowed);
+      
+      // Prevent clicking if locked
+      if (!isAllowed) {
+        el.onclick = function() { alert("System Module Security Lock Activated."); };
+      } else {
+        // Re-attach original navigation logic if unlocked
+        el.onclick = function() { navigateToModule(permissionKey); };
+      }
+    }
   });
 
+  // 5. Fetch required backend data
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getEngineers" }) });
     const data = await res.json();
-    if (data.success) { cachedEngineers = data.engineers; populateEngineerDropdowns(); }
-  } catch(e) { console.error(e.message); }
+    if (data.success) { 
+      cachedEngineers = data.engineers; 
+      populateEngineerDropdowns(); 
+    }
+  } catch(e) { console.error("Engineer load error: ", e.message); }
+  
+  // Refresh the dropdown listing for the company lookup module
   triggerCompanyDropdownArrayFetch();
 }
 
