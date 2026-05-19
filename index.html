@@ -908,10 +908,9 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         
         let rawDate = leadMap[key];
         if (rawDate) {
-            // Strip out the time component if it's an ISO string
-            let dateOnly = rawDate.toString().split('T')[0];
-            // Ensure it's not a weird legacy date object string
-            inp.value = dateOnly.substring(0, 10);
+            // Strip out the time component immediately, ignoring timezones
+            // Convert to string and take the first 10 characters (YYYY-MM-DD)
+            inp.value = rawDate.toString().substring(0, 10);
         }
         cell.appendChild(inp);
       } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
@@ -919,27 +918,20 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         inp.type = "time";
         inp.className = 'live-lead-field-input-' + leadRef;
         inp.dataset.headerKey = key;
-        
         let rawTime = leadMap[key];
         if (rawTime) {
             let timeStr = rawTime.toString();
-            
-            // If it looks like a full ISO timestamp, extract the time
-            if (timeStr.includes('T') && timeStr.includes(':')) {
-                inp.value = timeStr.split('T')[1].substring(0, 5);
+            if (timeStr.match(/^\d{1,2}:\d{2}/)) {
+                let [h, m] = timeStr.split(':');
+                inp.value = `${h.padStart(2, '0')}:${m.substring(0,2)}`;
             } 
-            // If it looks like "12:27 PM" or "3:02 PM"
             else if (timeStr.toLowerCase().includes("am") || timeStr.toLowerCase().includes("pm")) {
                 let [t, mod] = timeStr.split(' ');
                 let [h, m] = t.split(':');
                 h = parseInt(h);
                 if (mod.toLowerCase() === 'pm' && h < 12) h += 12;
                 if (mod.toLowerCase() === 'am' && h === 12) h = 0;
-                inp.value = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-            }
-            // If it's already HH:MM
-            else {
-                inp.value = timeStr.substring(0, 5);
+                inp.value = `${h.toString().padStart(2, '0')}:${m.padStart(2, '0')}`;
             }
         }
         cell.appendChild(inp);
