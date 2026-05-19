@@ -531,13 +531,18 @@ async function triggerCompanyDropdownArrayFetch() {
 }
 
 function navigateToModule(key) { 
-  if (!userPermissions[key]) return alert("Denied."); 
-  document.getElementById("dashboard-view").style.display = "none"; 
-  document.getElementById("module-workspace-container").style.display = "block"; 
-  document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); 
-  document.getElementById("workspace-" + key).style.display = "block"; 
-  currentActiveModuleContext = key === "cardDetails" ? "CARD" : "DROPDOWN";
-  resetSequentialFormState(); 
+    if (!userPermissions[key]) return alert("Denied."); 
+    document.getElementById("dashboard-view").style.display = "none"; 
+    document.getElementById("module-workspace-container").style.display = "block"; 
+    document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); 
+    document.getElementById("workspace-" + key).style.display = "block"; 
+    
+    // Reset buttons
+    document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
+    document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
+    
+    currentActiveModuleContext = key === "cardDetails" ? "CARD" : "DROPDOWN";
+    resetSequentialFormState(); 
 }
 
 function returnToDashboard() { 
@@ -1154,17 +1159,18 @@ async function triggerQualificationSearch() {
         
         if (data.success) {
             const canvas = document.getElementById("step2-inline-interaction-canvas");
-            // Use a container that forces the button to the right
-            document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                    <div class="qualification-status-bar" style="flex:1; margin-right:10px;">Qualifications: ${selected.join(", ")}</div>
-                    <button class="nav-btn-styled" onclick="returnToDashboard()">Return to Main Dashboard</button>
-                </div>
-            `;
+            
+            // Clear previous results/buttons in the canvas enclosure
+            const backBtnRow = document.getElementById("canvas-back-btn-enclosure-row");
+            backBtnRow.innerHTML = `<div class="qualification-status-bar">Qualifications: ${selected.join(", ")}</div>`;
+            
+            // Hide the Global Create Entry button for this specific module context
+            document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
             
             globalFollowUpsCacheMap = data.followups;
             globalTasksCacheMap = data.tasks;
             buildMultiContactDirectoryInterface(data.leads, "");
+            
             canvas.style.display = "block";
             document.getElementById("workspace-searchQualification").appendChild(canvas);
         }
