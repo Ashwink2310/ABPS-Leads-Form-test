@@ -1299,24 +1299,25 @@ async function triggerEngineerSearch() {
         const data = await res.json();
         
         if (data.success) {
-            const canvas = document.getElementById("step2-inline-interaction-canvas");
-            
-            // Updated: Removed the button HTML from this enclosure
-            document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
-                <div class="qualification-status-bar" style="width: 100%;">
-                    Engineer: ${engVal}
-                </div>
-            `;
-            
-            // Explicitly ensure the Create Entry button is available since you need it here
-            document.getElementById("global-direct-inline-create-entry-btn").style.display = "inline-flex";
-            
-            globalFollowUpsCacheMap = data.followups;
-            globalTasksCacheMap = data.tasks;
-            buildMultiContactDirectoryInterface(data.leads, "");
-            
-            canvas.style.display = "block";
-            document.getElementById("workspace-searchEngineer").appendChild(canvas);
+          const canvas = document.getElementById("step2-inline-interaction-canvas");
+          
+          // 1. Update the header row (keep existing layout)
+          document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
+              <div class="qualification-status-bar" style="width: 100%;">
+                  Engineer: ${engVal}
+              </div>
+          `;
+          
+          // 2. EXPLICITLY HIDE the Create button
+          // Set display to 'none' so it does not render
+          document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
+          
+          globalFollowUpsCacheMap = data.followups;
+          globalTasksCacheMap = data.tasks;
+          buildMultiContactDirectoryInterface(data.leads, "");
+          
+          canvas.style.display = "block";
+          document.getElementById("workspace-searchEngineer").appendChild(canvas);
         } else {
             alert("No leads found for this engineer.");
         }
