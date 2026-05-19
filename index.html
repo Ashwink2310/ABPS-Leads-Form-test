@@ -16,8 +16,8 @@
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 25px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
   .auth-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; }
-  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 6px 0 2px; }
-  input, select, textarea { width: 100%; padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
+  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 8px 0 2px; }
+  input, select, textarea { width: 100%; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
   
   header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 10px 16px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
   header h1 { font-size: 1.05rem; font-weight: 700; }
@@ -37,14 +37,12 @@
   .section-body { padding: 10px; }
   
   .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s ease; }
-  
-  /* Targeted Focal Highlighting Row Metrics Rule Mapping sets */
   .contact-summary-card-parent.search-highlighted-focus-node { background: var(--highlight-bg) !important; border: 2px solid var(--highlight-border) !important; box-shadow: 0 4px 10px rgba(0, 86, 179, 0.1) !important; }
   
   .contact-summary-header-row { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px; }
   @media(min-width: 800px) { .contact-summary-header-row { flex-direction: row; justify-content: space-between; align-items: center; } }
   
-  .contact-summary-title-info { font-size: 0.95rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; display: block; }
+  .contact-summary-title-info { font-size: 0.95rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
   .contact-summary-title-info .meta-row-line-block { display: flex; align-items: center; width: 100%; margin-bottom: 4px; }
   .contact-summary-title-info span { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #edf2f7; padding: 2px 6px; border-radius: 4px; margin-right: 4px; display: inline-block; }
   .contact-summary-title-info strong { margin-right: 18px; color: #111827; display: inline-block; }
@@ -57,6 +55,11 @@
   .grid-cell-item { display: flex; flex-direction: column; background: #f8fafc; padding: 2px 4px; border: 1px solid #e2e8f0; border-radius: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
   .grid-cell-item label { font-size: 0.58rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
   .grid-cell-item input, .grid-cell-item select, .grid-cell-item textarea { padding: 2px 4px; font-size: 0.78rem; font-weight: 600; border-radius: 3px; border: 1px solid var(--border); }
+  
+  /* Redesigned Area of Concerns Horizontal Layout Rules */
+  .aoc-split-row-box { display: grid; grid-template-columns: 85px 1fr; gap: 8px; align-items: center; width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 4px 6px; }
+  .aoc-split-row-box select { padding: 4px 6px; font-weight: 700; color: var(--brand); text-align: center; }
+  .aoc-split-row-box input { border: 1px solid var(--border); }
   
   .span-two-units { grid-column: span 2; }
   .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 2px 0; }
@@ -187,7 +190,7 @@
       </div>
 
       <div id="success-screen" style="display:none; text-align:center; padding:15px;">
-        <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:8px 0;"></p>
+        <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:6px 0;"></p>
         <button class="btn btn-sub" onclick="resetSequentialFormState()">Process Another Card</button>
       </div>
 
@@ -229,14 +232,40 @@
             <div id="vendor-fields" style="display:none; margin-top:10px;"><label class="field-label">Materials Name</label><input type="text" id="materialsName" /></div>
           </div>
         </div>
+        
         <div class="section">
           <div class="section-header">Section 4 — Area of Concerns</div>
-          <div class="section-body">
-            <label class="field-label">Low Power Factor Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="lpi" onclick="toggleNo(this)">No</button><input type="text" id="lpi" oninput="clearNo(this)" /></div>
-            <label class="field-label">High Electricity Bill Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hbi" onclick="toggleNo(this)">No</button><input type="text" id="hbi" oninput="clearNo(this)" /></div>
-            <label class="field-label">Harmonics Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hi" onclick="toggleNo(this)">No</button><input type="text" id="hi" oninput="clearNo(this)" /></div>
-            <label class="field-label">Transformer Heating Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="thi" onclick="toggleNo(this)">No</button><input type="text" id="thi" oninput="clearNo(this)" /></div>
-            <label class="field-label">Grid Stability Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
+          <div class="section-body" style="display: flex; flex-direction: column; gap: 8px;">
+            <label class="field-label" style="margin: 4px 0 0;">Low Power Factor Issue</label>
+            <div class="aoc-split-row-box">
+              <select id="sel-lpi"><option>No</option><option>Yes</option></select>
+              <input type="text" id="lpi" placeholder="Enter specific parameters issue details..." />
+            </div>
+            
+            <label class="field-label" style="margin: 4px 0 0;">High Electricity Bill Issue</label>
+            <div class="aoc-split-row-box">
+              <select id="sel-hbi"><option>No</option><option>Yes</option></select>
+              <input type="text" id="hbi" placeholder="Enter bill impact tracking details..." />
+            </div>
+            
+            <label class="field-label" style="margin: 4px 0 0;">Harmonics Issue</label>
+            <div class="aoc-split-row-box">
+              <select id="sel-hi"><option>No</option><option>Yes</option></select>
+              <input type="text" id="hi" placeholder="Enter metrics details..." />
+            </div>
+            
+            <label class="field-label" style="margin: 4px 0 0;">Transformer Heating Issue</label>
+            <div class="aoc-split-row-box">
+              <select id="sel-thi"><option>No</option><option>Yes</option></select>
+              <input type="text" id="thi" placeholder="Enter heat metrics specs details..." />
+            </div>
+            
+            <label class="field-label" style="margin: 4px 0 0;">Grid Stability Issue</label>
+            <div class="aoc-split-row-box">
+              <select id="sel-gsi"><option>No</option><option>Yes</option></select>
+              <input type="text" id="gsi" placeholder="Enter grid details logs..." />
+            </div>
+            
             <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
             <label class="field-label">Voltage Level</label><div class="pill-group"><input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label></div>
             <label class="field-label">Capacity Details</label>
@@ -247,6 +276,7 @@
             <label class="field-label">Technical Discussion Summary</label><textarea id="techSummary"></textarea>
           </div>
         </div>
+
         <div class="section">
           <div class="section-header">Section 5 — Requirement</div>
           <div class="section-body">
@@ -485,6 +515,7 @@ function revealNewEntryFormDropdown() {
   const targetedLockStringValue = (currentActiveModuleContext === "CARD") ? document.getElementById("f-company").value : document.getElementById("lookup-module-company-dropdown").value;
   document.getElementById("dropform-company-locked").value = targetedLockStringValue || "No Company Specified";
   
+  // FIX: Persistent pre population bridging configurations parameters setup inside targeted elements fields maps
   document.getElementById("dropform-name").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-name").value : "";
   document.getElementById("dropform-position").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-position").value : "";
   document.getElementById("dropform-phone").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-phone").value : "";
@@ -579,11 +610,15 @@ function revealNewEntryFormDropdownFromBanner() {
   const parentId = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
   document.getElementById(parentId).appendChild(document.getElementById("step2-new-entry-dropdown"));
   
+  // FIX: Retain and populate all parsed fields when a record is missing matching criteria properties maps
   document.getElementById("dropform-company-locked").value = activeSearchCompany;
-  document.getElementById("dropform-name").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-name").value : "";
-  document.getElementById("dropform-position").value = ""; document.getElementById("dropform-phone").value = "";
-  document.getElementById("dropform-altphone").value = ""; document.getElementById("dropform-email").value = "";
-  document.getElementById("dropform-website").value = ""; document.getElementById("dropform-address").value = "";
+  document.getElementById("dropform-name").value = document.getElementById("f-name").value || "";
+  document.getElementById("dropform-position").value = document.getElementById("f-position").value || "";
+  document.getElementById("dropform-phone").value = document.getElementById("f-phone").value || "";
+  document.getElementById("dropform-altphone").value = document.getElementById("f-altphone").value || "";
+  document.getElementById("dropform-email").value = document.getElementById("f-email").value || "";
+  document.getElementById("dropform-website").value = document.getElementById("f-website").value || "";
+  document.getElementById("dropform-address").value = document.getElementById("f-address").value || "";
 
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none"; 
   document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none"; 
@@ -599,21 +634,17 @@ function returnToDirectoryCardsFromFormView() {
   document.getElementById("step2-inline-interaction-canvas").style.display = "block";
 }
 
-// FIXED ARCHITECTURE: INTERACTION TO ENFORCE PRIORITY CAPTURE HIGHLIGHT AND AUTO ORDER SORT CHANNELS
 function buildMultiContactDirectoryInterface(leadsList, targetSearchName) {
   const container = document.getElementById("multi-contact-records-container");
   container.innerHTML = "";
   
   const sanitizedTargetName = targetSearchName ? targetSearchName.toString().replace(/\s+/g, '').toLowerCase() : "";
 
-  // Perform a predictive high fidelity lookahead split layout sort array calculation metrics parameters
   leadsList.sort(function(a, b) {
     let aNameClean = (a["Name"] || "").toString().replace(/\s+/g, '').toLowerCase();
     let bNameClean = (b["Name"] || "").toString().replace(/\s+/g, '').toLowerCase();
-    
     let aMatches = (sanitizedTargetName !== "" && aNameClean === sanitizedTargetName);
     let bMatches = (sanitizedTargetName !== "" && bNameClean === sanitizedTargetName);
-    
     if (aMatches && !bMatches) return -1;
     if (!aMatches && bMatches) return 1;
     return 0;
@@ -628,7 +659,6 @@ function buildMultiContactDirectoryInterface(leadsList, targetSearchName) {
     let cardDisplayName = (lead["Name"] && lead["Name"].toString().trim() !== "") ? lead["Name"] : "Unspecified";
     let leadCleanedName = cardDisplayName.toString().replace(/\s+/g, '').toLowerCase();
 
-    // Condition trigger matching block metrics rule configurations set validation gate
     if (sanitizedTargetName !== "" && leadCleanedName === sanitizedTargetName) {
       wrapperCard.className += " search-highlighted-focus-node";
     }
@@ -1006,34 +1036,6 @@ async function globalExecutionScopeReloader(leadRef, scopeNode) {
   } catch(e) { console.error(e.message); }
 }
 
-let fileFront = null, fileBack = null;
-document.getElementById('card-front').onchange = (e) => { fileFront = e.target.files[0]; document.getElementById('front-box').textContent = "Front ✅"; document.getElementById('front-box').classList.add('done'); document.getElementById('parse-btn').disabled = false; };
-document.getElementById('card-back').onchange = (e) => { fileBack = e.target.files[0]; document.getElementById('back-box').textContent = "Back ✅"; document.getElementById('back-box').classList.add('done'); };
-function toggleOtherText(r, id) { document.getElementById(id).style.display = (r.value === 'Other') ? 'block' : 'none'; }
-function handleQualChange() { document.getElementById('vendor-fields').style.display = document.getElementById('q8').checked ? 'block' : 'none'; }
-function toggleNo(btn) { const i = document.getElementById(btn.dataset.target); const act = btn.classList.toggle('active'); i.value = act ? "No" : ""; i.disabled = act; }
-function clearNo(i) { const b = document.querySelector(`button[data-target="${i.id}"]`); if (b) b.classList.remove('active'); }
-
-async function parseCard() {
-  const btn = document.getElementById('parse-btn'); btn.innerHTML = '<div class="spinner"></div> Parsing...'; btn.disabled = true;
-  const getB64 = (f) => new Promise((res) => { const rd = new FileReader(); rd.onload = () => res(rd.result.split(',')[1]); rd.readAsDataURL(f); });
-  try {
-    const img1 = await getB64(fileFront); const img2 = fileBack ? await getB64(fileBack) : null;
-    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'parse', image: img1, imageBack: img2 }) });
-    const j = await res.json(); const d = JSON.parse(j.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
-    document.getElementById('dropform-name').value = d.name || ""; document.getElementById('f-company').value = d.company || "";
-    document.getElementById('dropform-position').value = d.position || ""; document.getElementById('dropform-phone').value = d.phone || "";
-    document.getElementById('dropform-altphone').value = d.altPhone || ""; document.getElementById('dropform-email').value = d.email || "";
-    document.getElementById('dropform-website').value = d.website || ""; document.getElementById('dropform-address').value = d.address || "";
-  } catch (e) { alert(e.message); } finally { btn.innerHTML = 'Parse Card with AI'; btn.disabled = false; }
-}
-
-async function uploadToCloudinary(file) {
-  if (!file) return ""; const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', UPLOAD_PRESET);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
-  const d = await res.json(); return d.secure_url || "";
-}
-
 async function submitLead() {
   const btn = document.getElementById('submit-btn'); btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
@@ -1041,6 +1043,14 @@ async function submitLead() {
   try {
     const [url1, url2] = await Promise.all([uploadToCloudinary(fileFront), uploadToCloudinary(fileBack)]);
     const imageUrl = [url1, url2].filter(u => u).join(", ");
+    
+    // Explicit dynamic mapping overrides to prevent structural data drop leaks
+    const dynamicOverriddenLpiValue = document.getElementById("sel-lpi").value === "Yes" ? document.getElementById("lpi").value : "No";
+    const dynamicOverriddenHbiValue = document.getElementById("sel-hbi").value === "Yes" ? document.getElementById("hbi").value : "No";
+    const dynamicOverriddenHiValue = document.getElementById("sel-hi").value === "Yes" ? document.getElementById("hi").value : "No";
+    const dynamicOverriddenThiValue = document.getElementById("sel-thi").value === "Yes" ? document.getElementById("thi").value : "No";
+    const dynamicOverriddenGsiValue = document.getElementById("sel-gsi").value === "Yes" ? document.getElementById("gsi").value : "No";
+
     const fields = {
       engineerName: document.getElementById('engName').value, 
       name: document.getElementById('dropform-name').value || document.getElementById('f-name').value, 
@@ -1054,8 +1064,9 @@ async function submitLead() {
       meetingDate: document.getElementById('meetingDate').value, meetingTime: document.getElementById('meetingTime').value,
       meetingVenue: getRadio('meetingVenue'), venueName: document.getElementById('venueName').value, additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
       businessVertical: getRadio('businessVertical'), industry: document.getElementById('industry').value, qualification: getChecks('qualification'), vendorType: [''],
-      materialsName: document.getElementById('materialsName').value, lpi: document.getElementById('lpi').value, hbi: document.getElementById('hbi').value,
-      hi: document.getElementById('hi').value, thi: document.getElementById('thi').value, gsi: document.getElementById('gsi').value, esd: document.getElementById('esd').value,
+      materialsName: document.getElementById('materialsName').value, 
+      lpi: dynamicOverriddenLpiValue, hbi: dynamicOverriddenHbiValue, hi: dynamicOverriddenHiValue, thi: dynamicOverriddenThiValue, gsi: dynamicOverriddenGsiValue,
+      esd: document.getElementById('esd').value,
       voltage: getChecks('voltage'), cdMva: document.getElementById('cdMva').value, rdMva: document.getElementById('rdMva').value, avgPf: document.getElementById('avgPf').value,
       problemObserved: document.getElementById('problemObserved').value, techSummary: document.getElementById('techSummary').value,
       existingProject: document.getElementById('epInput').value, upcomingProject: document.getElementById('upInput').value,
