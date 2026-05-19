@@ -14,7 +14,7 @@
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 20px; }
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 25px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
-  .auth-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; }
+  .auth-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; }
   label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 6px 0 2px; }
   input, select, textarea { width: 100%; padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
   
@@ -35,20 +35,18 @@
   .section-header { background: var(--brand); color: #fff; padding: 5px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
   .section-body { padding: 10px; }
   
-  /* High contrast mobile directory card modifications rule mapping sets */
   .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
   .contact-summary-header-row { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px; }
   @media(min-width: 800px) { .contact-summary-header-row { flex-direction: row; justify-content: space-between; align-items: center; } }
   
-  /* Aligned side-by-side row display protection logic fields sets */
-  .contact-summary-title-info { font-size: 0.98rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; display: block; }
-  .contact-summary-title-info .meta-row-line-block { display: flex; flex-wrap: wrap; align-items: center; width: 100%; margin-bottom: 4px; }
+  .contact-summary-title-info { font-size: 0.95rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .contact-summary-title-info .meta-row-line-block { display: flex; align-items: center; width: 100%; margin-bottom: 4px; }
+  @media(min-width: 800px) { .contact-summary-title-info .meta-row-line-block { width: auto; margin-bottom: 0; } }
   .contact-summary-title-info span { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #edf2f7; padding: 2px 6px; border-radius: 4px; margin-right: 4px; display: inline-block; }
-  .contact-summary-title-info strong { margin-right: 20px; color: #111827; display: inline-block; }
+  .contact-summary-title-info strong { margin-right: 18px; color: #111827; display: inline-block; }
   .directory-btn-actions-block { display: flex; gap: 6px; width: 100%; justify-content: flex-start; }
   @media(min-width: 800px) { .directory-btn-actions-block { width: auto; justify-content: flex-end; } }
 
-  /* Decreased height elements layout parameters to support 100% zoom preventative scrolls rules sets */
   .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; text-align: left; }
   @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
   @media(min-width: 950px) { .compact-fields-grid { grid-template-columns: repeat(6, 1fr); } }
@@ -73,7 +71,7 @@
   .btn-ai { background: var(--accent); color: #fff; margin-bottom: 4px; padding: 4px; }
   .btn-warn { background: #718096; color: #fff; }
   
-  .system-runtime-inline-alert-callout { padding: 6px 10px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 6px; display: flex; flex-direction: column; gap: 6px; text-align: left; }
+  .system-runtime-inline-alert-callout { padding: 6px 10px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; text-align: left; }
   @media(min-width: 600px) { .system-runtime-inline-alert-callout { flex-direction: row; justify-content: space-between; align-items: center; } }
   .alert-callout-text-msg { font-size: 0.8rem; font-weight: 700; color: #dd6b20; line-height: 1.3; }
 
@@ -185,13 +183,28 @@
       </div>
 
       <div id="success-screen" style="display:none; text-align:center; padding:15px;">
-        <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:6px 0;"></p>
+        <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:8px 0;"></p>
         <button class="btn btn-sub" onclick="resetSequentialFormState()">Process Another Card</button>
       </div>
 
       <div id="remaining-sections-form">
         <div class="section">
-          <div class="section-header">Section 1 — Meeting Details</div>
+          <div class="section-header">Section 1 — Business Card Information</div>
+          <div class="section-body">
+            <label class="field-label">Company Name (Locked)</label>
+            <input type="text" id="dropform-company-locked" readonly style="background:#e2e8f0; cursor:not-allowed; font-weight:bold; color:#2d3748;" />
+            <label class="field-label">Contact Person Name</label><input type="text" id="dropform-name" />
+            <label class="field-label">Position</label><input type="text" id="dropform-position" />
+            <label class="field-label">Phone</label><input type="tel" id="dropform-phone" />
+            <label class="field-label">Alt Phone</label><input type="tel" id="dropform-altphone" />
+            <label class="field-label">Email</label><input type="email" id="dropform-email" />
+            <label class="field-label">Website</label><input type="url" id="dropform-website" />
+            <label class="field-label">Company Address</label><textarea id="dropform-address" style="min-height:45px;"></textarea>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">Section 2 — Meeting Details</div>
           <div class="section-body">
             <label class="field-label">Date of Meeting</label><input type="date" id="meetingDate" />
             <label class="field-label">Time of Meeting</label><input type="time" id="meetingTime" />
@@ -202,7 +215,7 @@
           </div>
         </div>
         <div class="section">
-          <div class="section-header">Section 2 — Technical Details</div>
+          <div class="section-header">Section 3 — Technical Details</div>
           <div class="section-body">
             <label class="field-label">ABPS Business Vertical</label>
             <div class="pill-group"><input type="radio" name="businessVertical" value="Industrial" id="bv1"><label for="bv1">Industrial</label><input type="radio" name="businessVertical" value="Power" id="bv2"><label for="bv2">Power</label></div>
@@ -213,7 +226,7 @@
           </div>
         </div>
         <div class="section">
-          <div class="section-header">Section 3 — Area of Concerns</div>
+          <div class="section-header">Section 4 — Area of Concerns</div>
           <div class="section-body">
             <label class="field-label">Low Power Factor Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="lpi" onclick="toggleNo(this)">No</button><input type="text" id="lpi" oninput="clearNo(this)" /></div>
             <label class="field-label">High Electricity Bill Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hbi" onclick="toggleNo(this)">No</button><input type="text" id="hbi" oninput="clearNo(this)" /></div>
@@ -231,7 +244,7 @@
           </div>
         </div>
         <div class="section">
-          <div class="section-header">Section 4 — Requirement</div>
+          <div class="section-header">Section 5 — Requirement</div>
           <div class="section-body">
             <label class="field-label">Existing Project</label><input type="text" id="epInput" />
             <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
@@ -244,7 +257,7 @@
           </div>
         </div>
         <div class="section">
-          <div class="section-header">Section 5 — Action Plan</div>
+          <div class="section-header">Section 6 — Action Plan</div>
           <div class="section-body">
             <label class="field-label">Send Company Profile</label><select id="act1"><option>No</option><option>Yes</option></select>
             <label class="field-label">Send Technical Presentation</label><select id="act2"><option>No</option><option>Yes</option></select>
@@ -255,7 +268,7 @@
           </div>
         </div>
         <div class="section">
-          <div class="section-header">Section 6 — Engineer Info</div>
+          <div class="section-header">Section 7 — Engineer Info</div>
           <div class="section-body">
             <label class="field-label">Assign Creator Name</label><select id="engName"><option value="">Loading Dynamic Listing...</option></select>
           </div>
@@ -337,7 +350,7 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyFjXxiyjrjmVGUuS6iZAKCOgjJ9D-CxzXcLJKGECdlADognDKWo60bRg-j0_LFxDsMUg/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwBPYiq5puGbBUXRC5FP8DqRm26jlMl0iZS15lffBruPuyTxB4SILGDcdWTno8A06D12w/exec"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
@@ -385,7 +398,7 @@ window.onload = function() {
 async function executeLogin() {
   const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
   const btn = document.getElementById("login-btn");
-  if (!userField.value || !passField.value) return alert("Complete fields.");
+  if (!userField.value || !passField.value) return alert("Complete credential fields.");
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verifying...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
@@ -455,14 +468,29 @@ function navigateToModule(key) {
   resetSequentialFormState(); 
 }
 
-function returnToDashboard() { showAppView(); }
+function returnToDashboard() { 
+  collapseNewEntryDropdownFormExplicitly(); // Force anti bleed collapse rules execution
+  showAppView(); 
+}
 
 function revealNewEntryFormDropdown() { 
   document.getElementById("missing-trigger-notice-block").style.display = "none"; 
   const container = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
   document.getElementById(container).appendChild(document.getElementById("step2-new-entry-dropdown"));
   
-  // Toggle Visibility maps of control blocks buttons explicitly
+  // Dynamic extraction binding parameter to lock company title inside section 1 fields automatically
+  const targetedLockStringValue = (currentActiveModuleContext === "CARD") ? document.getElementById("f-company").value : document.getElementById("lookup-module-company-dropdown").value;
+  document.getElementById("dropform-company-locked").value = targetedLockStringValue || "No Company Specified";
+  
+  // Force reset child input maps
+  document.getElementById("dropform-name").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-name").value : "";
+  document.getElementById("dropform-position").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-position").value : "";
+  document.getElementById("dropform-phone").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-phone").value : "";
+  document.getElementById("dropform-altphone").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-altphone").value : "";
+  document.getElementById("dropform-email").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-email").value : "";
+  document.getElementById("dropform-website").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-website").value : "";
+  document.getElementById("dropform-address").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-address").value : "";
+
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
   document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "inline-flex";
 
@@ -473,17 +501,14 @@ function revealNewEntryFormDropdown() {
 function collapseNewEntryDropdownFormExplicitly() {
   document.getElementById("step2-new-entry-dropdown").style.display = "none";
   document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
-  
-  // Re expose creation trigger parameters
-  document.getElementById("global-direct-inline-create-entry-btn").style.display = "inline-flex";
+  if (document.getElementById("step2-inline-interaction-canvas").style.display === "block") {
+    document.getElementById("global-direct-inline-create-entry-btn").style.display = "inline-flex";
+  }
 }
 
 async function triggerSequentialSearch(triggerSourceMode) {
   let comp = ""; let targetName = "";
   let btn = null;
-
-  document.getElementById("step2-new-entry-dropdown").style.display = "none";
-  document.getElementById("missing-trigger-notice-block").style.display = "none";
   
   if (triggerSourceMode === "CARD") {
     comp = document.getElementById("f-company").value;
@@ -552,6 +577,13 @@ function revealNewEntryFormDropdownFromBanner() {
   const parentId = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
   document.getElementById(parentId).appendChild(document.getElementById("step2-new-entry-dropdown"));
   
+  // Sync the disabled company title lock input box cleanly parameter
+  document.getElementById("dropform-company-locked").value = activeSearchCompany;
+  document.getElementById("dropform-name").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-name").value : "";
+  document.getElementById("dropform-position").value = ""; document.getElementById("dropform-phone").value = "";
+  document.getElementById("dropform-altphone").value = ""; document.getElementById("dropform-email").value = "";
+  document.getElementById("dropform-website").value = ""; document.getElementById("dropform-address").value = "";
+
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none"; 
   document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none"; 
   document.getElementById("staged-back-button-row").style.display = "flex"; 
@@ -799,24 +831,11 @@ async function removeLeadRowEntirely(leadRef) {
 }
 
 function exitCanvasToCardView() {
-  // 1. Hide the active interaction canvas
-  document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
-  
-  // 2. Hide the new entry form if it was open
-  document.getElementById("step2-new-entry-dropdown").style.display = "none";
-  
-  // 3. Reset header controls
+  collapseNewEntryDropdownFormExplicitly(); // Force absolute anti bleed collapse execution triggers
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
-  document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
-  document.getElementById("staged-back-button-row").style.display = "none";
-
-  // 4. Restore original context visibility
-  if(currentActiveModuleContext === "CARD") {
-    document.getElementById("step1-card-capture-block").style.display = "block"; 
-  }
-  if(currentActiveModuleContext === "DROPDOWN") {
-    document.getElementById("company-dropdown-selector-block").style.display = "block";
-  }
+  document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
+  if(currentActiveModuleContext === "CARD") document.getElementById("step1-card-capture-block").style.display = "block"; 
+  if(currentActiveModuleContext === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "block";
 }
 
 function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
@@ -962,6 +981,43 @@ async function globalExecutionScopeReloader(leadRef, scopeNode) {
     const data = await res.json();
     if (data.success) { globalFollowUpsCacheMap = data.followups; globalTasksCacheMap = data.tasks; currentFollowUpCount = data.followups[leadRef] ? data.followups[leadRef].length : 0; renderIsolatedFollowUpTimeline(leadRef, data.followups[leadRef] || [], scopeNode); renderIsolatedTaskItemsList(leadRef, data.tasks[leadRef] || [], scopeNode); }
   } catch(e) { console.error(e.message); }
+}
+
+async function submitLead() {
+  const btn = document.getElementById('submit-btn'); btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
+  const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
+  try {
+    const [url1, url2] = await Promise.all([uploadToCloudinary(fileFront), uploadToCloudinary(fileBack)]);
+    const imageUrl = [url1, url2].filter(u => u).join(", ");
+    const fields = {
+      engineerName: document.getElementById('engName').value, 
+      // Synchronize customized segment inputs dynamically
+      name: document.getElementById('dropform-name').value || document.getElementById('f-name').value, 
+      company: document.getElementById('dropform-company-locked').value || document.getElementById('f-company').value,
+      position: document.getElementById('dropform-position').value || document.getElementById('f-position').value, 
+      phone: document.getElementById('dropform-phone').value || document.getElementById('f-phone').value, 
+      altPhone: document.getElementById('dropform-altphone').value || document.getElementById('f-altphone').value,
+      email: document.getElementById('dropform-email').value || document.getElementById('f-email').value, 
+      website: document.getElementById('dropform-website').value || document.getElementById('f-website').value, 
+      address: document.getElementById('dropform-address').value || document.getElementById('f-address').value,
+      meetingDate: document.getElementById('meetingDate').value, meetingTime: document.getElementById('meetingTime').value,
+      meetingVenue: getRadio('meetingVenue'), venueName: document.getElementById('venueName').value, additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
+      businessVertical: getRadio('businessVertical'), industry: document.getElementById('industry').value, qualification: getChecks('qualification'), vendorType: [''],
+      materialsName: document.getElementById('materialsName').value, lpi: document.getElementById('lpi').value, hbi: document.getElementById('hbi').value,
+      hi: document.getElementById('hi').value, thi: document.getElementById('thi').value, gsi: document.getElementById('gsi').value, esd: document.getElementById('esd').value,
+      voltage: getChecks('voltage'), cdMva: document.getElementById('cdMva').value, rdMva: document.getElementById('rdMva').value, avgPf: document.getElementById('avgPf').value,
+      problemObserved: document.getElementById('problemObserved').value, techSummary: document.getElementById('techSummary').value,
+      existingProject: document.getElementById('epInput').value, upcomingProject: document.getElementById('upInput').value,
+      products: getChecks('prod'), approxReq: document.getElementById('approxReq').value, tenderDate: document.getElementById('tenderDate').value,
+      orderTimeline: document.getElementById('orderTimeline').value, competitors: document.getElementById('competitors').value, potential: getRadio('pot'),
+      sendProfile: document.getElementById('act1').value, sendPresentation: document.getElementById('act2').value, arrangeVisit: document.getElementById('act3').value,
+      getEnquiry: document.getElementById('act4').value, sendOffer: document.getElementById('actOffer').value, followUpRequired: document.getElementById('act7').value
+    };
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'submit', fields, imageUrl }) });
+    const d = await res.json();
+    if (d.success) { document.getElementById('remaining-sections-form').style.display = 'none'; document.getElementById('success-screen').style.display = 'block'; document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef; }
+  } catch (e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = 'Submit New Account Entry'; }
 }
 </script>
 </body>
