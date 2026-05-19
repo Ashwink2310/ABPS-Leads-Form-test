@@ -127,6 +127,7 @@
     <div class="dashboard-grid">
       <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')"><div class="menu-title">Enter Card Details</div></div>
       <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')"><div class="menu-title">Search by Company Name</div></div>
+      <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')"><div class="menu-title">Search by Qualification</div></div>
       <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Status</div></div>
       <div class="menu-card" id="mod-engineer" onclick="navigateToModule('searchEngineer')"><div class="menu-title">Search by Assigned Engineer</div></div>
     </div>
@@ -174,6 +175,20 @@
           <label class="field-label">Select Company Name</label>
           <select id="lookup-module-company-dropdown" style="margin-bottom: 6px; font-size:0.95rem; padding:6px;"><option value="">Loading Unique Company Names...</option></select>
           <button class="btn btn-sub" id="lookup-module-search-btn" onclick="triggerSequentialSearch('DROPDOWN')">Search Company</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="workspace-searchQualification" class="workspace-panel" style="display: none;">
+      <div class="section">
+        <div class="section-header">Filter Directory by Qualification</div>
+        <div class="section-body">
+          <label class="field-label">Select Qualifications</label>
+          <div class="pill-group" id="qual-filter-checkboxes" style="margin-bottom:10px;">
+            <!-- Dynamically populated -->
+          </div>
+          <div id="selected-quals-display" style="font-size:0.75rem; color:var(--brand); margin-bottom:10px; font-weight:700;"></div>
+          <button class="btn btn-sub" onclick="triggerQualificationSearch()">Search Records</button>
         </div>
       </div>
     </div>
@@ -384,7 +399,7 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwYG9GM6O7YnRr8MCd7oh7_yL2ju0CRsxOtlv_fu3_C9BQyGjV0dPWbIU7XG24eSlYITA/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwTfz7GqvP-S_tQf5ld871-lcVxwQxld7kGkkwNsHunGDy_BxSlto4BCxz0F5Nccpc/exec"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
