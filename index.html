@@ -30,21 +30,24 @@
   .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 20px; border-radius: var(--radius); cursor: pointer; font-weight: 700; }
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
   
-  .workspace-panel { padding: 10px 12px; }
-  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
+  .workspace-panel { padding: 5px 12px; }
+  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
   .section-header { background: var(--brand); color: #fff; padding: 6px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
-  .section-body { padding: 12px; }
+  .section-body { padding: 10px; }
   
-  /* Highly Polished Mobile-First Directory Component Cards layout rules updates */
-  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 14px; box-shadow: 0 3px 6px rgba(0,0,0,0.03); }
-  .contact-summary-header-row { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 12px; margin-bottom: 14px; }
-  @media(min-width: 768px) { .contact-summary-header-row { flex-direction: row; justify-content: space-between; align-items: center; } }
+  /* Highly Polished Mobile-Friendly Multi-Contact Row Grids */
+  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.02); }
+  .contact-summary-header-row { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 10px; margin-bottom: 12px; }
+  @media(min-width: 800px) { .contact-summary-header-row { flex-direction: row; justify-content: space-between; align-items: center; } }
   
-  .contact-summary-title-info { font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.5; width: 100%; }
-  .contact-summary-title-info span { font-weight: 600; color: var(--muted); margin-right: 4px; text-transform: uppercase; font-size: 0.75rem; background: #edf2f7; padding: 2px 6px; border-radius: 4px; }
-  .contact-summary-title-info strong { margin-right: 18px; color: #1a202c; display: inline-block; vertical-align: middle; }
-  .directory-btn-actions-block { display: flex; gap: 10px; width: 100%; justify-content: flex-start; }
-  @media(min-width: 768px) { .directory-btn-actions-block { width: auto; justify-content: flex-end; } }
+  /* Optimized font sizes on text blocks profiles rows */
+  .contact-summary-title-info { font-size: 0.95rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.6; }
+  .contact-summary-title-info .row-block-line { display: block; margin-bottom: 4px; }
+  @media(min-width: 800px) { .contact-summary-title-info .row-block-line { display: inline; margin-bottom: 0; } }
+  .contact-summary-title-info span { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #edf2f7; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+  .contact-summary-title-info strong { margin-right: 18px; color: #1a202c; }
+  .directory-btn-actions-block { display: flex; gap: 8px; width: 100%; justify-content: flex-start; }
+  @media(min-width: 800px) { .directory-btn-actions-block { width: auto; justify-content: flex-end; } }
 
   .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; text-align: left; }
   @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
@@ -61,8 +64,8 @@
   .pill-group label { padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 14px; font-size: .72rem; cursor: pointer; background: #fff; white-space: nowrap; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
   
-  .navigation-action-header-row { display: flex; justify-content: flex-end; align-items: center; padding: 6px 12px; background: #ffffff; border-radius: 6px; margin-bottom: 12px; border: 1px solid var(--border); }
-  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
+  .navigation-action-header-row { display: flex; justify-content: flex-end; align-items: center; padding: 6px 12px; background: #ffffff; border-radius: 6px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
   .nav-btn-styled:hover { background: var(--brand-dk); }
   
   .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; }
@@ -70,10 +73,12 @@
   .btn-ai { background: var(--accent); color: #fff; margin-bottom: 12px; }
   .btn-warn { background: #718096; color: #fff; }
   
-  /* Inline Execution Scoped Alerts Blocks Treatment Layout */
-  .system-runtime-inline-alert-callout { padding: 12px 16px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px; text-align: left; }
+  /* Compact Scroll Prevention Treatment Bounds */
+  .system-runtime-inline-alert-callout { padding: 10px 14px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
   @media(min-width: 600px) { .system-runtime-inline-alert-callout { flex-direction: row; justify-content: space-between; align-items: center; } }
-  .alert-callout-text-msg { font-size: 0.88rem; font-weight: 600; color: #dd6b20; line-height: 1.4; }
+  .alert-callout-text-msg { font-size: 0.82rem; font-weight: 700; color: #dd6b20; line-height: 1.4; }
+
+  #missing-trigger-notice-block { padding: 14px; text-align: center; background: white; border-radius: var(--radius); border: 1px solid var(--warn); margin: 0 0 12px; }
 
   .card-row { display: flex; gap: 10px; margin-bottom: 10px; }
   .card-box { flex: 1; border: 2px dashed var(--border); padding: 12px; text-align: center; font-size: .78rem; cursor: pointer; border-radius: 4px; }
@@ -134,9 +139,9 @@
     
     <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
       
-      <div id="step1-card-capture-block" class="section">
+      <div id="step1-card-capture-block" class="section" style="margin-bottom: 8px;">
         <div class="section-header">Business Card Information</div>
-        <div class="section-body">
+        <div class="section-body" style="padding: 10px;">
           <div class="card-row">
             <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
             <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
@@ -152,18 +157,23 @@
           <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
           <label class="field-label">Email</label><input type="email" id="f-email" />
           <label class="field-label">Website</label><input type="url" id="f-website" />
-          <label class="field-label">Address</label><textarea id="f-address"></textarea>
+          <label class="field-label">Address</label><textarea id="f-address" style="min-height:38px;"></textarea>
           
-          <button class="btn btn-sub" id="gate-search-btn" onclick="triggerSequentialSearch()" style="margin-top:15px;">Search Database</button>
+          <button class="btn btn-sub" id="gate-search-btn" onclick="triggerSequentialSearch()" style="margin-top:10px;">Search Database</button>
         </div>
       </div>
 
-      <div id="missing-trigger-notice-block" style="display:none; padding:15px; text-align:center; background:white; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:14px;">
-        <p style="color:#e53e3e; font-weight:700; margin-bottom:10px; font-size:0.95rem;">No record matched your target company parameters.</p>
-        <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:8px 20px;">Create New Entry</button>
+      <div id="missing-trigger-notice-block" style="display:none;">
+        <p style="color:#e53e3e; font-weight:700; margin-bottom:8px; font-size:0.88rem;">No record matched your target company parameters.</p>
+        <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:6px 16px;">Create New Entry</button>
       </div>
 
       <div id="step2-new-entry-dropdown" style="display: none;">
+        <div class="navigation-action-header-row" id="staged-back-button-row" style="display:none; background:#fffaf0; border:1px solid #dd6b20; margin-bottom:10px; padding:4px 10px;">
+          <span style="font-size:0.78rem; font-weight:700; color:#dd6b20;">Lead Capture Form Active</span>
+          <button class="nav-btn-styled" style="background:#718096; padding:4px 10px; font-size:0.75rem;" onclick="returnToDirectoryCardsFromFormView()">Back to Company Contacts List</button>
+        </div>
+
         <div id="success-screen" style="display:none; text-align:center; padding:20px;">
           <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:10px 0;"></p>
           <button class="btn btn-sub" onclick="resetSequentialFormState()">Process Another Card</button>
@@ -255,7 +265,6 @@
         </div>
 
         <div id="split-missing-person-banner-hook"></div>
-
         <div id="multi-contact-records-container"></div>
       </div>
 
@@ -327,7 +336,7 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxoPxNcSveuE2kbWUiJXohpCksp6jKUeOI7oqVmT4bmi5ciYMbXUbRakGhp0kWWOB7XWg/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxJdUiMsbujD1VusBka6ha12Y9Vxoy0KR7ziHGHN_qCcRCAxzh5EUQSxq_7cjQ45aBayw/exec"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
@@ -374,7 +383,7 @@ window.onload = function() {
 async function executeLogin() {
   const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
   const btn = document.getElementById("login-btn");
-  if (!userField.value || !passField.value) return alert("Complete credential fields.");
+  if (!userField.value || !passField.value) return alert("Complete fields.");
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verifying...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
@@ -420,7 +429,7 @@ function populateEngineerDropdowns() {
 
 function navigateToModule(key) { if (!userPermissions[key]) return alert("Denied."); document.getElementById("dashboard-view").style.display = "none"; document.getElementById("module-workspace-container").style.display = "block"; document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); document.getElementById("workspace-" + key).style.display = "block"; resetSequentialFormState(); }
 function returnToDashboard() { showAppView(); }
-function revealNewEntryFormDropdown() { document.getElementById("missing-trigger-notice-block").style.display = "none"; document.getElementById("step2-new-entry-dropdown").style.display = "block"; window.scrollTo(0,0); }
+function revealNewEntryFormDropdown() { document.getElementById("missing-trigger-notice-block").style.display = "none"; document.getElementById("staged-back-button-row").style.display = "none"; document.getElementById("step2-new-entry-dropdown").style.display = "block"; window.scrollTo(0,0); }
 
 async function triggerSequentialSearch() {
   const comp = document.getElementById("f-company").value;
@@ -433,17 +442,17 @@ async function triggerSequentialSearch() {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp, contactName: targetName }) });
     const data = await res.json();
     if (data.success) {
-      activeSearchCompany = comp;
+      activeSearchCompany = comp.toString().trim();
       globalFollowUpsCacheMap = data.followups;
       globalTasksCacheMap = data.tasks;
       
-      // Inject alert notice dynamically on screen layer if contact person mismatch flag trips
       const bannerHook = document.getElementById("split-missing-person-banner-hook");
       if (!data.nameMatchFound) {
+        // Enforce customized formatting tokens matching requirements precisely
         bannerHook.innerHTML = `
           <div class="system-runtime-inline-alert-callout">
-            <span class="alert-callout-text-msg">We have information on the following individuals from this company, but not for this specific person.</span>
-            <button class="nav-btn-styled" style="background:#dd6b20;" onclick="revealNewEntryFormDropdownFromBanner()">Create New Entry</button>
+            <span class="alert-callout-text-msg">We have information on the following people from this ${activeSearchCompany}, but not for this ${targetName ? targetName.toString().trim() : "specific person"}.</span>
+            <button class="nav-btn-styled" style="background:#dd6b20; padding:8px 16px;" onclick="revealNewEntryFormDropdownFromBanner()">Create New Entry</button>
           </div>
         `;
       } else {
@@ -464,8 +473,15 @@ async function triggerSequentialSearch() {
 
 function revealNewEntryFormDropdownFromBanner() {
   document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+  document.getElementById("staged-back-button-row").style.display = "flex"; // Enable local staging return control path button linkage
   document.getElementById("step2-new-entry-dropdown").style.display = "block";
   window.scrollTo(0,0);
+}
+
+function returnToDirectoryCardsFromFormView() {
+  document.getElementById("step2-new-entry-dropdown").style.display = "none";
+  document.getElementById("staged-back-button-row").style.display = "none";
+  document.getElementById("step2-inline-interaction-canvas").style.display = "block";
 }
 
 function buildMultiContactDirectoryInterface(leadsList) {
@@ -481,13 +497,13 @@ function buildMultiContactDirectoryInterface(leadsList) {
     wrapperCard.innerHTML = `
       <div class="contact-summary-header-row">
         <div class="contact-summary-title-info">
-          <span>Company:</span><strong>${lead["Company"]}</strong>
-          <span>Name:</span><strong>${lead["Name"] || "Unspecified"}</strong>
-          <span>Position:</span><strong>${lead["Position"] || "Unspecified"}</strong>
+          <div class="row-block-line"><span>Company:</span><strong>${lead["Company"]}</strong></div>
+          <div class="row-block-line"><span>Name:</span><strong>${lead["Name"] || "Unspecified"}</strong></div>
+          <div class="row-block-line" style="display:block; margin-top:5px; margin-bottom:0;"><span>Position:</span><strong>${lead["Position"] || "Unspecified"}</strong></div>
         </div>
         <div class="directory-btn-actions-block">
-          <button class="nav-btn-styled" style="font-size:0.9rem; padding:8px 16px;" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
-          <button class="nav-btn-styled" style="font-size:0.9rem; padding:8px 16px; background:var(--warn);" onclick="removeLeadRowEntirely('${tRef}')">Delete Record</button>
+          <button class="nav-btn-styled" style="font-size:0.95rem; padding:10px 18px;" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
+          <button class="nav-btn-styled" style="font-size:0.95rem; padding:10px 18px; background:var(--warn);" onclick="removeLeadRowEntirely('${tRef}')">Delete Record</button>
         </div>
       </div>
       <div class="contact-expanded-workspace-payload-drawer" id="drawer-panel-${tRef}" style="display:none; padding-top:10px;">
@@ -519,8 +535,7 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
     buildTargetedLeadsFormCanvas(leadRef, leadMap);
     
     const templateClone = document.getElementById("reusable-child-modules-template").cloneNode(true);
-    templateClone.style.display = "block";
-    templateClone.id = `active-modules-clone-${leadRef}`;
+    templateClone.style.display = "block"; templateClone.id = `active-modules-clone-${leadRef}`;
     
     setupIsolatedModuleTriggersAndActions(leadRef, templateClone);
     mountPoint.appendChild(templateClone);
@@ -548,18 +563,12 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
     fupForm.querySelector(".fup-is-edit-flag").value = "false";
     fupForm.querySelector(".fup-num-input").value = currentFollowUpCount + 1;
     fupForm.querySelector(".fup-leadid-input").value = leadRef;
-    fupForm.querySelector(".fup-notes-input").value = "";
-    fupForm.querySelector(".fup-nexttarget-input").value = "";
+    fupForm.querySelector(".fup-notes-input").value = ""; fupForm.querySelector(".fup-nexttarget-input").value = "";
     fupForm.style.display = "grid"; fupOpen.style.display = "none"; fupClose.style.display = "inline-flex";
   };
   
-  fupClose.onclick = function() {
-    fupForm.style.display = "none"; fupOpen.style.display = "inline-flex"; fupClose.style.display = "none";
-  };
-
-  nodeScope.querySelector(".commit-fup-btn-trigger").onclick = function() {
-    commitIsolatedFollowUpItem(leadRef, nodeScope);
-  };
+  fupClose.onclick = function() { fupForm.style.display = "none"; fupOpen.style.display = "inline-flex"; fupClose.style.display = "none"; };
+  nodeScope.querySelector(".commit-fup-btn-trigger").onclick = function() { commitIsolatedFollowUpItem(leadRef, nodeScope); };
 
   const taskForm = nodeScope.querySelector(".template-task-form");
   const taskOpen = nodeScope.querySelector(".trigger-task-open");
@@ -573,20 +582,12 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
   });
 
   taskOpen.onclick = function() {
-    taskForm.querySelector(".task-edit-id").value = "";
-    taskForm.querySelector(".task-desc-input").value = "";
-    taskForm.querySelector(".task-targetdate-input").value = "";
-    taskForm.querySelector(".task-status-select").value = "TS1";
+    taskForm.querySelector(".task-edit-id").value = ""; taskForm.querySelector(".task-desc-input").value = "";
+    taskForm.querySelector(".task-targetdate-input").value = ""; taskForm.querySelector(".task-status-select").value = "TS1";
     taskForm.style.display = "grid"; taskOpen.style.display = "none"; taskClose.style.display = "inline-flex";
   };
-
-  taskClose.onclick = function() {
-    taskForm.style.display = "none"; taskOpen.style.display = "inline-flex"; taskClose.style.display = "none";
-  };
-
-  nodeScope.querySelector(".commit-task-btn-trigger").onclick = function() {
-    commitIsolatedTaskItem(leadRef, nodeScope);
-  };
+  taskClose.onclick = function() { taskForm.style.display = "none"; taskOpen.style.display = "inline-flex"; taskClose.style.display = "none"; };
+  nodeScope.querySelector(".commit-task-btn-trigger").onclick = function() { commitIsolatedTaskItem(leadRef, nodeScope); };
 }
 
 function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
