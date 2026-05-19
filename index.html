@@ -895,32 +895,33 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
       let label = document.createElement("label"); label.textContent = key; cell.appendChild(label);
 
       if (key === "Status") {
-        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
-        ["Status1", "Status2", "Status3", "Status4"].forEach(st => {
-          let op = document.createElement("option"); op.textContent = st; if(leadMap[key] === st) op.selected = true; sel.appendChild(op);
-        });
-        cell.appendChild(sel);
-      } else if (["Date of Meeting", "Expected Tender / RFQ Date"].indexOf(key) !== -1) {
-        let inp = document.createElement("input"); inp.type = "date"; inp.className = 'live-lead-field-input-' + leadRef; inp.dataset.headerKey = key;      
+        let inp = document.createElement("input");
+        inp.type = "date";
+        inp.className = 'live-lead-field-input-' + leadRef;
+        inp.dataset.headerKey = key;
+        
+        // Direct string handling: Since your sheet already shows YYYY-MM-DD
         let rawDate = leadMap[key];
         if (rawDate) {
-            let d = new Date(rawDate);
-            if (!isNaN(d.getTime())) {
-                inp.value = d.toISOString().split('T')[0];
-            }
+            // If it's a JS Date object, convert to string, otherwise take as is
+            let dateStr = (rawDate instanceof Date) ? rawDate.toISOString().split('T')[0] : rawDate.toString().split('T')[0];
+            inp.value = dateStr;
         }
-        cell.appendChild(inp); 
-       } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
-        let inp = document.createElement("input"); inp.type = "time"; inp.className = 'live-lead-field-input-' + leadRef; inp.dataset.headerKey = key;
+        cell.appendChild(inp);
+      } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
+        let inp = document.createElement("input");
+        inp.type = "time";
+        inp.className = 'live-lead-field-input-' + leadRef;
+        inp.dataset.headerKey = key;
+        
+        // Direct string handling: Your sheet shows HH:MM
         let rawTime = leadMap[key];
         if (rawTime) {
-            // If it's a date string, extract time
-            let d = new Date(rawTime);
-            if (!isNaN(d.getTime())) {
-                inp.value = d.toTimeString().substring(0, 5);
+            // If it's a date object, extract time, otherwise take as is
+            if (rawTime instanceof Date) {
+                inp.value = rawTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
             } else {
-                // If it's a raw string (e.g., "03:02 PM"), try to normalize
-                inp.value = rawTime; 
+                inp.value = rawTime.toString().substring(0, 5);
             }
         }
         cell.appendChild(inp);
