@@ -908,17 +908,10 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         
         let rawDate = leadMap[key];
         if (rawDate) {
-            // Force conversion to YYYY-MM-DD
-            let d = new Date(rawDate);
-            if (!isNaN(d.getTime())) {
-                let year = d.getFullYear();
-                let month = ("0" + (d.getMonth() + 1)).slice(-2);
-                let day = ("0" + d.getDate()).slice(-2);
-                inp.value = `${year}-${month}-${day}`;
-            } else {
-                // Fallback: If it's already a YYYY-MM-DD string
-                inp.value = rawDate.toString().split('T')[0];
-            }
+            // Strip out the time component if it's an ISO string
+            let dateOnly = rawDate.toString().split('T')[0];
+            // Ensure it's not a weird legacy date object string
+            inp.value = dateOnly.substring(0, 10);
         }
         cell.appendChild(inp);
       } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
@@ -929,19 +922,23 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         
         let rawTime = leadMap[key];
         if (rawTime) {
-            // If rawTime is a string like "12:27" or "03:02 PM"
-            // We need to normalize this to 24hr HH:MM
             let timeStr = rawTime.toString();
             
-            // Basic check for AM/PM to convert to 24h
-            if (timeStr.toLowerCase().includes("am") || timeStr.toLowerCase().includes("pm")) {
-                let [t, modifier] = timeStr.split(' ');
-                let [hours, minutes] = t.split(':');
-                if (hours === '12') hours = '00';
-                if (modifier.toLowerCase() === 'pm') hours = parseInt(hours, 10) + 12;
-                inp.value = `${hours.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}`;
-            } else {
-                // It's already in 24hr format
+            // If it looks like a full ISO timestamp, extract the time
+            if (timeStr.includes('T') && timeStr.includes(':')) {
+                inp.value = timeStr.split('T')[1].substring(0, 5);
+            } 
+            // If it looks like "12:27 PM" or "3:02 PM"
+            else if (timeStr.toLowerCase().includes("am") || timeStr.toLowerCase().includes("pm")) {
+                let [t, mod] = timeStr.split(' ');
+                let [h, m] = t.split(':');
+                h = parseInt(h);
+                if (mod.toLowerCase() === 'pm' && h < 12) h += 12;
+                if (mod.toLowerCase() === 'am' && h === 12) h = 0;
+                inp.value = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            }
+            // If it's already HH:MM
+            else {
                 inp.value = timeStr.substring(0, 5);
             }
         }
