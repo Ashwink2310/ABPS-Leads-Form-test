@@ -35,13 +35,17 @@
   .section-header { background: var(--brand); color: #fff; padding: 6px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
   .section-body { padding: 12px; }
   
-  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-  .contact-summary-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px; }
-  .contact-summary-title-info { font-size: 0.88rem; font-weight: 700; color: var(--text); line-height: 1.4; }
-  .contact-summary-title-info span { font-weight: 500; color: var(--muted); margin-right: 6px; text-transform: uppercase; font-size: 0.72rem; }
-  .contact-summary-title-info strong { margin-right: 14px; color: var(--text); }
+  /* Highly Polished Mobile-First Directory Component Cards layout rules updates */
+  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-bottom: 14px; box-shadow: 0 3px 6px rgba(0,0,0,0.03); }
+  .contact-summary-header-row { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 12px; margin-bottom: 14px; }
+  @media(min-width: 768px) { .contact-summary-header-row { flex-direction: row; justify-content: space-between; align-items: center; } }
+  
+  .contact-summary-title-info { font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.5; width: 100%; }
+  .contact-summary-title-info span { font-weight: 600; color: var(--muted); margin-right: 4px; text-transform: uppercase; font-size: 0.75rem; background: #edf2f7; padding: 2px 6px; border-radius: 4px; }
+  .contact-summary-title-info strong { margin-right: 18px; color: #1a202c; display: inline-block; vertical-align: middle; }
+  .directory-btn-actions-block { display: flex; gap: 10px; width: 100%; justify-content: flex-start; }
+  @media(min-width: 768px) { .directory-btn-actions-block { width: auto; justify-content: flex-end; } }
 
-  /* Grid Layout and text protection wrappers styles */
   .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; text-align: left; }
   @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
   @media(min-width: 950px) { .compact-fields-grid { grid-template-columns: repeat(6, 1fr); } }
@@ -58,7 +62,7 @@
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
   
   .navigation-action-header-row { display: flex; justify-content: flex-end; align-items: center; padding: 6px 12px; background: #ffffff; border-radius: 6px; margin-bottom: 12px; border: 1px solid var(--border); }
-  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
+  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
   .nav-btn-styled:hover { background: var(--brand-dk); }
   
   .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; }
@@ -66,6 +70,11 @@
   .btn-ai { background: var(--accent); color: #fff; margin-bottom: 12px; }
   .btn-warn { background: #718096; color: #fff; }
   
+  /* Inline Execution Scoped Alerts Blocks Treatment Layout */
+  .system-runtime-inline-alert-callout { padding: 12px 16px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px; text-align: left; }
+  @media(min-width: 600px) { .system-runtime-inline-alert-callout { flex-direction: row; justify-content: space-between; align-items: center; } }
+  .alert-callout-text-msg { font-size: 0.88rem; font-weight: 600; color: #dd6b20; line-height: 1.4; }
+
   .card-row { display: flex; gap: 10px; margin-bottom: 10px; }
   .card-box { flex: 1; border: 2px dashed var(--border); padding: 12px; text-align: center; font-size: .78rem; cursor: pointer; border-radius: 4px; }
   .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
@@ -149,9 +158,9 @@
         </div>
       </div>
 
-      <div id="missing-trigger-notice-block" style="display:none; padding:20px; text-align:center; background:white; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:15px;">
-        <p style="color:var(--muted); margin-bottom:12px; font-size:0.88rem;">No record matched your target company query parameters.</p>
-        <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
+      <div id="missing-trigger-notice-block" style="display:none; padding:15px; text-align:center; background:white; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:14px;">
+        <p style="color:#e53e3e; font-weight:700; margin-bottom:10px; font-size:0.95rem;">No record matched your target company parameters.</p>
+        <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:8px 20px;">Create New Entry</button>
       </div>
 
       <div id="step2-new-entry-dropdown" style="display: none;">
@@ -227,7 +236,6 @@
               <label class="field-label">Get Enquiry</label><select id="act4"><option>No</option><option>Yes</option></select>
               <label class="field-label">Send Offer</label><select id="actOffer"><option value="No">No</option><option value="Send Budgetary Offer">Send Budgetary Offer</option><option value="Send Techno-Commercial Offer">Send Techno-Commercial Offer</option></select>
               <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
-              <label class="field-label">Next Follow-Up Date</label><input type="date" id="nextDate" />
             </div>
           </div>
 
@@ -245,6 +253,8 @@
         <div style="margin-bottom:12px; text-align:left;">
           <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568;">Back to Search</button>
         </div>
+
+        <div id="split-missing-person-banner-hook"></div>
 
         <div id="multi-contact-records-container"></div>
       </div>
@@ -317,12 +327,13 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzNHPca6I2lro79jzzwY5cBw70oxBxm3edbKa4Qie_xcBjmIJtSDD-9X-gkNXAskNNLjw/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxoPxNcSveuE2kbWUiJXohpCksp6jKUeOI7oqVmT4bmi5ciYMbXUbRakGhp0kWWOB7XWg/exec"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
 let activeSearchRef = ""; 
 let activeSearchCompany = "";
+let currentFollowUpCount = 0;
 
 let globalFollowUpsCacheMap = {};
 let globalTasksCacheMap = {};
@@ -363,7 +374,7 @@ window.onload = function() {
 async function executeLogin() {
   const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
   const btn = document.getElementById("login-btn");
-  if (!userField.value || !passField.value) return alert("Complete fields.");
+  if (!userField.value || !passField.value) return alert("Complete credential fields.");
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verifying...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
@@ -409,21 +420,36 @@ function populateEngineerDropdowns() {
 
 function navigateToModule(key) { if (!userPermissions[key]) return alert("Denied."); document.getElementById("dashboard-view").style.display = "none"; document.getElementById("module-workspace-container").style.display = "block"; document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); document.getElementById("workspace-" + key).style.display = "block"; resetSequentialFormState(); }
 function returnToDashboard() { showAppView(); }
-function revealNewEntryFormDropdown() { document.getElementById("missing-trigger-notice-block").style.display = "none"; document.getElementById("step2-new-entry-dropdown").style.display = "block"; }
+function revealNewEntryFormDropdown() { document.getElementById("missing-trigger-notice-block").style.display = "none"; document.getElementById("step2-new-entry-dropdown").style.display = "block"; window.scrollTo(0,0); }
 
 async function triggerSequentialSearch() {
   const comp = document.getElementById("f-company").value;
+  const targetName = document.getElementById("f-name").value;
   const btn = document.getElementById("gate-search-btn");
   if (!comp) return alert("Specify a Company Name to verify.");
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Searching...';
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp }) });
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp, contactName: targetName }) });
     const data = await res.json();
     if (data.success) {
       activeSearchCompany = comp;
       globalFollowUpsCacheMap = data.followups;
       globalTasksCacheMap = data.tasks;
+      
+      // Inject alert notice dynamically on screen layer if contact person mismatch flag trips
+      const bannerHook = document.getElementById("split-missing-person-banner-hook");
+      if (!data.nameMatchFound) {
+        bannerHook.innerHTML = `
+          <div class="system-runtime-inline-alert-callout">
+            <span class="alert-callout-text-msg">We have information on the following individuals from this company, but not for this specific person.</span>
+            <button class="nav-btn-styled" style="background:#dd6b20;" onclick="revealNewEntryFormDropdownFromBanner()">Create New Entry</button>
+          </div>
+        `;
+      } else {
+        bannerHook.innerHTML = "";
+      }
+
       buildMultiContactDirectoryInterface(data.leads);
       
       document.getElementById("missing-trigger-notice-block").style.display = "none";
@@ -436,7 +462,12 @@ async function triggerSequentialSearch() {
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Search Database"; }
 }
 
-// ── FIXED VIEW DETAILS HANDLER: DYNAMIC CHANNELS ISOLATION ───────────────────
+function revealNewEntryFormDropdownFromBanner() {
+  document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+  document.getElementById("step2-new-entry-dropdown").style.display = "block";
+  window.scrollTo(0,0);
+}
+
 function buildMultiContactDirectoryInterface(leadsList) {
   const container = document.getElementById("multi-contact-records-container");
   container.innerHTML = "";
@@ -451,12 +482,12 @@ function buildMultiContactDirectoryInterface(leadsList) {
       <div class="contact-summary-header-row">
         <div class="contact-summary-title-info">
           <span>Company:</span><strong>${lead["Company"]}</strong>
-          <span style="margin-left:12px;">Name:</span><strong>${lead["Name"] || "Unspecified"}</strong>
-          <span style="margin-left:12px;">Position:</span><strong>${lead["Position"] || "Unspecified"}</strong>
+          <span>Name:</span><strong>${lead["Name"] || "Unspecified"}</strong>
+          <span>Position:</span><strong>${lead["Position"] || "Unspecified"}</strong>
         </div>
-        <div style="display:flex; gap:8px;">
-          <button class="nav-btn-styled" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
-          <button class="nav-btn-styled" onclick="removeLeadRowEntirely('${tRef}')" style="background:var(--warn);">Delete Record</button>
+        <div class="directory-btn-actions-block">
+          <button class="nav-btn-styled" style="font-size:0.9rem; padding:8px 16px;" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
+          <button class="nav-btn-styled" style="font-size:0.9rem; padding:8px 16px; background:var(--warn);" onclick="removeLeadRowEntirely('${tRef}')">Delete Record</button>
         </div>
       </div>
       <div class="contact-expanded-workspace-payload-drawer" id="drawer-panel-${tRef}" style="display:none; padding-top:10px;">
@@ -476,7 +507,7 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
   if (drawer.style.display === "block") {
     drawer.style.display = "none";
     triggerBtn.textContent = "View Details";
-    mountPoint.innerHTML = ""; // Unmount safely to eliminate cross reference leaks completely
+    mountPoint.innerHTML = ""; 
   } else {
     document.querySelectorAll(".contact-expanded-workspace-payload-drawer").forEach(d => d.style.display = "none");
     document.querySelectorAll('[id^="expand-trigger-"]').forEach(b => b.textContent = "View Details");
@@ -485,20 +516,15 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
     const leadMap = JSON.parse(decodeURIComponent(encodedLeadMap));
     activeSearchRef = leadRef; 
     
-    // Inject clean editable forms matrix layout block rules
     buildTargetedLeadsFormCanvas(leadRef, leadMap);
     
-    // FIX: Clone the template modules inside the loop context to prevent document lookup errors
     const templateClone = document.getElementById("reusable-child-modules-template").cloneNode(true);
     templateClone.style.display = "block";
     templateClone.id = `active-modules-clone-${leadRef}`;
     
-    // Bind context elements safely inside the isolated scope structure row boundaries
     setupIsolatedModuleTriggersAndActions(leadRef, templateClone);
-    
     mountPoint.appendChild(templateClone);
     
-    // Fetch count boundaries matching the targeted profile reference
     currentFollowUpCount = globalFollowUpsCacheMap[leadRef] ? globalFollowUpsCacheMap[leadRef].length : 0;
     renderIsolatedFollowUpTimeline(leadRef, globalFollowUpsCacheMap[leadRef] || [], templateClone);
     renderIsolatedTaskItemsList(leadRef, globalTasksCacheMap[leadRef] || [], templateClone);
@@ -514,7 +540,6 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
   const fupClose = nodeScope.querySelector(".trigger-fup-close");
   const fupEngSelect = nodeScope.querySelector(".fup-eng-select");
   
-  // Fill dynamic engineers listing inside context dropdown selectors
   cachedEngineers.forEach(eng => {
     let o1 = document.createElement("option"); o1.textContent = eng; fupEngSelect.appendChild(o1);
   });
@@ -536,7 +561,6 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
     commitIsolatedFollowUpItem(leadRef, nodeScope);
   };
 
-  // Setup Tasks Hooks inside local container limits
   const taskForm = nodeScope.querySelector(".template-task-form");
   const taskOpen = nodeScope.querySelector(".trigger-task-open");
   const taskClose = nodeScope.querySelector(".trigger-task-close");
@@ -675,7 +699,7 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
 }
 
 async function removeLeadRowEntirely(leadRef) {
-  if (!confirm("Confirm complete record row extraction removal?")) return;
+  if (!confirm("Confirm record row extraction removal?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteLeadRow", leadRef: leadRef }) });
     const r = await res.json(); if (r.success) triggerSequentialSearch();
@@ -687,7 +711,6 @@ function exitCanvasToCardView() {
   document.getElementById("step1-card-capture-block").style.display = "block"; 
 }
 
-// ── ISOLATED ROW-GRID GRAPH FOOTPRINTS TIMELINES RENDERERS ──────────────────
 function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
   const box = scopeNode.querySelector(".template-timeline-box");
   box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No records</p>' : '';
@@ -714,7 +737,6 @@ function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
       </div>`;
     box.appendChild(card);
     
-    // Bind unique inline events directly inside isolated row scopes explicitly
     document.getElementById(`trigger-inner-edit-fup-${leadRef}-${f.num}`).onclick = function() {
       editIsolatedFollowUpItem(leadRef, scopeNode, f);
     };
@@ -758,7 +780,7 @@ async function commitIsolatedFollowUpItem(leadRef, scopeNode) {
     nq1: form.querySelector(".fup-nq1").value, nq2: form.querySelector(".fup-nq2").value, nq3: form.querySelector(".fup-nq3").value,
     nq4: form.querySelector(".fup-nq4").value, nq5: form.querySelector(".fup-nq5").value, nq6: form.querySelector(".fup-nq6").value
   };
-  if (!followUpData.notes) return alert("Interaction Notes entry metrics path required.");
+  if (!followUpData.notes) return alert("Interaction Notes required.");
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   try {
@@ -774,7 +796,7 @@ async function commitIsolatedFollowUpItem(leadRef, scopeNode) {
 }
 
 async function removeIsolatedFollowUpItem(leadRef, fNum) {
-  if(!confirm("Confirm follow up trace deletion?")) return;
+  if(!confirm("Confirm deletion?")) return;
   const fupId = leadRef + "||" + fNum;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteFollowUp", fupId: fupId }) });
@@ -786,7 +808,6 @@ async function removeIsolatedFollowUpItem(leadRef, fNum) {
   } catch(e) { alert(e.message); }
 }
 
-// ── ISOLATED TASK ITEMS HANDLER SUB ENGINES ─────────────────────────────────
 function renderIsolatedTaskItemsList(leadRef, list, scopeNode) {
   const box = scopeNode.querySelector(".template-task-box");
   box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No active entries.</p>' : '';
@@ -855,7 +876,7 @@ async function commitIsolatedTaskItem(leadRef, scopeNode) {
 }
 
 async function removeIsolatedTaskItem(leadRef, taskId) {
-  if (!confirm("Confirm cancellation parameters?")) return;
+  if (!confirm("Confirm cancellation?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: taskId }) });
     const r = await res.json(); 
@@ -881,7 +902,6 @@ async function globalExecutionScopeReloader(leadRef, scopeNode) {
   } catch(e) { console.error(e.message); }
 }
 
-// ── UTILITY RECOVERY FALLBACK ARCHITECTURES ─────────────────────────────────
 function toggleFollowUpAccordion(headerEl) {
   const body = headerEl.nextElementSibling; const isVisible = body.style.display === "block";
   body.style.display = isVisible ? "none" : "block";
