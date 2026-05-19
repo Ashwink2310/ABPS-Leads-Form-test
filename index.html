@@ -30,10 +30,6 @@
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
   
   .workspace-panel { padding: 15px 12px; }
-  .sub-nav-tabs { display: flex; gap: 10px; margin-bottom: 15px; background: #e2e8f0; padding: 6px; border-radius: 6px; }
-  .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; cursor: pointer; font-weight: 600; font-size: 0.85rem; border-radius: 4px; }
-  .tab-btn.active { background: var(--card); color: var(--brand); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-  
   .section { background: var(--card); border-radius: var(--radius); margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid var(--border); overflow: hidden; }
   .section-header { background: var(--brand); color: #fff; padding: 10px 16px; font-size: .8rem; font-weight: 700; text-transform: uppercase; }
   .section-body { padding: 16px; }
@@ -48,14 +44,22 @@
   .btn-sub { background: var(--brand); color: #fff; }
   .btn-ai { background: var(--accent); color: #fff; margin-bottom: 15px; }
   .btn-warn { background: var(--warn); color: #fff; }
+  .btn-outline { background: transparent; border: 1.5px solid var(--brand); color: var(--brand); }
+  
   .card-row { display: flex; gap: 10px; margin-bottom: 12px; }
   .card-box { flex: 1; border: 2px dashed var(--border); padding: 15px; text-align: center; font-size: .8rem; cursor: pointer; border-radius: 6px; }
   .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
   
+  .control-action-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
   .meta-edit-box { background: #f8fafc; padding: 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .timeline-container, .task-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-  .timeline-card, .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 12px; border-radius: 6px; text-align: left; position: relative; }
-  .task-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f1f5f9; padding: 12px; border-radius: 6px; margin-top: 10px; }
+  
+  /* Inline Expandable Follow Up Component Styles */
+  .fup-item-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; text-align: left; overflow: hidden; }
+  .fup-item-header { padding: 12px; background: #edf2f7; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; }
+  .fup-item-body { padding: 14px; display: none; border-top: 1px solid var(--border); background: #fff; }
+  
+  .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f1f5f9; padding: 12px; border-radius: 6px; margin: 10px 0; text-align: left; }
+  .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 12px; border-radius: 6px; text-align: left; margin-bottom: 8px; }
   .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .no-btn { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 6px; background: #fff; cursor: pointer; font-size: .8rem; }
@@ -101,39 +105,41 @@
     <div style="padding: 10px 12px 0;"><button class="back-btn" onclick="returnToDashboard()" style="background:#6b7a8d; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Return to Dashboard</button></div>
     
     <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
-      <div class="sub-nav-tabs">
-        <button class="tab-btn active" id="btn-subtab-new" onclick="switchSubTab('NEW')">Create New Entry</button>
-        <button class="tab-btn" id="btn-subtab-search" onclick="switchSubTab('SEARCH')">Search Company Database</button>
+      
+      <div id="step1-card-capture-block" class="section">
+        <div class="section-header">Section 1 — Business Card</div>
+        <div class="section-body">
+          <div class="card-row">
+            <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
+            <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
+          </div>
+          <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
+          <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
+          <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>Parse Card with AI</button>
+          
+          <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Required for search validation..." />
+          <label class="field-label">Contact Name</label><input type="text" id="f-name" />
+          <label class="field-label">Position</label><input type="text" id="f-position" />
+          <label class="field-label">Phone</label><input type="tel" id="f-phone" />
+          <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
+          <label class="field-label">Email</label><input type="email" id="f-email" />
+          <label class="field-label">Website</label><input type="url" id="f-website" />
+          <label class="field-label">Address</label><textarea id="f-address"></textarea>
+          
+          <div class="control-action-bar">
+            <button class="btn btn-sub" id="gate-search-btn" onclick="triggerSequentialSearch()">Search Database</button>
+            <button class="btn btn-outline" id="gate-create-btn" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
+          </div>
+        </div>
       </div>
 
-      <div id="subtab-new-entry-zone">
-        <div id="success-screen" style="display:none; text-align:center; padding:30px;">
-          <h2>Submission Successful!</h2><p id="success-ref" style="margin:15px 0; font-weight:bold; color:var(--brand);"></p>
-          <button class="btn btn-sub" onclick="resetNewEntryForm()">Add Another Lead</button>
+      <div id="step2-new-entry-dropdown" style="display: none;">
+        <div id="success-screen" style="display:none; text-align:center; padding:20px;">
+          <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:10px 0;"></p>
+          <button class="btn btn-sub" onclick="resetSequentialFormState()">Process Another Card</button>
         </div>
-        
-        <div id="main-form-container">
-          <div class="section">
-            <div class="section-header">Section 1 — Business Card</div>
-            <div class="section-body">
-              <div class="card-row">
-                <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
-                <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
-              </div>
-              <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
-              <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
-              <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>Parse Card with AI</button>
-              <label class="field-label">Name</label><input type="text" id="f-name" />
-              <label class="field-label">Company</label><input type="text" id="f-company" />
-              <label class="field-label">Position</label><input type="text" id="f-position" />
-              <label class="field-label">Phone</label><input type="tel" id="f-phone" />
-              <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
-              <label class="field-label">Email</label><input type="email" id="f-email" />
-              <label class="field-label">Website</label><input type="url" id="f-website" />
-              <label class="field-label">Address</label><textarea id="f-address"></textarea>
-            </div>
-          </div>
-          
+
+        <div id="remaining-sections-form">
           <div class="section">
             <div class="section-header">Section 2 — Meeting Details</div>
             <div class="section-body">
@@ -169,10 +175,7 @@
                 <input type="checkbox" name="qualification" value="EPC" id="q2" onchange="handleQualChange()"><label for="q2">EPC</label>
                 <input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label>
               </div>
-              <input type="text" id="qualificationOther" class="other-input" placeholder="Specify..." />
               <div id="vendor-fields" style="display:none; margin-top:10px; padding-left:10px; border-left:2px solid var(--brand);">
-                <label class="field-label">Type of Vendor</label>
-                <div class="pill-group"><input type="checkbox" name="vendorType" value="Raw Materials" id="vt1"><label for="vt1">Raw Materials</label></div>
                 <label class="field-label">Materials Name</label><input type="text" id="materialsName" />
               </div>
             </div>
@@ -188,13 +191,10 @@
               <label class="field-label">Grid Stability Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
               <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
               <label class="field-label">Voltage Level</label>
-              <div class="pill-group">
-                <input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label>
-                <input type="checkbox" name="voltage" value="11KV" id="vl4"><label for="vl4">11KV</label>
-              </div>
+              <div class="pill-group"><input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label><input type="checkbox" name="voltage" value="11KV" id="vl4"><label for="vl4">11KV</label></div>
               <label class="field-label">Capacity Details</label>
-              <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" style="margin-bottom:6px;" />
-              <input type="text" id="rdMva" placeholder="Running Demand (MVA)" style="margin-bottom:6px;" />
+              <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" style="margin-bottom:4px;" />
+              <input type="text" id="rdMva" placeholder="Running Demand (MVA)" style="margin-bottom:4px;" />
               <input type="text" id="avgPf" placeholder="Monthly Average Power Factor" />
               <label class="field-label">Problem Observed</label><input type="text" id="problemObserved" />
               <label class="field-label">Technical Discussion Summary</label><textarea id="techSummary"></textarea>
@@ -207,19 +207,13 @@
               <label class="field-label">Existing Project</label><input type="text" id="epInput" />
               <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
               <label class="field-label">Products Discussed</label>
-              <div class="pill-group">
-                <input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label>
-                <input type="checkbox" name="prod" value="SVG" id="pd3"><label for="pd3">SVG</label>
-              </div>
+              <div class="pill-group"><input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label><input type="checkbox" name="prod" value="SVG" id="pd3"><label for="pd3">SVG</label></div>
               <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
               <label class="field-label">Expected Tender Date</label><input type="date" id="tenderDate" />
               <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
               <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
               <label class="field-label">Approx Business Potential</label>
-              <div class="pill-group">
-                <input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label>
-                <input type="radio" name="pot" value="10-50L" id="bp2"><label for="bp2">10-50L</label>
-              </div>
+              <div class="pill-group"><input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label></div>
             </div>
           </div>
 
@@ -244,66 +238,70 @@
         </div>
       </div>
 
-      <div id="subtab-search-database-zone" style="display: none;">
-        <div class="section" style="padding:15px;">
-          <label class="field-label" style="margin:0 0 6px;">Enter Target Company Name</label>
-          <div style="display:flex; gap:8px;">
-            <input type="text" id="db-search-query" placeholder="Search exact match..." />
-            <button class="btn btn-sub" id="db-search-btn" onclick="executeDatabaseSearch()" style="width:120px; margin:0;">Search</button>
+      <div id="step2-inline-interaction-canvas" style="display: none;">
+        <div style="margin-bottom:12px; text-align:left;">
+          <button onclick="exitCanvasToCardView()" style="padding:6px 12px; font-size:0.8rem; cursor:pointer;">← Back to Card Scan</button>
+        </div>
+
+        <div class="meta-edit-box">
+          <div>
+            <label class="field-label" style="margin:0 0 4px;">Pipeline Status</label>
+            <select id="res-status-select"><option>Active</option><option>Pending</option><option>Converted</option><option>Closed</option></select>
+          </div>
+          <div>
+            <label class="field-label" style="margin:0 0 4px;">Assigned Engineer</label>
+            <select id="res-engineer-select"></select>
+          </div>
+          <button class="btn btn-sub" onclick="saveLeadMetaChanges()" style="grid-column: span 2; margin-top:5px; padding:8px;">Save Account Modifications</button>
+        </div>
+
+        <div class="section">
+          <div class="section-header">Follow-Up Tracking Ledger</div>
+          <div class="section-body">
+            <button class="btn btn-ai" onclick="showNewFollowUpForm()" style="padding:6px 12px; font-size:0.8rem; margin-bottom:10px;">+ Create New Follow-Up Entry</button>
+            
+            <div id="fup-form-expansion" style="display:none;" class="fup-grid-inputs">
+              <input type="hidden" id="fup-edit-id" />
+              <div><label class="field-label">Follow-Up Number</label><input type="number" id="fup-num-input" /></div>
+              <div><label class="field-label">Date</label><input type="date" id="fup-date-input" /></div>
+              <div><label class="field-label">Handled By</label><select id="fup-eng-select"></select></div>
+              <div style="grid-column: span 2;"><label class="field-label">Detailed Notes</label><textarea id="fup-details-input"></textarea></div>
+              <button class="btn btn-sub" onclick="commitFollowUpItem()" style="grid-column: span 2; padding:8px; margin-top:5px;">Save Follow-Up Track</button>
+            </div>
+
+            <div class="timeline-container" id="timeline-box"></div>
           </div>
         </div>
 
-        <div id="search-results-canvas" style="display: none;">
-          <div class="meta-edit-box">
-            <div>
-              <label class="field-label" style="margin:0 0 4px;">Current Pipeline Status</label>
-              <select id="res-status-select">
-                <option>Active</option><option>Pending</option><option>Converted</option><option>Closed</option>
-              </select>
+        <div class="section">
+          <div class="section-header">Engineer Task Rotations</div>
+          <div class="section-body">
+            <button class="btn btn-outline" onclick="showNewTaskForm()" style="padding:6px 12px; font-size:0.8rem; margin-bottom:10px;">+ Create New Task Rotation</button>
+            
+            <div id="task-form-expansion" style="display:none;" class="task-grid-inputs">
+              <input type="hidden" id="task-edit-id" />
+              <div><label class="field-label">Engineer</label><select id="task-eng-select"></select></div>
+              <div><label class="field-label">Task Type</label><input type="text" id="task-type-input" placeholder="e.g. Site Survey" /></div>
+              <div><label class="field-label">Target Shift</label><select id="task-shift-select"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
+              <div><label class="field-label">Date</label><input type="date" id="task-date-input" /></div>
+              <button class="btn btn-sub" onclick="commitTaskItem()" style="grid-column:span 2; padding:8px; margin-top:5px;">Save Task Rotation</button>
             </div>
-            <div>
-              <label class="field-label" style="margin:0 0 4px;">Assigned Engineer</label>
-              <select id="res-engineer-select"></select>
-            </div>
-            <button class="btn btn-sub" onclick="saveLeadMetaChanges()" style="grid-column: span 2; margin-top:5px; padding:8px;">Save Account Reassignments</button>
-          </div>
 
-          <div class="section">
-            <div class="section-header">Follow-Up History Blocks</div>
-            <div class="section-body">
-              <div class="timeline-container" id="timeline-box"></div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-header">Engineer Task Rotations</div>
-            <div class="section-body">
-              <button class="btn btn-ai" onclick="showNewTaskForm()" style="padding:8px; font-size:0.8rem;">+ Create New Task Assignment</button>
-              
-              <div id="task-form-expansion" style="display:none;" class="task-grid-inputs">
-                <input type="hidden" id="task-edit-id" />
-                <div><label class="field-label">Engineer</label><select id="task-eng-select"></select></div>
-                <div><label class="field-label">Task Type</label><input type="text" id="task-type-input" placeholder="e.g. Site Survey" /></div>
-                <div><label class="field-label">Target Shift</label><select id="task-shift-select"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
-                <div><label class="field-label">Date</label><input type="date" id="task-date-input" /></div>
-                <button class="btn btn-sub" onclick="commitTaskItem()" style="grid-column:span 2; padding:8px; margin:5px 0 0;">Save Task Rotation</button>
-              </div>
-
-              <div class="task-list-container" id="task-cards-box"></div>
-            </div>
+            <div class="task-list-container" id="task-cards-box"></div>
           </div>
         </div>
       </div>
+
     </div>
 
-    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;"><h3>Search Company Placeholder</h3></div>
-    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;"><h3>Search Status Placeholder</h3></div>
-    <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;"><h3>Search Engineer Placeholder</h3></div>
+    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;"><h3>Search Company Workspace Placeholder</h3></div>
+    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;"><h3>Search Status Workspace Placeholder</h3></div>
+    <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;"><h3>Search Engineer Workspace Placeholder</h3></div>
   </div>
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbw6Us_m-n1_XQdn_InMQfIw15N-u4n_xyhkkLifzsBsBoPqCYqCBs8lkpz_edcEhxb3zA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxQZUMh3HNG4bh1NZSrYvQe5ms-FjEtNL-9Js2i_BuTGdAr-tV9gTvnh2ZaXhEZ9Ze3ag/exec";
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
@@ -314,51 +312,31 @@ window.onload = function() {
   const token = localStorage.getItem("sessionToken");
   const expires = localStorage.getItem("sessionExpiry");
   const savedPerms = localStorage.getItem("userPermissions");
-  
   if (token && expires && new Date() < new Date(expires) && savedPerms) {
-    userPermissions = JSON.parse(savedPerms);
-    showAppView();
-  } else {
-    executeLogout();
-  }
+    userPermissions = JSON.parse(savedPerms); showAppView();
+  } else executeLogout();
 };
 
 async function executeLogin() {
-  const userField = document.getElementById("auth-user");
-  const passField = document.getElementById("auth-pass");
-  const loginBtn = document.getElementById("login-btn");
-  if (!userField.value || !passField.value) return alert("Complete credentials.");
-
-  loginBtn.disabled = true;
+  const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
+  if (!userField.value || !passField.value) return alert("Complete credential sets.");
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
     const r = await res.json();
     if (r.success) {
-      localStorage.setItem("sessionToken", r.sessionToken);
-      localStorage.setItem("sessionExpiry", r.expires);
-      localStorage.setItem("sessionUser", r.username);
-      localStorage.setItem("userFirstName", r.firstName);
-      localStorage.setItem("userLastName", r.lastName);
+      localStorage.setItem("sessionToken", r.sessionToken); localStorage.setItem("sessionExpiry", r.expires);
+      localStorage.setItem("sessionUser", r.username); localStorage.setItem("userFirstName", r.firstName); localStorage.setItem("userLastName", r.lastName);
       localStorage.setItem("userPermissions", JSON.stringify(r.permissions));
-      userPermissions = r.permissions;
-      showAppView();
+      userPermissions = r.permissions; showAppView();
     } else alert(r.error);
   } catch(e) { alert(e.message); }
-  finally { loginBtn.disabled = false; }
 }
 
-function executeLogout() {
-  localStorage.clear();
-  document.getElementById("app-container").style.display = "none";
-  document.getElementById("auth-container").style.display = "flex";
-}
+function executeLogout() { localStorage.clear(); document.getElementById("app-container").style.display = "none"; document.getElementById("auth-container").style.display = "flex"; }
 
 async function showAppView() {
-  document.getElementById("auth-container").style.display = "none";
-  document.getElementById("app-container").style.display = "block";
-  document.getElementById("dashboard-view").style.display = "block";
-  document.getElementById("module-workspace-container").style.display = "none";
-  
+  document.getElementById("auth-container").style.display = "none"; document.getElementById("app-container").style.display = "block";
+  document.getElementById("dashboard-view").style.display = "block"; document.getElementById("module-workspace-container").style.display = "none";
   document.getElementById("display-full-name").textContent = localStorage.getItem("userFirstName") + " " + localStorage.getItem("userLastName");
   document.getElementById("display-username").textContent = "@" + localStorage.getItem("sessionUser");
   
@@ -367,216 +345,237 @@ async function showAppView() {
     document.getElementById(id).classList.toggle("locked", !userPermissions[key]);
   });
 
-  // Pull dynamic engineers array configuration straight from sheets
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getEngineers" }) });
     const data = await res.json();
-    if (data.success) {
-      cachedEngineers = data.engineers;
-      populateEngineerDropdowns();
-    }
-  } catch(e) { console.error("Could not fetch user sheet listing: " + e.message); }
+    if (data.success) { cachedEngineers = data.engineers; populateEngineerDropdowns(); }
+  } catch(e) { console.error(e.message); }
 }
 
 function populateEngineerDropdowns() {
-  const menus = ["engName", "res-engineer-select", "task-eng-select"];
-  menus.forEach(mId => {
-    const el = document.getElementById(mId);
-    if (el) {
-      el.innerHTML = mId === "engName" ? '<option value="">— Select —</option>' : '';
-      cachedEngineers.forEach(eng => {
-        let opt = document.createElement("option");
-        opt.textContent = eng;
-        el.appendChild(opt);
-      });
-    }
+  ["engName", "res-engineer-select", "task-eng-select", "fup-eng-select"].forEach(mId => {
+    const el = document.getElementById(mId); if (!el) return;
+    el.innerHTML = mId === "engName" ? '<option value="">— Select —</option>' : '';
+    cachedEngineers.forEach(eng => {
+      let opt = document.createElement("option"); opt.textContent = eng; el.appendChild(opt);
+    });
   });
 }
 
-function navigateToModule(key) {
-  if (!userPermissions[key]) return alert("Access Blocked.");
-  document.getElementById("dashboard-view").style.display = "none";
-  document.getElementById("module-workspace-container").style.display = "block";
-  document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none");
-  document.getElementById("workspace-" + key).style.display = "block";
-}
-
+function navigateToModule(key) { if (!userPermissions[key]) return alert("Denied."); document.getElementById("dashboard-view").style.display = "none"; document.getElementById("module-workspace-container").style.display = "block"; document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); document.getElementById("workspace-" + key).style.display = "block"; resetSequentialFormState(); }
 function returnToDashboard() { showAppView(); }
 
-function switchSubTab(mode) {
-  document.getElementById("btn-subtab-new").classList.toggle("active", mode === "NEW");
-  document.getElementById("btn-subtab-search").classList.toggle("active", mode === "SEARCH");
-  document.getElementById("subtab-new-entry-zone").style.display = mode === "NEW" ? "block" : "none";
-  document.getElementById("subtab-search-database-zone").style.display = mode === "SEARCH" ? "block" : "none";
+// ── SEQUENTIAL WORKFLOW STRATIFICATION CONTROL ENGINES ───────────────────────
+function revealNewEntryFormDropdown() {
+  document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+  document.getElementById("step2-new-entry-dropdown").style.display = "block";
+  document.getElementById("remaining-sections-form").style.display = "block";
 }
 
-// ── Lead Verification Search Engine Node ────────────────────────────────────
-async function executeDatabaseSearch() {
-  const query = document.getElementById("db-search-query").value;
-  const btn = document.getElementById("db-search-btn");
-  if (!query) return alert("Provide string parameters.");
+async function triggerSequentialSearch() {
+  const comp = document.getElementById("f-company").value;
+  if (!comp) return alert("Please specify a Company Name string parameter to verify.");
   
-  btn.disabled = true;
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: query }) });
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp }) });
     const data = await res.json();
     if (data.success) {
-      activeSearchRef = data.lead["Card Ref"];
-      activeSearchCompany = data.lead["Company"];
-      
+      activeSearchRef = data.lead["Card Ref"]; activeSearchCompany = data.lead["Company"];
       document.getElementById("res-status-select").value = data.lead["Status"] || "Active";
       document.getElementById("res-engineer-select").value = data.lead["Assigned Engineer"] || "";
       
       renderFollowUpTimeline(data.followups);
       renderTaskItemsList(data.tasks);
       
-      document.getElementById("search-results-canvas").style.display = "block";
+      document.getElementById("step2-new-entry-dropdown").style.display = "none";
+      document.getElementById("step1-card-capture-block").style.display = "none";
+      document.getElementById("step2-inline-interaction-canvas").style.display = "block";
     } else {
-      alert(data.error);
-      document.getElementById("search-results-canvas").style.display = "none";
+      alert("Company record not matched. If this is a new lead partner account, please select 'Create New Entry'.");
     }
   } catch(e) { alert(e.message); }
-  finally { btn.disabled = false; }
 }
 
-async function saveLeadMetaChanges() {
-  const stat = document.getElementById("res-status-select").value;
-  const eng = document.getElementById("res-engineer-select").value;
-  try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadMeta", leadRef: activeSearchRef, status: stat, engineer: eng }) });
-    const r = await res.json();
-    if (r.success) alert("Reassignments saved successfully.");
-  } catch(e) { alert(e.message); }
+function exitCanvasToCardView() {
+  document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+  document.getElementById("step1-card-capture-block").style.display = "block";
 }
 
+function resetSequentialFormState() {
+  document.getElementById("step1-card-capture-block").style.display = "block";
+  document.getElementById("step2-new-entry-dropdown").style.display = "none";
+  document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+  document.getElementById("success-screen").style.display = "none";
+  document.getElementById("remaining-sections-form").style.display = "block";
+  fileFront = null; fileBack = null;
+  document.getElementById("front-box").textContent = "📷 Front Side"; document.getElementById("front-box").classList.remove("done");
+  document.getElementById("back-box").textContent = "📷 Back Side (Opt)"; document.getElementById("back-box").classList.remove("done");
+  document.getElementById("parse-btn").disabled = true;
+}
+
+// ── NESTED ACCORDION TIMELINE RENDERER (INLINE DISPLAY GAP PROTECTION) ─────
 function renderFollowUpTimeline(list) {
   const box = document.getElementById("timeline-box");
-  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem;">No historical follow-up tracks found.</p>' : '';
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No historical follow-ups recorded.</p>' : '';
   list.forEach(f => {
-    let div = document.createElement("div");
-    div.className = "timeline-card";
-    div.innerHTML = `<strong>Follow-Up ${f.num}</strong> (${f.date})<br/><small>Handled by: ${f.eng}</small><p style="margin-top:6px; font-size:0.85rem;">${f.details}</p>`;
-    box.appendChild(div);
+    let card = document.createElement("div"); card.className = "fup-item-card";
+    card.innerHTML = `
+      <div class="fup-item-header" onclick="toggleFollowUpAccordion(this)">
+        <span>Follow-Up ${f.num} (${f.date})</span>
+        <span style="color:var(--brand);">Click to view details ▾</span>
+      </div>
+      <div class="fup-item-body">
+        <small><strong>Managing Rep:</strong> ${f.eng}</small>
+        <p style="margin-top:8px; font-size:0.88rem; color:#2d3748;">${f.details}</p>
+        <button onclick="editFollowUpItem('${f.id}',${f.num},'${f.date}','${f.eng}',\`${f.details.replace(/'/g, "\\'")}\`)" style="margin-top:10px; font-size:0.75rem; padding:4px 8px; cursor:pointer;">Edit This Track</button>
+      </div>`;
+    box.appendChild(card);
   });
 }
 
+function toggleFollowUpAccordion(headerEl) {
+  const body = headerEl.nextElementSibling;
+  const isVisible = body.style.display === "block";
+  body.style.display = isVisible ? "none" : "block";
+  headerEl.querySelector("span:last-child").textContent = isVisible ? "Click to view details ▾" : "Collapse ▴";
+}
+
+function showNewFollowUpForm() {
+  document.getElementById("fup-edit-id").value = ""; document.getElementById("fup-num-input").value = "";
+  document.getElementById("fup-date-input").value = ""; document.getElementById("fup-details-input").value = "";
+  document.getElementById("fup-form-expansion").style.display = "grid";
+}
+
+function editFollowUpItem(id, num, date, eng, details) {
+  document.getElementById("fup-edit-id").value = id; document.getElementById("fup-num-input").value = num;
+  document.getElementById("fup-date-input").value = date; document.getElementById("fup-eng-select").value = eng;
+  document.getElementById("fup-details-input").value = details;
+  document.getElementById("fup-form-expansion").style.display = "grid";
+}
+
+async function commitFollowUpItem() {
+  const followUpData = {
+    id: document.getElementById("fup-edit-id").value, leadRef: activeSearchRef, company: activeSearchCompany,
+    num: document.getElementById("fup-num-input").value, date: document.getElementById("fup-date-input").value,
+    eng: document.getElementById("fup-eng-select").value, details: document.getElementById("fup-details-input").value
+  };
+  if (!followUpData.num || !followUpData.date || !followUpData.details) return alert("Complete required fields.");
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveFollowUp", followUpData }) });
+    const r = await res.json();
+    if (r.success) { document.getElementById("fup-form-expansion").style.display = "none"; refreshCanvasDataNodes(); }
+  } catch(e) { alert(e.message); }
+}
+
+// ── ROTATIONAL WORK ENGINE DISPATCH TASK SCHEDULER ──────────────────────────
 function renderTaskItemsList(list) {
   const box = document.getElementById("task-cards-box");
-  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem;">No current tasks assigned.</p>' : '';
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No current task mappings.</p>' : '';
   list.forEach(t => {
-    let div = document.createElement("div");
-    div.className = "task-item-card";
+    let div = document.createElement("div"); div.className = "task-item-card";
     div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Shift: ${t.shift} | Date: ${t.date}</small>
                      <div style="margin-top:8px; display:flex; gap:6px;">
-                       <button onclick="editTaskItem('${t.id}','${t.eng}','${t.type}','${t.shift}','${t.date}')" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
-                       <button onclick="removeTaskItem('${t.id}')" style="font-size:0.75rem; color:var(--warn); padding:2px 6px;">Delete</button>
+                       <button onclick="editTaskItem('${t.id}','${t.eng}','${t.type}','${t.shift}','${t.date}')" style="font-size:0.75rem; padding:2px 6px; cursor:pointer;">Edit</button>
+                       <button onclick="removeTaskItem('${t.id}')" style="font-size:0.75rem; color:var(--warn); padding:2px 6px; cursor:pointer;">Delete</button>
                      </div>`;
     box.appendChild(div);
   });
 }
 
 function showNewTaskForm() {
-  document.getElementById("task-edit-id").value = "";
-  document.getElementById("task-type-input").value = "";
-  document.getElementById("task-date-input").value = "";
-  document.getElementById("task-form-expansion").style.display = "grid";
+  document.getElementById("task-edit-id").value = ""; document.getElementById("task-type-input").value = "";
+  document.getElementById("task-date-input").value = ""; document.getElementById("task-form-expansion").style.display = "grid";
 }
 
 function editTaskItem(id, eng, type, shift, date) {
-  document.getElementById("task-edit-id").value = id;
-  document.getElementById("task-eng-select").value = eng;
-  document.getElementById("task-type-input").value = type;
-  document.getElementById("task-shift-select").value = shift;
-  document.getElementById("task-date-input").value = date;
-  document.getElementById("task-form-expansion").style.display = "grid";
+  document.getElementById("task-edit-id").value = id; document.getElementById("task-eng-select").value = eng;
+  document.getElementById("task-type-input").value = type; document.getElementById("task-shift-select").value = shift;
+  document.getElementById("task-date-input").value = date; document.getElementById("task-form-expansion").style.display = "grid";
 }
 
 async function commitTaskItem() {
   const taskData = {
-    id: document.getElementById("task-edit-id").value,
-    leadRef: activeSearchRef,
-    company: activeSearchCompany,
-    engineer: document.getElementById("task-eng-select").value,
-    type: document.getElementById("task-type-input").value,
-    shift: document.getElementById("task-shift-select").value,
-    date: document.getElementById("task-date-input").value
+    id: document.getElementById("task-edit-id").value, leadRef: activeSearchRef, company: activeSearchCompany,
+    engineer: document.getElementById("task-eng-select").value, type: document.getElementById("task-type-input").value,
+    shift: document.getElementById("task-shift-select").value, date: document.getElementById("task-date-input").value
   };
-  if (!taskData.type || !taskData.date) return alert("Provide required data fields.");
-
+  if (!taskData.type || !taskData.date) return alert("Provide type and date parameters.");
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveTask", taskData }) });
     const r = await res.json();
-    if (r.success) {
-      document.getElementById("task-form-expansion").style.display = "none";
-      executeDatabaseSearch(); // Reload interface context elements
-    }
+    if (r.success) { document.getElementById("task-form-expansion").style.display = "none"; refreshCanvasDataNodes(); }
   } catch(e) { alert(e.message); }
 }
 
 async function removeTaskItem(id) {
-  if (!confirm("Confirm target parameter deletion?")) return;
+  if (!confirm("Confirm removal parameters?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: id }) });
-    const r = await res.json();
-    if (r.success) executeDatabaseSearch();
+    const r = await res.json(); if (r.success) refreshCanvasDataNodes();
   } catch(e) { alert(e.message); }
 }
 
-// ── Card file state hooks ──────────────────────────────────────────────────
+async function saveLeadMetaChanges() {
+  const stat = document.getElementById("res-status-select").value; const eng = document.getElementById("res-engineer-select").value;
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadMeta", leadRef: activeSearchRef, status: stat, engineer: eng }) });
+    const r = await res.json(); if (r.success) alert("Modifications committed successfully.");
+  } catch(e) { alert(e.message); }
+}
+
+async function refreshCanvasDataNodes() {
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: activeSearchCompany }) });
+    const data = await res.json();
+    if (data.success) { renderFollowUpTimeline(data.followups); renderTaskItemsList(data.tasks); }
+  } catch(e) { console.error(e.message); }
+}
+
+// ── FILE AND STRUCTURAL PARSING HANDLING SYSTEM EXTENSIONS ──────────────────
 let fileFront = null, fileBack = null;
 document.getElementById('card-front').onchange = (e) => { fileFront = e.target.files[0]; document.getElementById('front-box').textContent = "Front ✅"; document.getElementById('front-box').classList.add('done'); document.getElementById('parse-btn').disabled = false; };
 document.getElementById('card-back').onchange = (e) => { fileBack = e.target.files[0]; document.getElementById('back-box').textContent = "Back ✅"; document.getElementById('back-box').classList.add('done'); };
-
 function toggleOtherText(r, id) { document.getElementById(id).style.display = (r.value === 'Other') ? 'block' : 'none'; }
-function toggleOtherCheck(c, id) { document.getElementById(id).style.display = c.checked ? 'block' : 'none'; }
 function handleQualChange() { document.getElementById('vendor-fields').style.display = document.getElementById('q8').checked ? 'block' : 'none'; }
 function toggleNo(btn) { const i = document.getElementById(btn.dataset.target); const act = btn.classList.toggle('active'); i.value = act ? "No" : ""; i.disabled = act; }
 function clearNo(i) { const b = document.querySelector(`button[data-target="${i.id}"]`); if (b) b.classList.remove('active'); }
 
 async function parseCard() {
-  const btn = document.getElementById('parse-btn');
-  btn.innerHTML = '<div class="spinner"></div> Parsing...'; btn.disabled = true;
-  const getB64 = (f) => new Promise((res, rej) => { const rd = new FileReader(); rd.onload = () => res(rd.result.split(',')[1]); rd.readAsDataURL(f); });
+  const btn = document.getElementById('parse-btn'); btn.innerHTML = '<div class="spinner"></div> Parsing...'; btn.disabled = true;
+  const getB64 = (f) => new Promise((res) => { const rd = new FileReader(); rd.onload = () => res(rd.result.split(',')[1]); rd.readAsDataURL(f); });
   try {
-    const img1 = await getB64(fileFront);
-    const img2 = fileBack ? await getB64(fileBack) : null;
+    const img1 = await getB64(fileFront); const img2 = fileBack ? await getB64(fileBack) : null;
     const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'parse', image: img1, imageBack: img2 }) });
-    const j = await res.json();
-    const d = JSON.parse(j.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
+    const j = await res.json(); const d = JSON.parse(j.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
     document.getElementById('f-name').value = d.name || ""; document.getElementById('f-company').value = d.company || "";
     document.getElementById('f-position').value = d.position || ""; document.getElementById('f-phone').value = d.phone || "";
     document.getElementById('f-altphone').value = d.altPhone || ""; document.getElementById('f-email').value = d.email || "";
     document.getElementById('f-website').value = d.website || ""; document.getElementById('f-address').value = d.address || "";
-  } catch (e) { alert("Parsing error: " + e.message); }
-  finally { btn.innerHTML = 'Parse Card with AI'; btn.disabled = false; }
+  } catch (e) { alert(e.message); } finally { btn.innerHTML = 'Parse Card with AI'; btn.disabled = false; }
 }
 
 async function uploadToCloudinary(file) {
-  if (!file) return "";
-  const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', UPLOAD_PRESET);
+  if (!file) return ""; const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', UPLOAD_PRESET);
   const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
   const d = await res.json(); return d.secure_url || "";
 }
 
 async function submitLead() {
-  const btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  const btn = document.getElementById('submit-btn'); btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
   const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
   try {
     const [url1, url2] = await Promise.all([uploadToCloudinary(fileFront), uploadToCloudinary(fileBack)]);
     const imageUrl = [url1, url2].filter(u => u).join(", ");
     const fields = {
-      engineerName: document.getElementById('engName').value,
-      name: document.getElementById('f-name').value, company: document.getElementById('f-company').value,
-      position: document.getElementById('f-position').value, phone: document.getElementById('f-phone').value,
-      altPhone: document.getElementById('f-altphone').value, email: document.getElementById('f-email').value,
-      website: document.getElementById('f-website').value, address: document.getElementById('f-address').value,
+      engineerName: document.getElementById('engName').value, name: document.getElementById('f-name').value, company: document.getElementById('f-company').value,
+      position: document.getElementById('f-position').value, phone: document.getElementById('f-phone').value, altPhone: document.getElementById('f-altphone').value,
+      email: document.getElementById('f-email').value, website: document.getElementById('f-website').value, address: document.getElementById('f-address').value,
       meetingDate: document.getElementById('meetingDate').value, meetingTime: document.getElementById('meetingTime').value,
       meetingVenue: getRadio('meetingVenue') === 'Other' ? document.getElementById('meetingVenueOther').value : getRadio('meetingVenue'),
       venueName: document.getElementById('venueName').value, additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
       businessVertical: getRadio('businessVertical') === 'Other' ? document.getElementById('businessVerticalOther').value : getRadio('businessVertical'),
-      industry: document.getElementById('industry').value, qualification: getChecks('qualification'), vendorType: getChecks('vendorType'),
+      industry: document.getElementById('industry').value, qualification: getChecks('qualification'), vendorType: [''],
       materialsName: document.getElementById('materialsName').value, lpi: document.getElementById('lpi').value, hbi: document.getElementById('hbi').value,
       hi: document.getElementById('hi').value, thi: document.getElementById('thi').value, gsi: document.getElementById('gsi').value, esd: document.getElementById('esd').value,
       voltage: getChecks('voltage'), cdMva: document.getElementById('cdMva').value, rdMva: document.getElementById('rdMva').value, avgPf: document.getElementById('avgPf').value,
@@ -588,24 +587,12 @@ async function submitLead() {
     };
     const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'submit', fields, imageUrl }) });
     const d = await res.json();
-    if (data.success || d.success) {
-      document.getElementById('main-form-container').style.display = 'none';
+    if (d.success) {
+      document.getElementById('remaining-sections-form').style.display = 'none';
       document.getElementById('success-screen').style.display = 'block';
       document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef;
     }
-  } catch (e) { alert(e.message); }
-  finally { btn.disabled = false; btn.innerHTML = 'Submit New Account Entry'; }
-}
-
-function resetNewEntryForm() {
-  document.getElementById('success-screen').style.display = 'none';
-  document.getElementById('main-form-container').style.display = 'block';
-  fileFront = null; fileBack = null;
-  document.getElementById('front-box').textContent = "📷 Front Side";
-  document.getElementById('front-box').classList.remove('done');
-  document.getElementById('back-box').textContent = "📷 Back Side (Opt)";
-  document.getElementById('back-box').classList.remove('done');
-  document.getElementById('parse-btn').disabled = true;
+  } catch (e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = 'Submit New Account Entry'; }
 }
 </script>
 </body>
