@@ -35,12 +35,12 @@
   .section-header { background: var(--brand); color: #fff; padding: 6px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
   .section-body { padding: 12px; }
   
-  /* Split multi contact parent framework blocks css definitions */
   .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
   .contact-summary-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px; }
   .contact-summary-title-info { font-size: 0.88rem; font-weight: 700; color: var(--text); }
   .contact-summary-title-info span { font-weight: 500; color: var(--muted); margin-right: 12px; }
 
+  /* Compact Forms Row Design Layout Elements */
   .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; text-align: left; }
   @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
   @media(min-width: 950px) { .compact-fields-grid { grid-template-columns: repeat(6, 1fr); } }
@@ -48,6 +48,7 @@
   .grid-cell-item label { font-size: 0.6rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
   .grid-cell-item input, .grid-cell-item select, .grid-cell-item textarea { padding: 3px 4px; font-size: 0.8rem; font-weight: 600; border-radius: 3px; border: 1px solid var(--border); }
   
+  /* Double wide element layout constraints */
   .span-two-units { grid-column: span 2; }
   .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 4px 0; }
   
@@ -149,7 +150,7 @@
       </div>
 
       <div id="missing-trigger-notice-block" style="display:none; padding:20px; text-align:center; background:white; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:15px;">
-        <p style="color:var(--muted); margin-bottom:12px; font-size:0.88rem;">No record matched your target company query parameters.</p>
+        <p style="color:var(--muted); margin-bottom:12px; font-size:0.88rem;">No record matched your target company parameters.</p>
         <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
       </div>
 
@@ -226,7 +227,6 @@
               <label class="field-label">Get Enquiry</label><select id="act4"><option>No</option><option>Yes</option></select>
               <label class="field-label">Send Offer</label><select id="actOffer"><option value="No">No</option><option value="Send Budgetary Offer">Send Budgetary Offer</option><option value="Send Techno-Commercial Offer">Send Techno-Commercial Offer</option></select>
               <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
-              <label class="field-label">Next Follow-Up Date</label><input type="date" id="nextDate" />
             </div>
           </div>
 
@@ -256,16 +256,81 @@
   </div>
 </div>
 
+<div id="hidden-modules-template-staging" style="display:none;">
+  <div class="section" id="template-fup-module-block">
+    <div class="section-header">Follow-Up Tracking</div>
+    <div class="section-body">
+      <div style="display:flex; gap:10px; margin-bottom:12px;">
+        <button class="btn btn-ai" id="tpl-toggle-fup-form-btn" onclick="initiateDrawerSubPanelVisibility('fup-form-expansion')" style="margin:0; width:auto;">+ Create New Follow-Up</button>
+        <button class="btn btn-warn" id="tpl-collapse-fup-panel-btn" onclick="closeDrawerSubPanelExplicitly('fup-form-expansion')" style="display:none; margin:0; width:auto;">Collapse</button>
+      </div>
+      
+      <div id="template-fup-form-expansion" style="display:none;" class="fup-grid-inputs">
+        <input type="hidden" id="tpl-fup-is-edit-flag" value="false" />
+        <input type="hidden" id="tpl-fup-edit-num" value="" />
+        <div><label class="field-label">Follow-Up Status</label><select id="tpl-fup-status-select"><option>FuS1</option><option>FuS2</option><option>FuS3</option><option>FuS4</option></select></div>
+        <div><label class="field-label">Follow-Up Number</label><input type="number" id="tpl-fup-num-input" readonly style="background:#e2e8f0; cursor:not-allowed;" /></div>
+        <div><label class="field-label">Lead ID</label><input type="text" id="tpl-fup-leadid-input" readonly style="background:#e2e8f0; cursor:not-allowed;" /></div>
+        <div><label class="field-label">Engineer Name</label><select id="tpl-fup-eng-select"></select></div>
+        <div><label class="field-label">Next Follow-Up Date</label><input type="date" id="tpl-fup-nexttarget-input" /></div>
+        <div><label class="field-label">Next Follow-Up Time</label><select id="tpl-fup-nexttime-select"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
+        <div style="grid-column: span 2;"><label class="field-label">Interaction Notes *</label><textarea id="tpl-fup-notes-input" placeholder="Type logs..."></textarea></div>
+        <div><label class="field-label">NQ1</label><input type="text" id="tpl-fup-nq1" /></div>
+        <div><label class="field-label">NQ2</label><input type="text" id="tpl-fup-nq2" /></div>
+        <div><label class="field-label">NQ3</label><input type="text" id="tpl-fup-nq3" /></div>
+        <div><label class="field-label">NQ4</label><input type="text" id="tpl-fup-nq4" /></div>
+        <div><label class="field-label">NQ5</label><input type="text" id="tpl-fup-nq5" /></div>
+        <div><label class="field-label">NQ6</label><input type="text" id="tpl-fup-nq6" /></div>
+        
+        <button class="btn btn-sub" id="tpl-save-fup-btn" onclick="dispatchFollowUpCommitAction()" style="grid-column: span 2; margin-top:5px;">Save Follow-Up</button>
+      </div>
+
+      <div class="timeline-container" id="tpl-timeline-box"></div>
+    </div>
+  </div>
+
+  <div class="section" id="template-task-module-block">
+    <div class="section-header">Engineer Tasks</div>
+    <div class="section-body">
+      <div style="display:flex; gap:10px; margin-bottom:12px;">
+        <button class="btn btn-ai" id="tpl-toggle-task-form-btn" onclick="initiateDrawerSubPanelVisibility('task-form-expansion')" style="margin:0; width:auto; background:transparent; border:1px solid var(--brand); color:var(--brand);">+ Create New Task</button>
+        <button class="btn btn-warn" id="tpl-collapse-task-panel-btn" onclick="closeDrawerSubPanelExplicitly('task-form-expansion')" style="display:none; margin:0; width:auto;">Collapse</button>
+      </div>
+      
+      <div id="template-task-form-expansion" style="display:none;" class="task-grid-inputs">
+        <input type="hidden" id="tpl-task-edit-id" />
+        
+        <div class="task-double-row">
+          <div><label class="field-label">Task Status</label><select id="tpl-task-status-select"><option>TS1</option><option>TS2</option><option>TS3</option><option>TS4</option></select></div>
+          <div><label class="field-label">Task Type</label><select id="tpl-task-type-select"><option>Task A</option><option>Task B</option><option>Task C</option></select></div>
+        </div>
+        
+        <div class="task-double-row">
+          <div><label class="field-label">Engineer Name</label><select id="tpl-task-eng-select"></select></div>
+          <div><label class="field-label">Assigning Engineer</label><select id="tpl-task-assigner-select"></select></div>
+        </div>
+        
+        <div style="grid-column: span 2;"><label class="field-label">Task Description</label><textarea id="tpl-task-desc-input"></textarea></div>
+        <div><label class="field-label">Target Time</label><select id="tpl-task-shift-select"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
+        <div><label class="field-label">Target Date</label><input type="date" id="tpl-task-targetdate-input" /></div>
+        
+        <button class="btn btn-sub" id="tpl-save-task-btn" onclick="dispatchTaskCommitAction()" style="grid-column:span 2; margin-top:5px;">Save Task</button>
+      </div>
+
+      <div class="task-list-container" id="tpl-task-cards-box"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzqYVJRt1h6D5KonTSPDwrmPZekYd11B6OftEo8nsPgDTZ5yGX4ZLdZU9zAj2--swkDrA/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxLIBtIlvH7IlfGLjWKM84wivN-Dip8rqG4H3gNYMFekcXKjH1rrbglvGVcuE33r7CmKg/exec"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
 let activeSearchCompany = "";
 let currentFollowUpCount = 0;
 
-// Universal structural dataset caches for matching contacts references tracking map keys
 let serverCachedFollowUpsMap = {};
 let serverCachedTasksMap = {};
 
@@ -278,13 +343,6 @@ function cleanISTTimestamp(rawStr) {
   let dateObj = new Date(str);
   if (isNaN(dateObj.getTime())) return str;
   
-  let year = dateObj.getFullYear();
-  if (year === 1899) {
-    let hours = dateObj.getHours(); let minutes = dateObj.getMinutes();
-    let ampm = hours >= 12 ? 'pm' : 'am';
-    hours = hours % 12; hours = hours ? hours : 12;
-    return hours + ":" + String(minutes).padStart(2,'0') + " " + ampm;
-  }
   let hours = dateObj.getHours(); let minutes = dateObj.getMinutes();
   let ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12; hours = hours ? hours : 12;
@@ -307,7 +365,7 @@ window.onload = function() {
 async function executeLogin() {
   const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
   const btn = document.getElementById("login-btn");
-  if (!userField.value || !passField.value) return alert("Complete credential parameters.");
+  if (!userField.value || !passField.value) return alert("Complete fields.");
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verifying...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
@@ -341,7 +399,7 @@ async function showAppView() {
 }
 
 function populateEngineerDropdowns() {
-  ["engName", "task-eng-select", "task-assigner-select", "fup-eng-select"].forEach(mId => {
+  ["engName", "tpl-task-eng-select", "tpl-task-assigner-select", "tpl-fup-eng-select"].forEach(mId => {
     const el = document.getElementById(mId); if (!el) return;
     el.innerHTML = mId === "engName" ? '<option value="">— Select —</option>' : '';
     cachedEngineers.forEach(eng => {
@@ -353,21 +411,30 @@ function populateEngineerDropdowns() {
 function navigateToModule(key) { if (!userPermissions[key]) return alert("Denied."); document.getElementById("dashboard-view").style.display = "none"; document.getElementById("module-workspace-container").style.display = "block"; document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); document.getElementById("workspace-" + key).style.display = "block"; resetSequentialFormState(); }
 function returnToDashboard() { showAppView(); }
 
-function toggleSubPanelVisibility(panelId, triggeringBtn) {
-  const panel = document.getElementById(panelId);
-  const suffix = panelId.startsWith("fup") ? "fup" : "task";
-  const collapseBtn = document.getElementById(`collapse-${suffix}-panel-btn`);
-  if (panel.style.display === "none") {
-    if(panelId === "fup-form-expansion") showNewFollowUpForm();
-    if(panelId === "task-form-expansion") showNewTaskForm();
-    panel.style.display = "grid"; triggeringBtn.style.display = "none"; collapseBtn.style.display = "inline-flex";
+function initiateDrawerSubPanelVisibility(type) {
+  if (type === 'fup-form-expansion') {
+    document.getElementById("template-fup-form-expansion").style.display = "grid";
+    document.getElementById("tpl-toggle-fup-form-btn").style.display = "none";
+    document.getElementById("tpl-collapse-fup-panel-btn").style.display = "inline-flex";
+    setupFreshFollowUpFormFields();
+  } else {
+    document.getElementById("template-task-form-expansion").style.display = "grid";
+    document.getElementById("tpl-toggle-task-form-btn").style.display = "none";
+    document.getElementById("tpl-collapse-task-panel-btn").style.display = "inline-flex";
+    setupFreshTaskFormFields();
   }
 }
 
-function collapseSubPanelExplicitly(panelId, openBtnId) {
-  document.getElementById(panelId).style.display = "none"; document.getElementById(openBtnId).style.display = "inline-flex";
-  const suffix = panelId.startsWith("fup") ? "fup" : "task";
-  const el = document.getElementById(`collapse-${suffix}-panel-btn`); if(el) el.style.display = "none";
+function closeDrawerSubPanelExplicitly(type) {
+  if (type === 'fup-form-expansion') {
+    document.getElementById("template-fup-form-expansion").style.display = "none";
+    document.getElementById("tpl-toggle-fup-form-btn").style.display = "inline-flex";
+    document.getElementById("tpl-collapse-fup-panel-btn").style.display = "none";
+  } else {
+    document.getElementById("template-task-form-expansion").style.display = "none";
+    document.getElementById("tpl-toggle-task-form-btn").style.display = "inline-flex";
+    document.getElementById("tpl-collapse-task-panel-btn").style.display = "none";
+  }
 }
 
 function revealNewEntryFormDropdown() {
@@ -378,7 +445,7 @@ function revealNewEntryFormDropdown() {
 async function triggerSequentialSearch() {
   const comp = document.getElementById("f-company").value;
   const btn = document.getElementById("gate-search-btn");
-  if (!comp) return alert("Specify a Company Name to verify.");
+  if (!comp) return alert("Specify a Company Name.");
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Searching...';
   try {
@@ -388,7 +455,6 @@ async function triggerSequentialSearch() {
       activeSearchCompany = comp;
       serverCachedFollowUpsMap = data.followups;
       serverCachedTasksMap = data.tasks;
-      
       buildMultiContactDirectoryInterface(data.leads);
       
       document.getElementById("missing-trigger-notice-block").style.display = "none";
@@ -401,7 +467,6 @@ async function triggerSequentialSearch() {
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Search Database"; }
 }
 
-// ── MULTI-CONTACT SEQUENTIAL ENGINE COMPONENT INJECTORS ─────────────────────
 function buildMultiContactDirectoryInterface(leadsList) {
   const container = document.getElementById("multi-contact-records-container");
   container.innerHTML = "";
@@ -426,6 +491,7 @@ function buildMultiContactDirectoryInterface(leadsList) {
       </div>
       <div class="contact-expanded-workspace-payload-drawer" id="drawer-panel-${tRef}" style="display:none; padding-top:10px;">
          <div class="leads-editable-fields-box-canvas" id="canvas-fields-${tRef}"></div>
+         <div class="cloned-modules-injection-pocket" id="pocket-modules-${tRef}" style="margin-top:14px;"></div>
       </div>
     `;
     container.appendChild(wrapperCard);
@@ -435,25 +501,34 @@ function buildMultiContactDirectoryInterface(leadsList) {
 function toggleContactExpansionView(leadRef, encodedLeadMap) {
   const drawer = document.getElementById(`drawer-panel-${leadRef}`);
   const triggerBtn = document.getElementById(`expand-trigger-${leadRef}`);
+  const pocket = document.getElementById(`pocket-modules-${leadRef}`);
   
   if (drawer.style.display === "block") {
     drawer.style.display = "none";
     triggerBtn.textContent = "View Details";
+    pocket.innerHTML = ""; // Evacuate dynamic bindings
   } else {
-    // Close all alternative drawers gracefully to conserve absolute monitor tracking boundaries
     document.querySelectorAll(".contact-expanded-workspace-payload-drawer").forEach(d => d.style.display = "none");
     document.querySelectorAll('[id^="expand-trigger-"]').forEach(b => b.textContent = "View Details");
+    document.querySelectorAll(".cloned-modules-injection-pocket").forEach(p => p.innerHTML = "");
     
     const leadMap = JSON.parse(decodeURIComponent(encodedLeadMap));
-    activeSearchRef = leadRef; // Direct focal context pointer parameters realignment
+    activeSearchRef = leadRef; 
     currentFollowUpCount = serverCachedFollowUpsMap[leadRef] ? serverCachedFollowUpsMap[leadRef].length : 0;
     
-    // Build specific canvas forms structures safely
     buildTargetedLeadsFormCanvas(leadRef, leadMap);
     
-    // Shift child elements into the single expanded panel view cleanly
-    drawer.appendChild(document.querySelector("#workspace-cardDetails .section:nth-of-type(2)")); // Shift FollowUp module
-    drawer.appendChild(document.querySelector("#workspace-cardDetails .section:nth-of-type(3)")); // Shift Tasks module
+    // Clone shared tracking sub panels natively right inside this specific contact card block
+    const fupNode = document.getElementById("template-fup-module-block").cloneNode(true);
+    fupNode.id = `cloned-fup-block-${leadRef}`;
+    const taskNode = document.getElementById("template-task-module-block").cloneNode(true);
+    taskNode.id = `cloned-task-block-${leadRef}`;
+    
+    pocket.appendChild(fupNode);
+    pocket.appendChild(taskNode);
+    
+    // Reroute global action control element pointers to target this specific card row layout
+    syncClonedElementIdsAndPointers(leadRef);
     
     renderFollowUpTimeline(serverCachedFollowUpsMap[leadRef] || []);
     renderTaskItemsList(serverCachedTasksMap[leadRef] || []);
@@ -463,12 +538,59 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
   }
 }
 
-function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
-  const canvas = document.getElementById(`canvas-fields-${leadRef}`);
-  canvas.innerHTML = "";
+function syncClonedElementIdsAndPointers(leadRef) {
+  const blockFup = document.getElementById(`cloned-fup-block-${leadRef}`);
+  const blockTask = document.getElementById(`cloned-task-block-${leadRef}`);
   
-  const gridWrapper = document.createElement("div");
-  gridWrapper.className = "compact-fields-grid";
+  // Re-bind click listeners to bypass template scope boundaries dynamically
+  blockFup.querySelector("#tpl-toggle-fup-form-btn").id = "toggle-fup-form-btn";
+  blockFup.querySelector("#tpl-collapse-fup-panel-btn").id = "collapse-fup-panel-btn";
+  blockFup.querySelector("#template-fup-form-expansion").id = "fup-form-expansion";
+  
+  blockFup.querySelector("#tpl-fup-is-edit-flag").id = "fup-is-edit-flag";
+  blockFup.querySelector("#tpl-fup-edit-num").id = "fup-edit-num";
+  blockFup.querySelector("#tpl-fup-status-select").id = "fup-status-select";
+  blockFup.querySelector("#tpl-fup-num-input").id = "fup-num-input";
+  blockFup.querySelector("#tpl-fup-leadid-input").id = "fup-leadid-input";
+  blockFup.querySelector("#tpl-fup-eng-select").id = "fup-eng-select";
+  blockFup.querySelector("#tpl-fup-nexttarget-input").id = "fup-nexttarget-input";
+  blockFup.querySelector("#tpl-fup-nexttime-select").id = "fup-nexttime-select";
+  blockFup.querySelector("#tpl-fup-notes-input").id = "fup-notes-input";
+  blockFup.querySelector("#tpl-save-fup-btn").id = "save-fup-btn";
+  blockFup.querySelector("#tpl-timeline-box").id = "timeline-box";
+  
+  for(let i=1;i<=6;i++) { blockFup.querySelector(`#tpl-fup-nq${i}`).id = `fup-nq${i}`; }
+  
+  blockTask.querySelector("#tpl-toggle-task-form-btn").id = "toggle-task-form-btn";
+  blockTask.querySelector("#tpl-collapse-task-panel-btn").id = "collapse-task-panel-btn";
+  blockTask.querySelector("#template-task-form-expansion").id = "task-form-expansion";
+  blockTask.querySelector("#tpl-task-edit-id").id = "task-edit-id";
+  blockTask.querySelector("#tpl-task-status-select").id = "task-status-select";
+  blockTask.querySelector("#tpl-task-type-select").id = "task-type-select";
+  blockTask.querySelector("#tpl-task-eng-select").id = "task-eng-select";
+  blockTask.querySelector("#tpl-task-assigner-select").id = "task-assigner-select";
+  blockTask.querySelector("#tpl-task-desc-input").id = "task-desc-input";
+  blockTask.querySelector("#tpl-task-shift-select").id = "task-shift-select";
+  blockTask.querySelector("#tpl-task-targetdate-input").id = "task-targetdate-input";
+  blockTask.querySelector("#tpl-save-task-btn").id = "save-task-btn";
+  blockTask.querySelector("#tpl-task-cards-box").id = "task-cards-box";
+  
+  // Repopulate specific clone menus lists structures
+  const engSel = document.getElementById("fup-eng-select");
+  const tEng = document.getElementById("task-eng-select");
+  const tAsg = document.getElementById("task-assigner-select");
+  
+  [engSel, tEng, tAsg].forEach(el => {
+    el.innerHTML = "";
+    cachedEngineers.forEach(eng => {
+      let op = document.createElement("option"); op.textContent = eng; el.appendChild(op);
+    });
+  });
+}
+
+function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
+  const canvas = document.getElementById(`canvas-fields-${leadRef}`); canvas.innerHTML = "";
+  const gridWrapper = document.createElement("div"); gridWrapper.className = "compact-fields-grid";
   
   const customSectionLayout = [
     { type: "META", keys: ["Status", "Engineer Name"] },
@@ -481,32 +603,22 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
   ];
 
   customSectionLayout.forEach((sec, sIdx) => {
-    if (sIdx > 0) {
-      let line = document.createElement("div"); line.className = "section-divider-line"; gridWrapper.appendChild(line);
-    }
-    
+    if (sIdx > 0) { let line = document.createElement("div"); line.className = "section-divider-line"; gridWrapper.appendChild(line); }
     sec.keys.forEach(key => {
       if (leadMap[key] === undefined) return;
       let cell = document.createElement("div"); cell.className = "grid-cell-item";
-      
-      if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)") {
-        cell.className += " span-two-units";
-      }
-      
-      let label = document.createElement("label"); label.textContent = key;
-      cell.appendChild(label);
+      if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)") { cell.className += " span-two-units"; }
+      let label = document.createElement("label"); label.textContent = key; cell.appendChild(label);
 
       if (key === "Status") {
         let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
         ["Status1", "Status2", "Status3", "Status4"].forEach(st => {
-          let op = document.createElement("option"); op.textContent = st; op.value = st;
-          if(leadMap[key] === st) op.selected = true; sel.appendChild(op);
+          let op = document.createElement("option"); op.textContent = st; op.value = st; if(leadMap[key] === st) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
       } else if (["Date of Meeting", "Expected Tender / RFQ Date"].indexOf(key) !== -1) {
         let inp = document.createElement("input"); inp.type = "date"; inp.className = `live-lead-field-input-${leadRef}`;
-        inp.dataset.headerKey = key; inp.value = formatCleanDateOnly(leadMap[key]);
-        cell.appendChild(inp);
+        inp.dataset.headerKey = key; inp.value = formatCleanDateOnly(leadMap[key]); cell.appendChild(inp);
       } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
         let inp = document.createElement("input"); inp.type = "time"; inp.className = `live-lead-field-input-${leadRef}`;
         inp.dataset.headerKey = key; inp.value = leadMap[key] ? (leadMap[key].toString().indexOf("T") !== -1 ? leadMap[key].toString().split("T")[1].substring(0,5) : leadMap[key]) : "";
@@ -520,16 +632,13 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
       } else if (key === "Send Offer") {
         let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
         ["No", "Send Budgetary Offer", "Send Techno-Commercial Offer"].forEach(opText => {
-          let op = document.createElement("option"); op.textContent = opText; op.value = opText;
-          if(leadMap[key] === opText) op.selected = true; sel.appendChild(op);
+          let op = document.createElement("option"); op.textContent = opText; op.value = opText; if(leadMap[key] === opText) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
       } else if (["Meeting Venue", "ABPS Business Vertical", "Approx Business Potential", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
         let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
         let opts = ["No", "Yes"];
-        if(key === "Meeting Venue") opts = ["Exhibition", "Customer Place"];
-        if(key === "ABPS Business Vertical") opts = ["Industrial", "Power"];
-        if(key === "Approx Business Potential") opts = ["<10L", "10-50L"];
+        if(key === "Meeting Venue") opts = ["Exhibition", "Customer Place"]; if(key === "ABPS Business Vertical") opts = ["Industrial", "Power"]; if(key === "Approx Business Potential") opts = ["<10L", "10-50L"];
         opts.forEach(o => {
           let op = document.createElement("option"); op.textContent = o; if(leadMap[key] === o) op.selected = true; sel.appendChild(op);
         });
@@ -550,12 +659,10 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         let tx = document.createElement("textarea"); tx.className = `live-lead-field-input-${leadRef}`; tx.dataset.headerKey = key;
         tx.value = leadMap[key] || ""; tx.style.minHeight = "45px"; cell.appendChild(tx);
       } else if (key === "Company") {
-        let inp = document.createElement("input"); inp.type = "text"; inp.value = leadMap[key] || "";
-        inp.disabled = true; inp.style.background = "#e2e8f0"; inp.style.cursor = "not-allowed"; cell.appendChild(inp);
+        let inp = document.createElement("input"); inp.type = "text"; inp.value = leadMap[key] || ""; inp.disabled = true; inp.style.background = "#e2e8f0"; cell.appendChild(inp);
       } else {
         let inp = document.createElement("input"); inp.type = "text"; inp.className = `live-lead-field-input-${leadRef}`;
-        inp.dataset.headerKey = key; inp.value = leadMap[key] || "";
-        cell.appendChild(inp);
+        inp.dataset.headerKey = key; inp.value = leadMap[key] || ""; cell.appendChild(inp);
       }
       gridWrapper.appendChild(cell);
     });
@@ -564,24 +671,19 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
   
   let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; saveBtn.id = `save-leads-matrix-btn-${leadRef}`;
   saveBtn.style.marginTop = "12px"; saveBtn.textContent = "Save Modifications";
-  saveBtn.onclick = function() { commitTargetedLeadsMutationsRows(leadRef); };
-  canvas.appendChild(saveBtn);
+  saveBtn.onclick = function() { commitTargetedLeadsMutationsRows(leadRef); }; canvas.appendChild(saveBtn);
 }
 
 async function commitTargetedLeadsMutationsRows(leadRef) {
   const btn = document.getElementById(`save-leads-matrix-btn-${leadRef}`);
   if(btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...'; }
-  
   let fieldsPayload = {};
   document.querySelectorAll(`.live-lead-field-input-${leadRef}`).forEach(el => { fieldsPayload[el.dataset.headerKey] = el.value; });
-  
   let checkGroups = {};
   document.querySelectorAll(`.live-lead-check-subset-${leadRef}`).forEach(el => {
-    let mk = el.dataset.masterKey; if(!checkGroups[mk]) checkGroups[mk] = [];
-    if(el.checked) checkGroups[mk].push(el.value);
+    let mk = el.dataset.masterKey; if(!checkGroups[mk]) checkGroups[mk] = []; if(el.checked) checkGroups[mk].push(el.value);
   });
   Object.keys(checkGroups).forEach(key => { fieldsPayload[key] = checkGroups[key].join(", "); });
-  
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadFull", leadRef: leadRef, fields: fieldsPayload }) });
     const r = await res.json(); if (r.success) alert("Modifications committed.");
@@ -589,21 +691,14 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
 }
 
 async function removeLeadRowEntirely(leadRef) {
-  if (!confirm("CRITICAL: Confirm removal of this specific contact person record from Leads tracking row?")) return;
+  if (!confirm("Confirm removal?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteLeadRow", leadRef: leadRef }) });
-    const r = await res.json();
-    if (r.success) {
-      document.getElementById(`workspace-cardDetails`).appendChild(document.querySelector("#timeline-box").parentElement.parentElement); // Safe pop background elements out
-      document.getElementById(`workspace-cardDetails`).appendChild(document.querySelector("#task-cards-box").parentElement.parentElement);
-      triggerSequentialSearch();
-    }
+    const r = await res.json(); if (r.success) triggerSequentialSearch();
   } catch(e) { alert(e.message); }
 }
 
 function exitCanvasToCardView() {
-  document.getElementById(`workspace-cardDetails`).appendChild(document.querySelector("#timeline-box").parentElement.parentElement);
-  document.getElementById(`workspace-cardDetails`).appendChild(document.querySelector("#task-cards-box").parentElement.parentElement);
   document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
   document.getElementById("step1-card-capture-block").style.display = "block"; 
 }
@@ -617,7 +712,20 @@ function resetSequentialFormState() {
   document.getElementById("parse-btn").disabled = true;
 }
 
-// ── FOLLOW-UP RENDERING ARCHITECTURE ───────────────────────────────────────
+function setupFreshFollowUpFormFields() {
+  document.getElementById("fup-is-edit-flag").value = "false";
+  document.getElementById("fup-num-input").value = currentFollowUpCount + 1;
+  document.getElementById("fup-leadid-input").value = activeSearchRef;
+  document.getElementById("fup-notes-input").value = ""; document.getElementById("fup-nexttarget-input").value = "";
+  for(let i=1;i<=6;i++){ document.getElementById(`fup-nq${i}`).value = ""; }
+}
+
+function setupFreshTaskFormFields() {
+  document.getElementById("task-edit-id").value = ""; document.getElementById("task-desc-input").value = "";
+  document.getElementById("task-targetdate-input").value = ""; document.getElementById("task-status-select").value = "TS1";
+  document.getElementById("task-type-select").value = "Task A";
+}
+
 function renderFollowUpTimeline(list) {
   const box = document.getElementById("timeline-box");
   box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No records</p>' : '';
@@ -637,7 +745,7 @@ function renderFollowUpTimeline(list) {
         </div>
         <div style="font-size:0.85rem; color:#2d3748; padding:6px 0; border-top:1px solid #edf2f7; word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;"><strong>Notes:</strong> ${f.notes}</div>
         <div style="margin-top:8px; display:flex; gap:8px;">
-          <button class="nav-btn-styled" onclick="editFollowUpItem('${f.status}',${f.num},'${f.eng}',\`${f.notes.replace(/'/g, "\\'")}\`,'${f.nextDate}','${f.nextTime}','${f.nq1}','${f.nq2}','${f.nq3}','${f.nq4}','${f.nq5}','${f.nq6}')" style="font-size:0.7rem; padding:4px 8px;">Edit</button>
+          <button class="nav-btn-styled" onclick="dispatchDirectFollowUpEdit('${f.status}',${f.num},'${f.eng}',\`${f.notes.replace(/'/g, "\\'")}\`,'${f.nextDate}','${f.nextTime}','${f.nq1}','${f.nq2}','${f.nq3}','${f.nq4}','${f.nq5}','${f.nq6}')" style="font-size:0.7rem; padding:4px 8px;">Edit</button>
           <button class="nav-btn-styled" onclick="removeFollowUpItem('${activeSearchRef}','${f.num}')" style="font-size:0.7rem; background:var(--warn); padding:4px 8px;">Delete Follow-Up</button>
         </div>
       </div>`;
@@ -645,19 +753,15 @@ function renderFollowUpTimeline(list) {
   });
 }
 
-function showNewFollowUpForm() {
-  document.getElementById("fup-is-edit-flag").value = "false";
-  document.getElementById("fup-num-input").value = currentFollowUpCount + 1;
-  document.getElementById("fup-leadid-input").value = activeSearchRef;
-  document.getElementById("fup-status-select").value = "FuS1";
-  document.getElementById("fup-notes-input").value = ""; document.getElementById("fup-nexttarget-input").value = "";
-  document.getElementById("fup-nq1").value = ""; document.getElementById("fup-nq2").value = "";
-  document.getElementById("fup-nq3").value = ""; document.getElementById("fup-nq4").value = "";
-  document.getElementById("fup-nq5").value = ""; document.getElementById("fup-nq6").value = "";
+function toggleFollowUpAccordion(headerEl) {
+  const body = headerEl.nextElementSibling; const isVisible = body.style.display === "block";
+  body.style.display = isVisible ? "none" : "block";
+  headerEl.querySelector("span:last-child").textContent = isVisible ? "View details ▾" : "Collapse ▴";
 }
 
-function editFollowUpItem(status, num, eng, notes, nextTarget, nextTime, n1, n2, n3, n4, n5, n6) {
+function dispatchDirectFollowUpEdit(status, num, eng, notes, nextTarget, nextTime, n1, n2, n3, n4, n5, n6) {
   document.getElementById("fup-is-edit-flag").value = "true";
+  document.getElementById("fup-edit-num").value = num;
   document.getElementById("fup-status-select").value = status;
   document.getElementById("fup-num-input").value = num;
   document.getElementById("fup-leadid-input").value = activeSearchRef;
@@ -675,12 +779,13 @@ function editFollowUpItem(status, num, eng, notes, nextTarget, nextTime, n1, n2,
   document.getElementById("collapse-fup-panel-btn").style.display = "inline-flex";
 }
 
-async function commitFollowUpItem() {
+async function dispatchFollowUpCommitAction() {
   const btn = document.getElementById("save-fup-btn");
+  const isEditMode = document.getElementById("fup-is-edit-flag").value === "true";
   const followUpData = {
-    isEdit: document.getElementById("fup-is-edit-flag").value === "true",
+    isEdit: isEditMode,
     status: document.getElementById("fup-status-select").value,
-    num: document.getElementById("fup-num-input").value,
+    num: isEditMode ? document.getElementById("fup-edit-num").value : document.getElementById("fup-num-input").value,
     leadRef: activeSearchRef, company: activeSearchCompany,
     eng: document.getElementById("fup-eng-select").value, notes: document.getElementById("fup-notes-input").value,
     nextDate: document.getElementById("fup-nexttarget-input").value, nextTime: document.getElementById("fup-nexttime-select").value,
@@ -693,10 +798,7 @@ async function commitFollowUpItem() {
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveFollowUp", followUpData }) });
     const r = await res.json();
-    if (r.success) { 
-      collapseSubPanelExplicitly('fup-form-expansion', 'toggle-fup-form-btn'); 
-      await refreshCanvasDataNodesGlobal(); 
-    }
+    if (r.success) { collapseSubPanelExplicitly('fup-form-expansion', 'toggle-fup-form-btn'); refreshCanvasDataNodes(); }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Follow-Up"; }
 }
 
@@ -705,46 +807,38 @@ async function removeFollowUpItem(lId, fNum) {
   const fupId = lId + "||" + fNum;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteFollowUp", fupId: fupId }) });
-    const r = await res.json(); if (r.success) await refreshCanvasDataNodesGlobal();
+    const r = await res.json(); if (r.success) refreshCanvasDataNodes();
   } catch(e) { alert(e.message); }
 }
 
-// ── TASK RENDERING SUBSYSTEM BLOCKS ──────────────────────────────────────────
 function renderTaskItemsList(list) {
   const box = document.getElementById("task-cards-box");
-  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No active entries.</p>' : '';
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No tasks assigned.</p>' : '';
   list.forEach(t => {
     let div = document.createElement("div"); div.className = "task-item-card";
     div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Time: ${t.shift} | Target Date: ${formatCleanDateOnly(t.targetDate)}</small>
-                     <p style="font-size:0.82rem; margin-top:4px; color:var(--text); word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;"><strong>Desc:</strong> ${t.desc || 'None'}</p>
+                     <p style="font-size:0.82rem; margin-top:4px; color:var(--text); word-wrap:break-word; white-space:pre-wrap;"><strong>Desc:</strong> ${t.desc || 'None'}</p>
                      <div style="font-size:0.75rem; font-weight:bold; color:var(--brand); margin-top:4px;">Status: ${t.status} | Assigner: ${t.assigner || "System"}</div>
                      <div style="margin-top:8px; display:flex; gap:6px;">
-                       <button class="nav-btn-styled" onclick="editTaskItem('${t.id}','${t.eng}','${t.assigner}','${t.type}',\`${(t.desc||'').replace(/'/g,"\\'")}\`,'${t.shift}','${t.targetDate}','${t.status}')" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
+                       <button class="nav-btn-styled" onclick="dispatchDirectTaskEdit('${t.id}','${t.eng}','${t.assigner}','${t.type}',\`${(t.desc||'').replace(/'/g,"\\'")}\`,'${t.shift}','${t.targetDate}','${t.status}')" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
                        <button class="nav-btn-styled" onclick="removeTaskItem('${t.id}')" style="font-size:0.75rem; background:var(--warn); padding:2px 6px;">Delete</button>
                      </div>`;
     box.appendChild(div);
   });
 }
 
-function showNewTaskForm() {
-  document.getElementById("task-edit-id").value = ""; document.getElementById("task-desc-input").value = "";
-  document.getElementById("task-targetdate-input").value = ""; document.getElementById("task-status-select").value = "TS1";
-  document.getElementById("task-type-select").value = "Task A";
-}
-
-function editTaskItem(id, eng, assigner, type, desc, shift, targetDate, status) {
+function dispatchDirectTaskEdit(id, eng, assigner, type, desc, shift, targetDate, status) {
   document.getElementById("task-edit-id").value = id; document.getElementById("task-eng-select").value = eng;
-  document.getElementById("task-assigner-select").value = assigner;
-  document.getElementById("task-type-select").value = type; document.getElementById("task-desc-input").value = desc;
-  document.getElementById("task-shift-select").value = shift; document.getElementById("task-targetdate-input").value = formatCleanDateOnly(targetDate);
-  document.getElementById("task-status-select").value = status;
+  document.getElementById("task-assigner-select").value = assigner; document.getElementById("task-type-select").value = type; 
+  document.getElementById("task-desc-input").value = desc; document.getElementById("task-shift-select").value = shift; 
+  document.getElementById("task-targetdate-input").value = formatCleanDateOnly(targetDate); document.getElementById("task-status-select").value = status;
   
   document.getElementById("task-form-expansion").style.display = "grid";
   document.getElementById("toggle-task-form-btn").style.display = "none";
   document.getElementById("collapse-task-panel-btn").style.display = "inline-flex";
 }
 
-async function commitTaskItem() {
+async function dispatchTaskCommitAction() {
   const btn = document.getElementById("save-task-btn");
   const editId = document.getElementById("task-edit-id").value;
   const taskData = {
@@ -760,7 +854,7 @@ async function commitTaskItem() {
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveTask", taskData }) });
     const r = await res.json();
-    if (r.success) { collapseSubPanelExplicitly('task-form-expansion', 'toggle-task-form-btn'); await refreshCanvasDataNodesGlobal(); }
+    if (r.success) { collapseSubPanelExplicitly('task-form-expansion', 'toggle-task-form-btn'); refreshCanvasDataNodes(); }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Task"; }
 }
 
@@ -768,19 +862,17 @@ async function removeTaskItem(id) {
   if (!confirm("Confirm cancellation?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: id }) });
-    const r = await res.json(); if (r.success) await refreshCanvasDataNodesGlobal();
+    const r = await res.json(); if (r.success) refreshCanvasDataNodes();
   } catch(e) { alert(e.message); }
 }
 
-async function refreshCanvasDataNodesGlobal() {
+async function refreshCanvasDataNodes() {
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: activeSearchCompany }) });
     const data = await res.json();
     if (data.success) { 
-      serverCachedFollowUpsMap = data.followups;
-      serverCachedTasksMap = data.tasks;
+      serverCachedFollowUpsMap = data.followups; serverCachedTasksMap = data.tasks;
       currentFollowUpCount = data.followups[activeSearchRef] ? data.followups[activeSearchRef].length : 0;
-      
       renderFollowUpTimeline(data.followups[activeSearchRef] || []); 
       renderTaskItemsList(data.tasks[activeSearchRef] || []); 
     }
@@ -837,7 +929,7 @@ async function submitLead() {
       products: getChecks('prod'), approxReq: document.getElementById('approxReq').value, tenderDate: document.getElementById('tenderDate').value,
       orderTimeline: document.getElementById('orderTimeline').value, competitors: document.getElementById('competitors').value, potential: getRadio('pot'),
       sendProfile: document.getElementById('act1').value, sendPresentation: document.getElementById('act2').value, arrangeVisit: document.getElementById('act3').value,
-      getEnquiry: document.getElementById('act4').value, sendOffer: document.getElementById('actOffer').value, followUpRequired: document.getElementById('act7').value, nextDate: document.getElementById('nextDate').value
+      getEnquiry: document.getElementById('act4').value, sendOffer: document.getElementById('actOffer').value, followUpRequired: document.getElementById('act7').value
     };
     const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'submit', fields, imageUrl }) });
     const d = await res.json();
@@ -850,8 +942,4 @@ async function submitLead() {
 }
 </script>
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> ad908cafbcf3a21c99f032751c8d1d0de8b4468e
