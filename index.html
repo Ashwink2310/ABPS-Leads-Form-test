@@ -3,720 +3,851 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>ABPS Renewable Asia and Energy Expo 2026</title>
+<title>ABPS Enterprise Portal</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  .toggle-input-group {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-  .toggle-input-group input {
-    flex: 1;
-  }
-  .no-btn {
-    padding: 10px 18px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: #fff;
-    color: var(--text);
-    font-size: .9rem;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all .15s;
-    flex-shrink: 0;
-  }
-  .no-btn.active {
-    background: var(--brand);
-    border-color: var(--brand);
-    color: #fff;
-  }
   :root {
-    --brand:    #0056b3;
-    --brand-dk: #003d82;
-    --accent:   #00a878;
-    --warn:     #e84545;
-    --bg:       #f0f4f8;
-    --card:     #ffffff;
-    --border:   #d0d9e4;
-    --text:     #1a2332;
-    --muted:    #6b7a8d;
-    --radius:   12px;
+    --brand: #0056b3; --brand-dk: #003d82; --accent: #00a878; --warn: #e84545;
+    --bg: #f0f4f8; --card: #ffffff; --border: #d0d9e4; --text: #1a2332;
+    --muted: #6b7a8d; --radius: 6px;
   }
+  body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
+  #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
+  .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+  .auth-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; }
+  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 8px 0 2px; }
+  input, select, textarea { width: 100%; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
+  
+  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 12px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+  header h1 { font-size: 1.1rem; font-weight: 700; }
+  .header-actions-block { display: flex; flex-direction: column; align-items: flex-end; }
+  .user-full-name { font-size: 0.85rem; font-weight: 700; }
+  .user-display-username { font-size: 0.72rem; color: #d0d9e4; font-family: monospace; }
+  .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.68rem; margin-top: 2px; text-transform: uppercase; }
+  
+  .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 24px 14px; }
+  @media(min-width: 600px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
+  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 20px; border-radius: var(--radius); cursor: pointer; font-weight: 700; }
+  .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
+  
+  .workspace-panel { padding: 10px 12px; }
+  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
+  .section-header { background: var(--brand); color: #fff; padding: 6px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+  .section-body { padding: 12px; }
+  
+  /* Split multi contact parent framework blocks css definitions */
+  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  .contact-summary-header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px; }
+  .contact-summary-title-info { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+  .contact-summary-title-info span { font-weight: 500; color: var(--muted); margin-right: 12px; }
 
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding-bottom: 40px;
-  }
-
-  /* ── Header ─────────────────────────────── */
-  header {
-    background: linear-gradient(135deg, var(--brand-dk) 0%, var(--brand) 100%);
-    color: #fff;
-    padding: 18px 20px 14px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,.25);
-  }
-  header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: .5px; }
-  header p  { font-size: .75rem; opacity: .8; margin-top: 2px; }
-
-  /* ── Section cards ───────────────────────── */
-  .section {
-    background: var(--card);
-    border-radius: var(--radius);
-    margin: 16px 12px 0;
-    box-shadow: 0 1px 6px rgba(0,0,0,.08);
-    overflow: hidden;
-  }
-  .section-header {
-    background: var(--brand);
-    color: #fff;
-    padding: 10px 16px;
-    font-size: .8rem;
-    font-weight: 700;
-    letter-spacing: .8px;
-    text-transform: uppercase;
-  }
-  .section-body { padding: 16px; }
-
-  /* ── Form elements ───────────────────────── */
-  label.field-label {
-    display: block;
-    font-size: .72rem;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    margin-bottom: 6px;
-    margin-top: 14px;
-  }
-  label.field-label:first-child { margin-top: 0; }
-
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  input[type="url"],
-  select,
-  textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    font-size: .9rem;
-    color: var(--text);
-    background: #fff;
-    transition: border-color .2s;
-    appearance: none;
-  }
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: var(--brand);
-    box-shadow: 0 0 0 3px rgba(0,86,179,.12);
-  }
-  textarea { resize: vertical; min-height: 60px; }
-
-  /* ── Checkbox / radio pill groups ───────── */
-  .pill-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 4px;
-  }
+  .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; text-align: left; }
+  @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media(min-width: 950px) { .compact-fields-grid { grid-template-columns: repeat(6, 1fr); } }
+  .grid-cell-item { display: flex; flex-direction: column; background: #f8fafc; padding: 4px 6px; border: 1px solid #e2e8f0; border-radius: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
+  .grid-cell-item label { font-size: 0.6rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
+  .grid-cell-item input, .grid-cell-item select, .grid-cell-item textarea { padding: 3px 4px; font-size: 0.8rem; font-weight: 600; border-radius: 3px; border: 1px solid var(--border); }
+  
+  .span-two-units { grid-column: span 2; }
+  .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 4px 0; }
+  
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
   .pill-group input { display: none; }
-  .pill-group label {
-    padding: 7px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 20px;
-    font-size: .82rem;
-    cursor: pointer;
-    user-select: none;
-    transition: all .15s;
-    white-space: nowrap;
-  }
-  .pill-group input:checked + label {
-    background: var(--brand);
-    border-color: var(--brand);
-    color: #fff;
-  }
-
-  /* ── Card upload area ────────────────────── */
-  #card-drop {
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 24px 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color .2s, background .2s;
-    position: relative;
-  }
-  #card-drop:hover, #card-drop.drag-over {
-    border-color: var(--brand);
-    background: rgba(0,86,179,.04);
-  }
-  #card-drop .icon { font-size: 2.2rem; line-height: 1; }
-  #card-drop .drop-label { font-size: .85rem; color: var(--muted); margin-top: 6px; }
-  #card-input { display: none; }
-
-  #card-preview {
-    display: none;
-    position: relative;
-    margin-top: 12px;
-  }
-  #card-preview img {
-    width: 100%;
-    border-radius: 8px;
-    border: 1.5px solid var(--border);
-    display: block;
-  }
-  #remove-card {
-    position: absolute;
-    top: 6px; right: 6px;
-    background: var(--warn);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 28px; height: 28px;
-    font-size: 1rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    line-height: 1;
-  }
-
-  /* ── Buttons ─────────────────────────────── */
-  .btn {
-    width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: 10px;
-    font-size: .95rem;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 12px;
-    transition: opacity .15s, transform .1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  .btn:active { transform: scale(.98); }
-  .btn:disabled { opacity: .5; cursor: not-allowed; }
-
-  .btn-ai  { background: var(--accent); color: #fff; }
-  .btn-sub { background: var(--brand);  color: #fff; font-size: 1rem; padding: 16px; margin-top: 20px; }
-
-  /* ── Spinner ─────────────────────────────── */
-  .spinner {
-    width: 18px; height: 18px;
-    border: 2.5px solid rgba(255,255,255,.35);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-    flex-shrink: 0;
-  }
+  .pill-group label { padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 14px; font-size: .72rem; cursor: pointer; background: #fff; white-space: nowrap; }
+  .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
+  
+  .navigation-action-header-row { display: flex; justify-content: flex-end; align-items: center; padding: 6px 12px; background: #ffffff; border-radius: 6px; margin-bottom: 12px; border: 1px solid var(--border); }
+  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
+  .nav-btn-styled:hover { background: var(--brand-dk); }
+  
+  .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; }
+  .btn-sub { background: var(--brand); color: #fff; }
+  .btn-ai { background: var(--accent); color: #fff; margin-bottom: 12px; }
+  .btn-warn { background: #718096; color: #fff; }
+  
+  .card-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .card-box { flex: 1; border: 2px dashed var(--border); padding: 12px; text-align: center; font-size: .78rem; cursor: pointer; border-radius: 4px; }
+  .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  
+  .fup-item-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 6px; text-align: left; overflow: hidden; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
+  .fup-item-header { padding: 10px; background: #edf2f7; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; align-items: center; }
+  .fup-item-body { padding: 12px; display: none; border-top: 1px solid var(--border); background: #fff; }
+  
+  .task-double-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; grid-column: span 2; }
+  .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f1f5f9; padding: 12px; border-radius: 4px; margin: 8px 0; text-align: left; }
+  .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 10px; border-radius: 4px; text-align: left; margin-bottom: 6px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
+  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── AI badge on fields ──────────────────── */
-  .ai-filled {
-    border-color: var(--accent) !important;
-    background: rgba(0,168,120,.05) !important;
-  }
-
-  /* ── Toast ───────────────────────────────── */
-  #toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--text);
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 24px;
-    font-size: .85rem;
-    font-weight: 500;
-    white-space: nowrap;
-    transition: transform .3s ease;
-    z-index: 999;
-    pointer-events: none;
-    max-width: calc(100vw - 32px);
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-  #toast.success { background: var(--accent); }
-  #toast.error   { background: var(--warn); }
-
-  /* ── Success overlay ─────────────────────── */
-  #success-screen {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: var(--brand-dk);
-    color: #fff;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 32px;
-    z-index: 200;
-  }
-  #success-screen.show { display: flex; }
-  #success-screen .big-check { font-size: 5rem; line-height: 1; }
-  #success-screen h2 { font-size: 1.6rem; margin-top: 16px; }
-  #success-screen .lead-ref { font-size: 2rem; font-weight: 800; margin-top: 8px; letter-spacing: 2px; }
-  #success-screen p { margin-top: 10px; opacity: .8; font-size: .9rem; }
-  #next-lead-btn {
-    margin-top: 32px;
-    background: #fff;
-    color: var(--brand-dk);
-    border: none;
-    padding: 14px 36px;
-    border-radius: 30px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  /* ── Divider ─────────────────────────────── */
-  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+  .no-btn { padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 4px; background: #fff; cursor: pointer; font-size: .75rem; }
+  .no-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .toggle-input-group { display: flex; gap: 6px; align-items: center; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>⚡ ABPS Renewable Asia and Energy Expo 2026</h1>
-  <p>Fill all 3 sections, then submit</p>
-</header>
+<div id="auth-container">
+  <div class="auth-card">
+    <div class="auth-title">ABPS Portal</div>
+    <div style="text-align: left;">
+      <label class="field-label">Username</label><input type="text" id="auth-user" placeholder="Enter username..." />
+      <label class="field-label">Password</label><input type="password" id="auth-pass" placeholder="Enter password..." />
+      <button class="btn btn-sub" id="login-btn" onclick="executeLogin()" style="margin-top:15px;">Login</button>
+    </div>
+  </div>
+</div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     SECTION 1 — Technical Details
-═══════════════════════════════════════════════════════════ -->
-<div class="section">
-  <div class="section-header">Section 1 — Technical Details</div>
-  <div class="section-body">
-  <label class="field-label">Type of Industry</label>
-  <input type="text" id="industry" placeholder="e.g. End User, EPC, Solar…" />
+<div id="app-container" style="display: none;">
+  <header>
+    <h1>ABPS Marketing Department</h1>
+    <div class="header-actions-block">
+      <div class="user-profile-meta">
+        <div class="user-full-name" id="display-full-name"></div>
+        <div class="user-display-username" id="display-username"></div>
+      </div>
+      <button class="logout-btn" onclick="executeLogout()">Sign Out</button>
+    </div>
+  </header>
 
-  <label class="field-label">Voltage Level (select all that apply)</label>
-  <div class="pill-group" id="voltage-group">
-    <input type="checkbox" id="v-11"  name="voltage" value="11KV"> <label for="v-11">11KV</label>
-    <input type="checkbox" id="v-22"  name="voltage" value="22KV"> <label for="v-22">22KV</label>
-    <input type="checkbox" id="v-33"  name="voltage" value="33KV"> <label for="v-33">33KV</label>
-    <input type="checkbox" id="v-66"  name="voltage" value="66KV"> <label for="v-66">66KV</label>
-    <input type="checkbox" id="v-132" name="voltage" value="132KV"><label for="v-132">132KV</label>
-    <input type="checkbox" id="v-220" name="voltage" value="220KV"><label for="v-220">220KV</label>
-    <input type="checkbox" id="v-400" name="voltage" value="400KV"><label for="v-400">400KV</label>
+  <div id="dashboard-view">
+    <div class="dashboard-grid">
+      <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')"><div class="menu-title">Enter Card Details</div></div>
+      <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')"><div class="menu-title">Search by Company Name</div></div>
+      <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Status</div></div>
+      <div class="menu-card" id="mod-engineer" onclick="navigateToModule('searchEngineer')"><div class="menu-title">Search by Assigned Engineer</div></div>
+    </div>
   </div>
 
-  <label class="field-label">Harmonics Issue</label>
-  <div class="toggle-input-group">
-    <button type="button" class="no-btn" data-target="harmonics" onclick="toggleNo(this)">No</button>
-    <input type="text" id="harmonics" placeholder="Describe the issue…" oninput="clearNo(this)" />
-  </div>
-
-  <label class="field-label">Power Factor Issue</label>
-  <div class="toggle-input-group">
-    <button type="button" class="no-btn" data-target="pfIssue" onclick="toggleNo(this)">No</button>
-    <input type="text" id="pfIssue" placeholder="Describe the issue…" oninput="clearNo(this)" />
-  </div>
-
-  <label class="field-label">Grid Stability Issue</label>
-  <div class="toggle-input-group">
-    <button type="button" class="no-btn" data-target="gridStability" onclick="toggleNo(this)">No</button>
-    <input type="text" id="gridStability" placeholder="Describe the issue…" oninput="clearNo(this)" />
-  </div>
-
-  <label class="field-label">High Electricity Bill Issue</label>
-  <div class="toggle-input-group">
-    <button type="button" class="no-btn" data-target="highElecBill" onclick="toggleNo(this)">No</button>
-    <input type="text" id="highElecBill" placeholder="Describe the issue…" oninput="clearNo(this)" />
-  </div>
-
-  <label class="field-label">Project Timeline</label>
-  <input type="text" id="projectTimeline" placeholder="e.g. Immediate / 1-3 Months…" />
-
-  <label class="field-label">Qualification</label>
-  <div class="pill-group" id="qual-group">
-    <input type="radio" id="q-epc" name="qualification" value="EPC">       <label for="q-epc">EPC</label>
-    <input type="radio" id="q-con" name="qualification" value="Consultant"><label for="q-con">Consultant</label>
-    <input type="radio" id="q-eu"  name="qualification" value="End User">  <label for="q-eu">End User</label>
-    <input type="radio" id="q-dl"  name="qualification" value="Dealer">    <label for="q-dl">Dealer</label>
-    <input type="radio" id="q-oth" name="qualification" value="Others">    <label for="q-oth">Others</label>
-  </div>
-  <input type="text" id="qualificationOther" placeholder="Please specify…" style="display:none; margin-top:8px;" />
-
-  <label class="field-label">Project Size</label>
-  <input type="text" id="projectSize" placeholder="e.g. 50 MVAr, 10 MW…" />
-
-  <label class="field-label">Immediate Requirement</label>
-  <div class="toggle-input-group">
-    <button type="button" class="no-btn" data-target="immediateReq" onclick="toggleNo(this)">No</button>
-    <input type="text" id="immediateReq" placeholder="Describe the issue…" oninput="clearNo(this)" />
-  </div>
+  <div id="module-workspace-container" style="display: none;">
+    <div class="navigation-action-header-row">
+      <button class="nav-btn-styled" onclick="returnToDashboard()">Return to Main Dashboard</button>
+    </div>
     
-  </div>
-</div>
+    <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
+      
+      <div id="step1-card-capture-block" class="section">
+        <div class="section-header">Business Card Information</div>
+        <div class="section-body">
+          <div class="card-row">
+            <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
+            <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
+          </div>
+          <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
+          <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
+          <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>Parse Card with AI</button>
+          
+          <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter target company..." />
+          <label class="field-label">Contact Name</label><input type="text" id="f-name" />
+          <label class="field-label">Position</label><input type="text" id="f-position" />
+          <label class="field-label">Phone</label><input type="tel" id="f-phone" />
+          <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
+          <label class="field-label">Email</label><input type="email" id="f-email" />
+          <label class="field-label">Website</label><input type="url" id="f-website" />
+          <label class="field-label">Address</label><textarea id="f-address"></textarea>
+          
+          <button class="btn btn-sub" id="gate-search-btn" onclick="triggerSequentialSearch()" style="margin-top:15px;">Search Database</button>
+        </div>
+      </div>
 
-<!-- ═══════════════════════════════════════════════════════════
-     SECTION 2 — Business Card
-═══════════════════════════════════════════════════════════ -->
-<div class="section">
-  <div class="section-header">Section 2 — Business Card</div>
-  <div class="section-body">
+      <div id="missing-trigger-notice-block" style="display:none; padding:20px; text-align:center; background:white; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:15px;">
+        <p style="color:var(--muted); margin-bottom:12px; font-size:0.88rem;">No record matched your target company query parameters.</p>
+        <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
+      </div>
 
-    <div id="card-drop" onclick="document.getElementById('card-input').click()">
-      <div class="icon">📇</div>
-      <div class="drop-label">Tap to photograph or pick from gallery</div>
+      <div id="step2-new-entry-dropdown" style="display: none;">
+        <div id="success-screen" style="display:none; text-align:center; padding:20px;">
+          <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:10px 0;"></p>
+          <button class="btn btn-sub" onclick="resetSequentialFormState()">Process Another Card</button>
+        </div>
+
+        <div id="remaining-sections-form">
+          <div class="section">
+            <div class="section-header">Section 1 — Meeting Details</div>
+            <div class="section-body">
+              <label class="field-label">Date of Meeting</label><input type="date" id="meetingDate" />
+              <label class="field-label">Time of Meeting</label><input type="time" id="meetingTime" />
+              <label class="field-label">Meeting Venue</label>
+              <div class="pill-group"><input type="radio" name="meetingVenue" value="Exhibition" id="mv1"><label for="mv1">Exhibition</label><input type="radio" name="meetingVenue" value="Customer Place" id="mv2"><label for="mv2">Customer Place</label></div>
+              <label class="field-label">Venue Name / City</label><input type="text" id="venueName" />
+              <label class="field-label">Additional Details</label><textarea id="additionalMeetingDetails"></textarea>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 2 — Technical Details</div>
+            <div class="section-body">
+              <label class="field-label">ABPS Business Vertical</label>
+              <div class="pill-group"><input type="radio" name="businessVertical" value="Industrial" id="bv1"><label for="bv1">Industrial</label><input type="radio" name="businessVertical" value="Power" id="bv2"><label for="bv2">Power</label></div>
+              <label class="field-label">Type of Industry</label><input type="text" id="industry" />
+              <label class="field-label">Qualification (Multiple)</label>
+              <div class="pill-group"><input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label><input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label></div>
+              <div id="vendor-fields" style="display:none; margin-top:10px;"><label class="field-label">Materials Name</label><input type="text" id="materialsName" /></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 3 — Area of Concerns</div>
+            <div class="section-body">
+              <label class="field-label">Low Power Factor Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="lpi" onclick="toggleNo(this)">No</button><input type="text" id="lpi" oninput="clearNo(this)" /></div>
+              <label class="field-label">High Electricity Bill Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hbi" onclick="toggleNo(this)">No</button><input type="text" id="hbi" oninput="clearNo(this)" /></div>
+              <label class="field-label">Harmonics Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hi" onclick="toggleNo(this)">No</button><input type="text" id="hi" oninput="clearNo(this)" /></div>
+              <label class="field-label">Transformer Heating Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="thi" onclick="toggleNo(this)">No</button><input type="text" id="thi" oninput="clearNo(this)" /></div>
+              <label class="field-label">Grid Stability Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
+              <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
+              <label class="field-label">Voltage Level</label><div class="pill-group"><input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label></div>
+              <label class="field-label">Capacity Details</label>
+              <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" style="margin-bottom:4px;" />
+              <input type="text" id="rdMva" placeholder="Running Demand (MVA)" style="margin-bottom:4px;" />
+              <input type="text" id="avgPf" placeholder="Monthly Average Power Factor" />
+              <label class="field-label">Problem Observed</label><input type="text" id="problemObserved" />
+              <label class="field-label">Technical Discussion Summary</label><textarea id="techSummary"></textarea>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 4 — Requirement</div>
+            <div class="section-body">
+              <label class="field-label">Existing Project</label><input type="text" id="epInput" />
+              <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
+              <label class="field-label">Products Discussed</label><div class="pill-group"><input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label></div>
+              <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
+              <label class="field-label">Expected Tender Date</label><input type="date" id="tenderDate" />
+              <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
+              <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
+              <label class="field-label">Approx Business Potential</label><div class="pill-group"><input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 5 — Action Plan</div>
+            <div class="section-body">
+              <label class="field-label">Send Company Profile</label><select id="act1"><option>No</option><option>Yes</option></select>
+              <label class="field-label">Send Technical Presentation</label><select id="act2"><option>No</option><option>Yes</option></select>
+              <label class="field-label">Arrange Site Visit</label><select id="act3"><option>No</option><option>Yes</option></select>
+              <label class="field-label">Get Enquiry</label><select id="act4"><option>No</option><option>Yes</option></select>
+              <label class="field-label">Send Offer</label><select id="actOffer"><option value="No">No</option><option value="Send Budgetary Offer">Send Budgetary Offer</option><option value="Send Techno-Commercial Offer">Send Techno-Commercial Offer</option></select>
+              <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
+              <label class="field-label">Next Follow-Up Date</label><input type="date" id="nextDate" />
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 6 — Engineer Info</div>
+            <div class="section-body">
+              <label class="field-label">Assign Creator Name</label><select id="engName"><option value="">Loading Dynamic Listing...</option></select>
+            </div>
+          </div>
+          <button class="btn btn-sub" id="submit-btn" onclick="submitLead()">Submit New Account Entry</button>
+        </div>
+      </div>
+
+      <div id="step2-inline-interaction-canvas" style="display: none;">
+        <div style="margin-bottom:12px; text-align:left;">
+          <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568;">Back to Search</button>
+        </div>
+
+        <div id="multi-contact-records-container"></div>
+      </div>
+
     </div>
-    <input type="file" id="card-input" accept="image/*" capture="environment" />
 
-    <div id="card-preview">
-      <img id="card-img" src="" alt="Card preview" />
-      <button id="remove-card" onclick="removeCard()">✕</button>
-    </div>
-
-    <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>
-      <span id="parse-icon">✨</span>
-      <span id="parse-label">Parse Card with AI</span>
-    </button>
-
-    <div class="divider" style="margin-top:18px;"></div>
-
-    <label class="field-label">Name</label>
-    <input type="text"  id="f-name"     placeholder="Full name" />
-
-    <label class="field-label">Company</label>
-    <input type="text"  id="f-company"  placeholder="Company name" />
-
-    <label class="field-label">Position / Title</label>
-    <input type="text"  id="f-position" placeholder="Job title" />
-
-    <label class="field-label">Phone Number</label>
-    <input type="tel"   id="f-phone"    placeholder="+91 …" />
-
-    <label class="field-label">Alternative Phone Number</label>
-    <input type="tel"   id="f-altphone" placeholder="+91 …" />
-
-    <label class="field-label">Email</label>
-    <input type="email" id="f-email"    placeholder="name@company.com" />
-
-    <label class="field-label">Website</label>
-    <input type="url"   id="f-website"  placeholder="https://…" />
-
-    <label class="field-label">Company Address</label>
-    <textarea id="f-address" rows="2" placeholder="Full address"></textarea>
-
+    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;"><h3>Search Company Workspace</h3></div>
+    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;"><h3>Search Status Workspace</h3></div>
+    <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;"><h3>Search Engineer Workspace</h3></div>
   </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════
-     SECTION 3 — Engineer Info
-═══════════════════════════════════════════════════════════ -->
-<div class="section">
-  <div class="section-header">Section 3 — Engineer Info</div>
-  <div class="section-body">
-
-    <label class="field-label">Your Name</label>
-    <select id="engineerName">
-      <option value="">— Select your name —</option>
-      <option>Alok Kumar</option>
-      <option>Aritra Roy</option>
-      <option>Debarshi Mukharjee</option>
-      <option>Mohammad Asraf</option>
-      <option>Pavan</option>
-      <option>Other</option>
-    </select>
-    <input type="text" id="engineerNameOther" placeholder="Type your name…"
-           style="display:none; margin-top:8px;" />
-
-  </div>
-</div>
-
-<!-- Submit -->
-<div style="padding: 0 12px;">
-  <button class="btn btn-sub" id="submit-btn" onclick="submitLead()">
-    <span>📤</span> Submit Lead
-  </button>
-</div>
-
-<!-- Toast -->
-<div id="toast"></div>
-
-<!-- Success overlay -->
-<div id="success-screen">
-  <div class="big-check">✅</div>
-  <h2>Lead Saved!</h2>
-  <div class="lead-ref" id="lead-ref-display"></div>
-  <p>Card saved to Drive · Row added to Sheet · Form opened on laptop</p>
-  <button id="next-lead-btn" onclick="resetForm()">＋ Next Lead</button>
 </div>
 
 <script>
+// --- CENTRAL CONFIGURATION HUB ---
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzqYVJRt1h6D5KonTSPDwrmPZekYd11B6OftEo8nsPgDTZ5yGX4ZLdZU9zAj2--swkDrA/exec"; 
 
-function toggleNo(btn) {
-  const isActive = btn.classList.toggle("active");
-  const input = document.getElementById(btn.dataset.target);
-  if (isActive) {
-    input.value = "";
-    input.disabled = true;
-    input.style.opacity = ".4";
-  } else {
-    input.disabled = false;
-    input.style.opacity = "1";
+let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
+let cachedEngineers = [];
+let activeSearchCompany = "";
+let currentFollowUpCount = 0;
+
+// Universal structural dataset caches for matching contacts references tracking map keys
+let serverCachedFollowUpsMap = {};
+let serverCachedTasksMap = {};
+
+function cleanISTTimestamp(rawStr) {
+  if (!rawStr) return "";
+  let str = rawStr.toString().trim();
+  if (!str) return "";
+  if (str.indexOf("T") === -1 && (str.indexOf("am") !== -1 || str.indexOf("pm") !== -1)) return str;
+  
+  let dateObj = new Date(str);
+  if (isNaN(dateObj.getTime())) return str;
+  
+  let year = dateObj.getFullYear();
+  if (year === 1899) {
+    let hours = dateObj.getHours(); let minutes = dateObj.getMinutes();
+    let ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12; hours = hours ? hours : 12;
+    return hours + ":" + String(minutes).padStart(2,'0') + " " + ampm;
   }
+  let hours = dateObj.getHours(); let minutes = dateObj.getMinutes();
+  let ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12; hours = hours ? hours : 12;
+  return hours + ":" + String(minutes).padStart(2,'0') + " " + ampm;
 }
 
-function compressImage(file, maxWidth = 1024, quality = 0.7) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const scale = Math.min(1, maxWidth / img.width);
-      const canvas = document.createElement("canvas");
-      canvas.width  = img.width  * scale;
-      canvas.height = img.height * scale;
-      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(blob => resolve(new File([blob], file.name, { type: "image/jpeg" })),
-        "image/jpeg", quality);
-      URL.revokeObjectURL(url);
-    };
-    img.src = url;
+function formatCleanDateOnly(rawStr) {
+  if (!rawStr) return "";
+  let s = rawStr.toString().trim();
+  if (s.indexOf("T") !== -1) s = s.split("T")[0];
+  if (s.indexOf(" ") !== -1) s = s.split(" ")[0];
+  return s;
+}
+
+window.onload = function() {
+  const token = localStorage.getItem("sessionToken"); const expires = localStorage.getItem("sessionExpiry"); const savedPerms = localStorage.getItem("userPermissions");
+  if (token && expires && new Date() < new Date(expires) && savedPerms) { userPermissions = JSON.parse(savedPerms); showAppView(); } else executeLogout();
+};
+
+async function executeLogin() {
+  const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
+  const btn = document.getElementById("login-btn");
+  if (!userField.value || !passField.value) return alert("Complete credential parameters.");
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verifying...';
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
+    const r = await res.json();
+    if (r.success) {
+      localStorage.setItem("sessionToken", r.sessionToken); localStorage.setItem("sessionExpiry", r.expires); localStorage.setItem("sessionUser", r.username);
+      localStorage.setItem("userFirstName", r.firstName); localStorage.setItem("userLastName", r.lastName); localStorage.setItem("userPermissions", JSON.stringify(r.permissions));
+      userPermissions = r.permissions; showAppView();
+    } else alert(r.error);
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Login"; }
+}
+
+function executeLogout() { localStorage.clear(); document.getElementById("app-container").style.display = "none"; document.getElementById("auth-container").style.display = "flex"; }
+
+async function showAppView() {
+  document.getElementById("auth-container").style.display = "none"; document.getElementById("app-container").style.display = "block";
+  document.getElementById("dashboard-view").style.display = "block"; document.getElementById("module-workspace-container").style.display = "none";
+  document.getElementById("display-full-name").textContent = localStorage.getItem("userFirstName") + " " + localStorage.getItem("userLastName");
+  document.getElementById("display-username").textContent = "@" + localStorage.getItem("sessionUser");
+  
+  ["mod-card","mod-company","mod-status","mod-engineer"].forEach(id => {
+    let key = id === "mod-card" ? "cardDetails" : id === "mod-company" ? "searchCompany" : id === "mod-status" ? "searchStatus" : "searchEngineer";
+    document.getElementById(id).classList.toggle("locked", !userPermissions[key]);
   });
-}
-
-function clearNo(input) {
-  // When user types, deactivate the No button
-  const group = input.closest(".toggle-input-group");
-  const btn = group.querySelector(".no-btn");
-  if (btn.classList.contains("active")) {
-    btn.classList.remove("active");
-    input.disabled = false;
-    input.style.opacity = "1";
-  }
-}
-
-// ─── Card Image ────────────────────────────────────────────────────────────────
-let cardFile = null;
-
-document.getElementById("card-input").addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  cardFile = file;
-  const url = URL.createObjectURL(file);
-  document.getElementById("card-img").src = url;
-  document.getElementById("card-preview").style.display = "block";
-  document.getElementById("card-drop").style.display = "none";
-  document.getElementById("parse-btn").disabled = false;
-});
-
-function removeCard() {
-  cardFile = null;
-  document.getElementById("card-input").value = "";
-  document.getElementById("card-preview").style.display = "none";
-  document.getElementById("card-drop").style.display = "block";
-  document.getElementById("parse-btn").disabled = true;
-}
-
-// ─── Engineer Name "Other" toggle ─────────────────────────────────────────────
-document.getElementById("engineerName").addEventListener("change", function() {
-  const other = document.getElementById("engineerNameOther");
-  other.style.display = this.value === "Other" ? "block" : "none";
-});
-
-document.querySelectorAll('input[name="qualification"]').forEach(el => {
-  el.addEventListener("change", function() {
-    const other = document.getElementById("qualificationOther");
-    other.style.display = this.value === "Others" ? "block" : "none";
-  });
-});
-
-// ─── AI Parse Card ─────────────────────────────────────────────────────────────
-async function parseCard() {
-  if (!cardFile) return;
-
-  const btn   = document.getElementById("parse-btn");
-  const icon  = document.getElementById("parse-icon");
-  const label = document.getElementById("parse-label");
-
-  btn.disabled = true;
-  icon.innerHTML = '<div class="spinner"></div>';
-  label.textContent = "Reading card…";
 
   try {
-    const compressed = await compressImage(cardFile);
-    const fd = new FormData();
-    fd.append("card", compressed);
-
-    const res  = await fetch("/parse-card", { method: "POST", body: fd });
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getEngineers" }) });
     const data = await res.json();
+    if (data.success) { cachedEngineers = data.engineers; populateEngineerDropdowns(); }
+  } catch(e) { console.error(e.message); }
+}
 
-    if (!data.success) {
-      const msg = data.error?.includes("503") || data.error?.includes("high demand") || data.error?.includes("UNAVAILABLE")
-        ? "Model overloaded, try again later"
-        : (data.error || "Parse failed");
-      throw new Error(msg);
+function populateEngineerDropdowns() {
+  ["engName", "task-eng-select", "task-assigner-select", "fup-eng-select"].forEach(mId => {
+    const el = document.getElementById(mId); if (!el) return;
+    el.innerHTML = mId === "engName" ? '<option value="">— Select —</option>' : '';
+    cachedEngineers.forEach(eng => {
+      let opt = document.createElement("option"); opt.textContent = eng; el.appendChild(opt);
+    });
+  });
+}
+
+function navigateToModule(key) { if (!userPermissions[key]) return alert("Denied."); document.getElementById("dashboard-view").style.display = "none"; document.getElementById("module-workspace-container").style.display = "block"; document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); document.getElementById("workspace-" + key).style.display = "block"; resetSequentialFormState(); }
+function returnToDashboard() { showAppView(); }
+
+function toggleSubPanelVisibility(panelId, triggeringBtn) {
+  const panel = document.getElementById(panelId);
+  const suffix = panelId.startsWith("fup") ? "fup" : "task";
+  const collapseBtn = document.getElementById(`collapse-${suffix}-panel-btn`);
+  if (panel.style.display === "none") {
+    if(panelId === "fup-form-expansion") showNewFollowUpForm();
+    if(panelId === "task-form-expansion") showNewTaskForm();
+    panel.style.display = "grid"; triggeringBtn.style.display = "none"; collapseBtn.style.display = "inline-flex";
+  }
+}
+
+function collapseSubPanelExplicitly(panelId, openBtnId) {
+  document.getElementById(panelId).style.display = "none"; document.getElementById(openBtnId).style.display = "inline-flex";
+  const suffix = panelId.startsWith("fup") ? "fup" : "task";
+  const el = document.getElementById(`collapse-${suffix}-panel-btn`); if(el) el.style.display = "none";
+}
+
+function revealNewEntryFormDropdown() {
+  document.getElementById("missing-trigger-notice-block").style.display = "none";
+  document.getElementById("step2-new-entry-dropdown").style.display = "block";
+}
+
+async function triggerSequentialSearch() {
+  const comp = document.getElementById("f-company").value;
+  const btn = document.getElementById("gate-search-btn");
+  if (!comp) return alert("Specify a Company Name to verify.");
+  
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Searching...';
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp }) });
+    const data = await res.json();
+    if (data.success) {
+      activeSearchCompany = comp;
+      serverCachedFollowUpsMap = data.followups;
+      serverCachedTasksMap = data.tasks;
+      
+      buildMultiContactDirectoryInterface(data.leads);
+      
+      document.getElementById("missing-trigger-notice-block").style.display = "none";
+      document.getElementById("step1-card-capture-block").style.display = "none";
+      document.getElementById("step2-inline-interaction-canvas").style.display = "block";
+    } else {
+      document.getElementById("missing-trigger-notice-block").style.display = "block";
+      document.getElementById("step2-inline-interaction-canvas").style.display = "none";
     }
-
-    const d = data.data;
-    const fill = (id, val) => {
-      const el = document.getElementById(id);
-      if (val) { el.value = val; el.classList.add("ai-filled"); }
-    };
-
-    fill("f-name",     d.name);
-    fill("f-company",  d.company);
-    fill("f-position", d.position);
-    fill("f-phone",    d.phone);
-    fill("f-altphone", d.altPhone);
-    fill("f-email",    d.email);
-    fill("f-website",  d.website);
-    fill("f-address",  d.address);
-
-    showToast("✨ Card parsed successfully", "success");
-    icon.textContent = "✅";
-    label.textContent = "Parsed — edit if needed";
-
-  } catch(err) {
-    showToast("❌ " + err.message, "error");
-    icon.textContent = "✨";
-    label.textContent = "Retry Parse";
-    setTimeout(() => { btn.disabled = false; }, 2000);
-  }
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Search Database"; }
 }
 
-// ─── Collect all form data ─────────────────────────────────────────────────────
-function collectFields() {
-  const radioVal = name => {
-    const el = document.querySelector(`input[name="${name}"]:checked`);
-    return el ? el.value : "";
-  };
-  const checkVals = name =>
-    [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(e => e.value);
-
-  const engSel  = document.getElementById("engineerName").value;
-  const engName = engSel === "Other"
-    ? document.getElementById("engineerNameOther").value.trim()
-    : engSel;
-
-  const qualVal = radioVal("qualification");
-  const qualification = qualVal === "Others"
-    ? document.getElementById("qualificationOther").value.trim() || "Others"
-    : qualVal;
-
-  return {
-    industry:        document.getElementById("industry").value.trim(),
-    voltage:         checkVals("voltage"),
-    harmonics:       document.getElementById("harmonics").value.trim(),
-    pfIssue:         document.getElementById("pfIssue").value.trim(),
-    gridStability:   document.getElementById("gridStability").value.trim(),
-    highElecBill:    document.getElementById("highElecBill").value.trim(),
-    projectTimeline: document.getElementById("projectTimeline").value.trim(),
-    qualification,
-    projectSize:     document.getElementById("projectSize").value.trim(),
-    immediateReq:    document.getElementById("immediateReq").value.trim(),
-    name:            document.getElementById("f-name").value.trim(),
-    company:         document.getElementById("f-company").value.trim(),
-    position:        document.getElementById("f-position").value.trim(),
-    phone:           document.getElementById("f-phone").value.trim(),
-    altPhone:        document.getElementById("f-altphone").value.trim(),
-    email:           document.getElementById("f-email").value.trim(),
-    website:         document.getElementById("f-website").value.trim(),
-    address:         document.getElementById("f-address").value.trim(),
-    engineerName:    engName,
-  };
-}
-
-// ─── Submit ────────────────────────────────────────────────────────────────────
-async function submitLead() {
-  const fields = collectFields();
-
-  if (!fields.name && !fields.company) {
-    showToast("⚠️ Please fill Name or Company", "error"); return;
-  }
-  if (!fields.engineerName) {
-    showToast("⚠️ Please select your name", "error"); return;
-  }
-
-  const btn = document.getElementById("submit-btn");
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Saving…';
-
-  try {
-    const fd = new FormData();
-    fd.append("fields", JSON.stringify(fields));
-    if (cardFile) fd.append("card", cardFile);
-
-    const res  = await fetch("/submit", { method: "POST", body: fd });
-    const data = await res.json();
-
-    if (!data.success) throw new Error(data.error || "Submit failed");
-
-    document.getElementById("lead-ref-display").textContent = data.leadRef;
-    document.getElementById("success-screen").classList.add("show");
-
-  } catch(err) {
-    showToast("❌ " + err.message, "error");
-    btn.disabled = false;
-    btn.innerHTML = '<span>📤</span> Submit Lead';
-  }
-}
-
-// ─── Reset for next lead ───────────────────────────────────────────────────────
-function resetForm() {
-  document.getElementById("success-screen").classList.remove("show");
-
-  document.querySelectorAll(".no-btn").forEach(btn => {
-  btn.classList.remove("active");
-  const input = document.getElementById(btn.dataset.target);
-  if (input) { input.disabled = false; input.style.opacity = "1"; }
-});
-
-  // Clear text inputs
-  ["projectSize","industry","harmonics","pfIssue","gridStability",
- "highElecBill","projectTimeline","immediateReq","qualificationOther",
- "f-name","f-company","f-position","f-phone",
- "f-altphone","f-email","f-website","f-address"].forEach(id => {
-    const el = document.getElementById(id);
-    el.value = "";
-    el.classList.remove("ai-filled");
+// ── MULTI-CONTACT SEQUENTIAL ENGINE COMPONENT INJECTORS ─────────────────────
+function buildMultiContactDirectoryInterface(leadsList) {
+  const container = document.getElementById("multi-contact-records-container");
+  container.innerHTML = "";
+  
+  leadsList.forEach(lead => {
+    let tRef = lead["Lead ID"];
+    let wrapperCard = document.createElement("div");
+    wrapperCard.className = "contact-summary-card-parent";
+    wrapperCard.id = `contact-parent-wrapper-${tRef}`;
+    
+    wrapperCard.innerHTML = `
+      <div class="contact-summary-header-row">
+        <div class="contact-summary-title-info">
+          <span>Company:</span><strong>${lead["Company"]}</strong>
+          <span style="margin-left:15px;">Name:</span><strong>${lead["Name"] || "Unspecified"}</strong>
+          <span style="margin-left:15px;">Position:</span><strong>${lead["Position"] || "Unspecified"}</strong>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="nav-btn-styled" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
+          <button class="nav-btn-styled" onclick="removeLeadRowEntirely('${tRef}')" style="background:var(--warn);">Delete Record</button>
+        </div>
+      </div>
+      <div class="contact-expanded-workspace-payload-drawer" id="drawer-panel-${tRef}" style="display:none; padding-top:10px;">
+         <div class="leads-editable-fields-box-canvas" id="canvas-fields-${tRef}"></div>
+      </div>
+    `;
+    container.appendChild(wrapperCard);
   });
-
-  // Clear radios + checkboxes
-  document.querySelectorAll('input[type="radio"], input[type="checkbox"]')
-    .forEach(el => el.checked = false);
-
-  // Reset card
-  removeCard();
-
-  // Reset parse button
-  document.getElementById("parse-icon").textContent  = "✨";
-  document.getElementById("parse-label").textContent = "Parse Card with AI";
-  document.getElementById("parse-btn").disabled = true;
-
-  // Reset submit button
-  const btn = document.getElementById("submit-btn");
-  btn.disabled = false;
-  btn.innerHTML = '<span>📤</span> Submit Lead';
-
-  // Scroll to top
-  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// ─── Toast ─────────────────────────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg, type = "") {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className   = "show " + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.className = "", 3000);
+function toggleContactExpansionView(leadRef, encodedLeadMap) {
+  const drawer = document.getElementById(`drawer-panel-${leadRef}`);
+  const triggerBtn = document.getElementById(`expand-trigger-${leadRef}`);
+  
+  if (drawer.style.display === "block") {
+    drawer.style.display = "none";
+    triggerBtn.textContent = "View Details";
+  } else {
+    // Close all alternative drawers gracefully to conserve absolute monitor tracking boundaries
+    document.querySelectorAll(".contact-expanded-workspace-payload-drawer").forEach(d => d.style.display = "none");
+    document.querySelectorAll('[id^="expand-trigger-"]').forEach(b => b.textContent = "View Details");
+    
+    const leadMap = JSON.parse(decodeURIComponent(encodedLeadMap));
+    activeSearchRef = leadRef; // Direct focal context pointer parameters realignment
+    currentFollowUpCount = serverCachedFollowUpsMap[leadRef] ? serverCachedFollowUpsMap[leadRef].length : 0;
+    
+    // Build specific canvas forms structures safely
+    buildTargetedLeadsFormCanvas(leadRef, leadMap);
+    
+    // Shift child elements into the single expanded panel view cleanly
+    drawer.appendChild(document.querySelector("#workspace-cardDetails .section:nth-of-type(2)")); // Shift FollowUp module
+    drawer.appendChild(document.querySelector("#workspace-cardDetails .section:nth-of-type(3)")); // Shift Tasks module
+    
+    renderFollowUpTimeline(serverCachedFollowUpsMap[leadRef] || []);
+    renderTaskItemsList(serverCachedTasksMap[leadRef] || []);
+    
+    drawer.style.display = "block";
+    triggerBtn.textContent = "Collapse Details";
+  }
+}
+
+function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
+  const canvas = document.getElementById(`canvas-fields-${leadRef}`);
+  canvas.innerHTML = "";
+  
+  const gridWrapper = document.createElement("div");
+  gridWrapper.className = "compact-fields-grid";
+  
+  const customSectionLayout = [
+    { type: "META", keys: ["Status", "Engineer Name"] },
+    { type: "CARD", keys: ["Name", "Company", "Position", "Phone", "Alt Phone", "Email", "Website", "Company Address"] },
+    { type: "SEC1", keys: ["Date of Meeting", "Time of Meeting", "Meeting Venue", "Venue Name / City", "Additional Meeting Details (if any)"] },
+    { type: "SEC2", keys: ["ABPS Business Vertical", "Type of Industry", "Qualification", "Type of Vendor", "Name of Materials"] },
+    { type: "SEC3", keys: ["Low Power Factor Issue", "High Electricity Bill Issue", "Harmonics Issue", "Transformer Heating / Breakdown Issue", "Grid Stability Issue", "Existing System Details", "Voltage Level", "Contract Demand (MVA)", "Running Demand (MVA)", "Monthly Average Power Factor", "Problem Observed", "Technical Discussion Summary"] },
+    { type: "SEC4", keys: ["Existing Project", "Upcoming Project", "Products Discussed", "Approx Requirement", "Expected Tender / RFQ Date", "Expected Order Timeline", "Competitor Details", "Approx Business Potential"] },
+    { type: "SEC5", keys: ["Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Send Offer", "Follow-Up Required"] }
+  ];
+
+  customSectionLayout.forEach((sec, sIdx) => {
+    if (sIdx > 0) {
+      let line = document.createElement("div"); line.className = "section-divider-line"; gridWrapper.appendChild(line);
+    }
+    
+    sec.keys.forEach(key => {
+      if (leadMap[key] === undefined) return;
+      let cell = document.createElement("div"); cell.className = "grid-cell-item";
+      
+      if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)") {
+        cell.className += " span-two-units";
+      }
+      
+      let label = document.createElement("label"); label.textContent = key;
+      cell.appendChild(label);
+
+      if (key === "Status") {
+        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        ["Status1", "Status2", "Status3", "Status4"].forEach(st => {
+          let op = document.createElement("option"); op.textContent = st; op.value = st;
+          if(leadMap[key] === st) op.selected = true; sel.appendChild(op);
+        });
+        cell.appendChild(sel);
+      } else if (["Date of Meeting", "Expected Tender / RFQ Date"].indexOf(key) !== -1) {
+        let inp = document.createElement("input"); inp.type = "date"; inp.className = `live-lead-field-input-${leadRef}`;
+        inp.dataset.headerKey = key; inp.value = formatCleanDateOnly(leadMap[key]);
+        cell.appendChild(inp);
+      } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
+        let inp = document.createElement("input"); inp.type = "time"; inp.className = `live-lead-field-input-${leadRef}`;
+        inp.dataset.headerKey = key; inp.value = leadMap[key] ? (leadMap[key].toString().indexOf("T") !== -1 ? leadMap[key].toString().split("T")[1].substring(0,5) : leadMap[key]) : "";
+        cell.appendChild(inp);
+      } else if (["Assigned Engineer", "Engineer Name"].indexOf(key) !== -1) {
+        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        cachedEngineers.forEach(eng => {
+          let op = document.createElement("option"); op.textContent = eng; if(leadMap[key] === eng) op.selected = true; sel.appendChild(op);
+        });
+        cell.appendChild(sel);
+      } else if (key === "Send Offer") {
+        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        ["No", "Send Budgetary Offer", "Send Techno-Commercial Offer"].forEach(opText => {
+          let op = document.createElement("option"); op.textContent = opText; op.value = opText;
+          if(leadMap[key] === opText) op.selected = true; sel.appendChild(op);
+        });
+        cell.appendChild(sel);
+      } else if (["Meeting Venue", "ABPS Business Vertical", "Approx Business Potential", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
+        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        let opts = ["No", "Yes"];
+        if(key === "Meeting Venue") opts = ["Exhibition", "Customer Place"];
+        if(key === "ABPS Business Vertical") opts = ["Industrial", "Power"];
+        if(key === "Approx Business Potential") opts = ["<10L", "10-50L"];
+        opts.forEach(o => {
+          let op = document.createElement("option"); op.textContent = o; if(leadMap[key] === o) op.selected = true; sel.appendChild(op);
+        });
+        cell.appendChild(sel);
+      } else if (["Voltage Level", "Products Discussed", "Qualification"].indexOf(key) !== -1) {
+        let wrapper = document.createElement("div"); wrapper.style.display = "flex"; wrapper.style.flexDirection = "column"; wrapper.style.gap = "2px";
+        let opts = key === "Voltage Level" ? ["440V", "11KV"] : key === "Products Discussed" ? ["APFC", "SVG"] : ["Industry", "Vendor"];
+        let currentValues = (leadMap[key] || "").toString().split(", ");
+        opts.forEach(o => {
+          let div = document.createElement("div"); div.style.display="flex"; div.style.gap="4px"; div.style.alignItems="center";
+          let chk = document.createElement("input"); chk.type="checkbox"; chk.value = o; chk.className = `live-lead-check-subset-${leadRef}`; chk.dataset.masterKey = key;
+          if(currentValues.indexOf(o) !== -1) chk.checked = true;
+          let span = document.createElement("span"); span.textContent = o; span.style.fontSize="0.72rem";
+          div.appendChild(chk); div.appendChild(span); wrapper.appendChild(div);
+        });
+        cell.appendChild(wrapper);
+      } else if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)" || key === "Company Address" || key === "Address" || key === "Existing System Details") {
+        let tx = document.createElement("textarea"); tx.className = `live-lead-field-input-${leadRef}`; tx.dataset.headerKey = key;
+        tx.value = leadMap[key] || ""; tx.style.minHeight = "45px"; cell.appendChild(tx);
+      } else if (key === "Company") {
+        let inp = document.createElement("input"); inp.type = "text"; inp.value = leadMap[key] || "";
+        inp.disabled = true; inp.style.background = "#e2e8f0"; inp.style.cursor = "not-allowed"; cell.appendChild(inp);
+      } else {
+        let inp = document.createElement("input"); inp.type = "text"; inp.className = `live-lead-field-input-${leadRef}`;
+        inp.dataset.headerKey = key; inp.value = leadMap[key] || "";
+        cell.appendChild(inp);
+      }
+      gridWrapper.appendChild(cell);
+    });
+  });
+  canvas.appendChild(gridWrapper);
+  
+  let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; saveBtn.id = `save-leads-matrix-btn-${leadRef}`;
+  saveBtn.style.marginTop = "12px"; saveBtn.textContent = "Save Modifications";
+  saveBtn.onclick = function() { commitTargetedLeadsMutationsRows(leadRef); };
+  canvas.appendChild(saveBtn);
+}
+
+async function commitTargetedLeadsMutationsRows(leadRef) {
+  const btn = document.getElementById(`save-leads-matrix-btn-${leadRef}`);
+  if(btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...'; }
+  
+  let fieldsPayload = {};
+  document.querySelectorAll(`.live-lead-field-input-${leadRef}`).forEach(el => { fieldsPayload[el.dataset.headerKey] = el.value; });
+  
+  let checkGroups = {};
+  document.querySelectorAll(`.live-lead-check-subset-${leadRef}`).forEach(el => {
+    let mk = el.dataset.masterKey; if(!checkGroups[mk]) checkGroups[mk] = [];
+    if(el.checked) checkGroups[mk].push(el.value);
+  });
+  Object.keys(checkGroups).forEach(key => { fieldsPayload[key] = checkGroups[key].join(", "); });
+  
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadFull", leadRef: leadRef, fields: fieldsPayload }) });
+    const r = await res.json(); if (r.success) alert("Modifications committed.");
+  } catch(e) { alert(e.message); } finally { if(btn) { btn.disabled = false; btn.innerHTML = "Save Modifications"; } }
+}
+
+async function removeLeadRowEntirely(leadRef) {
+  if (!confirm("CRITICAL: Confirm removal of this specific contact person record from Leads tracking row?")) return;
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteLeadRow", leadRef: leadRef }) });
+    const r = await res.json();
+    if (r.success) {
+      document.getElementById(`workspace-cardDetails`).appendChild(document.querySelector("#timeline-box").parentElement.parentElement); // Safe pop background elements out
+      document.getElementById(`workspace-cardDetails`).appendChild(document.querySelector("#task-cards-box").parentElement.parentElement);
+      triggerSequentialSearch();
+    }
+  } catch(e) { alert(e.message); }
+}
+
+function exitCanvasToCardView() {
+  document.getElementById(`workspace-cardDetails`).appendChild(document.querySelector("#timeline-box").parentElement.parentElement);
+  document.getElementById(`workspace-cardDetails`).appendChild(document.querySelector("#task-cards-box").parentElement.parentElement);
+  document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
+  document.getElementById("step1-card-capture-block").style.display = "block"; 
+}
+
+function resetSequentialFormState() {
+  document.getElementById("step1-card-capture-block").style.display = "block"; document.getElementById("step2-new-entry-dropdown").style.display = "none";
+  document.getElementById("step2-inline-interaction-canvas").style.display = "none"; document.getElementById("missing-trigger-notice-block").style.display = "none";
+  document.getElementById("success-screen").style.display = "none"; document.getElementById("remaining-sections-form").style.display = "block";
+  fileFront = null; fileBack = null; document.getElementById("front-box").textContent = "📷 Front Side"; document.getElementById("front-box").classList.remove("done");
+  document.getElementById("back-box").textContent = "📷 Back Side (Opt)"; document.getElementById("back-box").classList.remove("done");
+  document.getElementById("parse-btn").disabled = true;
+}
+
+// ── FOLLOW-UP RENDERING ARCHITECTURE ───────────────────────────────────────
+function renderFollowUpTimeline(list) {
+  const box = document.getElementById("timeline-box");
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No records</p>' : '';
+  list.forEach(f => {
+    let card = document.createElement("div"); card.className = "fup-item-card";
+    card.innerHTML = `
+      <div class="fup-item-header" onclick="toggleFollowUpAccordion(this)">
+        <span>Follow-Up ${f.num} (${formatCleanDateOnly(f.date)} ${cleanISTTimestamp(f.time)})</span>
+        <span style="color:var(--brand); font-size:0.75rem;">View details ▾</span>
+      </div>
+      <div class="fup-item-body">
+        <div style="font-size:0.82rem; line-height:1.5; color:var(--muted); margin-bottom:6px;">
+          <strong>Status:</strong> ${f.status}<br/><strong>Lead ID:</strong> ${f.leadId}<br/><strong>Engineer Name:</strong> ${f.eng}<br/>
+          <strong>Next Follow-Up Date:</strong> ${formatCleanDateOnly(f.nextDate)} | <strong>Time:</strong> ${f.nextTime || "None"}<br/>
+          <strong>NQ1:</strong> ${f.nq1} | <strong>NQ2:</strong> ${f.nq2} | <strong>NQ3:</strong> ${f.nq3}<br/>
+          <strong>NQ4:</strong> ${f.nq4} | <strong>NQ5:</strong> ${f.nq5} | <strong>NQ6:</strong> ${f.nq6}
+        </div>
+        <div style="font-size:0.85rem; color:#2d3748; padding:6px 0; border-top:1px solid #edf2f7; word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;"><strong>Notes:</strong> ${f.notes}</div>
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <button class="nav-btn-styled" onclick="editFollowUpItem('${f.status}',${f.num},'${f.eng}',\`${f.notes.replace(/'/g, "\\'")}\`,'${f.nextDate}','${f.nextTime}','${f.nq1}','${f.nq2}','${f.nq3}','${f.nq4}','${f.nq5}','${f.nq6}')" style="font-size:0.7rem; padding:4px 8px;">Edit</button>
+          <button class="nav-btn-styled" onclick="removeFollowUpItem('${activeSearchRef}','${f.num}')" style="font-size:0.7rem; background:var(--warn); padding:4px 8px;">Delete Follow-Up</button>
+        </div>
+      </div>`;
+    box.appendChild(card);
+  });
+}
+
+function showNewFollowUpForm() {
+  document.getElementById("fup-is-edit-flag").value = "false";
+  document.getElementById("fup-num-input").value = currentFollowUpCount + 1;
+  document.getElementById("fup-leadid-input").value = activeSearchRef;
+  document.getElementById("fup-status-select").value = "FuS1";
+  document.getElementById("fup-notes-input").value = ""; document.getElementById("fup-nexttarget-input").value = "";
+  document.getElementById("fup-nq1").value = ""; document.getElementById("fup-nq2").value = "";
+  document.getElementById("fup-nq3").value = ""; document.getElementById("fup-nq4").value = "";
+  document.getElementById("fup-nq5").value = ""; document.getElementById("fup-nq6").value = "";
+}
+
+function editFollowUpItem(status, num, eng, notes, nextTarget, nextTime, n1, n2, n3, n4, n5, n6) {
+  document.getElementById("fup-is-edit-flag").value = "true";
+  document.getElementById("fup-status-select").value = status;
+  document.getElementById("fup-num-input").value = num;
+  document.getElementById("fup-leadid-input").value = activeSearchRef;
+  document.getElementById("fup-eng-select").value = eng;
+  document.getElementById("fup-notes-input").value = notes;
+  document.getElementById("fup-nexttarget-input").value = formatCleanDateOnly(nextTarget);
+  document.getElementById("fup-nexttime-select").value = nextTime || "Morning";
+  
+  document.getElementById("fup-nq1").value = n1; document.getElementById("fup-nq2").value = n2;
+  document.getElementById("fup-nq3").value = n3; document.getElementById("fup-nq4").value = n4;
+  document.getElementById("fup-nq5").value = n5; document.getElementById("fup-nq6").value = n6;
+  
+  document.getElementById("fup-form-expansion").style.display = "grid";
+  document.getElementById("toggle-fup-form-btn").style.display = "none";
+  document.getElementById("collapse-fup-panel-btn").style.display = "inline-flex";
+}
+
+async function commitFollowUpItem() {
+  const btn = document.getElementById("save-fup-btn");
+  const followUpData = {
+    isEdit: document.getElementById("fup-is-edit-flag").value === "true",
+    status: document.getElementById("fup-status-select").value,
+    num: document.getElementById("fup-num-input").value,
+    leadRef: activeSearchRef, company: activeSearchCompany,
+    eng: document.getElementById("fup-eng-select").value, notes: document.getElementById("fup-notes-input").value,
+    nextDate: document.getElementById("fup-nexttarget-input").value, nextTime: document.getElementById("fup-nexttime-select").value,
+    nq1: document.getElementById("fup-nq1").value, nq2: document.getElementById("fup-nq2").value, nq3: document.getElementById("fup-nq3").value,
+    nq4: document.getElementById("fup-nq4").value, nq5: document.getElementById("fup-nq5").value, nq6: document.getElementById("fup-nq6").value
+  };
+  if (!followUpData.notes) return alert("Interaction Notes required.");
+  
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveFollowUp", followUpData }) });
+    const r = await res.json();
+    if (r.success) { 
+      collapseSubPanelExplicitly('fup-form-expansion', 'toggle-fup-form-btn'); 
+      await refreshCanvasDataNodesGlobal(); 
+    }
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Follow-Up"; }
+}
+
+async function removeFollowUpItem(lId, fNum) {
+  if(!confirm("Confirm deletion?")) return;
+  const fupId = lId + "||" + fNum;
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteFollowUp", fupId: fupId }) });
+    const r = await res.json(); if (r.success) await refreshCanvasDataNodesGlobal();
+  } catch(e) { alert(e.message); }
+}
+
+// ── TASK RENDERING SUBSYSTEM BLOCKS ──────────────────────────────────────────
+function renderTaskItemsList(list) {
+  const box = document.getElementById("task-cards-box");
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No active entries.</p>' : '';
+  list.forEach(t => {
+    let div = document.createElement("div"); div.className = "task-item-card";
+    div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Time: ${t.shift} | Target Date: ${formatCleanDateOnly(t.targetDate)}</small>
+                     <p style="font-size:0.82rem; margin-top:4px; color:var(--text); word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;"><strong>Desc:</strong> ${t.desc || 'None'}</p>
+                     <div style="font-size:0.75rem; font-weight:bold; color:var(--brand); margin-top:4px;">Status: ${t.status} | Assigner: ${t.assigner || "System"}</div>
+                     <div style="margin-top:8px; display:flex; gap:6px;">
+                       <button class="nav-btn-styled" onclick="editTaskItem('${t.id}','${t.eng}','${t.assigner}','${t.type}',\`${(t.desc||'').replace(/'/g,"\\'")}\`,'${t.shift}','${t.targetDate}','${t.status}')" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
+                       <button class="nav-btn-styled" onclick="removeTaskItem('${t.id}')" style="font-size:0.75rem; background:var(--warn); padding:2px 6px;">Delete</button>
+                     </div>`;
+    box.appendChild(div);
+  });
+}
+
+function showNewTaskForm() {
+  document.getElementById("task-edit-id").value = ""; document.getElementById("task-desc-input").value = "";
+  document.getElementById("task-targetdate-input").value = ""; document.getElementById("task-status-select").value = "TS1";
+  document.getElementById("task-type-select").value = "Task A";
+}
+
+function editTaskItem(id, eng, assigner, type, desc, shift, targetDate, status) {
+  document.getElementById("task-edit-id").value = id; document.getElementById("task-eng-select").value = eng;
+  document.getElementById("task-assigner-select").value = assigner;
+  document.getElementById("task-type-select").value = type; document.getElementById("task-desc-input").value = desc;
+  document.getElementById("task-shift-select").value = shift; document.getElementById("task-targetdate-input").value = formatCleanDateOnly(targetDate);
+  document.getElementById("task-status-select").value = status;
+  
+  document.getElementById("task-form-expansion").style.display = "grid";
+  document.getElementById("toggle-task-form-btn").style.display = "none";
+  document.getElementById("collapse-task-panel-btn").style.display = "inline-flex";
+}
+
+async function commitTaskItem() {
+  const btn = document.getElementById("save-task-btn");
+  const editId = document.getElementById("task-edit-id").value;
+  const taskData = {
+    id: editId || "NEW", isNew: !editId, leadRef: activeSearchRef, company: activeSearchCompany,
+    engineer: document.getElementById("task-eng-select").value, assigner: document.getElementById("task-assigner-select").value,
+    type: document.getElementById("task-type-select").value, desc: document.getElementById("task-desc-input").value, 
+    shift: document.getElementById("task-shift-select").value, targetDate: document.getElementById("task-targetdate-input").value, 
+    status: document.getElementById("task-status-select").value
+  };
+  if (!taskData.targetDate) return alert("Provide a Target Date.");
+  
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveTask", taskData }) });
+    const r = await res.json();
+    if (r.success) { collapseSubPanelExplicitly('task-form-expansion', 'toggle-task-form-btn'); await refreshCanvasDataNodesGlobal(); }
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Task"; }
+}
+
+async function removeTaskItem(id) {
+  if (!confirm("Confirm cancellation?")) return;
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: id }) });
+    const r = await res.json(); if (r.success) await refreshCanvasDataNodesGlobal();
+  } catch(e) { alert(e.message); }
+}
+
+async function refreshCanvasDataNodesGlobal() {
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: activeSearchCompany }) });
+    const data = await res.json();
+    if (data.success) { 
+      serverCachedFollowUpsMap = data.followups;
+      serverCachedTasksMap = data.tasks;
+      currentFollowUpCount = data.followups[activeSearchRef] ? data.followups[activeSearchRef].length : 0;
+      
+      renderFollowUpTimeline(data.followups[activeSearchRef] || []); 
+      renderTaskItemsList(data.tasks[activeSearchRef] || []); 
+    }
+  } catch(e) { console.error(e.message); }
+}
+
+let fileFront = null, fileBack = null;
+document.getElementById('card-front').onchange = (e) => { fileFront = e.target.files[0]; document.getElementById('front-box').textContent = "Front ✅"; document.getElementById('front-box').classList.add('done'); document.getElementById('parse-btn').disabled = false; };
+document.getElementById('card-back').onchange = (e) => { fileBack = e.target.files[0]; document.getElementById('back-box').textContent = "Back ✅"; document.getElementById('back-box').classList.add('done'); };
+function toggleOtherText(r, id) { document.getElementById(id).style.display = (r.value === 'Other') ? 'block' : 'none'; }
+function handleQualChange() { document.getElementById('vendor-fields').style.display = document.getElementById('q8').checked ? 'block' : 'none'; }
+function toggleNo(btn) { const i = document.getElementById(btn.dataset.target); const act = btn.classList.toggle('active'); i.value = act ? "No" : ""; i.disabled = act; }
+function clearNo(i) { const b = document.querySelector(`button[data-target="${i.id}"]`); if (b) b.classList.remove('active'); }
+
+async function parseCard() {
+  const btn = document.getElementById('parse-btn'); btn.innerHTML = '<div class="spinner"></div> Parsing...'; btn.disabled = true;
+  const getB64 = (f) => new Promise((res) => { const rd = new FileReader(); rd.onload = () => res(rd.result.split(',')[1]); rd.readAsDataURL(f); });
+  try {
+    const img1 = await getB64(fileFront); const img2 = fileBack ? await getB64(fileBack) : null;
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'parse', image: img1, imageBack: img2 }) });
+    const j = await res.json(); const d = JSON.parse(j.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
+    document.getElementById('f-name').value = d.name || ""; document.getElementById('f-company').value = d.company || "";
+    document.getElementById('f-position').value = d.position || ""; document.getElementById('f-phone').value = d.phone || "";
+    document.getElementById('f-altphone').value = d.altPhone || ""; document.getElementById('f-email').value = d.email || "";
+    document.getElementById('f-website').value = d.website || ""; document.getElementById('f-address').value = d.address || "";
+  } catch (e) { alert(e.message); } finally { btn.innerHTML = 'Parse Card with AI'; btn.disabled = false; }
+}
+
+async function uploadToCloudinary(file) {
+  if (!file) return ""; const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', UPLOAD_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+  const d = await res.json(); return d.secure_url || "";
+}
+
+async function submitLead() {
+  const btn = document.getElementById('submit-btn'); btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
+  const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
+  try {
+    const [url1, url2] = await Promise.all([uploadToCloudinary(fileFront), uploadToCloudinary(fileBack)]);
+    const imageUrl = [url1, url2].filter(u => u).join(", ");
+    const fields = {
+      engineerName: document.getElementById('engName').value, name: document.getElementById('f-name').value, company: document.getElementById('f-company').value,
+      position: document.getElementById('f-position').value, phone: document.getElementById('f-phone').value, altPhone: document.getElementById('f-altphone').value,
+      email: document.getElementById('f-email').value, website: document.getElementById('f-website').value, address: document.getElementById('f-address').value,
+      meetingDate: document.getElementById('meetingDate').value, meetingTime: document.getElementById('meetingTime').value,
+      meetingVenue: getRadio('meetingVenue'), venueName: document.getElementById('venueName').value, additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
+      businessVertical: getRadio('businessVertical'), industry: document.getElementById('industry').value, qualification: getChecks('qualification'), vendorType: [''],
+      materialsName: document.getElementById('materialsName').value, lpi: document.getElementById('lpi').value, hbi: document.getElementById('hbi').value,
+      hi: document.getElementById('hi').value, thi: document.getElementById('thi').value, gsi: document.getElementById('gsi').value, esd: document.getElementById('esd').value,
+      voltage: getChecks('voltage'), cdMva: document.getElementById('cdMva').value, rdMva: document.getElementById('rdMva').value, avgPf: document.getElementById('avgPf').value,
+      problemObserved: document.getElementById('problemObserved').value, techSummary: document.getElementById('techSummary').value,
+      existingProject: document.getElementById('epInput').value, upcomingProject: document.getElementById('upInput').value,
+      products: getChecks('prod'), approxReq: document.getElementById('approxReq').value, tenderDate: document.getElementById('tenderDate').value,
+      orderTimeline: document.getElementById('orderTimeline').value, competitors: document.getElementById('competitors').value, potential: getRadio('pot'),
+      sendProfile: document.getElementById('act1').value, sendPresentation: document.getElementById('act2').value, arrangeVisit: document.getElementById('act3').value,
+      getEnquiry: document.getElementById('act4').value, sendOffer: document.getElementById('actOffer').value, followUpRequired: document.getElementById('act7').value, nextDate: document.getElementById('nextDate').value
+    };
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'submit', fields, imageUrl }) });
+    const d = await res.json();
+    if (d.success) {
+      document.getElementById('remaining-sections-form').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+      document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef;
+    }
+  } catch (e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = 'Submit New Account Entry'; }
 }
 </script>
-
 </body>
 </html>
