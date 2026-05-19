@@ -13,47 +13,53 @@
   }
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
   
-  /* Authentication Gate Layer */
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
   .auth-title { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 25px; }
   label.field-label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 14px 0 6px; }
-  input { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: .9rem; background: #fff; color: var(--text); }
+  input, select, textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: .9rem; background: #fff; color: var(--text); }
   
-  /* Main Corporate Layout Header */
   header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,.15); display: flex; justify-content: space-between; align-items: center; }
-  header h1 { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.5px; }
+  header h1 { font-size: 1.2rem; font-weight: 700; }
   
-  /* Profile panel layout fixes */
   .header-actions-block { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
-  .user-profile-meta { margin-bottom: 8px; line-height: 1.3; display: block; visibility: visible; }
+  .user-profile-meta { margin-bottom: 8px; line-height: 1.3; }
   .user-full-name { font-size: 0.95rem; font-weight: 700; color: #ffffff; }
   .user-display-username { font-size: 0.9rem; color: #d0d9e4; font-family: monospace; font-weight: 600; margin-top: 2px; }
-  .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; transition: background 0.2s; }
-  .logout-btn:hover { background: rgba(255,255,255,0.15); }
+  .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
   
-  /* Dashboard Grid Options Layout */
   .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 24px 14px; }
   @media(min-width: 600px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 28px 24px; border-radius: var(--radius); text-align: left; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: transform 0.15s, border-color 0.15s; }
-  .menu-card:hover { transform: translateY(-1px); border-color: var(--brand); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 28px 24px; border-radius: var(--radius); text-align: left; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+  .menu-card:hover { border-color: var(--brand); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
-  .menu-card.locked:hover { transform: none; border-color: var(--border); box-shadow: none; }
   .menu-title { font-size: 1.15rem; font-weight: 700; color: var(--text); }
 
-  /* Workspace Staging Panels */
-  .workspace-panel { background: var(--card); border-radius: var(--radius); margin: 20px 12px; padding: 35px 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); text-align: center; border: 1px solid var(--border); }
-  .demo-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-  .demo-text { font-size: 0.9rem; color: var(--muted); margin-bottom: 25px; }
-  
+  /* Inner Sub Module Routing Navigation Tabs */
+  .sub-tab-bar { display: flex; gap: 10px; margin: 15px 12px 5px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
+  .sub-tab-btn { background: #e2e8f0; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; font-size: 0.85rem; cursor: pointer; color: var(--text); }
+  .sub-tab-btn.active { background: var(--brand); color: white; }
+
+  .workspace-panel { background: var(--card); border-radius: var(--radius); margin: 10px 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border); }
   .back-nav-container { padding: 16px 12px 0; }
   .back-btn { background: #6b7a8d; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
   
   .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; }
   .btn-sub { background: var(--brand); color: #fff; margin-top: 15px; }
+  .btn-secondary { background: #e2e8f0; color: var(--text); max-width: 180px; margin-top: 10px; }
   .btn:disabled { opacity: .6; cursor: not-allowed; }
   .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Results Matrix Styling */
+  .search-action-row { display: flex; gap: 10px; margin-bottom: 20px; }
+  .lead-result-card { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 15px; text-align: left; }
+  .meta-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; }
+  .followup-badge-container { display: flex; gap: 8px; margin-top: 10px; }
+  .follow-badge { background: #edf2f7; border: 1px solid var(--border); padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+  
+  /* Task Allocation Sub-Module Grid */
+  .task-assignment-box { border-left: 3px solid var(--accent); background: #f0fdf4; padding: 14px; margin-top: 15px; border-radius: 0 6px 6px 0; }
 </style>
 </head>
 <body>
@@ -61,14 +67,9 @@
 <div id="auth-container">
   <div class="auth-card">
     <div class="auth-title">ABPS Portal</div>
-    
     <div style="text-align: left;">
-      <label class="field-label">Username</label>
-      <input type="text" id="auth-user" placeholder="Enter username..." required />
-      
-      <label class="field-label">Password</label>
-      <input type="password" id="auth-pass" placeholder="Enter password..." required />
-      
+      <label class="field-label">Username</label><input type="text" id="auth-user" placeholder="Enter username..." required />
+      <label class="field-label">Password</label><input type="password" id="auth-pass" placeholder="Enter password..." required />
       <button class="btn btn-sub" id="login-btn" onclick="executeLogin()">Login</button>
     </div>
   </div>
@@ -77,7 +78,6 @@
 <div id="app-container" style="display: none;">
   <header>
     <h1>ABPS Marketing Department</h1>
-    
     <div class="header-actions-block">
       <div class="user-profile-meta">
         <div class="user-full-name" id="display-full-name"></div>
@@ -89,21 +89,10 @@
 
   <div id="dashboard-view">
     <div class="dashboard-grid">
-      <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')">
-        <div class="menu-title">Enter Card Details</div>
-      </div>
-      
-      <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')">
-        <div class="menu-title">Search by Company Name</div>
-      </div>
-      
-      <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')">
-        <div class="menu-title">Search by Status</div>
-      </div>
-      
-      <div class="menu-card" id="mod-engineer" onclick="navigateToModule('searchEngineer')">
-        <div class="menu-title">Search by Assigned Engineer</div>
-      </div>
+      <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')"><div class="menu-title">Enter Card Details</div></div>
+      <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')"><div class="menu-title">Search by Company Name</div></div>
+      <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Status</div></div>
+      <div class="menu-card" id="mod-engineer" onclick="navigateToModule('searchEngineer')"><div class="menu-title">Search by Assigned Engineer</div></div>
     </div>
   </div>
 
@@ -112,37 +101,40 @@
       <button class="back-btn" onclick="returnToDashboard()">Return to Dashboard</button>
     </div>
     
-    <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
-      <div class="demo-title">Enter Card Details Module</div>
-      <div class="demo-text">Placeholder staging view for card scanning and parsing forms. Access confirmed.</div>
+    <div id="workspace-cardDetails" style="display: none;">
+      <div class="sub-tab-bar">
+        <button class="sub-tab-btn active" id="btn-subtab-search" onclick="switchSubTab('search')">Company Quick Search Hub</button>
+        <button class="sub-tab-btn" id="btn-subtab-create" onclick="switchSubTab('create')">Create New Lead Entry</button>
+      </div>
+
+      <div id="subtab-panel-search" class="workspace-panel">
+        <div class="search-action-row">
+          <input type="text" id="card-search-company" placeholder="Type exact company name to analyze..." />
+          <button class="btn btn-sub" style="margin:0; max-width:120px;" onclick="executeCompanySearch()">Search</button>
+        </div>
+        
+        <div id="company-search-results-root">
+          <p style="color:var(--muted); font-size:0.9rem;">Type an enterprise title above to evaluate active marketing files.</p>
+        </div>
+      </div>
+
+      <div id="subtab-panel-create" class="workspace-panel" style="display: none;">
+        <h3 style="margin-bottom:15px; text-align:left;">New Lead Registration Framework</h3>
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:15px; text-align:left;">The original questions from your original index.html data entry pipeline will be fully injected here.</p>
+      </div>
     </div>
     
-    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;">
-      <div class="demo-title">Search by Company Name Module</div>
-      <div class="demo-text">Placeholder staging view for company history searching and log mutations. Access confirmed.</div>
-    </div>
-    
-    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;">
-      <div class="demo-title">Search by Status Module</div>
-      <div class="demo-text">Placeholder staging view for filtering pipeline entries by project status tracking parameters. Access confirmed.</div>
-    </div>
-    
-    <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;">
-      <div class="demo-title">Search by Assigned Engineer Module</div>
-      <div class="demo-text">Placeholder staging view for viewing client accounts distributed by personnel assignments. Access confirmed.</div>
-    </div>
+    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;"><h3>Search by Company Name Module</h3></div>
+    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;"><h3>Search by Status Module</h3></div>
+    <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;"><h3>Search by Assigned Engineer Module</h3></div>
   </div>
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzDEN06sLXzeD8shL1BgCMJLBB5IMb0eJ30b2Um4VpiCmeUujvM3mluFYB0YNmzFOyEJQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwhbgY2zpqyL4Rmbrh8tUI6eUcCl8f6Dm8A99hb56TijrRghuziqOOiwBRAPbqR5hGudw/exec";
 
-let userPermissions = {
-  cardDetails: false,
-  searchCompany: false,
-  searchStatus: false,
-  searchEngineer: false
-};
+let userPermissions = {};
+let cachedEngineers = [];
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken");
@@ -152,6 +144,7 @@ window.onload = function() {
   if (token && expires && new Date() < new Date(expires) && savedPerms) {
     userPermissions = JSON.parse(savedPerms);
     showAppView();
+    fetchEngineersDropdown();
   } else {
     executeLogout();
   }
@@ -160,24 +153,14 @@ window.onload = function() {
 async function executeLogin() {
   const userField = document.getElementById("auth-user");
   const passField = document.getElementById("auth-pass");
-  const loginBtn = document.getElementById("login-btn");
-
-  if (!userField.value || !passField.value) {
-    alert("Please complete credential fields.");
-    return;
-  }
-
-  loginBtn.disabled = true;
-  loginBtn.innerHTML = '<div class="spinner"></div> Verifying...';
+  if (!userField.value || !passField.value) return alert("Fill credentials.");
 
   try {
     const response = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({ action: "login", username: userField.value, password: passField.value })
     });
-    
     const result = await response.json();
-    
     if (result.success) {
       localStorage.setItem("sessionToken", result.sessionToken);
       localStorage.setItem("sessionExpiry", result.expires);
@@ -185,25 +168,19 @@ async function executeLogin() {
       localStorage.setItem("userFirstName", result.firstName || "");
       localStorage.setItem("userLastName", result.lastName || "");
       localStorage.setItem("userPermissions", JSON.stringify(result.permissions));
-      
       userPermissions = result.permissions;
       showAppView();
+      fetchEngineersDropdown();
     } else {
-      alert("Access Denied: " + result.error);
+      alert(result.error);
     }
-  } catch (err) {
-    alert("Connection to authorization nodes failed.\n" + err.message);
-  } finally {
-    loginBtn.disabled = false;
-    loginBtn.innerHTML = "Login";
-  }
+  } catch(e) { alert("Login connection timeout."); }
 }
 
 function executeLogout() {
   localStorage.clear();
   document.getElementById("app-container").style.display = "none";
   document.getElementById("auth-container").style.display = "flex";
-  document.getElementById("auth-pass").value = "";
 }
 
 function showAppView() {
@@ -212,47 +189,124 @@ function showAppView() {
   document.getElementById("dashboard-view").style.display = "block";
   document.getElementById("module-workspace-container").style.display = "none";
   
-  const fName = localStorage.getItem("userFirstName") || "";
-  const lName = localStorage.getItem("userLastName") || "";
-  const uName = localStorage.getItem("sessionUser") || "";
+  document.getElementById("display-full-name").textContent = localStorage.getItem("userFirstName") + " " + localStorage.getItem("userLastName");
+  document.getElementById("display-username").textContent = "@" + localStorage.getItem("sessionUser");
   
-  document.getElementById("display-full-name").textContent = fName + " " + lName;
-  document.getElementById("display-username").textContent = "@" + uName;
-  
-  updateMenuCardVisuals("mod-card", userPermissions.cardDetails);
-  updateMenuCardVisuals("mod-company", userPermissions.searchCompany);
-  updateMenuCardVisuals("mod-status", userPermissions.searchStatus);
-  updateMenuCardVisuals("mod-engineer", userPermissions.searchEngineer);
-}
-
-function updateMenuCardVisuals(elementId, hasAccess) {
-  const card = document.getElementById(elementId);
-  if (card) {
-    if (hasAccess) {
-      card.classList.remove("locked");
-    } else {
-      card.classList.add("locked");
-    }
-  }
+  ["mod-card", "mod-company", "mod-status", "mod-engineer"].forEach(id => {
+    let key = id === "mod-card" ? "cardDetails" : id === "mod-company" ? "searchCompany" : id === "mod-status" ? "searchStatus" : "searchEngineer";
+    document.getElementById(id).classList.toggle("locked", !userPermissions[key]);
+  });
 }
 
 function navigateToModule(moduleKey) {
-  if (!userPermissions[moduleKey]) {
-    alert("Access Denied: Your account does not have permission parameters enabled to view this section.");
-    return;
-  }
-  
+  if (!userPermissions[moduleKey]) return alert("Access Denied.");
   document.getElementById("dashboard-view").style.display = "none";
   document.getElementById("module-workspace-container").style.display = "block";
   
-  const panels = document.querySelectorAll(".workspace-panel");
-  panels.forEach(p => p.style.display = "none");
-  
-  document.getElementById("workspace-" + moduleKey).style.display = "block";
+  ["workspace-cardDetails", "workspace-searchCompany", "workspace-searchStatus", "workspace-searchEngineer"].forEach(id => {
+    document.getElementById(id).style.display = (id === "workspace-" + moduleKey) ? "block" : "none";
+  });
+  if(moduleKey === "cardDetails") switchSubTab('search');
 }
 
-function returnToDashboard() {
-  showAppView();
+function returnToDashboard() { showAppView(); }
+
+function switchSubTab(subTabKey) {
+  document.getElementById("btn-subtab-search").classList.toggle("active", subTabKey === 'search');
+  document.getElementById("btn-subtab-create").classList.toggle("active", subTabKey === 'create');
+  document.getElementById("subtab-panel-search").style.display = subTabKey === 'search' ? 'block' : 'none';
+  document.getElementById("subtab-panel-create").style.display = subTabKey === 'create' ? 'block' : 'none';
+}
+
+// ── CRM ENGINE DATA HANDSHAKES ───────────────────────────────────────────────
+async function fetchEngineersDropdown() {
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getEngineers" }) });
+    const d = await res.json();
+    if(d.success) cachedEngineers = d.engineers;
+  } catch(e) { console.log("Engineers cache offline."); }
+}
+
+async function executeCompanySearch() {
+  const query = document.getElementById("card-search-company").value;
+  const root = document.getElementById("company-search-results-root");
+  if(!query) return alert("Type a company name.");
+  
+  root.innerHTML = '<div class="spinner" style="margin:20px auto; border-top-color:var(--brand);"></div>';
+  
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyLeads", companyName: query }) });
+    const d = await res.json();
+    
+    if(!d.success || d.leads.length === 0) {
+      root.innerHTML = '<p style="color:var(--warn); font-size:0.9rem;">No matching business accounts registered in the Leads database architecture.</p>';
+      return;
+    }
+    
+    root.innerHTML = "";
+    d.leads.forEach(lead => {
+      // Build dynamic dropdown options from your live user sheet cache array
+      let engOptions = cachedEngineers.map(eng => `<option value="${eng}" ${eng === lead.assignedEngineer ? 'selected' : ''}>${eng}</option>`).join("");
+      
+      let leadCardHTML = `
+        <div class="lead-result-card" id="card-row-${lead.leadRef}">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <strong style="color:var(--brand); font-size:1.1rem;">${lead.rowData[4]} (${lead.leadRef})</strong>
+            <span style="background:var(--brand-dk); color:white; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">Parent Entry Row</span>
+          </div>
+          <p style="font-size:0.9rem; margin-bottom:4px;"><strong>Contact Person:</strong> ${lead.rowData[3]} — ${lead.rowData[5]}</p>
+          <p style="font-size:0.9rem; margin-bottom:12px;"><strong>Email:</strong> ${lead.rowData[8]} | <strong>Phone:</strong> ${lead.rowData[6]}</p>
+          
+          <div class="meta-edit-grid">
+            <div>
+              <label class="field-label" style="margin-top:0;">File Status</label>
+              <select id="status-${lead.leadRef}">
+                <option value="Active" ${lead.currentStatus === 'Active' ? 'selected' : ''}>Active</option>
+                <option value="Pending" ${lead.currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                <option value="Closed" ${lead.currentStatus === 'Closed' ? 'selected' : ''}>Closed</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" style="margin-top:0;">Assigned Engineer</label>
+              <select id="engineer-${lead.leadRef}">
+                <option value="">— Unassigned —</option>
+                ${engOptions}
+              </select>
+            </div>
+          </div>
+          <button class="btn back-btn" style="background:var(--brand); font-size:0.8rem; margin-bottom:15px;" onclick="saveLeadMetaEdits('${lead.leadRef}')">Save Metadata Changes</button>
+          
+          <div class="task-assignment-box">
+            <h4 style="font-size:0.9rem; color:var(--text); margin-bottom:6px;">Task Allocation Staging (Inline Management)</h4>
+            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:10px;">Distribute field tasks, assign dates, and pick shift schedules (Morning, Afternoon, Evening).</p>
+            <div style="display:flex; gap:8px;"><button class="btn back-btn" style="padding:6px 12px; font-size:0.75rem; background:var(--accent);">Assign New Task</button></div>
+          </div>
+
+          <h4 class="field-label" style="color:var(--text); border-top:1px dashed var(--border); padding-top:12px; margin-top:15px;">Follow-Up History Nodes</h4>
+          <div class="followup-badge-container">
+            ${lead.followUps.length === 0 ? '<p style="font-size:0.8rem; color:var(--muted);">No sequential follow-up logs submitted yet.</p>' : ''}
+            ${lead.followUps.map((f, idx) => `<div class="follow-badge" onclick="alert('Follow-Up Details Module initialized successfully.')">Follow-Up ${idx + 1}</div>`).join("")}
+          </div>
+          <button class="btn btn-secondary" style="font-size:0.8rem; padding:6px; font-weight:600; margin-top:15px;">Create New Follow-Up</button>
+        </div>
+      `;
+      root.innerHTML += leadCardHTML;
+    });
+    
+  } catch(e) { root.innerHTML = '<p style="color:var(--warn);">Handshake network query exception failure.</p>'; }
+}
+
+async function saveLeadMetaEdits(leadRef) {
+  const status = document.getElementById("status-" + leadRef).value;
+  const engineer = document.getElementById("engineer-" + leadRef).value;
+  const user = localStorage.getItem("sessionUser");
+  
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadMeta", leadRef, status, engineer, user }) });
+    const d = await res.json();
+    if(d.success) alert("Metadata saved successfully! Changes committed to transaction AuditLog sheet.");
+    else alert("Error: " + d.error);
+  } catch(e) { alert("Network writing exception."); }
 }
 </script>
 </body>
