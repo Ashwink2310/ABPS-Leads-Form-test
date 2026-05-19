@@ -35,21 +35,20 @@
   .section-header { background: var(--brand); color: #fff; padding: 5px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
   .section-body { padding: 10px; }
   
-  /* Highly Polished Mobile-Friendly Multi-Contact Row Grids */
+  /* High contrast mobile directory card modifications rule mapping sets */
   .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
   .contact-summary-header-row { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px; }
   @media(min-width: 800px) { .contact-summary-header-row { flex-direction: row; justify-content: space-between; align-items: center; } }
   
-  /* Standard High Contrast Mobile Text Configurations Layout */
-  .contact-summary-title-info { font-size: 0.95rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
-  .contact-summary-title-info .meta-row-line-block { display: flex; align-items: center; width: 100%; margin-bottom: 4px; }
-  @media(min-width: 800px) { .contact-summary-title-info .meta-row-line-block { width: auto; margin-bottom: 0; } }
+  /* Aligned side-by-side row display protection logic fields sets */
+  .contact-summary-title-info { font-size: 0.98rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; display: block; }
+  .contact-summary-title-info .meta-row-line-block { display: flex; flex-wrap: wrap; align-items: center; width: 100%; margin-bottom: 4px; }
   .contact-summary-title-info span { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #edf2f7; padding: 2px 6px; border-radius: 4px; margin-right: 4px; display: inline-block; }
-  .contact-summary-title-info strong { margin-right: 18px; color: #111827; display: inline-block; }
+  .contact-summary-title-info strong { margin-right: 20px; color: #111827; display: inline-block; }
   .directory-btn-actions-block { display: flex; gap: 6px; width: 100%; justify-content: flex-start; }
   @media(min-width: 800px) { .directory-btn-actions-block { width: auto; justify-content: flex-end; } }
 
-  /* 100% Zoom Zero-Scroll Protection Deflation Grid Map Matrix Elements */
+  /* Decreased height elements layout parameters to support 100% zoom preventative scrolls rules sets */
   .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; text-align: left; }
   @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
   @media(min-width: 950px) { .compact-fields-grid { grid-template-columns: repeat(6, 1fr); } }
@@ -130,7 +129,10 @@
 
   <div id="module-workspace-container" style="display: none;">
     <div class="navigation-action-header-row" id="main-global-nav-header-bar">
-      <button class="nav-btn-styled" id="global-direct-inline-create-entry-btn" style="display:none; background:var(--accent);" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
+      <div style="display:flex; gap:8px;" id="inline-creation-header-controls-block">
+        <button class="nav-btn-styled" id="global-direct-inline-create-entry-btn" style="display:none; background:var(--accent);" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
+        <button class="nav-btn-styled" id="global-direct-inline-collapse-entry-btn" style="display:none; background:var(--warn);" onclick="collapseNewEntryDropdownFormExplicitly()">Collapse Form</button>
+      </div>
       <button class="nav-btn-styled" onclick="returnToDashboard()">Return to Main Dashboard</button>
     </div>
     
@@ -165,7 +167,7 @@
         <div class="section-header">Choose Target Company Profile</div>
         <div class="section-body" style="padding: 6px; text-align: left;">
           <label class="field-label">Select Company Name</label>
-          <select id="lookup-module-company-dropdown" style="margin-bottom: 6px; font-size:0.95rem; padding:6px;"><option value="">Loading unique corporate logs...</option></select>
+          <select id="lookup-module-company-dropdown" style="margin-bottom: 6px; font-size:0.95rem; padding:6px;"><option value="">Loading Unique Company Names...</option></select>
           <button class="btn btn-sub" id="lookup-module-search-btn" onclick="triggerSequentialSearch('DROPDOWN')">Search Company</button>
         </div>
       </div>
@@ -335,7 +337,7 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz8HoGfQrxy-FnOg1XxQ7hnu87NLuUzDbFK08bI8RFYkpft6DPy56bc379ZUNmb2eZw7A/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyFjXxiyjrjmVGUuS6iZAKCOgjJ9D-CxzXcLJKGECdlADognDKWo60bRg-j0_LFxDsMUg/exec"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
@@ -383,7 +385,7 @@ window.onload = function() {
 async function executeLogin() {
   const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
   const btn = document.getElementById("login-btn");
-  if (!userField.value || !passField.value) return alert("Complete credential fields.");
+  if (!userField.value || !passField.value) return alert("Complete fields.");
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verifying...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
@@ -459,8 +461,21 @@ function revealNewEntryFormDropdown() {
   document.getElementById("missing-trigger-notice-block").style.display = "none"; 
   const container = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
   document.getElementById(container).appendChild(document.getElementById("step2-new-entry-dropdown"));
+  
+  // Toggle Visibility maps of control blocks buttons explicitly
+  document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
+  document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "inline-flex";
+
   document.getElementById("step2-new-entry-dropdown").style.display = "block"; 
   window.scrollTo(0,0); 
+}
+
+function collapseNewEntryDropdownFormExplicitly() {
+  document.getElementById("step2-new-entry-dropdown").style.display = "none";
+  document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
+  
+  // Re expose creation trigger parameters
+  document.getElementById("global-direct-inline-create-entry-btn").style.display = "inline-flex";
 }
 
 async function triggerSequentialSearch(triggerSourceMode) {
@@ -514,12 +529,12 @@ async function triggerSequentialSearch(triggerSourceMode) {
       if(triggerSourceMode === "CARD") document.getElementById("step1-card-capture-block").style.display = "none";
       if(triggerSourceMode === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "none";
       
-      // Inline Creation Navigation Link placement injection hook rule mapping set
       document.getElementById("main-global-nav-header-bar").insertBefore(
-        document.getElementById("global-direct-inline-create-entry-btn"),
+        document.getElementById("inline-creation-header-controls-block"),
         document.getElementById("main-global-nav-header-bar").firstChild
       );
       document.getElementById("global-direct-inline-create-entry-btn").style.display = "inline-flex";
+      document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
 
       document.getElementById("step2-inline-interaction-canvas").style.display = "block";
     } else {
@@ -533,7 +548,9 @@ function revealNewEntryFormDropdownFromBanner() {
   document.getElementById("step2-inline-interaction-canvas").style.display = "none";
   const parentId = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
   document.getElementById(parentId).appendChild(document.getElementById("step2-new-entry-dropdown"));
-  document.getElementById("global-direct-inline-create-entry-btn").style.display = "none"; // Suppress to avoid redundancy layout maps
+  
+  document.getElementById("global-direct-inline-create-entry-btn").style.display = "none"; 
+  document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none"; 
   document.getElementById("staged-back-button-row").style.display = "flex"; 
   document.getElementById("step2-new-entry-dropdown").style.display = "block";
   window.scrollTo(0,0);
@@ -556,7 +573,6 @@ function buildMultiContactDirectoryInterface(leadsList) {
     wrapperCard.className = "contact-summary-card-parent";
     wrapperCard.id = `contact-parent-wrapper-${tRef}`;
     
-    // Dynamic naming normalization parameters configuration fallback check rules matching
     let cardDisplayName = (lead["Name"] && lead["Name"].toString().trim() !== "") ? lead["Name"] : "Unspecified";
     
     wrapperCard.innerHTML = `
@@ -564,7 +580,7 @@ function buildMultiContactDirectoryInterface(leadsList) {
         <div class="contact-summary-title-info">
           <div class="meta-row-line-block"><span>Company:</span><strong id="card-lbl-comp-${tRef}">${lead["Company"]}</strong></div>
           <div class="meta-row-line-block"><span>Name:</span><strong id="card-lbl-name-${tRef}">${cardDisplayName}</strong></div>
-          <div class="meta-row-line-block" style="width:100%; margin-top:4px;"><span>Position:</span><strong id="card-lbl-pos-${tRef}">${lead["Position"] || "Unspecified"}</strong></div>
+          <div class="meta-row-line-block" style="width:100%; margin-top:2px;"><span>Position:</span><strong id="card-lbl-pos-${tRef}">${lead["Position"] || "Unspecified"}</strong></div>
         </div>
         <div class="directory-btn-actions-block">
           <button class="nav-btn-styled" style="font-size:0.92rem; padding:6px 14px;" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
@@ -583,7 +599,7 @@ function buildMultiContactDirectoryInterface(leadsList) {
 function toggleContactExpansionView(leadRef, encodedLeadMap) {
   const drawer = document.getElementById(`drawer-panel-${leadRef}`);
   const triggerBtn = document.getElementById(`expand-trigger-${leadRef}`);
-  const mountPoint = document.getElementById(`modules-mount-${leadRef}`);
+  const mountPoint = document.getElementById('modules-mount-' + leadRef);
   
   if (drawer.style.display === "block") {
     drawer.style.display = "none"; triggerBtn.textContent = "View Details"; mountPoint.innerHTML = ""; 
@@ -598,7 +614,7 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
     buildTargetedLeadsFormCanvas(leadRef, leadMap);
     
     const templateClone = document.getElementById("reusable-child-modules-template").cloneNode(true);
-    templateClone.style.display = "block"; templateClone.id = `active-modules-clone-${leadRef}`;
+    templateClone.style.display = "block"; templateClone.id = 'active-modules-clone-' + leadRef;
     
     setupIsolatedModuleTriggersAndActions(leadRef, templateClone);
     mountPoint.appendChild(templateClone);
@@ -653,7 +669,7 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
 }
 
 function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
-  const canvas = document.getElementById(`canvas-fields-${leadRef}`); canvas.innerHTML = "";
+  const canvas = document.getElementById('canvas-fields-' + leadRef); canvas.innerHTML = "";
   const gridWrapper = document.createElement("div"); gridWrapper.className = "compact-fields-grid";
   
   const customSectionLayout = [
@@ -678,32 +694,32 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
       let label = document.createElement("label"); label.textContent = key; cell.appendChild(label);
 
       if (key === "Status") {
-        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         ["Status1", "Status2", "Status3", "Status4"].forEach(st => {
           let op = document.createElement("option"); op.textContent = st; if(leadMap[key] === st) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
       } else if (["Date of Meeting", "Expected Tender / RFQ Date"].indexOf(key) !== -1) {
-        let inp = document.createElement("input"); inp.type = "date"; inp.className = `live-lead-field-input-${leadRef}`;
+        let inp = document.createElement("input"); inp.type = "date"; inp.className = 'live-lead-field-input-' + leadRef;
         inp.dataset.headerKey = key; inp.value = formatCleanDateOnly(leadMap[key]); cell.appendChild(inp);
       } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
-        let inp = document.createElement("input"); inp.type = "time"; inp.className = `live-lead-field-input-${leadRef}`;
+        let inp = document.createElement("input"); inp.type = "time"; inp.className = 'live-lead-field-input-' + leadRef;
         inp.dataset.headerKey = key; inp.value = leadMap[key] ? (leadMap[key].toString().indexOf("T") !== -1 ? leadMap[key].toString().split("T")[1].substring(0,5) : leadMap[key]) : "";
         cell.appendChild(inp);
       } else if (["Assigned Engineer", "Engineer Name"].indexOf(key) !== -1) {
-        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         cachedEngineers.forEach(eng => {
           let op = document.createElement("option"); op.textContent = eng; if(leadMap[key] === eng) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
       } else if (key === "Send Offer") {
-        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         ["No", "Send Budgetary Offer", "Send Techno-Commercial Offer"].forEach(opText => {
           let op = document.createElement("option"); op.textContent = opText; if(leadMap[key] === opText) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
       } else if (["Meeting Venue", "ABPS Business Vertical", "Approx Business Potential", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
-        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         let opts = ["No", "Yes"];
         if(key === "Meeting Venue") opts = ["Exhibition", "Customer Place"];
         if(key === "ABPS Business Vertical") opts = ["Industrial", "Power"];
@@ -718,20 +734,20 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         let currentValues = (leadMap[key] || "").toString().split(", ");
         opts.forEach(o => {
           let div = document.createElement("div"); div.style.display="flex"; div.style.gap="4px"; div.style.alignItems="center";
-          let chk = document.createElement("input"); chk.type="checkbox"; chk.value = o; chk.className = `live-lead-check-subset-${leadRef}`; chk.dataset.masterKey = key;
+          let chk = document.createElement("input"); chk.type="checkbox"; chk.value = o; chk.className = 'live-lead-check-subset-' + leadRef; chk.dataset.masterKey = key;
           if(currentValues.indexOf(o) !== -1) chk.checked = true;
           let span = document.createElement("span"); span.textContent = o; span.style.fontSize="0.72rem";
           div.appendChild(chk); div.appendChild(span); wrapper.appendChild(div);
         });
         cell.appendChild(wrapper);
       } else if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)" || key === "Company Address" || key === "Address" || key === "Existing System Details") {
-        let tx = document.createElement("textarea"); tx.className = `live-lead-field-input-${leadRef}`; tx.dataset.headerKey = key;
+        let tx = document.createElement("textarea"); tx.className = 'live-lead-field-input-' + leadRef; tx.dataset.headerKey = key;
         tx.value = leadMap[key] || ""; tx.style.minHeight = "45px"; cell.appendChild(tx);
       } else if (key === "Company") {
         let inp = document.createElement("input"); inp.type = "text"; inp.value = leadMap[key] || "";
         inp.disabled = true; inp.style.background = "#e2e8f0"; inp.style.cursor = "not-allowed"; cell.appendChild(inp);
       } else {
-        let inp = document.createElement("input"); inp.type = "text"; inp.className = `live-lead-field-input-${leadRef}`;
+        let inp = document.createElement("input"); inp.type = "text"; inp.className = 'live-lead-field-input-' + leadRef;
         inp.dataset.headerKey = key; inp.value = leadMap[key] || ""; cell.appendChild(inp);
       }
       gridWrapper.appendChild(cell);
@@ -739,18 +755,18 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
   });
   canvas.appendChild(gridWrapper);
   
-  let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; saveBtn.id = `save-leads-matrix-btn-${leadRef}`;
+  let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; saveBtn.id = 'save-leads-matrix-btn-' + leadRef;
   saveBtn.style.marginTop = "12px"; saveBtn.textContent = "Save Modifications";
   saveBtn.onclick = function() { commitTargetedLeadsMutationsRows(leadRef); }; canvas.appendChild(saveBtn);
 }
 
 async function commitTargetedLeadsMutationsRows(leadRef) {
-  const btn = document.getElementById(`save-leads-matrix-btn-${leadRef}`);
+  const btn = document.getElementById('save-leads-matrix-btn-' + leadRef);
   if(btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...'; }
   let fieldsPayload = {};
-  document.querySelectorAll(`.live-lead-field-input-${leadRef}`).forEach(el => { fieldsPayload[el.dataset.headerKey] = el.value; });
+  document.querySelectorAll('.live-lead-field-input-' + leadRef).forEach(el => { fieldsPayload[el.dataset.headerKey] = el.value; });
   let checkGroups = {};
-  document.querySelectorAll(`.live-lead-check-subset-${leadRef}`).forEach(el => {
+  document.querySelectorAll('.live-lead-check-subset-' + leadRef).forEach(el => {
     let mk = el.dataset.masterKey; if(!checkGroups[mk]) checkGroups[mk] = [];
     if(el.checked) checkGroups[mk].push(el.value);
   });
@@ -760,7 +776,6 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
     const r = await res.json(); 
     if (r.success) {
       alert("Modifications committed.");
-      // Real-time synchronization parameters enforcement to prevent display gap lags
       const updatedNameText = fieldsPayload["Name"] && fieldsPayload["Name"].trim() !== "" ? fieldsPayload["Name"] : "Unspecified";
       const updatedPositionText = fieldsPayload["Position"] && fieldsPayload["Position"].trim() !== "" ? fieldsPayload["Position"] : "Unspecified";
       
@@ -782,6 +797,7 @@ async function removeLeadRowEntirely(leadRef) {
 
 function exitCanvasToCardView() {
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
+  document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
   document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
   if(currentActiveModuleContext === "CARD") document.getElementById("step1-card-capture-block").style.display = "block"; 
   if(currentActiveModuleContext === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "block";
@@ -813,8 +829,8 @@ function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
       </div>`;
     box.appendChild(card);
     
-    document.getElementById(`trigger-inner-edit-fup-${leadRef}-${f.num}`).onclick = function() { editIsolatedFollowUpItem(leadRef, scopeNode, f); };
-    document.getElementById(`trigger-inner-delete-fup-${leadRef}-${f.num}`).onclick = function() { removeIsolatedFollowUpItem(leadRef, f.num); };
+    document.getElementById('trigger-inner-edit-fup-' + leadRef + '-' + f.num).onclick = function() { editIsolatedFollowUpItem(leadRef, scopeNode, f); };
+    document.getElementById('trigger-inner-delete-fup-' + leadRef + '-' + f.num).onclick = function() { removeIsolatedFollowUpItem(leadRef, f.num); };
   });
 }
 
