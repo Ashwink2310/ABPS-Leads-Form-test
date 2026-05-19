@@ -481,6 +481,9 @@ function collapseNewEntryDropdownFormExplicitly() {
 async function triggerSequentialSearch(triggerSourceMode) {
   let comp = ""; let targetName = "";
   let btn = null;
+
+  document.getElementById("step2-new-entry-dropdown").style.display = "none";
+  document.getElementById("missing-trigger-notice-block").style.display = "none";
   
   if (triggerSourceMode === "CARD") {
     comp = document.getElementById("f-company").value;
@@ -796,11 +799,24 @@ async function removeLeadRowEntirely(leadRef) {
 }
 
 function exitCanvasToCardView() {
+  // 1. Hide the active interaction canvas
+  document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
+  
+  // 2. Hide the new entry form if it was open
+  document.getElementById("step2-new-entry-dropdown").style.display = "none";
+  
+  // 3. Reset header controls
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
   document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
-  document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
-  if(currentActiveModuleContext === "CARD") document.getElementById("step1-card-capture-block").style.display = "block"; 
-  if(currentActiveModuleContext === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "block";
+  document.getElementById("staged-back-button-row").style.display = "none";
+
+  // 4. Restore original context visibility
+  if(currentActiveModuleContext === "CARD") {
+    document.getElementById("step1-card-capture-block").style.display = "block"; 
+  }
+  if(currentActiveModuleContext === "DROPDOWN") {
+    document.getElementById("company-dropdown-selector-block").style.display = "block";
+  }
 }
 
 function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
