@@ -15,8 +15,8 @@
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
   .auth-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; }
-  label.field-label { display: block; font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 10px 0 3px; }
-  input, select, textarea { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .88rem; background: #fff; color: var(--text); }
+  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 8px 0 2px; }
+  input, select, textarea { width: 100%; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
   
   header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 12px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
   header h1 { font-size: 1.1rem; font-weight: 700; }
@@ -32,30 +32,31 @@
   
   .workspace-panel { padding: 10px 12px; }
   .section { background: var(--card); border-radius: var(--radius); margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
-  .section-header { background: var(--brand); color: #fff; padding: 8px 14px; font-size: .78rem; font-weight: 700; text-transform: uppercase; }
-  .section-body { padding: 14px; }
+  .section-header { background: var(--brand); color: #fff; padding: 6px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+  .section-body { padding: 12px; }
   
-  /* Compact 4-Column Responsive Layout Grid Grid Pattern */
-  .compact-fields-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 10px; text-align: left; }
-  @media(min-width: 480px) { .compact-fields-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media(min-width: 768px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
-  .grid-cell-item { display: flex; flex-direction: column; }
+  /* Ultra-Compact Micro Dashboard Data Grid Container */
+  .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; text-align: left; }
+  @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media(min-width: 900px) { .compact-fields-grid { grid-template-columns: repeat(6, 1fr); } }
+  .grid-cell-item { display: flex; flex-direction: column; background: #f8fafc; padding: 4px 6px; border: 1px solid #e2e8f0; border-radius: 4px; }
+  .grid-cell-item label { font-size: 0.62rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
+  .grid-cell-item input { border: none; padding: 2px 0; font-size: 0.8rem; font-weight: 600; background: transparent; }
+  .grid-cell-item input:focus { outline: none; background: #fff; padding-left: 2px; }
   
   .pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
   .pill-group input { display: none; }
-  .pill-group label { padding: 5px 10px; border: 1.5px solid var(--border); border-radius: 16px; font-size: .75rem; cursor: pointer; background: #fff; }
+  .pill-group label { padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 14px; font-size: .72rem; cursor: pointer; background: #fff; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
   
-  /* Elegant Navigation Headers Buttons */
-  .navigation-action-header-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #e2e8f0; border-radius: var(--radius); margin-bottom: 14px; }
-  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .navigation-action-header-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: #e2e8f0; border-radius: var(--radius); margin-bottom: 12px; }
+  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
   .nav-btn-styled:hover { background: var(--brand-dk); }
   
-  .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.88rem; }
+  .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; }
   .btn-sub { background: var(--brand); color: #fff; }
   .btn-ai { background: var(--accent); color: #fff; margin-bottom: 12px; }
-  .btn-warn { background: var(--warn); color: #fff; }
-  .btn-toggle-view { background: #6b7a8d; color: #fff; width: auto; display: inline-flex; padding: 6px 12px; font-size: 0.78rem; margin-bottom: 10px; }
+  .btn-warn { background: #4a5568; color: #fff; } /* Streamlined Slate Secondary State Text Elements */
   
   .card-row { display: flex; gap: 10px; margin-bottom: 10px; }
   .card-box { flex: 1; border: 2px dashed var(--border); padding: 12px; text-align: center; font-size: .78rem; cursor: pointer; border-radius: 4px; }
@@ -67,7 +68,7 @@
   
   .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f1f5f9; padding: 12px; border-radius: 4px; margin: 8px 0; text-align: left; }
   .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 10px; border-radius: 4px; text-align: left; margin-bottom: 6px; }
-  .spinner { width: 14; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: inline-block; }
+  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .no-btn { padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 4px; background: #fff; cursor: pointer; font-size: .75rem; }
   .no-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
@@ -110,7 +111,7 @@
 
   <div id="module-workspace-container" style="display: none;">
     <div class="navigation-action-header-row">
-      <div style="font-weight:700; font-size:0.85rem; color:var(--text);">Workspace Node Console</div>
+      <div style="font-weight:700; font-size:0.82rem; color:var(--text); text-transform:uppercase;">Console</div>
       <button class="nav-btn-styled" onclick="returnToDashboard()">Return to Main Dashboard</button>
     </div>
     
@@ -141,7 +142,7 @@
       </div>
 
       <div id="missing-trigger-notice-block" style="display:none; padding:20px; text-align:center; background:white; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:15px;">
-        <p style="color:var(--muted); margin-bottom:12px; font-size:0.9rem;">No record matched your target company query parameters.</p>
+        <p style="color:var(--muted); margin-bottom:12px; font-size:0.88rem;">No record matched your target company query parameters.</p>
         <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
       </div>
 
@@ -236,7 +237,7 @@
 
         <div class="section">
           <div class="section-header">Company Information</div>
-          <div class="section-body" id="leads-editable-fields-box">
+          <div class="section-body" id="leads-editable-fields-box" style="padding:10px;">
             </div>
         </div>
 
@@ -244,19 +245,17 @@
           <div class="section-header">Follow-Up Tracking</div>
           <div class="section-body">
             <div style="display:flex; gap:10px; margin-bottom:12px;">
-              <button class="btn btn-ai" id="toggle-fup-form-btn" onclick="toggleSubPanelVisibility('fup-form-expansion', this, '+ Create New Follow-Up')" style="margin:0; width:auto;">+ Create New Follow-Up</button>
-              <button class="btn btn-warn" id="collapse-fup-panel-btn" onclick="collapseSubPanelExplicitly('fup-form-expansion', 'toggle-fup-form-btn', '+ Create New Follow-Up')" style="display:none; margin:0; width:auto; background:#718096;">Collapse</button>
+              <button class="btn btn-ai" id="toggle-fup-form-btn" onclick="toggleSubPanelVisibility('fup-form-expansion', this)" style="margin:0; width:auto;">+ Create New Follow-Up</button>
+              <button class="btn btn-warn" id="collapse-fup-panel-btn" onclick="collapseSubPanelExplicitly('fup-form-expansion', 'toggle-fup-form-btn')" style="display:none; margin:0; width:auto;">Collapse</button>
             </div>
             
             <div id="fup-form-expansion" style="display:none;" class="fup-grid-inputs">
               <input type="hidden" id="fup-edit-id" />
               <div><label class="field-label">Follow-Up Number</label><input type="number" id="fup-num-input" readonly style="background:#e2e8f0; cursor:not-allowed;" /></div>
               <div><label class="field-label">Lead ID</label><input type="text" id="fup-leadid-input" readonly style="background:#e2e8f0; cursor:not-allowed;" /></div>
-              <div><label class="field-label">Date</label><input type="date" id="fup-date-input" /></div>
-              <div><label class="field-label">Time</label><input type="time" id="fup-time-input" /></div>
               <div><label class="field-label">User / Engineer</label><select id="fup-eng-select"></select></div>
-              <div style="grid-column: span 2;"><label class="field-label">Interaction Notes</label><textarea id="fup-notes-input"></textarea></div>
               <div><label class="field-label">Next Target Date</label><input type="date" id="fup-nexttarget-input" /></div>
+              <div style="grid-column: span 2;"><label class="field-label">Interaction Notes *</label><textarea id="fup-notes-input" placeholder="Type log remarks..."></textarea></div>
               <div><label class="field-label">NQ1</label><input type="text" id="fup-nq1" /></div>
               <div><label class="field-label">NQ2</label><input type="text" id="fup-nq2" /></div>
               <div><label class="field-label">NQ3</label><input type="text" id="fup-nq3" /></div>
@@ -275,17 +274,19 @@
           <div class="section-header">Engineer Tasks</div>
           <div class="section-body">
             <div style="display:flex; gap:10px; margin-bottom:12px;">
-              <button class="btn btn-ai" id="toggle-task-form-btn" onclick="toggleSubPanelVisibility('task-form-expansion', this, '+ Create New Task')" style="margin:0; width:auto; background:transparent; border:1px solid var(--brand); color:var(--brand);">+ Create New Task</button>
-              <button class="btn btn-warn" id="collapse-task-panel-btn" onclick="collapseSubPanelExplicitly('task-form-expansion', 'toggle-task-form-btn', '+ Create New Task')" style="display:none; margin:0; width:auto; background:#718096;">Collapse</button>
+              <button class="btn btn-ai" id="toggle-task-form-btn" onclick="toggleSubPanelVisibility('task-form-expansion', this)" style="margin:0; width:auto; background:transparent; border:1px solid var(--brand); color:var(--brand);">+ Create New Task</button>
+              <button class="btn btn-warn" id="collapse-task-panel-btn" onclick="collapseSubPanelExplicitly('task-form-expansion', 'toggle-task-form-btn')" style="display:none; margin:0; width:auto;">Collapse</button>
             </div>
             
             <div id="task-form-expansion" style="display:none;" class="task-grid-inputs">
               <input type="hidden" id="task-edit-id" />
-              <div><label class="field-label">Engineer</label><select id="task-eng-select"></select></div>
+              <input type="hidden" id="task-fup-linked-num" />
+              <div><label class="field-label">Engineer Name</label><select id="task-eng-select"></select></div>
               <div><label class="field-label">Task Type</label><select id="task-type-select"><option>Task A</option><option>Task B</option><option>Task C</option></select></div>
               <div style="grid-column: span 2;"><label class="field-label">Task Description</label><textarea id="task-desc-input"></textarea></div>
               <div><label class="field-label">Target Time</label><select id="task-shift-select"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
-              <div><label class="field-label">Date</label><input type="date" id="task-date-input" /></div>
+              <div><label class="field-label">Target Date</label><input type="date" id="task-targetdate-input" /></div>
+              <div><label class="field-label">Task Status</label><select id="task-status-select"><option>Pending</option><option>In Progress</option><option>Completed</option></select></div>
               <button class="btn btn-sub" id="save-task-btn" onclick="commitTaskItem()" style="grid-column:span 2; margin-top:5px;">Save Task</button>
             </div>
 
@@ -303,8 +304,8 @@
 </div>
 
 <script>
-// --- CONFIGURATION ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwVl07Kdjla6azCA0gf9aWeTi6aIhGsmicxk2vyvapjEwXDkLXxWj4NgH3N8cQsjUXiJQ/exec"; // ← Paste your deployed Google Apps Script Web App URL string here
+// --- CENTRAL CONFIGURATION HUB ---
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzaKTseVeAeMZPqSEpBEZ3BQQwWjQdr7lMpEhw0VyMmc8OkP7VspisSTMQgbNm4CkRgpQ/exec"; // ← Paste your deployed Google Apps Script Web App URL string here
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
@@ -312,39 +313,31 @@ let activeSearchRef = "";
 let activeSearchCompany = "";
 let currentFollowUpCount = 0;
 
-// Dynamic Helper to process timestamps into clean IST strings
+// Dynamic Timestamp Parser to output absolute clean IST strings
 function cleanISTTimestamp(rawStr) {
   if (!rawStr) return "None";
-  const str = rawStr.toString().trim();
+  let str = rawStr.toString().trim();
   if (!str) return "None";
+  if (str.indexOf("T") === -1 && (str.indexOf("am") !== -1 || str.indexOf("pm") !== -1)) return str;
   
   let dateObj = new Date(str);
-  if (isNaN(dateObj.getTime())) {
-    // If standard parsing fails, evaluate raw string fragments directly
-    return str;
-  }
+  if (isNaN(dateObj.getTime())) return str;
   
-  // Extract time parts using absolute local values or explicit timezone offsets
   let year = dateObj.getFullYear();
   if (year === 1899) {
-    // Handle standalone Excel/Sheets time leakage rows gracefully
-    let hours = dateObj.getHours();
-    let minutes = dateObj.getMinutes();
+    let hours = dateObj.getHours(); let minutes = dateObj.getMinutes();
     let ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12; hours = hours ? hours : 12;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    return hours + ":" + minutes + " " + ampm;
+    return hours + ":" + String(minutes).padStart(2,'0') + " " + ampm;
   }
 
   let month = String(dateObj.getMonth() + 1).padStart(2, '0');
   let day = String(dateObj.getDate()).padStart(2, '0');
-  let hours = dateObj.getHours();
-  let minutes = dateObj.getMinutes();
+  let hours = dateObj.getHours(); let minutes = dateObj.getMinutes();
   let ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12; hours = hours ? hours : 12;
-  minutes = minutes < 10 ? '0' + minutes : minutes;
   
-  return year + "-" + month + "-" + day + " " + String(hours).padStart(2, '0') + ":" + minutes + " " + ampm;
+  return year + "-" + month + "-" + day + " " + String(hours).padStart(2, '0') + ":" + String(minutes).padStart(2, '0') + " " + ampm;
 }
 
 window.onload = function() {
@@ -355,7 +348,7 @@ window.onload = function() {
 async function executeLogin() {
   const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
   const btn = document.getElementById("login-btn");
-  if (!userField.value || !passField.value) return alert("Complete credential fields.");
+  if (!userField.value || !passField.value) return alert("Complete credential sets.");
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verifying...';
   try {
@@ -402,24 +395,19 @@ function populateEngineerDropdowns() {
 function navigateToModule(key) { if (!userPermissions[key]) return alert("Denied."); document.getElementById("dashboard-view").style.display = "none"; document.getElementById("module-workspace-container").style.display = "block"; document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); document.getElementById("workspace-" + key).style.display = "block"; resetSequentialFormState(); }
 function returnToDashboard() { showAppView(); }
 
-// ── EXPANDABLE DISPATCH SECTIONS SUB-PANEL UI CONTROL ARTIFACTS ──────────────
-function toggleSubPanelVisibility(panelId, triggeringBtn, initialText) {
+function toggleSubPanelVisibility(panelId, triggeringBtn) {
   const panel = document.getElementById(panelId);
   const suffix = panelId.startsWith("fup") ? "fup" : "task";
   const collapseBtn = document.getElementById(`collapse-${suffix}-panel-btn`);
-  
   if (panel.style.display === "none") {
     if(panelId === "fup-form-expansion") showNewFollowUpForm();
     if(panelId === "task-form-expansion") showNewTaskForm();
-    panel.style.display = "grid";
-    triggeringBtn.style.display = "none";
-    collapseBtn.style.display = "inline-flex";
+    panel.style.display = "grid"; triggeringBtn.style.display = "none"; collapseBtn.style.display = "inline-flex";
   }
 }
 
-function collapseSubPanelExplicitly(panelId, openBtnId, originalText) {
-  document.getElementById(panelId).style.display = "none";
-  document.getElementById(openBtnId).style.display = "inline-flex";
+function collapseSubPanelExplicitly(panelId, openBtnId) {
+  document.getElementById(panelId).style.display = "none"; document.getElementById(openBtnId).style.display = "inline-flex";
   const suffix = panelId.startsWith("fup") ? "fup" : "task";
   document.getElementById(`collapse-${suffix}-panel-btn`).style.display = "none";
 }
@@ -456,73 +444,47 @@ async function triggerSequentialSearch() {
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Search Database"; }
 }
 
-// ── COMPACT 4-COLUMN DATA ARCHITECTURE MATRIX ──────────────────────────────
 function buildLeadsEditableFormCanvas(leadMap) {
-  const container = document.getElementById("leads-editable-fields-box");
-  container.innerHTML = "";
-  
-  const gridWrapper = document.createElement("div");
-  gridWrapper.className = "compact-fields-grid";
-  
+  const container = document.getElementById("leads-editable-fields-box"); container.innerHTML = "";
+  const gridWrapper = document.createElement("div"); gridWrapper.className = "compact-fields-grid";
   const excludeList = ["Lead ID", "Timestamp", "Card Image Link(s)"];
   
   Object.keys(leadMap).forEach(key => {
     if (excludeList.indexOf(key) !== -1) return;
-    
-    let itemCell = document.createElement("div");
-    itemCell.className = "grid-cell-item";
-    
-    let label = document.createElement("label"); label.className = "field-label"; label.textContent = key;
+    let itemCell = document.createElement("div"); itemCell.className = "grid-cell-item";
+    let label = document.createElement("label"); label.textContent = key;
     let input = document.createElement("input"); input.type = "text"; input.className = "live-lead-field-input";
     input.dataset.headerKey = key; input.value = leadMap[key] || "";
-    
-    itemCell.appendChild(label);
-    itemCell.appendChild(input);
-    gridWrapper.appendChild(itemCell);
+    itemCell.appendChild(label); itemCell.appendChild(input); gridWrapper.appendChild(itemCell);
   });
-  
   container.appendChild(gridWrapper);
   
-  let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; id="save-leads-matrix-btn";
-  saveBtn.style.marginTop = "15px"; saveBtn.textContent = "Save Modifications";
-  saveBtn.onclick = commitLeadsTableFieldMutations;
-  container.appendChild(saveBtn);
+  let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; saveBtn.id = "save-leads-matrix-btn";
+  saveBtn.style.marginTop = "12px"; saveBtn.textContent = "Save Modifications";
+  saveBtn.onclick = commitLeadsTableFieldMutations; container.appendChild(saveBtn);
 }
 
 async function commitLeadsTableFieldMutations() {
-  const btn = document.getElementById("save-leads-matrix-btn") || this;
-  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
-  
+  const btn = document.getElementById("save-leads-matrix-btn");
+  if(btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...'; }
   let fieldsPayload = {};
-  document.querySelectorAll(".live-lead-field-input").forEach(el => {
-    fieldsPayload[el.dataset.headerKey] = el.value;
-  });
-  
+  document.querySelectorAll(".live-lead-field-input").forEach(el => { fieldsPayload[el.dataset.headerKey] = el.value; });
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadFull", leadRef: activeSearchRef, fields: fieldsPayload }) });
     const r = await res.json(); if (r.success) alert("Modifications saved.");
   } catch(e) { alert(e.message); } finally { if(btn) { btn.disabled = false; btn.innerHTML = "Save Modifications"; } }
 }
 
-function exitCanvasToCardView() {
-  document.getElementById("step2-inline-interaction-canvas").style.display = "none";
-  document.getElementById("step1-card-capture-block").style.display = "block";
-}
-
+function exitCanvasToCardView() { document.getElementById("step2-inline-interaction-canvas").style.display = "none"; document.getElementById("step1-card-capture-block").style.display = "block"; }
 function resetSequentialFormState() {
-  document.getElementById("step1-card-capture-block").style.display = "block";
-  document.getElementById("step2-new-entry-dropdown").style.display = "none";
-  document.getElementById("step2-inline-interaction-canvas").style.display = "none";
-  document.getElementById("missing-trigger-notice-block").style.display = "none";
-  document.getElementById("success-screen").style.display = "none";
-  document.getElementById("remaining-sections-form").style.display = "block";
-  fileFront = null; fileBack = null;
-  document.getElementById("front-box").textContent = "📷 Front Side"; document.getElementById("front-box").classList.remove("done");
+  document.getElementById("step1-card-capture-block").style.display = "block"; document.getElementById("step2-new-entry-dropdown").style.display = "none";
+  document.getElementById("step2-inline-interaction-canvas").style.display = "none"; document.getElementById("missing-trigger-notice-block").style.display = "none";
+  document.getElementById("success-screen").style.display = "none"; document.getElementById("remaining-sections-form").style.display = "block";
+  fileFront = null; fileBack = null; document.getElementById("front-box").textContent = "📷 Front Side"; document.getElementById("front-box").classList.remove("done");
   document.getElementById("back-box").textContent = "📷 Back Side (Opt)"; document.getElementById("back-box").classList.remove("done");
   document.getElementById("parse-btn").disabled = true;
 }
 
-// ── ACCORDION TIMELINE REAL-TIME SANITIZER ──────────────────────────────────
 function renderFollowUpTimeline(list) {
   const box = document.getElementById("timeline-box");
   box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No historical follow-ups recorded.</p>' : '';
@@ -530,26 +492,25 @@ function renderFollowUpTimeline(list) {
     let card = document.createElement("div"); card.className = "fup-item-card";
     card.innerHTML = `
       <div class="fup-item-header" onclick="toggleFollowUpAccordion(this)">
-        <span>Follow-Up ${f.num} (${cleanISTTimestamp(f.date)})</span>
+        <span>Follow-Up ${f.id} (${cleanISTTimestamp(f.date)})</span>
         <span style="color:var(--brand); font-size:0.75rem;">Click to view details ▾</span>
       </div>
       <div class="fup-item-body">
         <div style="font-size:0.82rem; line-height:1.5; color:var(--muted); margin-bottom:8px;">
-          <strong>Lead ID:</strong> ${f.id}<br/><strong>Time:</strong> ${cleanISTTimestamp(f.time)}<br/><strong>Engineer:</strong> ${f.eng}<br/>
+          <strong>Lead ID:</strong> ${f.num}<br/><strong>Actual Time:</strong> ${cleanISTTimestamp(f.time)}<br/><strong>Engineer:</strong> ${f.eng}<br/>
           <strong>Next Target Date:</strong> ${cleanISTTimestamp(f.nextDate)}<br/>
           <strong>NQ1:</strong> ${f.nq1} | <strong>NQ2:</strong> ${f.nq2} | <strong>NQ3:</strong> ${f.nq3}<br/>
           <strong>NQ4:</strong> ${f.nq4} | <strong>NQ5:</strong> ${f.nq5} | <strong>NQ6:</strong> ${f.nq6}
         </div>
         <div style="font-size:0.88rem; color:#2d3748; padding:8px 0; border-top:1px solid #edf2f7;"><strong>Notes:</strong> ${f.notes}</div>
-        <button class="nav-btn-styled" onclick="editFollowUpItem('${f.id}',${f.num},'${f.date}','${f.time}','${f.eng}',\`${f.notes.replace(/'/g, "\\'")}\`,'${f.nextDate}','${f.nq1}','${f.nq2}','${f.nq3}','${f.nq4}','${f.nq5}','${f.nq6}')" style="margin-top:5px; font-size:0.72rem; padding:4px 8px;">Edit This Follow-Up</button>
+        <button class="nav-btn-styled" onclick="editFollowUpItem('${f.id}','${f.num}','${f.date}','${f.time}','${f.eng}',\`${f.notes.replace(/'/g, "\\'")}\`,'${f.nextDate}','${f.nq1}','${f.nq2}','${f.nq3}','${f.nq4}','${f.nq5}','${f.nq6}')" style="margin-top:5px; font-size:0.72rem; padding:4px 8px;">Edit This Follow-Up</button>
       </div>`;
     box.appendChild(card);
   });
 }
 
 function toggleFollowUpAccordion(headerEl) {
-  const body = headerEl.nextElementSibling;
-  const isVisible = body.style.display === "block";
+  const body = headerEl.nextElementSibling; const isVisible = body.style.display === "block";
   body.style.display = isVisible ? "none" : "block";
   headerEl.querySelector("span:last-child").textContent = isVisible ? "Click to view details ▾" : "Collapse ▴";
 }
@@ -558,7 +519,6 @@ function showNewFollowUpForm() {
   document.getElementById("fup-edit-id").value = "";
   document.getElementById("fup-num-input").value = currentFollowUpCount + 1;
   document.getElementById("fup-leadid-input").value = activeSearchRef;
-  document.getElementById("fup-date-input").value = ""; document.getElementById("fup-time-input").value = "";
   document.getElementById("fup-notes-input").value = ""; document.getElementById("fup-nexttarget-input").value = "";
   document.getElementById("fup-nq1").value = ""; document.getElementById("fup-nq2").value = "";
   document.getElementById("fup-nq3").value = ""; document.getElementById("fup-nq4").value = "";
@@ -566,17 +526,10 @@ function showNewFollowUpForm() {
 }
 
 function editFollowUpItem(id, num, date, time, eng, notes, nextTarget, n1, n2, n3, n4, n5, n6) {
-  document.getElementById("fup-edit-id").value = id; document.getElementById("fup-num-input").value = num;
-  document.getElementById("fup-leadid-input").value = activeSearchRef;
-  
-  // Strip timezone attachments from picker bindings safely
-  document.getElementById("fup-date-input").value = date ? date.split("T")[0] : ""; 
-  document.getElementById("fup-time-input").value = time ? (time.indexOf("T") !== -1 ? time.split("T")[1].substring(0,5) : time) : "";
-  
-  document.getElementById("fup-eng-select").value = eng;
-  document.getElementById("fup-notes-input").value = notes; 
+  document.getElementById("fup-edit-id").value = id; // Holds primary identifier number context block keys
+  document.getElementById("fup-num-input").value = id; document.getElementById("fup-leadid-input").value = activeSearchRef;
+  document.getElementById("fup-eng-select").value = eng; document.getElementById("fup-notes-input").value = notes;
   document.getElementById("fup-nexttarget-input").value = nextTarget ? nextTarget.split("T")[0] : "";
-  
   document.getElementById("fup-nq1").value = n1; document.getElementById("fup-nq2").value = n2;
   document.getElementById("fup-nq3").value = n3; document.getElementById("fup-nq4").value = n4;
   document.getElementById("fup-nq5").value = n5; document.getElementById("fup-nq6").value = n6;
@@ -589,36 +542,32 @@ function editFollowUpItem(id, num, date, time, eng, notes, nextTarget, n1, n2, n
 async function commitFollowUpItem() {
   const btn = document.getElementById("save-fup-btn");
   const followUpData = {
-    id: document.getElementById("fup-edit-id").value, leadRef: activeSearchRef, company: activeSearchCompany,
-    num: document.getElementById("fup-num-input").value, date: document.getElementById("fup-date-input").value,
-    time: document.getElementById("fup-time-input").value, eng: document.getElementById("fup-eng-select").value,
+    id: document.getElementById("fup-edit-id").value || "NEW", leadRef: activeSearchRef, company: activeSearchCompany,
+    num: document.getElementById("fup-num-input").value, eng: document.getElementById("fup-eng-select").value,
     notes: document.getElementById("fup-notes-input").value, nextDate: document.getElementById("fup-nexttarget-input").value,
     nq1: document.getElementById("fup-nq1").value, nq2: document.getElementById("fup-nq2").value, nq3: document.getElementById("fup-nq3").value,
     nq4: document.getElementById("fup-nq4").value, nq5: document.getElementById("fup-nq5").value, nq6: document.getElementById("fup-nq6").value
   };
-  if (!followUpData.date || !followUpData.notes) return alert("Please fill out Date and Interaction Notes.");
+  if (!followUpData.notes) return alert("Interaction Notes parameter required.");
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveFollowUp", followUpData }) });
     const r = await res.json();
-    if (r.success) { 
-      collapseSubPanelExplicitly('fup-form-expansion', 'toggle-fup-form-btn', '+ Create New Follow-Up');
-      refreshCanvasDataNodes(); 
-    }
+    if (r.success) { collapseSubPanelExplicitly('fup-form-expansion', 'toggle-fup-form-btn'); refreshCanvasDataNodes(); }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Follow-Up"; }
 }
 
-// ── FIXED ACTION: ENGINEER TASKS RETRIEVAL SUB-SYSTEMS ──────────────────────
 function renderTaskItemsList(list) {
   const box = document.getElementById("task-cards-box");
-  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No tasks assigned.</p>' : '';
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No tasks mapped.</p>' : '';
   list.forEach(t => {
     let div = document.createElement("div"); div.className = "task-item-card";
-    div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Target Time: ${t.shift} | Date: ${cleanISTTimestamp(t.date)}</small>
-                     <p style="font-size:0.82rem; margin-top:4px; color:var(--muted);"><strong>Desc:</strong> ${t.desc || 'None'}</p>
+    div.innerHTML = `<strong>${t.type}</strong> (FUP Ref: ${t.fupNum}) - ${t.eng}<br/><small>Time Shift: ${t.shift} | Target Date: ${cleanISTTimestamp(t.targetDate)}</small>
+                     <p style="font-size:0.82rem; margin-top:4px; color:var(--text);"><strong>Desc:</strong> ${t.desc || 'None'}</p>
+                     <div style="font-size:0.75rem; font-weight:bold; color:var(--brand); margin-top:4px;">Status: ${t.status}</div>
                      <div style="margin-top:8px; display:flex; gap:6px;">
-                       <button class="nav-btn-styled" onclick="editTaskItem('${t.id}','${t.eng}','${t.type}',\`${(t.desc||'').replace(/'/g,"\\'")}\`,'${t.shift}','${t.date}')" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
+                       <button class="nav-btn-styled" onclick="editTaskItem('${t.id}','${t.fupNum}','${t.eng}','${t.type}',\`${(t.desc||'').replace(/'/g,"\\'")}\`,'${t.shift}','${t.targetDate}','${t.status}')" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
                        <button class="nav-btn-styled" onclick="removeTaskItem('${t.id}')" style="font-size:0.75rem; background:var(--warn); padding:2px 6px;">Delete</button>
                      </div>`;
     box.appendChild(div);
@@ -627,14 +576,16 @@ function renderTaskItemsList(list) {
 
 function showNewTaskForm() {
   document.getElementById("task-edit-id").value = ""; document.getElementById("task-desc-input").value = "";
-  document.getElementById("task-date-input").value = "";
+  document.getElementById("task-targetdate-input").value = ""; document.getElementById("task-fup-linked-num").value = currentFollowUpCount;
+  document.getElementById("task-status-select").value = "Pending";
 }
 
-function editTaskItem(id, eng, type, desc, shift, date) {
-  document.getElementById("task-edit-id").value = id; document.getElementById("task-eng-select").value = eng;
-  document.getElementById("task-type-select").value = type; document.getElementById("task-desc-input").value = desc;
-  document.getElementById("task-shift-select").value = shift; 
-  document.getElementById("task-date-input").value = date ? date.split("T")[0] : "";
+function editTaskItem(id, fupNum, eng, type, desc, shift, targetDate, status) {
+  document.getElementById("task-edit-id").value = id; document.getElementById("task-fup-linked-num").value = fupNum;
+  document.getElementById("task-eng-select").value = eng; document.getElementById("task-type-select").value = type;
+  document.getElementById("task-desc-input").value = desc; document.getElementById("task-shift-select").value = shift;
+  document.getElementById("task-targetdate-input").value = targetDate ? targetDate.split("T")[0] : "";
+  document.getElementById("task-status-select").value = status;
   
   document.getElementById("task-form-expansion").style.display = "grid";
   document.getElementById("toggle-task-form-btn").style.display = "none";
@@ -643,26 +594,31 @@ function editTaskItem(id, eng, type, desc, shift, date) {
 
 async function commitTaskItem() {
   const btn = document.getElementById("save-task-btn");
+  const editId = document.getElementById("task-edit-id").value;
   const taskData = {
-    id: document.getElementById("task-edit-id").value, leadRef: activeSearchRef, company: activeSearchCompany,
-    engineer: document.getElementById("task-eng-select").value, type: document.getElementById("task-type-select").value,
-    desc: document.getElementById("task-desc-input").value, shift: document.getElementById("task-shift-select").value, date: document.getElementById("task-date-input").value
+    id: editId || "NEW",
+    isNew: !editId,
+    fupNum: document.getElementById("task-fup-linked-num").value || currentFollowUpCount,
+    leadRef: activeSearchRef,
+    engineer: document.getElementById("task-eng-select").value,
+    type: document.getElementById("task-type-select").value,
+    desc: document.getElementById("task-desc-input").value,
+    shift: document.getElementById("task-shift-select").value,
+    targetDate: document.getElementById("task-targetdate-input").value,
+    status: document.getElementById("task-status-select").value
   };
-  if (!taskData.date) return alert("Provide a Target Date.");
+  if (!taskData.targetDate) return alert("Provide an explicit Target Date.");
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveTask", taskData }) });
     const r = await res.json();
-    if (r.success) { 
-      collapseSubPanelExplicitly('task-form-expansion', 'toggle-task-form-btn', '+ Create New Task');
-      refreshCanvasDataNodes(); 
-    }
+    if (r.success) { collapseSubPanelExplicitly('task-form-expansion', 'toggle-task-form-btn'); refreshCanvasDataNodes(); }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Task"; }
 }
 
 async function removeTaskItem(id) {
-  if (!confirm("Confirm removal?")) return;
+  if (!confirm("Confirm cancellation metrics?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: id }) });
     const r = await res.json(); if (r.success) refreshCanvasDataNodes();
@@ -677,7 +633,6 @@ async function refreshCanvasDataNodes() {
   } catch(e) { console.error(e.message); }
 }
 
-// ── CAPTURE FILE HANDLING SYSTEM BLOCKS ─────────────────────────────────────
 let fileFront = null, fileBack = null;
 document.getElementById('card-front').onchange = (e) => { fileFront = e.target.files[0]; document.getElementById('front-box').textContent = "Front ✅"; document.getElementById('front-box').classList.add('done'); document.getElementById('parse-btn').disabled = false; };
 document.getElementById('card-back').onchange = (e) => { fileBack = e.target.files[0]; document.getElementById('back-box').textContent = "Back ✅"; document.getElementById('back-box').classList.add('done'); };
