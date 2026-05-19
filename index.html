@@ -15,8 +15,8 @@
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
   .auth-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; }
-  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 8px 0 2px; }
-  input, select, textarea { width: 100%; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
+  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 6px 0 2px; }
+  input, select, textarea { width: 100%; padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
   
   header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 12px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
   header h1 { font-size: 1.1rem; font-weight: 700; }
@@ -30,72 +30,71 @@
   .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 20px; border-radius: var(--radius); cursor: pointer; font-weight: 700; }
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
   
-  .workspace-panel { padding: 5px 12px; }
-  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
-  .section-header { background: var(--brand); color: #fff; padding: 6px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
-  .section-body { padding: 10px; }
+  .workspace-panel { padding: 4px 12px; }
+  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
+  .section-header { background: var(--brand); color: #fff; padding: 5px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+  .section-body { padding: 8px; }
   
-  /* Highly Polished Mobile-Friendly Multi-Contact Row Grids */
-  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.02); }
-  .contact-summary-header-row { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 10px; margin-bottom: 12px; }
+  /* High contrast multi line directory styling block metrics rules updates */
+  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  .contact-summary-header-row { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px; }
   @media(min-width: 800px) { .contact-summary-header-row { flex-direction: row; justify-content: space-between; align-items: center; } }
   
-  /* Optimized font sizes on text blocks profiles rows */
-  .contact-summary-title-info { font-size: 0.95rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.6; }
-  .contact-summary-title-info .row-block-line { display: block; margin-bottom: 4px; }
-  @media(min-width: 800px) { .contact-summary-title-info .row-block-line { display: inline; margin-bottom: 0; } }
+  .contact-summary-title-info { font-size: 0.98rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; }
+  .contact-summary-title-info .row-block-line { display: inline-block; width: 100%; margin-bottom: 2px; }
+  @media(min-width: 800px) { .contact-summary-title-info .row-block-line { display: inline; width: auto; margin-bottom: 0; } }
   .contact-summary-title-info span { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #edf2f7; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
-  .contact-summary-title-info strong { margin-right: 18px; color: #1a202c; }
-  .directory-btn-actions-block { display: flex; gap: 8px; width: 100%; justify-content: flex-start; }
+  .contact-summary-title-info strong { margin-right: 20px; color: #111827; }
+  .directory-btn-actions-block { display: flex; gap: 6px; width: 100%; justify-content: flex-start; }
   @media(min-width: 800px) { .directory-btn-actions-block { width: auto; justify-content: flex-end; } }
 
-  .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; text-align: left; }
+  /* Zero Scroll Compact Form Layout Adjustments 100% Zoom Mode Optimized */
+  .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; text-align: left; }
   @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
   @media(min-width: 950px) { .compact-fields-grid { grid-template-columns: repeat(6, 1fr); } }
-  .grid-cell-item { display: flex; flex-direction: column; background: #f8fafc; padding: 4px 6px; border: 1px solid #e2e8f0; border-radius: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
-  .grid-cell-item label { font-size: 0.6rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
-  .grid-cell-item input, .grid-cell-item select, .grid-cell-item textarea { padding: 3px 4px; font-size: 0.8rem; font-weight: 600; border-radius: 3px; border: 1px solid var(--border); }
+  .grid-cell-item { display: flex; flex-direction: column; background: #f8fafc; padding: 3px 5px; border: 1px solid #e2e8f0; border-radius: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
+  .grid-cell-item label { font-size: 0.58rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
+  .grid-cell-item input, .grid-cell-item select, .grid-cell-item textarea { padding: 2px 4px; font-size: 0.78rem; font-weight: 600; border-radius: 3px; border: 1px solid var(--border); }
   
   .span-two-units { grid-column: span 2; }
-  .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 4px 0; }
+  .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 3px 0; }
   
-  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 1px; }
   .pill-group input { display: none; }
-  .pill-group label { padding: 4px 8px; border: 1.5px solid var(--border); border-radius: 14px; font-size: .72rem; cursor: pointer; background: #fff; white-space: nowrap; }
+  .pill-group label { padding: 3px 6px; border: 1.5px solid var(--border); border-radius: 12px; font-size: .7rem; cursor: pointer; background: #fff; white-space: nowrap; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
   
-  .navigation-action-header-row { display: flex; justify-content: flex-end; align-items: center; padding: 6px 12px; background: #ffffff; border-radius: 6px; margin-bottom: 10px; border: 1px solid var(--border); }
-  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
+  .navigation-action-header-row { display: flex; justify-content: flex-end; align-items: center; padding: 4px 10px; background: #ffffff; border-radius: 6px; margin-bottom: 8px; border: 1px solid var(--border); }
+  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
   .nav-btn-styled:hover { background: var(--brand-dk); }
   
-  .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; }
+  .btn { width: 100%; padding: 8px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.82rem; }
   .btn-sub { background: var(--brand); color: #fff; }
-  .btn-ai { background: var(--accent); color: #fff; margin-bottom: 12px; }
+  .btn-ai { background: var(--accent); color: #fff; margin-bottom: 8px; padding: 6px; }
   .btn-warn { background: #718096; color: #fff; }
   
-  /* Compact Scroll Prevention Treatment Bounds */
-  .system-runtime-inline-alert-callout { padding: 10px 14px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; text-align: left; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+  /* Fallback alert banners zero scroll placements layout properties */
+  .system-runtime-inline-alert-callout { padding: 8px 12px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; text-align: left; box-shadow: 0 1px 2px rgba(0,0,0,0.01); }
   @media(min-width: 600px) { .system-runtime-inline-alert-callout { flex-direction: row; justify-content: space-between; align-items: center; } }
-  .alert-callout-text-msg { font-size: 0.82rem; font-weight: 700; color: #dd6b20; line-height: 1.4; }
+  .alert-callout-text-msg { font-size: 0.8rem; font-weight: 700; color: #dd6b20; line-height: 1.3; }
 
-  #missing-trigger-notice-block { padding: 14px; text-align: center; background: white; border-radius: var(--radius); border: 1px solid var(--warn); margin: 0 0 12px; }
+  #missing-trigger-notice-block { padding: 10px; text-align: center; background: white; border-radius: var(--radius); border: 1px solid var(--warn); margin-bottom: 8px; }
+  #missing-trigger-notice-block p { font-size: 0.8rem; margin-bottom: 6px; }
 
-  .card-row { display: flex; gap: 10px; margin-bottom: 10px; }
-  .card-box { flex: 1; border: 2px dashed var(--border); padding: 12px; text-align: center; font-size: .78rem; cursor: pointer; border-radius: 4px; }
+  .card-row { display: flex; gap: 8px; margin-bottom: 6px; }
+  .card-box { flex: 1; border: 2px dashed var(--border); padding: 8px; text-align: center; font-size: .75rem; cursor: pointer; border-radius: 4px; }
   .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
   
-  .fup-item-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 6px; text-align: left; overflow: hidden; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
-  .fup-item-header { padding: 10px; background: #edf2f7; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; align-items: center; }
-  .fup-item-body { padding: 12px; display: none; border-top: 1px solid var(--border); background: #fff; }
+  .fup-item-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 4px; text-align: left; overflow: hidden; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
+  .fup-item-header { padding: 8px; background: #edf2f7; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; align-items: center; }
+  .fup-item-body { padding: 10px; display: none; border-top: 1px solid var(--border); background: #fff; }
   
-  .task-double-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; grid-column: span 2; }
-  .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f1f5f9; padding: 12px; border-radius: 4px; margin: 8px 0; text-align: left; }
-  .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 10px; border-radius: 4px; text-align: left; margin-bottom: 6px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
-  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: inline-block; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .no-btn { padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 4px; background: #fff; cursor: pointer; font-size: .75rem; }
+  .task-double-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; grid-column: span 2; }
+  .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #f1f5f9; padding: 10px; border-radius: 4px; margin: 6px 0; text-align: left; }
+  .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 8px; border-radius: 4px; text-align: left; margin-bottom: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
+  .no-btn { padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 4px; background: #fff; cursor: pointer; font-size: .72rem; }
   .no-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
-  .toggle-input-group { display: flex; gap: 6px; align-items: center; }
+  .toggle-input-group { display: flex; gap: 4px; align-items: center; }
 </style>
 </head>
 <body>
@@ -138,10 +137,9 @@
     </div>
     
     <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
-      
-      <div id="step1-card-capture-block" class="section" style="margin-bottom: 8px;">
+      <div id="step1-card-capture-block" class="section">
         <div class="section-header">Business Card Information</div>
-        <div class="section-body" style="padding: 10px;">
+        <div class="section-body" style="padding: 8px;">
           <div class="card-row">
             <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
             <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
@@ -150,127 +148,130 @@
           <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
           <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>Parse Card with AI</button>
           
-          <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter target company..." />
+          <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter company..." />
           <label class="field-label">Contact Name</label><input type="text" id="f-name" />
           <label class="field-label">Position</label><input type="text" id="f-position" />
           <label class="field-label">Phone</label><input type="tel" id="f-phone" />
           <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
           <label class="field-label">Email</label><input type="email" id="f-email" />
           <label class="field-label">Website</label><input type="url" id="f-website" />
-          <label class="field-label">Address</label><textarea id="f-address" style="min-height:38px;"></textarea>
+          <label class="field-label">Address</label><textarea id="f-address" style="min-height:35px;"></textarea>
           
-          <button class="btn btn-sub" id="gate-search-btn" onclick="triggerSequentialSearch()" style="margin-top:10px;">Search Database</button>
+          <button class="btn btn-sub" id="gate-search-btn" onclick="triggerSequentialSearch('CARD')" style="margin-top:8px;">Search Database</button>
         </div>
       </div>
-
-      <div id="missing-trigger-notice-block" style="display:none;">
-        <p style="color:#e53e3e; font-weight:700; margin-bottom:8px; font-size:0.88rem;">No record matched your target company parameters.</p>
-        <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:6px 16px;">Create New Entry</button>
-      </div>
-
-      <div id="step2-new-entry-dropdown" style="display: none;">
-        <div class="navigation-action-header-row" id="staged-back-button-row" style="display:none; background:#fffaf0; border:1px solid #dd6b20; margin-bottom:10px; padding:4px 10px;">
-          <span style="font-size:0.78rem; font-weight:700; color:#dd6b20;">Lead Capture Form Active</span>
-          <button class="nav-btn-styled" style="background:#718096; padding:4px 10px; font-size:0.75rem;" onclick="returnToDirectoryCardsFromFormView()">Back to Company Contacts List</button>
-        </div>
-
-        <div id="success-screen" style="display:none; text-align:center; padding:20px;">
-          <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:10px 0;"></p>
-          <button class="btn btn-sub" onclick="resetSequentialFormState()">Process Another Card</button>
-        </div>
-
-        <div id="remaining-sections-form">
-          <div class="section">
-            <div class="section-header">Section 1 — Meeting Details</div>
-            <div class="section-body">
-              <label class="field-label">Date of Meeting</label><input type="date" id="meetingDate" />
-              <label class="field-label">Time of Meeting</label><input type="time" id="meetingTime" />
-              <label class="field-label">Meeting Venue</label>
-              <div class="pill-group"><input type="radio" name="meetingVenue" value="Exhibition" id="mv1"><label for="mv1">Exhibition</label><input type="radio" name="meetingVenue" value="Customer Place" id="mv2"><label for="mv2">Customer Place</label></div>
-              <label class="field-label">Venue Name / City</label><input type="text" id="venueName" />
-              <label class="field-label">Additional Details</label><textarea id="additionalMeetingDetails"></textarea>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-header">Section 2 — Technical Details</div>
-            <div class="section-body">
-              <label class="field-label">ABPS Business Vertical</label>
-              <div class="pill-group"><input type="radio" name="businessVertical" value="Industrial" id="bv1"><label for="bv1">Industrial</label><input type="radio" name="businessVertical" value="Power" id="bv2"><label for="bv2">Power</label></div>
-              <label class="field-label">Type of Industry</label><input type="text" id="industry" />
-              <label class="field-label">Qualification (Multiple)</label>
-              <div class="pill-group"><input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label><input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label></div>
-              <div id="vendor-fields" style="display:none; margin-top:10px;"><label class="field-label">Materials Name</label><input type="text" id="materialsName" /></div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-header">Section 3 — Area of Concerns</div>
-            <div class="section-body">
-              <label class="field-label">Low Power Factor Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="lpi" onclick="toggleNo(this)">No</button><input type="text" id="lpi" oninput="clearNo(this)" /></div>
-              <label class="field-label">High Electricity Bill Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hbi" onclick="toggleNo(this)">No</button><input type="text" id="hbi" oninput="clearNo(this)" /></div>
-              <label class="field-label">Harmonics Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hi" onclick="toggleNo(this)">No</button><input type="text" id="hi" oninput="clearNo(this)" /></div>
-              <label class="field-label">Transformer Heating Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="thi" onclick="toggleNo(this)">No</button><input type="text" id="thi" oninput="clearNo(this)" /></div>
-              <label class="field-label">Grid Stability Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
-              <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
-              <label class="field-label">Voltage Level</label><div class="pill-group"><input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label></div>
-              <label class="field-label">Capacity Details</label>
-              <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" style="margin-bottom:4px;" />
-              <input type="text" id="rdMva" placeholder="Running Demand (MVA)" style="margin-bottom:4px;" />
-              <input type="text" id="avgPf" placeholder="Monthly Average Power Factor" />
-              <label class="field-label">Problem Observed</label><input type="text" id="problemObserved" />
-              <label class="field-label">Technical Discussion Summary</label><textarea id="techSummary"></textarea>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-header">Section 4 — Requirement</div>
-            <div class="section-body">
-              <label class="field-label">Existing Project</label><input type="text" id="epInput" />
-              <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
-              <label class="field-label">Products Discussed</label><div class="pill-group"><input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label></div>
-              <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
-              <label class="field-label">Expected Tender Date</label><input type="date" id="tenderDate" />
-              <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
-              <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
-              <label class="field-label">Approx Business Potential</label><div class="pill-group"><input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label></div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-header">Section 5 — Action Plan</div>
-            <div class="section-body">
-              <label class="field-label">Send Company Profile</label><select id="act1"><option>No</option><option>Yes</option></select>
-              <label class="field-label">Send Technical Presentation</label><select id="act2"><option>No</option><option>Yes</option></select>
-              <label class="field-label">Arrange Site Visit</label><select id="act3"><option>No</option><option>Yes</option></select>
-              <label class="field-label">Get Enquiry</label><select id="act4"><option>No</option><option>Yes</option></select>
-              <label class="field-label">Send Offer</label><select id="actOffer"><option value="No">No</option><option value="Send Budgetary Offer">Send Budgetary Offer</option><option value="Send Techno-Commercial Offer">Send Techno-Commercial Offer</option></select>
-              <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-header">Section 6 — Engineer Info</div>
-            <div class="section-body">
-              <label class="field-label">Assign Creator Name</label><select id="engName"><option value="">Loading Dynamic Listing...</option></select>
-            </div>
-          </div>
-          <button class="btn btn-sub" id="submit-btn" onclick="submitLead()">Submit New Account Entry</button>
-        </div>
-      </div>
-
-      <div id="step2-inline-interaction-canvas" style="display: none;">
-        <div style="margin-bottom:12px; text-align:left;">
-          <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568;">Back to Search</button>
-        </div>
-
-        <div id="split-missing-person-banner-hook"></div>
-        <div id="multi-contact-records-container"></div>
-      </div>
-
     </div>
 
-    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;"><h3>Search Company Workspace</h3></div>
+    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;">
+      <div id="company-dropdown-selector-block" class="section">
+        <div class="section-header">Choose Target Company Profile</div>
+        <div class="section-body" style="padding: 10px; text-align: left;">
+          <label class="field-label">Select Company Entry Portfolio</label>
+          <select id="lookup-module-company-dropdown" style="margin-bottom: 12px;"><option value="">Loading unique corporate logs...</option></select>
+          <button class="btn btn-sub" id="lookup-module-search-btn" onclick="triggerSequentialSearch('DROPDOWN')">Search Profile Tab</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="missing-trigger-notice-block" style="display:none;">
+      <p style="color:#e53e3e; font-weight:700;">No record matched your target company parameters.</p>
+      <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:5px 14px;">Create New Entry</button>
+    </div>
+
+    <div id="step2-new-entry-dropdown" style="display: none; padding: 0 12px;">
+      <div class="navigation-action-header-row" id="staged-back-button-row" style="display:none; background:#fffaf0; border:1px solid #dd6b20; margin-bottom:8px; padding:3px 8px;">
+        <span style="font-size:0.75rem; font-weight:700; color:#dd6b20;">Lead Capture Form Active</span>
+        <button class="nav-btn-styled" style="background:#718096; padding:3px 8px; font-size:0.72rem;" onclick="returnToDirectoryCardsFromFormView()">Back to Company Contacts List</button>
+      </div>
+
+      <div id="success-screen" style="display:none; text-align:center; padding:15px;">
+        <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:8px 0;"></p>
+        <button class="btn btn-sub" onclick="resetSequentialFormState()">Process Another Card</button>
+      </div>
+
+      <div id="remaining-sections-form">
+        <div class="section">
+          <div class="section-header">Section 1 — Meeting Details</div>
+          <div class="section-body">
+            <label class="field-label">Date of Meeting</label><input type="date" id="meetingDate" />
+            <label class="field-label">Time of Meeting</label><input type="time" id="meetingTime" />
+            <label class="field-label">Meeting Venue</label>
+            <div class="pill-group"><input type="radio" name="meetingVenue" value="Exhibition" id="mv1"><label for="mv1">Exhibition</label><input type="radio" name="meetingVenue" value="Customer Place" id="mv2"><label for="mv2">Customer Place</label></div>
+            <label class="field-label">Venue Name / City</label><input type="text" id="venueName" />
+            <label class="field-label">Additional Details</label><textarea id="additionalMeetingDetails"></textarea>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">Section 2 — Technical Details</div>
+          <div class="section-body">
+            <label class="field-label">ABPS Business Vertical</label>
+            <div class="pill-group"><input type="radio" name="businessVertical" value="Industrial" id="bv1"><label for="bv1">Industrial</label><input type="radio" name="businessVertical" value="Power" id="bv2"><label for="bv2">Power</label></div>
+            <label class="field-label">Type of Industry</label><input type="text" id="industry" />
+            <label class="field-label">Qualification (Multiple)</label>
+            <div class="pill-group"><input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label><input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label></div>
+            <div id="vendor-fields" style="display:none; margin-top:10px;"><label class="field-label">Materials Name</label><input type="text" id="materialsName" /></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">Section 3 — Area of Concerns</div>
+          <div class="section-body">
+            <label class="field-label">Low Power Factor Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="lpi" onclick="toggleNo(this)">No</button><input type="text" id="lpi" oninput="clearNo(this)" /></div>
+            <label class="field-label">High Electricity Bill Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hbi" onclick="toggleNo(this)">No</button><input type="text" id="hbi" oninput="clearNo(this)" /></div>
+            <label class="field-label">Harmonics Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hi" onclick="toggleNo(this)">No</button><input type="text" id="hi" oninput="clearNo(this)" /></div>
+            <label class="field-label">Transformer Heating Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="thi" onclick="toggleNo(this)">No</button><input type="text" id="thi" oninput="clearNo(this)" /></div>
+            <label class="field-label">Grid Stability Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
+            <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
+            <label class="field-label">Voltage Level</label><div class="pill-group"><input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label></div>
+            <label class="field-label">Capacity Details</label>
+            <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" style="margin-bottom:4px;" />
+            <input type="text" id="rdMva" placeholder="Running Demand (MVA)" style="margin-bottom:4px;" />
+            <input type="text" id="avgPf" placeholder="Monthly Average Power Factor" />
+            <label class="field-label">Problem Observed</label><input type="text" id="problemObserved" />
+            <label class="field-label">Technical Discussion Summary</label><textarea id="techSummary"></textarea>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">Section 4 — Requirement</div>
+          <div class="section-body">
+            <label class="field-label">Existing Project</label><input type="text" id="epInput" />
+            <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
+            <label class="field-label">Products Discussed</label><div class="pill-group"><input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label></div>
+            <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
+            <label class="field-label">Expected Tender Date</label><input type="date" id="tenderDate" />
+            <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
+            <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
+            <label class="field-label">Approx Business Potential</label><div class="pill-group"><input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">Section 5 — Action Plan</div>
+          <div class="section-body">
+            <label class="field-label">Send Company Profile</label><select id="act1"><option>No</option><option>Yes</option></select>
+            <label class="field-label">Send Technical Presentation</label><select id="act2"><option>No</option><option>Yes</option></select>
+            <label class="field-label">Arrange Site Visit</label><select id="act3"><option>No</option><option>Yes</option></select>
+            <label class="field-label">Get Enquiry</label><select id="act4"><option>No</option><option>Yes</option></select>
+            <label class="field-label">Send Offer</label><select id="actOffer"><option value="No">No</option><option value="Send Budgetary Offer">Send Budgetary Offer</option><option value="Send Techno-Commercial Offer">Send Techno-Commercial Offer</option></select>
+            <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">Section 6 — Engineer Info</div>
+          <div class="section-body">
+            <label class="field-label">Assign Creator Name</label><select id="engName"><option value="">Loading Dynamic Listing...</option></select>
+          </div>
+        </div>
+        <button class="btn btn-sub" id="submit-btn" onclick="submitLead()">Submit New Account Entry</button>
+      </div>
+    </div>
+
+    <div id="step2-inline-interaction-canvas" style="display: none; padding: 0 12px;">
+      <div style="margin-bottom:8px; text-align:left;" id="canvas-back-btn-enclosure-row">
+        <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568;">Back to Search</button>
+      </div>
+      <div id="split-missing-person-banner-hook"></div>
+      <div id="multi-contact-records-container"></div>
+    </div>
+
     <div id="workspace-searchStatus" class="workspace-panel" style="display: none;"><h3>Search Status Workspace</h3></div>
     <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;"><h3>Search Engineer Workspace</h3></div>
   </div>
@@ -336,13 +337,14 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxJdUiMsbujD1VusBka6ha12Y9Vxoy0KR7ziHGHN_qCcRCAxzh5EUQSxq_7cjQ45aBayw/exec"; 
+const GAS_URL = "AKfycbxxI3YMIu3ibfpPPPIY3FPWP2UxvXYmTYphOxxpB9tm6QfLPYUevT8UX08uHXvpHmzcCw"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
 let activeSearchRef = ""; 
 let activeSearchCompany = "";
 let currentFollowUpCount = 0;
+let currentActiveModuleContext = "CARD"; 
 
 let globalFollowUpsCacheMap = {};
 let globalTasksCacheMap = {};
@@ -414,6 +416,9 @@ async function showAppView() {
     const data = await res.json();
     if (data.success) { cachedEngineers = data.engineers; populateEngineerDropdowns(); }
   } catch(e) { console.error(e.message); }
+  
+  // Pull unique lookups to synchronize selector dropdown arrays
+  triggerCompanyDropdownArrayFetch();
 }
 
 function populateEngineerDropdowns() {
@@ -427,20 +432,73 @@ function populateEngineerDropdowns() {
   });
 }
 
-function navigateToModule(key) { if (!userPermissions[key]) return alert("Denied."); document.getElementById("dashboard-view").style.display = "none"; document.getElementById("module-workspace-container").style.display = "block"; document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); document.getElementById("workspace-" + key).style.display = "block"; resetSequentialFormState(); }
-function returnToDashboard() { showAppView(); }
-function revealNewEntryFormDropdown() { document.getElementById("missing-trigger-notice-block").style.display = "none"; document.getElementById("staged-back-button-row").style.display = "none"; document.getElementById("step2-new-entry-dropdown").style.display = "block"; window.scrollTo(0,0); }
+async function triggerCompanyDropdownArrayFetch() {
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getUniqueCompaniesList" }) });
+    const d = await res.json();
+    if (d.success) {
+      const drop = document.getElementById("lookup-module-company-dropdown");
+      drop.innerHTML = '<option value="">— Select Company Portfolio —</option>';
+      d.companies.forEach(item => {
+        let op = document.createElement("option"); op.value = item.companyValue; op.textContent = item.displayLabel;
+        drop.appendChild(op);
+      });
+    }
+  } catch(e) { console.error("Selector loading exception: " + e.message); }
+}
 
-async function triggerSequentialSearch() {
-  const comp = document.getElementById("f-company").value;
-  const targetName = document.getElementById("f-name").value;
-  const btn = document.getElementById("gate-search-btn");
-  if (!comp) return alert("Specify a Company Name to verify.");
+function navigateToModule(key) { 
+  if (!userPermissions[key]) return alert("Denied."); 
+  document.getElementById("dashboard-view").style.display = "none"; 
+  document.getElementById("module-workspace-container").style.display = "block"; 
+  document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); 
+  document.getElementById("workspace-" + key).style.display = "block"; 
+  
+  currentActiveModuleContext = key === "cardDetails" ? "CARD" : "DROPDOWN";
+  resetSequentialFormState(); 
+}
+
+function returnToDashboard() { showAppView(); }
+
+function revealNewEntryFormDropdown() { 
+  // Relocate elements dynamically straight inside viewport level bounds
+  document.getElementById("missing-trigger-notice-block").style.display = "none"; 
+  const container = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
+  document.getElementById(container).appendChild(document.getElementById("step2-new-entry-dropdown"));
+  
+  document.getElementById("step2-new-entry-dropdown").style.display = "block"; 
+  window.scrollTo(0,0); 
+}
+
+async function triggerSequentialSearch(triggerSourceMode) {
+  let comp = ""; let targetName = "";
+  let btn = null;
+  
+  if (triggerSourceMode === "CARD") {
+    comp = document.getElementById("f-company").value;
+    targetName = document.getElementById("f-name").value;
+    btn = document.getElementById("gate-search-btn");
+  } else {
+    comp = document.getElementById("lookup-module-company-dropdown").value;
+    targetName = ""; // Drops directly to full corporate directory parsing loops
+    btn = document.getElementById("lookup-module-search-btn");
+    if(!comp) return alert("Select a company option string first.");
+  }
+  
+  if (!comp) return alert("Specify Company parameters.");
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Searching...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp, contactName: targetName }) });
     const data = await res.json();
+    
+    // Clear and mount targets correctly across specific workspace context roots
+    const activePanelId = (triggerSourceMode === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
+    const activePanel = document.getElementById(activePanelId);
+    
+    activePanel.appendChild(document.getElementById("missing-trigger-notice-block"));
+    activePanel.appendChild(document.getElementById("step2-inline-interaction-canvas"));
+    
     if (data.success) {
       activeSearchCompany = comp.toString().trim();
       globalFollowUpsCacheMap = data.followups;
@@ -448,11 +506,10 @@ async function triggerSequentialSearch() {
       
       const bannerHook = document.getElementById("split-missing-person-banner-hook");
       if (!data.nameMatchFound) {
-        // Enforce customized formatting tokens matching requirements precisely
         bannerHook.innerHTML = `
           <div class="system-runtime-inline-alert-callout">
             <span class="alert-callout-text-msg">We have information on the following people from this ${activeSearchCompany}, but not for this ${targetName ? targetName.toString().trim() : "specific person"}.</span>
-            <button class="nav-btn-styled" style="background:#dd6b20; padding:8px 16px;" onclick="revealNewEntryFormDropdownFromBanner()">Create New Entry</button>
+            <button class="nav-btn-styled" style="background:#dd6b20;" onclick="revealNewEntryFormDropdownFromBanner()">Create New Entry</button>
           </div>
         `;
       } else {
@@ -462,18 +519,23 @@ async function triggerSequentialSearch() {
       buildMultiContactDirectoryInterface(data.leads);
       
       document.getElementById("missing-trigger-notice-block").style.display = "none";
-      document.getElementById("step1-card-capture-block").style.display = "none";
+      if(triggerSourceMode === "CARD") document.getElementById("step1-card-capture-block").style.display = "none";
+      if(triggerSourceMode === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "none";
+      
       document.getElementById("step2-inline-interaction-canvas").style.display = "block";
     } else {
       document.getElementById("missing-trigger-notice-block").style.display = "block";
       document.getElementById("step2-inline-interaction-canvas").style.display = "none";
     }
-  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Search Database"; }
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = triggerSourceMode === "CARD" ? "Search Database" : "Search Profile Tab"; }
 }
 
 function revealNewEntryFormDropdownFromBanner() {
   document.getElementById("step2-inline-interaction-canvas").style.display = "none";
-  document.getElementById("staged-back-button-row").style.display = "flex"; // Enable local staging return control path button linkage
+  const parentId = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
+  document.getElementById(parentId).appendChild(document.getElementById("step2-new-entry-dropdown"));
+  
+  document.getElementById("staged-back-button-row").style.display = "flex"; 
   document.getElementById("step2-new-entry-dropdown").style.display = "block";
   window.scrollTo(0,0);
 }
@@ -499,16 +561,16 @@ function buildMultiContactDirectoryInterface(leadsList) {
         <div class="contact-summary-title-info">
           <div class="row-block-line"><span>Company:</span><strong>${lead["Company"]}</strong></div>
           <div class="row-block-line"><span>Name:</span><strong>${lead["Name"] || "Unspecified"}</strong></div>
-          <div class="row-block-line" style="display:block; margin-top:5px; margin-bottom:0;"><span>Position:</span><strong>${lead["Position"] || "Unspecified"}</strong></div>
+          <div class="row-block-line" style="display:block; margin-top:3px; margin-bottom:0;"><span>Position:</span><strong>${lead["Position"] || "Unspecified"}</strong></div>
         </div>
         <div class="directory-btn-actions-block">
-          <button class="nav-btn-styled" style="font-size:0.95rem; padding:10px 18px;" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
-          <button class="nav-btn-styled" style="font-size:0.95rem; padding:10px 18px; background:var(--warn);" onclick="removeLeadRowEntirely('${tRef}')">Delete Record</button>
+          <button class="nav-btn-styled" style="font-size:0.92rem; padding:8px 14px;" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
+          <button class="nav-btn-styled" style="font-size:0.92rem; padding:8px 14px; background:var(--warn);" onclick="removeLeadRowEntirely('${tRef}')">Delete Record</button>
         </div>
       </div>
       <div class="contact-expanded-workspace-payload-drawer" id="drawer-panel-${tRef}" style="display:none; padding-top:10px;">
          <div class="leads-editable-fields-box-canvas" id="canvas-fields-${tRef}"></div>
-         <div class="child-injected-modules-mount-point" id="modules-mount-${tRef}" style="margin-top:14px;"></div>
+         <div class="child-injected-modules-mount-point" id="modules-mount-${tRef}" style="margin-top:12px;"></div>
       </div>
     `;
     container.appendChild(wrapperCard);
@@ -521,9 +583,7 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
   const mountPoint = document.getElementById(`modules-mount-${leadRef}`);
   
   if (drawer.style.display === "block") {
-    drawer.style.display = "none";
-    triggerBtn.textContent = "View Details";
-    mountPoint.innerHTML = ""; 
+    drawer.style.display = "none"; triggerBtn.textContent = "View Details"; mountPoint.innerHTML = ""; 
   } else {
     document.querySelectorAll(".contact-expanded-workspace-payload-drawer").forEach(d => d.style.display = "none");
     document.querySelectorAll('[id^="expand-trigger-"]').forEach(b => b.textContent = "View Details");
@@ -544,8 +604,7 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
     renderIsolatedFollowUpTimeline(leadRef, globalFollowUpsCacheMap[leadRef] || [], templateClone);
     renderIsolatedTaskItemsList(leadRef, globalTasksCacheMap[leadRef] || [], templateClone);
     
-    drawer.style.display = "block";
-    triggerBtn.textContent = "Collapse Details";
+    drawer.style.display = "block"; triggerBtn.textContent = "Collapse Details";
   }
 }
 
@@ -703,13 +762,14 @@ async function removeLeadRowEntirely(leadRef) {
   if (!confirm("Confirm record row extraction removal?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteLeadRow", leadRef: leadRef }) });
-    const r = await res.json(); if (r.success) triggerSequentialSearch();
+    const r = await res.json(); if (r.success) triggerSequentialSearch(currentActiveModuleContext);
   } catch(e) { alert(e.message); }
 }
 
 function exitCanvasToCardView() {
   document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
-  document.getElementById("step1-card-capture-block").style.display = "block"; 
+  if(currentActiveModuleContext === "CARD") document.getElementById("step1-card-capture-block").style.display = "block"; 
+  if(currentActiveModuleContext === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "block";
 }
 
 function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
@@ -738,12 +798,8 @@ function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
       </div>`;
     box.appendChild(card);
     
-    document.getElementById(`trigger-inner-edit-fup-${leadRef}-${f.num}`).onclick = function() {
-      editIsolatedFollowUpItem(leadRef, scopeNode, f);
-    };
-    document.getElementById(`trigger-inner-delete-fup-${leadRef}-${f.num}`).onclick = function() {
-      removeIsolatedFollowUpItem(leadRef, f.num);
-    };
+    document.getElementById(`trigger-inner-edit-fup-${leadRef}-${f.num}`).onclick = function() { editIsolatedFollowUpItem(leadRef, scopeNode, f); };
+    document.getElementById(`trigger-inner-delete-fup-${leadRef}-${f.num}`).onclick = function() { removeIsolatedFollowUpItem(leadRef, f.num); };
   });
 }
 
@@ -787,12 +843,7 @@ async function commitIsolatedFollowUpItem(leadRef, scopeNode) {
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveFollowUp", followUpData }) });
     const r = await res.json();
-    if (r.success) {
-      form.style.display = "none";
-      scopeNode.querySelector(".trigger-fup-open").style.display = "inline-flex";
-      scopeNode.querySelector(".trigger-fup-close").style.display = "none";
-      await globalExecutionScopeReloader(leadRef, scopeNode);
-    }
+    if (r.success) { form.style.display = "none"; scopeNode.querySelector(".trigger-fup-open").style.display = "inline-flex"; scopeNode.querySelector(".trigger-fup-close").style.display = "none"; await globalExecutionScopeReloader(leadRef, scopeNode); }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Follow-Up"; }
 }
 
@@ -801,18 +852,13 @@ async function removeIsolatedFollowUpItem(leadRef, fNum) {
   const fupId = leadRef + "||" + fNum;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteFollowUp", fupId: fupId }) });
-    const r = await res.json(); 
-    if (r.success) {
-      const activeScopeNode = document.getElementById(`active-modules-clone-${leadRef}`);
-      await globalExecutionScopeReloader(leadRef, activeScopeNode);
-    }
+    const r = await res.json(); if (r.success) { const activeScopeNode = document.getElementById(`active-modules-clone-${leadRef}`); await globalExecutionScopeReloader(leadRef, activeScopeNode); }
   } catch(e) { alert(e.message); }
 }
 
 function renderIsolatedTaskItemsList(leadRef, list, scopeNode) {
   const box = scopeNode.querySelector(".template-task-box");
   box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No active entries.</p>' : '';
-  
   list.forEach(t => {
     let div = document.createElement("div"); div.className = "task-item-card";
     div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Time: ${t.shift} | Target Date: ${formatCleanDateOnly(t.targetDate)}</small>
@@ -823,56 +869,35 @@ function renderIsolatedTaskItemsList(leadRef, list, scopeNode) {
                        <button class="nav-btn-styled" id="trigger-inner-delete-task-${leadRef}-${t.id}" style="font-size:0.75rem; background:var(--warn); padding:2px 6px;">Delete</button>
                      </div>`;
     box.appendChild(div);
-
-    document.getElementById(`trigger-inner-edit-task-${leadRef}-${t.id}`).onclick = function() {
-      editIsolatedTaskItem(leadRef, scopeNode, t);
-    };
-    document.getElementById(`trigger-inner-delete-task-${leadRef}-${t.id}`).onclick = function() {
-      removeIsolatedTaskItem(leadRef, t.id);
-    };
+    document.getElementById(`trigger-inner-edit-task-${leadRef}-${t.id}`).onclick = function() { editIsolatedTaskItem(leadRef, scopeNode, t); };
+    document.getElementById(`trigger-inner-delete-task-${leadRef}-${t.id}`).onclick = function() { removeIsolatedTaskItem(leadRef, t.id); };
   });
 }
 
 function editIsolatedTaskItem(leadRef, scopeNode, t) {
   const taskForm = scopeNode.querySelector(".template-task-form");
-  taskForm.querySelector(".task-edit-id").value = t.id;
-  taskForm.querySelector(".task-status-select").value = t.status;
-  taskForm.querySelector(".task-eng-select").value = t.eng;
-  taskForm.querySelector(".task-assigner-select").value = t.assigner || "";
-  taskForm.querySelector(".task-type-select").value = t.type;
-  taskForm.querySelector(".task-desc-input").value = t.desc;
-  taskForm.querySelector(".task-shift-select").value = t.shift;
-  taskForm.querySelector(".task-targetdate-input").value = formatCleanDateOnly(t.targetDate);
-  
-  taskForm.style.display = "grid";
-  scopeNode.querySelector(".trigger-task-open").style.display = "none";
-  scopeNode.querySelector(".trigger-task-close").style.display = "inline-flex";
+  taskForm.querySelector(".task-edit-id").value = t.id; taskForm.querySelector(".task-status-select").value = t.status;
+  taskForm.querySelector(".task-eng-select").value = t.eng; taskForm.querySelector(".task-assigner-select").value = t.assigner || "";
+  taskForm.querySelector(".task-type-select").value = t.type; taskForm.querySelector(".task-desc-input").value = t.desc;
+  taskForm.querySelector(".task-shift-select").value = t.shift; taskForm.querySelector(".task-targetdate-input").value = formatCleanDateOnly(t.targetDate);
+  taskForm.style.display = "grid"; scopeNode.querySelector(".trigger-task-open").style.display = "none"; scopeNode.querySelector(".trigger-task-close").style.display = "inline-flex";
 }
 
 async function commitIsolatedTaskItem(leadRef, scopeNode) {
-  const form = scopeNode.querySelector(".template-task-form");
-  const btn = scopeNode.querySelector(".commit-task-btn-trigger");
+  const form = scopeNode.querySelector(".template-task-form"); const btn = scopeNode.querySelector(".commit-task-btn-trigger");
   const editId = form.querySelector(".task-edit-id").value;
-  
   const taskData = {
     id: editId || "NEW", isNew: !editId, fupNum: currentFollowUpCount, leadRef: leadRef, company: activeSearchCompany,
     engineer: form.querySelector(".task-eng-select").value, assigner: form.querySelector(".task-assigner-select").value,
     type: form.querySelector(".task-type-select").value, desc: form.querySelector(".task-desc-input").value, 
-    shift: form.querySelector(".task-shift-select").value, targetDate: form.querySelector(".task-targetdate-input").value, 
-    status: form.querySelector(".task-status-select").value
+    shift: form.querySelector(".task-shift-select").value, targetDate: form.querySelector(".task-targetdate-input").value, status: form.querySelector(".task-status-select").value
   };
   if (!taskData.targetDate) return alert("Target Date required.");
-  
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveTask", taskData }) });
     const r = await res.json();
-    if (r.success) {
-      form.style.display = "none";
-      scopeNode.querySelector(".trigger-task-open").style.display = "inline-flex";
-      scopeNode.querySelector(".trigger-task-close").style.display = "none";
-      await globalExecutionScopeReloader(leadRef, scopeNode);
-    }
+    if (r.success) { form.style.display = "none"; scopeNode.querySelector(".trigger-task-open").style.display = "inline-flex"; scopeNode.querySelector(".trigger-task-close").style.display = "none"; await globalExecutionScopeReloader(leadRef, scopeNode); }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Task"; }
 }
 
@@ -880,11 +905,7 @@ async function removeIsolatedTaskItem(leadRef, taskId) {
   if (!confirm("Confirm cancellation?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: taskId }) });
-    const r = await res.json(); 
-    if (r.success) {
-      const activeScopeNode = document.getElementById(`active-modules-clone-${leadRef}`);
-      await globalExecutionScopeReloader(leadRef, activeScopeNode);
-    }
+    const r = await res.json(); if (r.success) { const activeScopeNode = document.getElementById(`active-modules-clone-${leadRef}`); await globalExecutionScopeReloader(leadRef, activeScopeNode); }
   } catch(e) { alert(e.message); }
 }
 
@@ -892,27 +913,16 @@ async function globalExecutionScopeReloader(leadRef, scopeNode) {
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: activeSearchCompany }) });
     const data = await res.json();
-    if (data.success) {
-      globalFollowUpsCacheMap = data.followups;
-      globalTasksCacheMap = data.tasks;
-      currentFollowUpCount = data.followups[leadRef] ? data.followups[leadRef].length : 0;
-      
-      renderIsolatedFollowUpTimeline(leadRef, data.followups[leadRef] || [], scopeNode);
-      renderIsolatedTaskItemsList(leadRef, data.tasks[leadRef] || [], scopeNode);
-    }
+    if (data.success) { globalFollowUpsCacheMap = data.followups; globalTasksCacheMap = data.tasks; currentFollowUpCount = data.followups[leadRef] ? data.followups[leadRef].length : 0; renderIsolatedFollowUpTimeline(leadRef, data.followups[leadRef] || [], scopeNode); renderIsolatedTaskItemsList(leadRef, data.tasks[leadRef] || [], scopeNode); }
   } catch(e) { console.error(e.message); }
 }
 
-function toggleFollowUpAccordion(headerEl) {
-  const body = headerEl.nextElementSibling; const isVisible = body.style.display === "block";
-  body.style.display = isVisible ? "none" : "block";
-  headerEl.querySelector("span:last-child").textContent = isVisible ? "View details ▾" : "Collapse ▴";
-}
-
 function resetSequentialFormState() {
-  document.getElementById("step1-card-capture-block").style.display = "block"; document.getElementById("step2-new-entry-dropdown").style.display = "none";
-  document.getElementById("step2-inline-interaction-canvas").style.display = "none"; document.getElementById("missing-trigger-notice-block").style.display = "none";
-  document.getElementById("success-screen").style.display = "none"; document.getElementById("remaining-sections-form").style.display = "block";
+  document.getElementById("step1-card-capture-block").style.display = currentActiveModuleContext === "CARD" ? "block" : "none"; 
+  document.getElementById("company-dropdown-selector-block").style.display = currentActiveModuleContext === "DROPDOWN" ? "block" : "none";
+  document.getElementById("step2-new-entry-dropdown").style.display = "none"; document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+  document.getElementById("missing-trigger-notice-block").style.display = "none"; document.getElementById("success-screen").style.display = "none";
+  document.getElementById("remaining-sections-form").style.display = "block";
   fileFront = null; fileBack = null; document.getElementById("front-box").textContent = "📷 Front Side"; document.getElementById("front-box").classList.remove("done");
   document.getElementById("back-box").textContent = "📷 Back Side (Opt)"; document.getElementById("back-box").classList.remove("done");
   document.getElementById("parse-btn").disabled = true;
@@ -972,11 +982,7 @@ async function submitLead() {
     };
     const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'submit', fields, imageUrl }) });
     const d = await res.json();
-    if (d.success) {
-      document.getElementById('remaining-sections-form').style.display = 'none';
-      document.getElementById('success-screen').style.display = 'block';
-      document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef;
-    }
+    if (d.success) { document.getElementById('remaining-sections-form').style.display = 'none'; document.getElementById('success-screen').style.display = 'block'; document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef; }
   } catch (e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = 'Submit New Account Entry'; }
 }
 </script>
