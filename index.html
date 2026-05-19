@@ -9,59 +9,69 @@
   :root {
     --brand: #0056b3; --brand-dk: #003d82; --accent: #00a878; --warn: #e84545;
     --bg: #f0f4f8; --card: #ffffff; --border: #d0d9e4; --text: #1a2332;
-    --muted: #6b7a8d; --radius: 8px;
+    --muted: #6b7a8d; --radius: 6px;
   }
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
-  .auth-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 25px; }
-  label.field-label { display: block; font-size: .72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 12px 0 4px; }
-  input, select, textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: .9rem; background: #fff; color: var(--text); }
+  .auth-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; }
+  label.field-label { display: block; font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 10px 0 3px; }
+  input, select, textarea { width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .88rem; background: #fff; color: var(--text); }
   
-  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 12px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+  header h1 { font-size: 1.1rem; font-weight: 700; }
   .header-actions-block { display: flex; flex-direction: column; align-items: flex-end; }
-  .user-full-name { font-size: 0.9rem; font-weight: 700; }
-  .user-display-username { font-size: 0.75rem; color: #d0d9e4; font-family: monospace; }
-  .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; margin-top: 4px; text-transform: uppercase; }
+  .user-full-name { font-size: 0.85rem; font-weight: 700; }
+  .user-display-username { font-size: 0.72rem; color: #d0d9e4; font-family: monospace; }
+  .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.68rem; margin-top: 2px; text-transform: uppercase; }
   
   .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 24px 14px; }
   @media(min-width: 600px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 24px; border-radius: var(--radius); cursor: pointer; }
+  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 20px; border-radius: var(--radius); cursor: pointer; font-weight: 700; }
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
   
-  .workspace-panel { padding: 15px 12px; }
-  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid var(--border); overflow: hidden; }
-  .section-header { background: var(--brand); color: #fff; padding: 10px 16px; font-size: .8rem; font-weight: 700; text-transform: uppercase; }
-  .section-body { padding: 16px; }
+  .workspace-panel { padding: 10px 12px; }
+  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
+  .section-header { background: var(--brand); color: #fff; padding: 8px 14px; font-size: .78rem; font-weight: 700; text-transform: uppercase; }
+  .section-body { padding: 14px; }
   
-  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  /* Compact 4-Column Responsive Layout Grid Grid Pattern */
+  .compact-fields-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 10px; text-align: left; }
+  @media(min-width: 480px) { .compact-fields-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media(min-width: 768px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
+  .grid-cell-item { display: flex; flex-direction: column; }
+  
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
   .pill-group input { display: none; }
-  .pill-group label { padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 20px; font-size: .78rem; cursor: pointer; background: #fff; }
+  .pill-group label { padding: 5px 10px; border: 1.5px solid var(--border); border-radius: 16px; font-size: .75rem; cursor: pointer; background: #fff; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
-  .other-input { margin-top: 8px; display: none; }
   
-  .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
+  /* Elegant Navigation Headers Buttons */
+  .navigation-action-header-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #e2e8f0; border-radius: var(--radius); margin-bottom: 14px; }
+  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 6px 14px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .nav-btn-styled:hover { background: var(--brand-dk); }
+  
+  .btn { width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.88rem; }
   .btn-sub { background: var(--brand); color: #fff; }
-  .btn-ai { background: var(--accent); color: #fff; margin-bottom: 15px; }
+  .btn-ai { background: var(--accent); color: #fff; margin-bottom: 12px; }
   .btn-warn { background: var(--warn); color: #fff; }
+  .btn-toggle-view { background: #6b7a8d; color: #fff; width: auto; display: inline-flex; padding: 6px 12px; font-size: 0.78rem; margin-bottom: 10px; }
   
-  .card-row { display: flex; gap: 10px; margin-bottom: 12px; }
-  .card-box { flex: 1; border: 2px dashed var(--border); padding: 15px; text-align: center; font-size: .8rem; cursor: pointer; border-radius: 6px; }
+  .card-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .card-box { flex: 1; border: 2px dashed var(--border); padding: 12px; text-align: center; font-size: .78rem; cursor: pointer; border-radius: 4px; }
   .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
   
-  .meta-edit-box { background: #f8fafc; padding: 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .fup-item-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 6px; text-align: left; overflow: hidden; }
+  .fup-item-header { padding: 10px; background: #edf2f7; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; }
+  .fup-item-body { padding: 12px; display: none; border-top: 1px solid var(--border); background: #fff; }
   
-  .fup-item-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; text-align: left; overflow: hidden; }
-  .fup-item-header { padding: 12px; background: #edf2f7; cursor: pointer; display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; }
-  .fup-item-body { padding: 14px; display: none; border-top: 1px solid var(--border); background: #fff; }
-  
-  .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f1f5f9; padding: 12px; border-radius: 6px; margin: 10px 0; text-align: left; }
-  .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 12px; border-radius: 6px; text-align: left; margin-bottom: 8px; }
-  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+  .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f1f5f9; padding: 12px; border-radius: 4px; margin: 8px 0; text-align: left; }
+  .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 10px; border-radius: 4px; text-align: left; margin-bottom: 6px; }
+  .spinner { width: 14; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .no-btn { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 6px; background: #fff; cursor: pointer; font-size: .8rem; }
+  .no-btn { padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 4px; background: #fff; cursor: pointer; font-size: .75rem; }
   .no-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
-  .toggle-input-group { display: flex; gap: 8px; align-items: center; }
+  .toggle-input-group { display: flex; gap: 6px; align-items: center; }
 </style>
 </head>
 <body>
@@ -99,7 +109,10 @@
   </div>
 
   <div id="module-workspace-container" style="display: none;">
-    <div style="padding: 10px 12px 0;"><button class="back-btn" onclick="returnToDashboard()" style="background:#6b7a8d; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Return to Dashboard</button></div>
+    <div class="navigation-action-header-row">
+      <div style="font-weight:700; font-size:0.85rem; color:var(--text);">Workspace Node Console</div>
+      <button class="nav-btn-styled" onclick="returnToDashboard()">Return to Main Dashboard</button>
+    </div>
     
     <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
       
@@ -127,9 +140,9 @@
         </div>
       </div>
 
-      <div id="missing-trigger-notice-block" style="display:none; padding:20px; text-align:center;">
-        <p style="color:var(--muted); margin-bottom:15px;">No record matched your target company query parameters.</p>
-        <button class="btn btn-sub" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
+      <div id="missing-trigger-notice-block" style="display:none; padding:20px; text-align:center; background:white; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:15px;">
+        <p style="color:var(--muted); margin-bottom:12px; font-size:0.9rem;">No record matched your target company query parameters.</p>
+        <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
       </div>
 
       <div id="step2-new-entry-dropdown" style="display: none;">
@@ -145,10 +158,7 @@
               <label class="field-label">Date of Meeting</label><input type="date" id="meetingDate" />
               <label class="field-label">Time of Meeting</label><input type="time" id="meetingTime" />
               <label class="field-label">Meeting Venue</label>
-              <div class="pill-group">
-                <input type="radio" name="meetingVenue" value="Exhibition" id="mv1"><label for="mv1">Exhibition</label>
-                <input type="radio" name="meetingVenue" value="Customer Place" id="mv2"><label for="mv2">Customer Place</label>
-              </div>
+              <div class="pill-group"><input type="radio" name="meetingVenue" value="Exhibition" id="mv1"><label for="mv1">Exhibition</label><input type="radio" name="meetingVenue" value="Customer Place" id="mv2"><label for="mv2">Customer Place</label></div>
               <label class="field-label">Venue Name / City</label><input type="text" id="venueName" />
               <label class="field-label">Additional Details</label><textarea id="additionalMeetingDetails"></textarea>
             </div>
@@ -158,16 +168,10 @@
             <div class="section-header">Section 2 — Technical Details</div>
             <div class="section-body">
               <label class="field-label">ABPS Business Vertical</label>
-              <div class="pill-group">
-                <input type="radio" name="businessVertical" value="Industrial" id="bv1"><label for="bv1">Industrial</label>
-                <input type="radio" name="businessVertical" value="Power" id="bv2"><label for="bv2">Power</label>
-              </div>
+              <div class="pill-group"><input type="radio" name="businessVertical" value="Industrial" id="bv1"><label for="bv1">Industrial</label><input type="radio" name="businessVertical" value="Power" id="bv2"><label for="bv2">Power</label></div>
               <label class="field-label">Type of Industry</label><input type="text" id="industry" />
               <label class="field-label">Qualification (Multiple)</label>
-              <div class="pill-group">
-                <input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label>
-                <input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label>
-              </div>
+              <div class="pill-group"><input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label><input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label></div>
               <div id="vendor-fields" style="display:none; margin-top:10px;"><label class="field-label">Materials Name</label><input type="text" id="materialsName" /></div>
             </div>
           </div>
@@ -181,8 +185,7 @@
               <label class="field-label">Transformer Heating Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="thi" onclick="toggleNo(this)">No</button><input type="text" id="thi" oninput="clearNo(this)" /></div>
               <label class="field-label">Grid Stability Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
               <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
-              <label class="field-label">Voltage Level</label>
-              <div class="pill-group"><input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label></div>
+              <label class="field-label">Voltage Level</label><div class="pill-group"><input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label></div>
               <label class="field-label">Capacity Details</label>
               <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" style="margin-bottom:4px;" />
               <input type="text" id="rdMva" placeholder="Running Demand (MVA)" style="margin-bottom:4px;" />
@@ -197,14 +200,12 @@
             <div class="section-body">
               <label class="field-label">Existing Project</label><input type="text" id="epInput" />
               <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
-              <label class="field-label">Products Discussed</label>
-              <div class="pill-group"><input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label></div>
+              <label class="field-label">Products Discussed</label><div class="pill-group"><input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label></div>
               <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
               <label class="field-label">Expected Tender Date</label><input type="date" id="tenderDate" />
               <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
               <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
-              <label class="field-label">Approx Business Potential</label>
-              <div class="pill-group"><input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label></div>
+              <label class="field-label">Approx Business Potential</label><div class="pill-group"><input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label></div>
             </div>
           </div>
 
@@ -221,8 +222,7 @@
           <div class="section">
             <div class="section-header">Section 6 — Engineer Info</div>
             <div class="section-body">
-              <label class="field-label">Assign Creator Name</label>
-              <select id="engName"><option value="">Loading Dynamic Listing...</option></select>
+              <label class="field-label">Assign Creator Name</label><select id="engName"><option value="">Loading Dynamic Listing...</option></select>
             </div>
           </div>
           <button class="btn btn-sub" id="submit-btn" onclick="submitLead()">Submit New Account Entry</button>
@@ -231,19 +231,22 @@
 
       <div id="step2-inline-interaction-canvas" style="display: none;">
         <div style="margin-bottom:12px; text-align:left;">
-          <button class="back-btn" onclick="exitCanvasToCardView()" style="background:#6b7a8d; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">← Back to Search</button>
+          <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568;">Back to Search</button>
         </div>
 
         <div class="section">
           <div class="section-header">Company Information</div>
-          <div class="section-body" style="text-align: left;" id="leads-editable-fields-box">
+          <div class="section-body" id="leads-editable-fields-box">
             </div>
         </div>
 
         <div class="section">
           <div class="section-header">Follow-Up Tracking</div>
           <div class="section-body">
-            <button class="btn btn-ai" onclick="showNewFollowUpForm()" style="padding:6px 12px; font-size:0.8rem; margin-bottom:10px;">+ Create New Follow-Up</button>
+            <div style="display:flex; gap:10px; margin-bottom:12px;">
+              <button class="btn btn-ai" id="toggle-fup-form-btn" onclick="toggleSubPanelVisibility('fup-form-expansion', this, '+ Create New Follow-Up')" style="margin:0; width:auto;">+ Create New Follow-Up</button>
+              <button class="btn btn-warn" id="collapse-fup-panel-btn" onclick="collapseSubPanelExplicitly('fup-form-expansion', 'toggle-fup-form-btn', '+ Create New Follow-Up')" style="display:none; margin:0; width:auto; background:#718096;">Collapse</button>
+            </div>
             
             <div id="fup-form-expansion" style="display:none;" class="fup-grid-inputs">
               <input type="hidden" id="fup-edit-id" />
@@ -261,7 +264,7 @@
               <div><label class="field-label">NQ5</label><input type="text" id="fup-nq5" /></div>
               <div><label class="field-label">NQ6</label><input type="text" id="fup-nq6" /></div>
               
-              <button class="btn btn-sub" onclick="commitFollowUpItem()" style="grid-column: span 2; padding:8px; margin-top:5px;">Save Follow-Up</button>
+              <button class="btn btn-sub" id="save-fup-btn" onclick="commitFollowUpItem()" style="grid-column: span 2; margin-top:5px;">Save Follow-Up</button>
             </div>
 
             <div class="timeline-container" id="timeline-box"></div>
@@ -271,19 +274,19 @@
         <div class="section">
           <div class="section-header">Engineer Tasks</div>
           <div class="section-body">
-            <button class="btn btn-outline" onclick="showNewTaskForm()" style="padding:6px 12px; font-size:0.8rem; margin-bottom:10px; border:1px solid var(--brand); color:var(--brand); background:none;">+ Create New Task</button>
+            <div style="display:flex; gap:10px; margin-bottom:12px;">
+              <button class="btn btn-ai" id="toggle-task-form-btn" onclick="toggleSubPanelVisibility('task-form-expansion', this, '+ Create New Task')" style="margin:0; width:auto; background:transparent; border:1px solid var(--brand); color:var(--brand);">+ Create New Task</button>
+              <button class="btn btn-warn" id="collapse-task-panel-btn" onclick="collapseSubPanelExplicitly('task-form-expansion', 'toggle-task-form-btn', '+ Create New Task')" style="display:none; margin:0; width:auto; background:#718096;">Collapse</button>
+            </div>
             
             <div id="task-form-expansion" style="display:none;" class="task-grid-inputs">
               <input type="hidden" id="task-edit-id" />
               <div><label class="field-label">Engineer</label><select id="task-eng-select"></select></div>
-              <div>
-                <label class="field-label">Task Type</label>
-                <select id="task-type-select"><option>Task A</option><option>Task B</option><option>Task C</option></select>
-              </div>
-              <div style="grid-column: span 2;"><label class="field-label">Task Description</label><textarea id="task-desc-input" placeholder="Enter task assignment specifications..."></textarea></div>
+              <div><label class="field-label">Task Type</label><select id="task-type-select"><option>Task A</option><option>Task B</option><option>Task C</option></select></div>
+              <div style="grid-column: span 2;"><label class="field-label">Task Description</label><textarea id="task-desc-input"></textarea></div>
               <div><label class="field-label">Target Time</label><select id="task-shift-select"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
               <div><label class="field-label">Date</label><input type="date" id="task-date-input" /></div>
-              <button class="btn btn-sub" onclick="commitTaskItem()" style="grid-column:span 2; padding:8px; margin-top:5px;">Save Task</button>
+              <button class="btn btn-sub" id="save-task-btn" onclick="commitTaskItem()" style="grid-column:span 2; margin-top:5px;">Save Task</button>
             </div>
 
             <div class="task-list-container" id="task-cards-box"></div>
@@ -300,13 +303,49 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz44hFtUQNfx0s6m3T6Ufm7_niGav2oXvkliVnxQiZ36LJjV0SSLeTzD8WQ5OFCi_DLNg/exec";
+// --- CONFIGURATION ---
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwVl07Kdjla6azCA0gf9aWeTi6aIhGsmicxk2vyvapjEwXDkLXxWj4NgH3N8cQsjUXiJQ/exec"; // ← Paste your deployed Google Apps Script Web App URL string here
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
 let activeSearchRef = "";
 let activeSearchCompany = "";
 let currentFollowUpCount = 0;
+
+// Dynamic Helper to process timestamps into clean IST strings
+function cleanISTTimestamp(rawStr) {
+  if (!rawStr) return "None";
+  const str = rawStr.toString().trim();
+  if (!str) return "None";
+  
+  let dateObj = new Date(str);
+  if (isNaN(dateObj.getTime())) {
+    // If standard parsing fails, evaluate raw string fragments directly
+    return str;
+  }
+  
+  // Extract time parts using absolute local values or explicit timezone offsets
+  let year = dateObj.getFullYear();
+  if (year === 1899) {
+    // Handle standalone Excel/Sheets time leakage rows gracefully
+    let hours = dateObj.getHours();
+    let minutes = dateObj.getMinutes();
+    let ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12; hours = hours ? hours : 12;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    return hours + ":" + minutes + " " + ampm;
+  }
+
+  let month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  let day = String(dateObj.getDate()).padStart(2, '0');
+  let hours = dateObj.getHours();
+  let minutes = dateObj.getMinutes();
+  let ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12; hours = hours ? hours : 12;
+  minutes = minutes < 10 ? '0' + minutes : minutes;
+  
+  return year + "-" + month + "-" + day + " " + String(hours).padStart(2, '0') + ":" + minutes + " " + ampm;
+}
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken"); const expires = localStorage.getItem("sessionExpiry"); const savedPerms = localStorage.getItem("userPermissions");
@@ -315,7 +354,10 @@ window.onload = function() {
 
 async function executeLogin() {
   const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
-  if (!userField.value || !passField.value) return alert("Complete fields.");
+  const btn = document.getElementById("login-btn");
+  if (!userField.value || !passField.value) return alert("Complete credential fields.");
+  
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verifying...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
     const r = await res.json();
@@ -324,7 +366,7 @@ async function executeLogin() {
       localStorage.setItem("userFirstName", r.firstName); localStorage.setItem("userLastName", r.lastName); localStorage.setItem("userPermissions", JSON.stringify(r.permissions));
       userPermissions = r.permissions; showAppView();
     } else alert(r.error);
-  } catch(e) { alert(e.message); }
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Login"; }
 }
 
 function executeLogout() { localStorage.clear(); document.getElementById("app-container").style.display = "none"; document.getElementById("auth-container").style.display = "flex"; }
@@ -360,6 +402,28 @@ function populateEngineerDropdowns() {
 function navigateToModule(key) { if (!userPermissions[key]) return alert("Denied."); document.getElementById("dashboard-view").style.display = "none"; document.getElementById("module-workspace-container").style.display = "block"; document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); document.getElementById("workspace-" + key).style.display = "block"; resetSequentialFormState(); }
 function returnToDashboard() { showAppView(); }
 
+// ── EXPANDABLE DISPATCH SECTIONS SUB-PANEL UI CONTROL ARTIFACTS ──────────────
+function toggleSubPanelVisibility(panelId, triggeringBtn, initialText) {
+  const panel = document.getElementById(panelId);
+  const suffix = panelId.startsWith("fup") ? "fup" : "task";
+  const collapseBtn = document.getElementById(`collapse-${suffix}-panel-btn`);
+  
+  if (panel.style.display === "none") {
+    if(panelId === "fup-form-expansion") showNewFollowUpForm();
+    if(panelId === "task-form-expansion") showNewTaskForm();
+    panel.style.display = "grid";
+    triggeringBtn.style.display = "none";
+    collapseBtn.style.display = "inline-flex";
+  }
+}
+
+function collapseSubPanelExplicitly(panelId, openBtnId, originalText) {
+  document.getElementById(panelId).style.display = "none";
+  document.getElementById(openBtnId).style.display = "inline-flex";
+  const suffix = panelId.startsWith("fup") ? "fup" : "task";
+  document.getElementById(`collapse-${suffix}-panel-btn`).style.display = "none";
+}
+
 function revealNewEntryFormDropdown() {
   document.getElementById("missing-trigger-notice-block").style.display = "none";
   document.getElementById("step2-new-entry-dropdown").style.display = "block";
@@ -367,13 +431,15 @@ function revealNewEntryFormDropdown() {
 
 async function triggerSequentialSearch() {
   const comp = document.getElementById("f-company").value;
-  if (!comp) return alert("Please specify a Company Name to perform search validation.");
+  const btn = document.getElementById("gate-search-btn");
+  if (!comp) return alert("Specify a Company Name to verify.");
   
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Searching...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp }) });
     const data = await res.json();
     if (data.success) {
-      activeSearchRef = data.lead["Card Ref"]; activeSearchCompany = data.lead["Company"];
+      activeSearchRef = data.lead["Lead ID"]; activeSearchCompany = data.lead["Company"];
       currentFollowUpCount = data.followups.length;
       
       buildLeadsEditableFormCanvas(data.lead);
@@ -387,31 +453,46 @@ async function triggerSequentialSearch() {
       document.getElementById("missing-trigger-notice-block").style.display = "block";
       document.getElementById("step2-inline-interaction-canvas").style.display = "none";
     }
-  } catch(e) { alert(e.message); }
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Search Database"; }
 }
 
+// ── COMPACT 4-COLUMN DATA ARCHITECTURE MATRIX ──────────────────────────────
 function buildLeadsEditableFormCanvas(leadMap) {
   const container = document.getElementById("leads-editable-fields-box");
   container.innerHTML = "";
   
-  // Exclude file references and references handled by meta edit blocks
-  const excludeList = ["Card Ref", "Timestamp", "Card Image Link(s)"];
+  const gridWrapper = document.createElement("div");
+  gridWrapper.className = "compact-fields-grid";
+  
+  const excludeList = ["Lead ID", "Timestamp", "Card Image Link(s)"];
   
   Object.keys(leadMap).forEach(key => {
     if (excludeList.indexOf(key) !== -1) return;
+    
+    let itemCell = document.createElement("div");
+    itemCell.className = "grid-cell-item";
+    
     let label = document.createElement("label"); label.className = "field-label"; label.textContent = key;
     let input = document.createElement("input"); input.type = "text"; input.className = "live-lead-field-input";
     input.dataset.headerKey = key; input.value = leadMap[key] || "";
-    container.appendChild(label); container.appendChild(input);
+    
+    itemCell.appendChild(label);
+    itemCell.appendChild(input);
+    gridWrapper.appendChild(itemCell);
   });
   
-  let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub";
+  container.appendChild(gridWrapper);
+  
+  let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; id="save-leads-matrix-btn";
   saveBtn.style.marginTop = "15px"; saveBtn.textContent = "Save Modifications";
   saveBtn.onclick = commitLeadsTableFieldMutations;
   container.appendChild(saveBtn);
 }
 
 async function commitLeadsTableFieldMutations() {
+  const btn = document.getElementById("save-leads-matrix-btn") || this;
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  
   let fieldsPayload = {};
   document.querySelectorAll(".live-lead-field-input").forEach(el => {
     fieldsPayload[el.dataset.headerKey] = el.value;
@@ -419,8 +500,8 @@ async function commitLeadsTableFieldMutations() {
   
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadFull", leadRef: activeSearchRef, fields: fieldsPayload }) });
-    const r = await res.json(); if (r.success) alert("Modifications saved successfully.");
-  } catch(e) { alert(e.message); }
+    const r = await res.json(); if (r.success) alert("Modifications saved.");
+  } catch(e) { alert(e.message); } finally { if(btn) { btn.disabled = false; btn.innerHTML = "Save Modifications"; } }
 }
 
 function exitCanvasToCardView() {
@@ -441,7 +522,7 @@ function resetSequentialFormState() {
   document.getElementById("parse-btn").disabled = true;
 }
 
-// ── ACCORDION TIMELINE RENDERER (FOLLOW-UP CONTEXT LAYER) ────────────────────
+// ── ACCORDION TIMELINE REAL-TIME SANITIZER ──────────────────────────────────
 function renderFollowUpTimeline(list) {
   const box = document.getElementById("timeline-box");
   box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No historical follow-ups recorded.</p>' : '';
@@ -449,18 +530,18 @@ function renderFollowUpTimeline(list) {
     let card = document.createElement("div"); card.className = "fup-item-card";
     card.innerHTML = `
       <div class="fup-item-header" onclick="toggleFollowUpAccordion(this)">
-        <span>Follow-Up ${f.num} (${f.date})</span>
-        <span style="color:var(--brand);">Click to view details ▾</span>
+        <span>Follow-Up ${f.num} (${cleanISTTimestamp(f.date)})</span>
+        <span style="color:var(--brand); font-size:0.75rem;">Click to view details ▾</span>
       </div>
       <div class="fup-item-body">
         <div style="font-size:0.82rem; line-height:1.5; color:var(--muted); margin-bottom:8px;">
-          <strong>Lead ID:</strong> ${f.id}<br/><strong>Time:</strong> ${f.time}<br/><strong>Engineer:</strong> ${f.eng}<br/>
-          <strong>Next Target Date:</strong> ${f.nextDate || "None"}<br/>
+          <strong>Lead ID:</strong> ${f.id}<br/><strong>Time:</strong> ${cleanISTTimestamp(f.time)}<br/><strong>Engineer:</strong> ${f.eng}<br/>
+          <strong>Next Target Date:</strong> ${cleanISTTimestamp(f.nextDate)}<br/>
           <strong>NQ1:</strong> ${f.nq1} | <strong>NQ2:</strong> ${f.nq2} | <strong>NQ3:</strong> ${f.nq3}<br/>
           <strong>NQ4:</strong> ${f.nq4} | <strong>NQ5:</strong> ${f.nq5} | <strong>NQ6:</strong> ${f.nq6}
         </div>
         <div style="font-size:0.88rem; color:#2d3748; padding:8px 0; border-top:1px solid #edf2f7;"><strong>Notes:</strong> ${f.notes}</div>
-        <button onclick="editFollowUpItem('${f.id}',${f.num},'${f.date}','${f.time}','${f.eng}',\`${f.notes.replace(/'/g, "\\'")}\`,'${f.nextDate}','${f.nq1}','${f.nq2}','${f.nq3}','${f.nq4}','${f.nq5}','${f.nq6}')" style="margin-top:5px; font-size:0.72rem; padding:4px 8px; cursor:pointer;">Edit This Follow-Up</button>
+        <button class="nav-btn-styled" onclick="editFollowUpItem('${f.id}',${f.num},'${f.date}','${f.time}','${f.eng}',\`${f.notes.replace(/'/g, "\\'")}\`,'${f.nextDate}','${f.nq1}','${f.nq2}','${f.nq3}','${f.nq4}','${f.nq5}','${f.nq6}')" style="margin-top:5px; font-size:0.72rem; padding:4px 8px;">Edit This Follow-Up</button>
       </div>`;
     box.appendChild(card);
   });
@@ -475,7 +556,6 @@ function toggleFollowUpAccordion(headerEl) {
 
 function showNewFollowUpForm() {
   document.getElementById("fup-edit-id").value = "";
-  // Auto assigned logic: next index calculation parameters assignment
   document.getElementById("fup-num-input").value = currentFollowUpCount + 1;
   document.getElementById("fup-leadid-input").value = activeSearchRef;
   document.getElementById("fup-date-input").value = ""; document.getElementById("fup-time-input").value = "";
@@ -483,21 +563,31 @@ function showNewFollowUpForm() {
   document.getElementById("fup-nq1").value = ""; document.getElementById("fup-nq2").value = "";
   document.getElementById("fup-nq3").value = ""; document.getElementById("fup-nq4").value = "";
   document.getElementById("fup-nq5").value = ""; document.getElementById("fup-nq6").value = "";
-  document.getElementById("fup-form-expansion").style.display = "grid";
 }
 
 function editFollowUpItem(id, num, date, time, eng, notes, nextTarget, n1, n2, n3, n4, n5, n6) {
   document.getElementById("fup-edit-id").value = id; document.getElementById("fup-num-input").value = num;
-  document.getElementById("fup-leadid-input").value = activeSearchRef; document.getElementById("fup-date-input").value = date;
-  document.getElementById("fup-time-input").value = time; document.getElementById("fup-eng-select").value = eng;
-  document.getElementById("fup-notes-input").value = notes; document.getElementById("fup-nexttarget-input").value = nextTarget;
+  document.getElementById("fup-leadid-input").value = activeSearchRef;
+  
+  // Strip timezone attachments from picker bindings safely
+  document.getElementById("fup-date-input").value = date ? date.split("T")[0] : ""; 
+  document.getElementById("fup-time-input").value = time ? (time.indexOf("T") !== -1 ? time.split("T")[1].substring(0,5) : time) : "";
+  
+  document.getElementById("fup-eng-select").value = eng;
+  document.getElementById("fup-notes-input").value = notes; 
+  document.getElementById("fup-nexttarget-input").value = nextTarget ? nextTarget.split("T")[0] : "";
+  
   document.getElementById("fup-nq1").value = n1; document.getElementById("fup-nq2").value = n2;
   document.getElementById("fup-nq3").value = n3; document.getElementById("fup-nq4").value = n4;
   document.getElementById("fup-nq5").value = n5; document.getElementById("fup-nq6").value = n6;
+  
   document.getElementById("fup-form-expansion").style.display = "grid";
+  document.getElementById("toggle-fup-form-btn").style.display = "none";
+  document.getElementById("collapse-fup-panel-btn").style.display = "inline-flex";
 }
 
 async function commitFollowUpItem() {
+  const btn = document.getElementById("save-fup-btn");
   const followUpData = {
     id: document.getElementById("fup-edit-id").value, leadRef: activeSearchRef, company: activeSearchCompany,
     num: document.getElementById("fup-num-input").value, date: document.getElementById("fup-date-input").value,
@@ -507,24 +597,29 @@ async function commitFollowUpItem() {
     nq4: document.getElementById("fup-nq4").value, nq5: document.getElementById("fup-nq5").value, nq6: document.getElementById("fup-nq6").value
   };
   if (!followUpData.date || !followUpData.notes) return alert("Please fill out Date and Interaction Notes.");
+  
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveFollowUp", followUpData }) });
     const r = await res.json();
-    if (r.success) { document.getElementById("fup-form-expansion").style.display = "none"; refreshCanvasDataNodes(); }
-  } catch(e) { alert(e.message); }
+    if (r.success) { 
+      collapseSubPanelExplicitly('fup-form-expansion', 'toggle-fup-form-btn', '+ Create New Follow-Up');
+      refreshCanvasDataNodes(); 
+    }
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Follow-Up"; }
 }
 
-// ── TASK SCHEDULER MODULE METHODS ──────────────────────────────────────────
+// ── FIXED ACTION: ENGINEER TASKS RETRIEVAL SUB-SYSTEMS ──────────────────────
 function renderTaskItemsList(list) {
   const box = document.getElementById("task-cards-box");
   box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No tasks assigned.</p>' : '';
   list.forEach(t => {
     let div = document.createElement("div"); div.className = "task-item-card";
-    div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Target Time: ${t.shift} | Date: ${t.date}</small>
+    div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Target Time: ${t.shift} | Date: ${cleanISTTimestamp(t.date)}</small>
                      <p style="font-size:0.82rem; margin-top:4px; color:var(--muted);"><strong>Desc:</strong> ${t.desc || 'None'}</p>
                      <div style="margin-top:8px; display:flex; gap:6px;">
-                       <button onclick="editTaskItem('${t.id}','${t.eng}','${t.type}','\`${(t.desc||'').replace(/'/g,"\\'")}\`','${t.shift}','${t.date}')" style="font-size:0.75rem; padding:2px 6px; cursor:pointer;">Edit</button>
-                       <button onclick="removeTaskItem('${t.id}')" style="font-size:0.75rem; color:var(--warn); padding:2px 6px; cursor:pointer;">Delete</button>
+                       <button class="nav-btn-styled" onclick="editTaskItem('${t.id}','${t.eng}','${t.type}',\`${(t.desc||'').replace(/'/g,"\\'")}\`,'${t.shift}','${t.date}')" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
+                       <button class="nav-btn-styled" onclick="removeTaskItem('${t.id}')" style="font-size:0.75rem; background:var(--warn); padding:2px 6px;">Delete</button>
                      </div>`;
     box.appendChild(div);
   });
@@ -532,32 +627,42 @@ function renderTaskItemsList(list) {
 
 function showNewTaskForm() {
   document.getElementById("task-edit-id").value = ""; document.getElementById("task-desc-input").value = "";
-  document.getElementById("task-date-input").value = ""; document.getElementById("task-form-expansion").style.display = "grid";
+  document.getElementById("task-date-input").value = "";
 }
 
 function editTaskItem(id, eng, type, desc, shift, date) {
   document.getElementById("task-edit-id").value = id; document.getElementById("task-eng-select").value = eng;
   document.getElementById("task-type-select").value = type; document.getElementById("task-desc-input").value = desc;
-  document.getElementById("task-shift-select").value = shift; document.getElementById("task-date-input").value = date;
+  document.getElementById("task-shift-select").value = shift; 
+  document.getElementById("task-date-input").value = date ? date.split("T")[0] : "";
+  
   document.getElementById("task-form-expansion").style.display = "grid";
+  document.getElementById("toggle-task-form-btn").style.display = "none";
+  document.getElementById("collapse-task-panel-btn").style.display = "inline-flex";
 }
 
 async function commitTaskItem() {
+  const btn = document.getElementById("save-task-btn");
   const taskData = {
     id: document.getElementById("task-edit-id").value, leadRef: activeSearchRef, company: activeSearchCompany,
     engineer: document.getElementById("task-eng-select").value, type: document.getElementById("task-type-select").value,
     desc: document.getElementById("task-desc-input").value, shift: document.getElementById("task-shift-select").value, date: document.getElementById("task-date-input").value
   };
-  if (!taskData.date) return alert("Provide a Target Date assignment parameter.");
+  if (!taskData.date) return alert("Provide a Target Date.");
+  
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveTask", taskData }) });
     const r = await res.json();
-    if (r.success) { document.getElementById("task-form-expansion").style.display = "none"; refreshCanvasDataNodes(); }
-  } catch(e) { alert(e.message); }
+    if (r.success) { 
+      collapseSubPanelExplicitly('task-form-expansion', 'toggle-task-form-btn', '+ Create New Task');
+      refreshCanvasDataNodes(); 
+    }
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Task"; }
 }
 
 async function removeTaskItem(id) {
-  if (!confirm("Confirm removal parameters?")) return;
+  if (!confirm("Confirm removal?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: id }) });
     const r = await res.json(); if (r.success) refreshCanvasDataNodes();
@@ -572,7 +677,7 @@ async function refreshCanvasDataNodes() {
   } catch(e) { console.error(e.message); }
 }
 
-// ── CORE CARD CAPTURE / PARSING HOOK METHODS ────────────────────────────────
+// ── CAPTURE FILE HANDLING SYSTEM BLOCKS ─────────────────────────────────────
 let fileFront = null, fileBack = null;
 document.getElementById('card-front').onchange = (e) => { fileFront = e.target.files[0]; document.getElementById('front-box').textContent = "Front ✅"; document.getElementById('front-box').classList.add('done'); document.getElementById('parse-btn').disabled = false; };
 document.getElementById('card-back').onchange = (e) => { fileBack = e.target.files[0]; document.getElementById('back-box').textContent = "Back ✅"; document.getElementById('back-box').classList.add('done'); };
