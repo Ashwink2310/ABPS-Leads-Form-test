@@ -12,54 +12,55 @@
     --muted: #6b7a8d; --radius: 8px;
   }
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
-  
-  #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
+  #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
-  .auth-title { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 25px; }
-  label.field-label { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 14px 0 6px; }
+  .auth-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 25px; }
+  label.field-label { display: block; font-size: .72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 12px 0 4px; }
   input, select, textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: .9rem; background: #fff; color: var(--text); }
   
-  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,.15); display: flex; justify-content: space-between; align-items: center; }
-  header h1 { font-size: 1.2rem; font-weight: 700; }
-  
-  .header-actions-block { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
-  .user-profile-meta { margin-bottom: 8px; line-height: 1.3; }
-  .user-full-name { font-size: 0.95rem; font-weight: 700; color: #ffffff; }
-  .user-display-username { font-size: 0.9rem; color: #d0d9e4; font-family: monospace; font-weight: 600; margin-top: 2px; }
-  .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 15px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+  .header-actions-block { display: flex; flex-direction: column; align-items: flex-end; }
+  .user-full-name { font-size: 0.9rem; font-weight: 700; }
+  .user-display-username { font-size: 0.75rem; color: #d0d9e4; font-family: monospace; }
+  .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.5); color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; margin-top: 4px; text-transform: uppercase; }
   
   .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 24px 14px; }
   @media(min-width: 600px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 28px 24px; border-radius: var(--radius); text-align: left; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-  .menu-card:hover { border-color: var(--brand); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 24px; border-radius: var(--radius); cursor: pointer; }
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
-  .menu-title { font-size: 1.15rem; font-weight: 700; color: var(--text); }
-
-  /* Inner Sub Module Routing Navigation Tabs */
-  .sub-tab-bar { display: flex; gap: 10px; margin: 15px 12px 5px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-  .sub-tab-btn { background: #e2e8f0; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; font-size: 0.85rem; cursor: pointer; color: var(--text); }
-  .sub-tab-btn.active { background: var(--brand); color: white; }
-
-  .workspace-panel { background: var(--card); border-radius: var(--radius); margin: 10px 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border); }
-  .back-nav-container { padding: 16px 12px 0; }
-  .back-btn { background: #6b7a8d; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
   
-  .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; }
-  .btn-sub { background: var(--brand); color: #fff; margin-top: 15px; }
-  .btn-secondary { background: #e2e8f0; color: var(--text); max-width: 180px; margin-top: 10px; }
-  .btn:disabled { opacity: .6; cursor: not-allowed; }
-  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+  .workspace-panel { padding: 15px 12px; }
+  .sub-nav-tabs { display: flex; gap: 10px; margin-bottom: 15px; background: #e2e8f0; padding: 6px; border-radius: 6px; }
+  .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; cursor: pointer; font-weight: 600; font-size: 0.85rem; border-radius: 4px; }
+  .tab-btn.active { background: var(--card); color: var(--brand); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+  
+  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid var(--border); overflow: hidden; }
+  .section-header { background: var(--brand); color: #fff; padding: 10px 16px; font-size: .8rem; font-weight: 700; text-transform: uppercase; }
+  .section-body { padding: 16px; }
+  
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .pill-group input { display: none; }
+  .pill-group label { padding: 6px 12px; border: 1.5px solid var(--border); border-radius: 20px; font-size: .78rem; cursor: pointer; background: #fff; }
+  .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .other-input { margin-top: 8px; display: none; }
+  
+  .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
+  .btn-sub { background: var(--brand); color: #fff; }
+  .btn-ai { background: var(--accent); color: #fff; margin-bottom: 15px; }
+  .btn-warn { background: var(--warn); color: #fff; }
+  .card-row { display: flex; gap: 10px; margin-bottom: 12px; }
+  .card-box { flex: 1; border: 2px dashed var(--border); padding: 15px; text-align: center; font-size: .8rem; cursor: pointer; border-radius: 6px; }
+  .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  
+  .meta-edit-box { background: #f8fafc; padding: 14px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .timeline-container, .task-list-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+  .timeline-card, .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 12px; border-radius: 6px; text-align: left; position: relative; }
+  .task-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #f1f5f9; padding: 12px; border-radius: 6px; margin-top: 10px; }
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Results Matrix Styling */
-  .search-action-row { display: flex; gap: 10px; margin-bottom: 20px; }
-  .lead-result-card { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 15px; text-align: left; }
-  .meta-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 6px; margin: 12px 0; }
-  .followup-badge-container { display: flex; gap: 8px; margin-top: 10px; }
-  .follow-badge { background: #edf2f7; border: 1px solid var(--border); padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
-  
-  /* Task Allocation Sub-Module Grid */
-  .task-assignment-box { border-left: 3px solid var(--accent); background: #f0fdf4; padding: 14px; margin-top: 15px; border-radius: 0 6px 6px 0; }
+  .no-btn { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 6px; background: #fff; cursor: pointer; font-size: .8rem; }
+  .no-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .toggle-input-group { display: flex; gap: 8px; align-items: center; }
 </style>
 </head>
 <body>
@@ -68,9 +69,9 @@
   <div class="auth-card">
     <div class="auth-title">ABPS Portal</div>
     <div style="text-align: left;">
-      <label class="field-label">Username</label><input type="text" id="auth-user" placeholder="Enter username..." required />
-      <label class="field-label">Password</label><input type="password" id="auth-pass" placeholder="Enter password..." required />
-      <button class="btn btn-sub" id="login-btn" onclick="executeLogin()">Login</button>
+      <label class="field-label">Username</label><input type="text" id="auth-user" placeholder="Enter username..." />
+      <label class="field-label">Password</label><input type="password" id="auth-pass" placeholder="Enter password..." />
+      <button class="btn btn-sub" id="login-btn" onclick="executeLogin()" style="margin-top:15px;">Login</button>
     </div>
   </div>
 </div>
@@ -97,44 +98,217 @@
   </div>
 
   <div id="module-workspace-container" style="display: none;">
-    <div class="back-nav-container">
-      <button class="back-btn" onclick="returnToDashboard()">Return to Dashboard</button>
-    </div>
+    <div style="padding: 10px 12px 0;"><button class="back-btn" onclick="returnToDashboard()" style="background:#6b7a8d; color:white; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">Return to Dashboard</button></div>
     
-    <div id="workspace-cardDetails" style="display: none;">
-      <div class="sub-tab-bar">
-        <button class="sub-tab-btn active" id="btn-subtab-search" onclick="switchSubTab('search')">Company Quick Search Hub</button>
-        <button class="sub-tab-btn" id="btn-subtab-create" onclick="switchSubTab('create')">Create New Lead Entry</button>
+    <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
+      <div class="sub-nav-tabs">
+        <button class="tab-btn active" id="btn-subtab-new" onclick="switchSubTab('NEW')">Create New Entry</button>
+        <button class="tab-btn" id="btn-subtab-search" onclick="switchSubTab('SEARCH')">Search Company Database</button>
       </div>
 
-      <div id="subtab-panel-search" class="workspace-panel">
-        <div class="search-action-row">
-          <input type="text" id="card-search-company" placeholder="Type exact company name to analyze..." />
-          <button class="btn btn-sub" style="margin:0; max-width:120px;" onclick="executeCompanySearch()">Search</button>
+      <div id="subtab-new-entry-zone">
+        <div id="success-screen" style="display:none; text-align:center; padding:30px;">
+          <h2>Submission Successful!</h2><p id="success-ref" style="margin:15px 0; font-weight:bold; color:var(--brand);"></p>
+          <button class="btn btn-sub" onclick="resetNewEntryForm()">Add Another Lead</button>
         </div>
         
-        <div id="company-search-results-root">
-          <p style="color:var(--muted); font-size:0.9rem;">Type an enterprise title above to evaluate active marketing files.</p>
+        <div id="main-form-container">
+          <div class="section">
+            <div class="section-header">Section 1 — Business Card</div>
+            <div class="section-body">
+              <div class="card-row">
+                <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
+                <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
+              </div>
+              <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
+              <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
+              <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>Parse Card with AI</button>
+              <label class="field-label">Name</label><input type="text" id="f-name" />
+              <label class="field-label">Company</label><input type="text" id="f-company" />
+              <label class="field-label">Position</label><input type="text" id="f-position" />
+              <label class="field-label">Phone</label><input type="tel" id="f-phone" />
+              <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
+              <label class="field-label">Email</label><input type="email" id="f-email" />
+              <label class="field-label">Website</label><input type="url" id="f-website" />
+              <label class="field-label">Address</label><textarea id="f-address"></textarea>
+            </div>
+          </div>
+          
+          <div class="section">
+            <div class="section-header">Section 2 — Meeting Details</div>
+            <div class="section-body">
+              <label class="field-label">Date of Meeting</label><input type="date" id="meetingDate" />
+              <label class="field-label">Time of Meeting</label><input type="time" id="meetingTime" />
+              <label class="field-label">Meeting Venue</label>
+              <div class="pill-group">
+                <input type="radio" name="meetingVenue" value="Exhibition" id="mv1" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv1">Exhibition</label>
+                <input type="radio" name="meetingVenue" value="Customer Place" id="mv2" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv2">Customer Place</label>
+                <input type="radio" name="meetingVenue" value="ABPS Office" id="mv3" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv3">ABPS Office</label>
+                <input type="radio" name="meetingVenue" value="Other" id="mv4" onchange="toggleOtherText(this,'meetingVenueOther')"><label for="mv4">Other</label>
+              </div>
+              <input type="text" id="meetingVenueOther" class="other-input" placeholder="Specify..." />
+              <label class="field-label">Venue Name / City</label><input type="text" id="venueName" />
+              <label class="field-label">Additional Details</label><textarea id="additionalMeetingDetails"></textarea>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 3 — Technical Details</div>
+            <div class="section-body">
+              <label class="field-label">ABPS Business Vertical</label>
+              <div class="pill-group">
+                <input type="radio" name="businessVertical" value="Industrial" id="bv1" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv1">Industrial</label>
+                <input type="radio" name="businessVertical" value="Power" id="bv2" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv2">Power</label>
+                <input type="radio" name="businessVertical" value="Renewable" id="bv3" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv3">Renewable</label>
+              </div>
+              <input type="text" id="businessVerticalOther" class="other-input" placeholder="Specify..." />
+              <label class="field-label">Type of Industry</label><input type="text" id="industry" />
+              <label class="field-label">Qualification (Multiple)</label>
+              <div class="pill-group">
+                <input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label>
+                <input type="checkbox" name="qualification" value="EPC" id="q2" onchange="handleQualChange()"><label for="q2">EPC</label>
+                <input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label>
+              </div>
+              <input type="text" id="qualificationOther" class="other-input" placeholder="Specify..." />
+              <div id="vendor-fields" style="display:none; margin-top:10px; padding-left:10px; border-left:2px solid var(--brand);">
+                <label class="field-label">Type of Vendor</label>
+                <div class="pill-group"><input type="checkbox" name="vendorType" value="Raw Materials" id="vt1"><label for="vt1">Raw Materials</label></div>
+                <label class="field-label">Materials Name</label><input type="text" id="materialsName" />
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 4 — Area of Concerns</div>
+            <div class="section-body">
+              <label class="field-label">Low Power Factor Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="lpi" onclick="toggleNo(this)">No</button><input type="text" id="lpi" oninput="clearNo(this)" /></div>
+              <label class="field-label">High Electricity Bill Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hbi" onclick="toggleNo(this)">No</button><input type="text" id="hbi" oninput="clearNo(this)" /></div>
+              <label class="field-label">Harmonics Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="hi" onclick="toggleNo(this)">No</button><input type="text" id="hi" oninput="clearNo(this)" /></div>
+              <label class="field-label">Transformer Heating Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="thi" onclick="toggleNo(this)">No</button><input type="text" id="thi" oninput="clearNo(this)" /></div>
+              <label class="field-label">Grid Stability Issue</label><div class="toggle-input-group"><button class="no-btn" data-target="gsi" onclick="toggleNo(this)">No</button><input type="text" id="gsi" oninput="clearNo(this)" /></div>
+              <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
+              <label class="field-label">Voltage Level</label>
+              <div class="pill-group">
+                <input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label>
+                <input type="checkbox" name="voltage" value="11KV" id="vl4"><label for="vl4">11KV</label>
+              </div>
+              <label class="field-label">Capacity Details</label>
+              <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" style="margin-bottom:6px;" />
+              <input type="text" id="rdMva" placeholder="Running Demand (MVA)" style="margin-bottom:6px;" />
+              <input type="text" id="avgPf" placeholder="Monthly Average Power Factor" />
+              <label class="field-label">Problem Observed</label><input type="text" id="problemObserved" />
+              <label class="field-label">Technical Discussion Summary</label><textarea id="techSummary"></textarea>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 5 — Requirement</div>
+            <div class="section-body">
+              <label class="field-label">Existing Project</label><input type="text" id="epInput" />
+              <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
+              <label class="field-label">Products Discussed</label>
+              <div class="pill-group">
+                <input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label>
+                <input type="checkbox" name="prod" value="SVG" id="pd3"><label for="pd3">SVG</label>
+              </div>
+              <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
+              <label class="field-label">Expected Tender Date</label><input type="date" id="tenderDate" />
+              <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
+              <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
+              <label class="field-label">Approx Business Potential</label>
+              <div class="pill-group">
+                <input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label>
+                <input type="radio" name="pot" value="10-50L" id="bp2"><label for="bp2">10-50L</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 6 — Action Plan</div>
+            <div class="section-body">
+              <label class="field-label">Send Profile</label><select id="act1"><option>No</option><option>Yes</option></select>
+              <label class="field-label">Send Techno</label><select id="act6"><option>No</option><option>Yes</option></select>
+              <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
+              <label class="field-label">Next Follow-Up Date</label><input type="date" id="nextDate" />
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Section 7 — Engineer Info</div>
+            <div class="section-body">
+              <label class="field-label">Assign Creator Name</label>
+              <select id="engName"><option value="">Loading Dynamic Listing...</option></select>
+            </div>
+          </div>
+          <button class="btn btn-sub" id="submit-btn" onclick="submitLead()">Submit New Account Entry</button>
         </div>
       </div>
 
-      <div id="subtab-panel-create" class="workspace-panel" style="display: none;">
-        <h3 style="margin-bottom:15px; text-align:left;">New Lead Registration Framework</h3>
-        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:15px; text-align:left;">The original questions from your original index.html data entry pipeline will be fully injected here.</p>
+      <div id="subtab-search-database-zone" style="display: none;">
+        <div class="section" style="padding:15px;">
+          <label class="field-label" style="margin:0 0 6px;">Enter Target Company Name</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="db-search-query" placeholder="Search exact match..." />
+            <button class="btn btn-sub" id="db-search-btn" onclick="executeDatabaseSearch()" style="width:120px; margin:0;">Search</button>
+          </div>
+        </div>
+
+        <div id="search-results-canvas" style="display: none;">
+          <div class="meta-edit-box">
+            <div>
+              <label class="field-label" style="margin:0 0 4px;">Current Pipeline Status</label>
+              <select id="res-status-select">
+                <option>Active</option><option>Pending</option><option>Converted</option><option>Closed</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label" style="margin:0 0 4px;">Assigned Engineer</label>
+              <select id="res-engineer-select"></select>
+            </div>
+            <button class="btn btn-sub" onclick="saveLeadMetaChanges()" style="grid-column: span 2; margin-top:5px; padding:8px;">Save Account Reassignments</button>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Follow-Up History Blocks</div>
+            <div class="section-body">
+              <div class="timeline-container" id="timeline-box"></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">Engineer Task Rotations</div>
+            <div class="section-body">
+              <button class="btn btn-ai" onclick="showNewTaskForm()" style="padding:8px; font-size:0.8rem;">+ Create New Task Assignment</button>
+              
+              <div id="task-form-expansion" style="display:none;" class="task-grid-inputs">
+                <input type="hidden" id="task-edit-id" />
+                <div><label class="field-label">Engineer</label><select id="task-eng-select"></select></div>
+                <div><label class="field-label">Task Type</label><input type="text" id="task-type-input" placeholder="e.g. Site Survey" /></div>
+                <div><label class="field-label">Target Shift</label><select id="task-shift-select"><option>Morning</option><option>Afternoon</option><option>Evening</option></select></div>
+                <div><label class="field-label">Date</label><input type="date" id="task-date-input" /></div>
+                <button class="btn btn-sub" onclick="commitTaskItem()" style="grid-column:span 2; padding:8px; margin:5px 0 0;">Save Task Rotation</button>
+              </div>
+
+              <div class="task-list-container" id="task-cards-box"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    
-    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;"><h3>Search by Company Name Module</h3></div>
-    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;"><h3>Search by Status Module</h3></div>
-    <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;"><h3>Search by Assigned Engineer Module</h3></div>
+
+    <div id="workspace-searchCompany" class="workspace-panel" style="display: none;"><h3>Search Company Placeholder</h3></div>
+    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;"><h3>Search Status Placeholder</h3></div>
+    <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;"><h3>Search Engineer Placeholder</h3></div>
   </div>
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbySGs6hjBtfx5X2Qz1Mn-6lb5s5tDP3KTXfMRm65XwmEkWD8kmNhjrvlAS_YAEdLLjsBw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw6Us_m-n1_XQdn_InMQfIw15N-u4n_xyhkkLifzsBsBoPqCYqCBs8lkpz_edcEhxb3zA/exec";
 
-let userPermissions = {};
+let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
+let activeSearchRef = "";
+let activeSearchCompany = "";
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken");
@@ -144,7 +318,6 @@ window.onload = function() {
   if (token && expires && new Date() < new Date(expires) && savedPerms) {
     userPermissions = JSON.parse(savedPerms);
     showAppView();
-    fetchEngineersDropdown();
   } else {
     executeLogout();
   }
@@ -153,28 +326,25 @@ window.onload = function() {
 async function executeLogin() {
   const userField = document.getElementById("auth-user");
   const passField = document.getElementById("auth-pass");
-  if (!userField.value || !passField.value) return alert("Fill credentials.");
+  const loginBtn = document.getElementById("login-btn");
+  if (!userField.value || !passField.value) return alert("Complete credentials.");
 
+  loginBtn.disabled = true;
   try {
-    const response = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "login", username: userField.value, password: passField.value })
-    });
-    const result = await response.json();
-    if (result.success) {
-      localStorage.setItem("sessionToken", result.sessionToken);
-      localStorage.setItem("sessionExpiry", result.expires);
-      localStorage.setItem("sessionUser", result.username);
-      localStorage.setItem("userFirstName", result.firstName || "");
-      localStorage.setItem("userLastName", result.lastName || "");
-      localStorage.setItem("userPermissions", JSON.stringify(result.permissions));
-      userPermissions = result.permissions;
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
+    const r = await res.json();
+    if (r.success) {
+      localStorage.setItem("sessionToken", r.sessionToken);
+      localStorage.setItem("sessionExpiry", r.expires);
+      localStorage.setItem("sessionUser", r.username);
+      localStorage.setItem("userFirstName", r.firstName);
+      localStorage.setItem("userLastName", r.lastName);
+      localStorage.setItem("userPermissions", JSON.stringify(r.permissions));
+      userPermissions = r.permissions;
       showAppView();
-      fetchEngineersDropdown();
-    } else {
-      alert(result.error);
-    }
-  } catch(e) { alert("Login connection timeout."); }
+    } else alert(r.error);
+  } catch(e) { alert(e.message); }
+  finally { loginBtn.disabled = false; }
 }
 
 function executeLogout() {
@@ -183,7 +353,7 @@ function executeLogout() {
   document.getElementById("auth-container").style.display = "flex";
 }
 
-function showAppView() {
+async function showAppView() {
   document.getElementById("auth-container").style.display = "none";
   document.getElementById("app-container").style.display = "block";
   document.getElementById("dashboard-view").style.display = "block";
@@ -192,121 +362,250 @@ function showAppView() {
   document.getElementById("display-full-name").textContent = localStorage.getItem("userFirstName") + " " + localStorage.getItem("userLastName");
   document.getElementById("display-username").textContent = "@" + localStorage.getItem("sessionUser");
   
-  ["mod-card", "mod-company", "mod-status", "mod-engineer"].forEach(id => {
+  ["mod-card","mod-company","mod-status","mod-engineer"].forEach(id => {
     let key = id === "mod-card" ? "cardDetails" : id === "mod-company" ? "searchCompany" : id === "mod-status" ? "searchStatus" : "searchEngineer";
     document.getElementById(id).classList.toggle("locked", !userPermissions[key]);
   });
+
+  // Pull dynamic engineers array configuration straight from sheets
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getEngineers" }) });
+    const data = await res.json();
+    if (data.success) {
+      cachedEngineers = data.engineers;
+      populateEngineerDropdowns();
+    }
+  } catch(e) { console.error("Could not fetch user sheet listing: " + e.message); }
 }
 
-function navigateToModule(moduleKey) {
-  if (!userPermissions[moduleKey]) return alert("Access Denied.");
+function populateEngineerDropdowns() {
+  const menus = ["engName", "res-engineer-select", "task-eng-select"];
+  menus.forEach(mId => {
+    const el = document.getElementById(mId);
+    if (el) {
+      el.innerHTML = mId === "engName" ? '<option value="">— Select —</option>' : '';
+      cachedEngineers.forEach(eng => {
+        let opt = document.createElement("option");
+        opt.textContent = eng;
+        el.appendChild(opt);
+      });
+    }
+  });
+}
+
+function navigateToModule(key) {
+  if (!userPermissions[key]) return alert("Access Blocked.");
   document.getElementById("dashboard-view").style.display = "none";
   document.getElementById("module-workspace-container").style.display = "block";
-  
-  ["workspace-cardDetails", "workspace-searchCompany", "workspace-searchStatus", "workspace-searchEngineer"].forEach(id => {
-    document.getElementById(id).style.display = (id === "workspace-" + moduleKey) ? "block" : "none";
-  });
-  if(moduleKey === "cardDetails") switchSubTab('search');
+  document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none");
+  document.getElementById("workspace-" + key).style.display = "block";
 }
 
 function returnToDashboard() { showAppView(); }
 
-function switchSubTab(subTabKey) {
-  document.getElementById("btn-subtab-search").classList.toggle("active", subTabKey === 'search');
-  document.getElementById("btn-subtab-create").classList.toggle("active", subTabKey === 'create');
-  document.getElementById("subtab-panel-search").style.display = subTabKey === 'search' ? 'block' : 'none';
-  document.getElementById("subtab-panel-create").style.display = subTabKey === 'create' ? 'block' : 'none';
+function switchSubTab(mode) {
+  document.getElementById("btn-subtab-new").classList.toggle("active", mode === "NEW");
+  document.getElementById("btn-subtab-search").classList.toggle("active", mode === "SEARCH");
+  document.getElementById("subtab-new-entry-zone").style.display = mode === "NEW" ? "block" : "none";
+  document.getElementById("subtab-search-database-zone").style.display = mode === "SEARCH" ? "block" : "none";
 }
 
-// ── CRM ENGINE DATA HANDSHAKES ───────────────────────────────────────────────
-async function fetchEngineersDropdown() {
-  try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getEngineers" }) });
-    const d = await res.json();
-    if(d.success) cachedEngineers = d.engineers;
-  } catch(e) { console.log("Engineers cache offline."); }
-}
-
-async function executeCompanySearch() {
-  const query = document.getElementById("card-search-company").value;
-  const root = document.getElementById("company-search-results-root");
-  if(!query) return alert("Type a company name.");
+// ── Lead Verification Search Engine Node ────────────────────────────────────
+async function executeDatabaseSearch() {
+  const query = document.getElementById("db-search-query").value;
+  const btn = document.getElementById("db-search-btn");
+  if (!query) return alert("Provide string parameters.");
   
-  root.innerHTML = '<div class="spinner" style="margin:20px auto; border-top-color:var(--brand);"></div>';
-  
+  btn.disabled = true;
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyLeads", companyName: query }) });
-    const d = await res.json();
-    
-    if(!d.success || d.leads.length === 0) {
-      root.innerHTML = '<p style="color:var(--warn); font-size:0.9rem;">No matching business accounts registered in the Leads database architecture.</p>';
-      return;
-    }
-    
-    root.innerHTML = "";
-    d.leads.forEach(lead => {
-      // Build dynamic dropdown options from your live user sheet cache array
-      let engOptions = cachedEngineers.map(eng => `<option value="${eng}" ${eng === lead.assignedEngineer ? 'selected' : ''}>${eng}</option>`).join("");
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: query }) });
+    const data = await res.json();
+    if (data.success) {
+      activeSearchRef = data.lead["Card Ref"];
+      activeSearchCompany = data.lead["Company"];
       
-      let leadCardHTML = `
-        <div class="lead-result-card" id="card-row-${lead.leadRef}">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <strong style="color:var(--brand); font-size:1.1rem;">${lead.rowData[4]} (${lead.leadRef})</strong>
-            <span style="background:var(--brand-dk); color:white; padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">Parent Entry Row</span>
-          </div>
-          <p style="font-size:0.9rem; margin-bottom:4px;"><strong>Contact Person:</strong> ${lead.rowData[3]} — ${lead.rowData[5]}</p>
-          <p style="font-size:0.9rem; margin-bottom:12px;"><strong>Email:</strong> ${lead.rowData[8]} | <strong>Phone:</strong> ${lead.rowData[6]}</p>
-          
-          <div class="meta-edit-grid">
-            <div>
-              <label class="field-label" style="margin-top:0;">File Status</label>
-              <select id="status-${lead.leadRef}">
-                <option value="Active" ${lead.currentStatus === 'Active' ? 'selected' : ''}>Active</option>
-                <option value="Pending" ${lead.currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
-                <option value="Closed" ${lead.currentStatus === 'Closed' ? 'selected' : ''}>Closed</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label" style="margin-top:0;">Assigned Engineer</label>
-              <select id="engineer-${lead.leadRef}">
-                <option value="">— Unassigned —</option>
-                ${engOptions}
-              </select>
-            </div>
-          </div>
-          <button class="btn back-btn" style="background:var(--brand); font-size:0.8rem; margin-bottom:15px;" onclick="saveLeadMetaEdits('${lead.leadRef}')">Save Metadata Changes</button>
-          
-          <div class="task-assignment-box">
-            <h4 style="font-size:0.9rem; color:var(--text); margin-bottom:6px;">Task Allocation Staging (Inline Management)</h4>
-            <p style="font-size:0.8rem; color:var(--muted); margin-bottom:10px;">Distribute field tasks, assign dates, and pick shift schedules (Morning, Afternoon, Evening).</p>
-            <div style="display:flex; gap:8px;"><button class="btn back-btn" style="padding:6px 12px; font-size:0.75rem; background:var(--accent);">Assign New Task</button></div>
-          </div>
-
-          <h4 class="field-label" style="color:var(--text); border-top:1px dashed var(--border); padding-top:12px; margin-top:15px;">Follow-Up History Nodes</h4>
-          <div class="followup-badge-container">
-            ${lead.followUps.length === 0 ? '<p style="font-size:0.8rem; color:var(--muted);">No sequential follow-up logs submitted yet.</p>' : ''}
-            ${lead.followUps.map((f, idx) => `<div class="follow-badge" onclick="alert('Follow-Up Details Module initialized successfully.')">Follow-Up ${idx + 1}</div>`).join("")}
-          </div>
-          <button class="btn btn-secondary" style="font-size:0.8rem; padding:6px; font-weight:600; margin-top:15px;">Create New Follow-Up</button>
-        </div>
-      `;
-      root.innerHTML += leadCardHTML;
-    });
-    
-  } catch(e) { root.innerHTML = '<p style="color:var(--warn);">Handshake network query exception failure.</p>'; }
+      document.getElementById("res-status-select").value = data.lead["Status"] || "Active";
+      document.getElementById("res-engineer-select").value = data.lead["Assigned Engineer"] || "";
+      
+      renderFollowUpTimeline(data.followups);
+      renderTaskItemsList(data.tasks);
+      
+      document.getElementById("search-results-canvas").style.display = "block";
+    } else {
+      alert(data.error);
+      document.getElementById("search-results-canvas").style.display = "none";
+    }
+  } catch(e) { alert(e.message); }
+  finally { btn.disabled = false; }
 }
 
-async function saveLeadMetaEdits(leadRef) {
-  const status = document.getElementById("status-" + leadRef).value;
-  const engineer = document.getElementById("engineer-" + leadRef).value;
-  const user = localStorage.getItem("sessionUser");
-  
+async function saveLeadMetaChanges() {
+  const stat = document.getElementById("res-status-select").value;
+  const eng = document.getElementById("res-engineer-select").value;
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadMeta", leadRef, status, engineer, user }) });
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadMeta", leadRef: activeSearchRef, status: stat, engineer: eng }) });
+    const r = await res.json();
+    if (r.success) alert("Reassignments saved successfully.");
+  } catch(e) { alert(e.message); }
+}
+
+function renderFollowUpTimeline(list) {
+  const box = document.getElementById("timeline-box");
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem;">No historical follow-up tracks found.</p>' : '';
+  list.forEach(f => {
+    let div = document.createElement("div");
+    div.className = "timeline-card";
+    div.innerHTML = `<strong>Follow-Up ${f.num}</strong> (${f.date})<br/><small>Handled by: ${f.eng}</small><p style="margin-top:6px; font-size:0.85rem;">${f.details}</p>`;
+    box.appendChild(div);
+  });
+}
+
+function renderTaskItemsList(list) {
+  const box = document.getElementById("task-cards-box");
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem;">No current tasks assigned.</p>' : '';
+  list.forEach(t => {
+    let div = document.createElement("div");
+    div.className = "task-item-card";
+    div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Shift: ${t.shift} | Date: ${t.date}</small>
+                     <div style="margin-top:8px; display:flex; gap:6px;">
+                       <button onclick="editTaskItem('${t.id}','${t.eng}','${t.type}','${t.shift}','${t.date}')" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
+                       <button onclick="removeTaskItem('${t.id}')" style="font-size:0.75rem; color:var(--warn); padding:2px 6px;">Delete</button>
+                     </div>`;
+    box.appendChild(div);
+  });
+}
+
+function showNewTaskForm() {
+  document.getElementById("task-edit-id").value = "";
+  document.getElementById("task-type-input").value = "";
+  document.getElementById("task-date-input").value = "";
+  document.getElementById("task-form-expansion").style.display = "grid";
+}
+
+function editTaskItem(id, eng, type, shift, date) {
+  document.getElementById("task-edit-id").value = id;
+  document.getElementById("task-eng-select").value = eng;
+  document.getElementById("task-type-input").value = type;
+  document.getElementById("task-shift-select").value = shift;
+  document.getElementById("task-date-input").value = date;
+  document.getElementById("task-form-expansion").style.display = "grid";
+}
+
+async function commitTaskItem() {
+  const taskData = {
+    id: document.getElementById("task-edit-id").value,
+    leadRef: activeSearchRef,
+    company: activeSearchCompany,
+    engineer: document.getElementById("task-eng-select").value,
+    type: document.getElementById("task-type-input").value,
+    shift: document.getElementById("task-shift-select").value,
+    date: document.getElementById("task-date-input").value
+  };
+  if (!taskData.type || !taskData.date) return alert("Provide required data fields.");
+
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveTask", taskData }) });
+    const r = await res.json();
+    if (r.success) {
+      document.getElementById("task-form-expansion").style.display = "none";
+      executeDatabaseSearch(); // Reload interface context elements
+    }
+  } catch(e) { alert(e.message); }
+}
+
+async function removeTaskItem(id) {
+  if (!confirm("Confirm target parameter deletion?")) return;
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: id }) });
+    const r = await res.json();
+    if (r.success) executeDatabaseSearch();
+  } catch(e) { alert(e.message); }
+}
+
+// ── Card file state hooks ──────────────────────────────────────────────────
+let fileFront = null, fileBack = null;
+document.getElementById('card-front').onchange = (e) => { fileFront = e.target.files[0]; document.getElementById('front-box').textContent = "Front ✅"; document.getElementById('front-box').classList.add('done'); document.getElementById('parse-btn').disabled = false; };
+document.getElementById('card-back').onchange = (e) => { fileBack = e.target.files[0]; document.getElementById('back-box').textContent = "Back ✅"; document.getElementById('back-box').classList.add('done'); };
+
+function toggleOtherText(r, id) { document.getElementById(id).style.display = (r.value === 'Other') ? 'block' : 'none'; }
+function toggleOtherCheck(c, id) { document.getElementById(id).style.display = c.checked ? 'block' : 'none'; }
+function handleQualChange() { document.getElementById('vendor-fields').style.display = document.getElementById('q8').checked ? 'block' : 'none'; }
+function toggleNo(btn) { const i = document.getElementById(btn.dataset.target); const act = btn.classList.toggle('active'); i.value = act ? "No" : ""; i.disabled = act; }
+function clearNo(i) { const b = document.querySelector(`button[data-target="${i.id}"]`); if (b) b.classList.remove('active'); }
+
+async function parseCard() {
+  const btn = document.getElementById('parse-btn');
+  btn.innerHTML = '<div class="spinner"></div> Parsing...'; btn.disabled = true;
+  const getB64 = (f) => new Promise((res, rej) => { const rd = new FileReader(); rd.onload = () => res(rd.result.split(',')[1]); rd.readAsDataURL(f); });
+  try {
+    const img1 = await getB64(fileFront);
+    const img2 = fileBack ? await getB64(fileBack) : null;
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'parse', image: img1, imageBack: img2 }) });
+    const j = await res.json();
+    const d = JSON.parse(j.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
+    document.getElementById('f-name').value = d.name || ""; document.getElementById('f-company').value = d.company || "";
+    document.getElementById('f-position').value = d.position || ""; document.getElementById('f-phone').value = d.phone || "";
+    document.getElementById('f-altphone').value = d.altPhone || ""; document.getElementById('f-email').value = d.email || "";
+    document.getElementById('f-website').value = d.website || ""; document.getElementById('f-address').value = d.address || "";
+  } catch (e) { alert("Parsing error: " + e.message); }
+  finally { btn.innerHTML = 'Parse Card with AI'; btn.disabled = false; }
+}
+
+async function uploadToCloudinary(file) {
+  if (!file) return "";
+  const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', UPLOAD_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+  const d = await res.json(); return d.secure_url || "";
+}
+
+async function submitLead() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
+  const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
+  try {
+    const [url1, url2] = await Promise.all([uploadToCloudinary(fileFront), uploadToCloudinary(fileBack)]);
+    const imageUrl = [url1, url2].filter(u => u).join(", ");
+    const fields = {
+      engineerName: document.getElementById('engName').value,
+      name: document.getElementById('f-name').value, company: document.getElementById('f-company').value,
+      position: document.getElementById('f-position').value, phone: document.getElementById('f-phone').value,
+      altPhone: document.getElementById('f-altphone').value, email: document.getElementById('f-email').value,
+      website: document.getElementById('f-website').value, address: document.getElementById('f-address').value,
+      meetingDate: document.getElementById('meetingDate').value, meetingTime: document.getElementById('meetingTime').value,
+      meetingVenue: getRadio('meetingVenue') === 'Other' ? document.getElementById('meetingVenueOther').value : getRadio('meetingVenue'),
+      venueName: document.getElementById('venueName').value, additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
+      businessVertical: getRadio('businessVertical') === 'Other' ? document.getElementById('businessVerticalOther').value : getRadio('businessVertical'),
+      industry: document.getElementById('industry').value, qualification: getChecks('qualification'), vendorType: getChecks('vendorType'),
+      materialsName: document.getElementById('materialsName').value, lpi: document.getElementById('lpi').value, hbi: document.getElementById('hbi').value,
+      hi: document.getElementById('hi').value, thi: document.getElementById('thi').value, gsi: document.getElementById('gsi').value, esd: document.getElementById('esd').value,
+      voltage: getChecks('voltage'), cdMva: document.getElementById('cdMva').value, rdMva: document.getElementById('rdMva').value, avgPf: document.getElementById('avgPf').value,
+      problemObserved: document.getElementById('problemObserved').value, techSummary: document.getElementById('techSummary').value,
+      existingProject: document.getElementById('epInput').value, upcomingProject: document.getElementById('upInput').value,
+      products: getChecks('prod'), approxReq: document.getElementById('approxReq').value, tenderDate: document.getElementById('tenderDate').value,
+      orderTimeline: document.getElementById('orderTimeline').value, competitors: document.getElementById('competitors').value, potential: getRadio('pot'),
+      sendProfile: document.getElementById('act1').value, sendTechno: document.getElementById('act6').value, followUpRequired: document.getElementById('act7').value, nextDate: document.getElementById('nextDate').value,
+    };
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'submit', fields, imageUrl }) });
     const d = await res.json();
-    if(d.success) alert("Metadata saved successfully! Changes committed to transaction AuditLog sheet.");
-    else alert("Error: " + d.error);
-  } catch(e) { alert("Network writing exception."); }
+    if (data.success || d.success) {
+      document.getElementById('main-form-container').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+      document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef;
+    }
+  } catch (e) { alert(e.message); }
+  finally { btn.disabled = false; btn.innerHTML = 'Submit New Account Entry'; }
+}
+
+function resetNewEntryForm() {
+  document.getElementById('success-screen').style.display = 'none';
+  document.getElementById('main-form-container').style.display = 'block';
+  fileFront = null; fileBack = null;
+  document.getElementById('front-box').textContent = "📷 Front Side";
+  document.getElementById('front-box').classList.remove('done');
+  document.getElementById('back-box').textContent = "📷 Back Side (Opt)";
+  document.getElementById('back-box').classList.remove('done');
+  document.getElementById('parse-btn').disabled = true;
 }
 </script>
 </body>
