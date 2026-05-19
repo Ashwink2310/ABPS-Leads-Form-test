@@ -355,7 +355,22 @@
       <div id="multi-contact-records-container"></div>
     </div>
 
-    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;"><h3>Search Status Workspace</h3></div>
+    <div id="workspace-searchStatus" class="workspace-panel" style="display: none;">
+      <div class="section">
+        <div class="section-header">Filter Directory by Lead Status</div>
+        <div class="section-body">
+          <label class="field-label">Select Target Status</label>
+          <select id="status-filter-select" style="margin-bottom:10px;">
+            <option value="">— Select Status —</option>
+            <option value="Status1">Status1</option>
+            <option value="Status2">Status2</option>
+            <option value="Status3">Status3</option>
+            <option value="Status4">Status4</option>
+          </select>
+          <button class="btn btn-sub" id="status-search-btn" onclick="triggerStatusSearch()">Search Leads</button>
+        </div>
+      </div>
+    </div>
     <div id="workspace-searchEngineer" class="workspace-panel" style="display: none;"><h3>Search Engineer Workspace</h3></div>
   </div>
 </div>
@@ -420,7 +435,7 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzFprQ5IzHzhSOGnqq0FpFnJQZTmjxX0LW0YdVRgKtsrcEKlUvJViDUeXiFNkdmZNT4Yg/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwVq505jNES8uYLQ8DUwpOtzB4ax_kprcAyQXZyEYc3pQKPGz8n5Cjp3TQqKOgoD4BvPg/exec"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
@@ -906,7 +921,7 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadFull", leadRef: leadRef, fields: fieldsPayload }) });
     const r = await res.json(); 
     if (r.success) {
-      alert("Modifications committed.");
+      alert("Modifications Saved.");
       const updatedNameText = fieldsPayload["Name"] && fieldsPayload["Name"].trim() !== "" ? fieldsPayload["Name"] : "Unspecified";
       const updatedPositionText = fieldsPayload["Position"] && fieldsPayload["Position"].trim() !== "" ? fieldsPayload["Position"] : "Unspecified";
       
@@ -1177,6 +1192,42 @@ async function triggerQualificationSearch() {
     } catch(e) { alert(e.message); } finally {
         btn.classList.remove("loading");
         btn.textContent = "Search Qualifications";
+    }
+}
+
+async function triggerStatusSearch() {
+    const btn = document.getElementById("status-search-btn");
+    const statusVal = document.getElementById("status-filter-select").value;
+    if(!statusVal) return alert("Please select a status.");
+
+    btn.classList.add("loading");
+    btn.textContent = "Searching...";
+
+    try {
+        const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchByStatus", statusValue: statusVal }) });
+        const data = await res.json();
+        
+        if (data.success) {
+            const canvas = document.getElementById("step2-inline-interaction-canvas");
+            // Set up header row without the create button
+            document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
+                <div class="qualification-status-bar">Status: ${statusVal}</div>
+            `;
+            
+            // Explicitly hide the global create entry buttons
+            document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
+            
+            globalFollowUpsCacheMap = data.followups;
+            globalTasksCacheMap = data.tasks;
+            buildMultiContactDirectoryInterface(data.leads, "");
+            canvas.style.display = "block";
+            document.getElementById("workspace-searchStatus").appendChild(canvas);
+        } else {
+            alert(data.error || "No leads found with this status.");
+        }
+    } catch(e) { alert(e.message); } finally {
+        btn.classList.remove("loading");
+        btn.textContent = "Search Leads";
     }
 }
 
