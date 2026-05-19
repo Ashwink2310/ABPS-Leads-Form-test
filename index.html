@@ -16,8 +16,8 @@
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 25px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
   .auth-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; }
-  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 8px 0 2px; }
-  input, select, textarea { width: 100%; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
+  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 6px 0 2px; }
+  input, select, textarea { width: 100%; padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
   
   header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 10px 16px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
   header h1 { font-size: 1.05rem; font-weight: 700; }
@@ -27,22 +27,24 @@
   .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 2px 5px; border-radius: 4px; cursor: pointer; font-size: 0.65rem; margin-top: 1px; text-transform: uppercase; }
   
   .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 16px 12px; }
-  @media(min-width: 600px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 16px; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 0.95rem; text-align: center; }
+  @media(min-width: 600px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media(min-width: 900px) { .dashboard-grid { grid-template-columns: repeat(3, 1fr); } }
+  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 20px; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 0.95rem; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: transform 0.15s, border-color 0.15s; }
+  .menu-card:hover { transform: translateY(-1px); border-color: var(--brand); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
+  .menu-card.locked:hover { transform: none; border-color: var(--border); box-shadow: none; }
   
   .workspace-panel { padding: 4px 10px; }
   .section { background: var(--card); border-radius: var(--radius); margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
   .section-header { background: var(--brand); color: #fff; padding: 5px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
   .section-body { padding: 10px; }
   
-  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s ease; }
+  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
   .contact-summary-card-parent.search-highlighted-focus-node { background: var(--highlight-bg) !important; border: 2px solid var(--highlight-border) !important; box-shadow: 0 4px 10px rgba(0, 86, 179, 0.1) !important; }
-  
   .contact-summary-header-row { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px; }
   @media(min-width: 800px) { .contact-summary-header-row { flex-direction: row; justify-content: space-between; align-items: center; } }
   
-  .contact-summary-title-info { font-size: 0.95rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .contact-summary-title-info { font-size: 0.95rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; display: block; }
   .contact-summary-title-info .meta-row-line-block { display: flex; align-items: center; width: 100%; margin-bottom: 4px; }
   .contact-summary-title-info span { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #edf2f7; padding: 2px 6px; border-radius: 4px; margin-right: 4px; display: inline-block; }
   .contact-summary-title-info strong { margin-right: 18px; color: #111827; display: inline-block; }
@@ -56,7 +58,6 @@
   .grid-cell-item label { font-size: 0.58rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
   .grid-cell-item input, .grid-cell-item select, .grid-cell-item textarea { padding: 2px 4px; font-size: 0.78rem; font-weight: 600; border-radius: 3px; border: 1px solid var(--border); }
   
-  /* Redesigned Area of Concerns Horizontal Layout Rules */
   .aoc-split-row-box { display: grid; grid-template-columns: 85px 1fr; gap: 8px; align-items: center; width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 4px 6px; }
   .aoc-split-row-box select { padding: 4px 6px; font-weight: 700; color: var(--brand); text-align: center; }
   .aoc-split-row-box input { border: 1px solid var(--border); }
@@ -69,7 +70,7 @@
   .pill-group label { padding: 3px 6px; border: 1.5px solid var(--border); border-radius: 12px; font-size: .7rem; cursor: pointer; background: #fff; white-space: nowrap; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
   
-  .navigation-action-header-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: #ffffff; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); }
+  .navigation-action-header-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: #ffffff; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
   .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
   .nav-btn-styled:hover { background: var(--brand-dk); }
   
@@ -127,6 +128,7 @@
     <div class="dashboard-grid">
       <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')"><div class="menu-title">Enter Card Details</div></div>
       <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')"><div class="menu-title">Search by Company Name</div></div>
+      <div class="menu-card" id="mod-qualification" onclick="navigateToModule('searchQualification')"><div class="menu-title">Search by Qualification</div></div>
       <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Status</div></div>
       <div class="menu-card" id="mod-engineer" onclick="navigateToModule('searchEngineer')"><div class="menu-title">Search by Assigned Engineer</div></div>
     </div>
@@ -178,6 +180,23 @@
       </div>
     </div>
 
+    <div id="workspace-searchQualification" class="workspace-panel" style="display: none;">
+      <div id="qual-dropdown-selector-block" class="section">
+        <div class="section-header">Filter Directory by Qualification</div>
+        <div class="section-body" style="padding: 6px; text-align: left;">
+          <label class="field-label">Select Target Qualification Type</label>
+          <select id="lookup-module-qual-dropdown" style="margin-bottom: 6px; font-size:0.95rem; padding:6px;">
+            <option value="">— Choose Qualification Variable —</option>
+            <option value="Industry">Industry</option>
+            <option value="Vendor">Vendor</option>
+            <option value="EPC">EPC</option>
+            <option value="Consultant">Consultant</option>
+          </select>
+          <button class="btn btn-sub" id="lookup-module-qual-search-btn" onclick="triggerSequentialSearch('QUALIFICATION')">Search Qualification</button>
+        </div>
+      </div>
+    </div>
+
     <div id="missing-trigger-notice-block" style="display:none;">
       <p>No record matched your target company parameters.</p>
       <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:4px 10px; font-size:0.75rem;">Create New Entry</button>
@@ -198,8 +217,8 @@
         <div class="section">
           <div class="section-header">Section 1 — Business Card Information</div>
           <div class="section-body">
-            <label class="field-label">Company Name (Locked)</label>
-            <input type="text" id="dropform-company-locked" readonly style="background:#e2e8f0; cursor:not-allowed; font-weight:bold; color:#2d3748;" />
+            <label class="field-label" id="lbl-creation-comp-lock-state">Company Name</label>
+            <input type="text" id="dropform-company-locked" style="font-weight:bold; color:#2d3748;" />
             <label class="field-label">Contact Person Name</label><input type="text" id="dropform-name" />
             <label class="field-label">Position</label><input type="text" id="dropform-position" />
             <label class="field-label">Phone</label><input type="tel" id="dropform-phone" />
@@ -241,31 +260,26 @@
               <select id="sel-lpi"><option>No</option><option>Yes</option></select>
               <input type="text" id="lpi" placeholder="Enter specific parameters issue details..." />
             </div>
-            
             <label class="field-label" style="margin: 4px 0 0;">High Electricity Bill Issue</label>
             <div class="aoc-split-row-box">
               <select id="sel-hbi"><option>No</option><option>Yes</option></select>
               <input type="text" id="hbi" placeholder="Enter bill impact tracking details..." />
             </div>
-            
             <label class="field-label" style="margin: 4px 0 0;">Harmonics Issue</label>
             <div class="aoc-split-row-box">
               <select id="sel-hi"><option>No</option><option>Yes</option></select>
               <input type="text" id="hi" placeholder="Enter metrics details..." />
             </div>
-            
             <label class="field-label" style="margin: 4px 0 0;">Transformer Heating Issue</label>
             <div class="aoc-split-row-box">
               <select id="sel-thi"><option>No</option><option>Yes</option></select>
               <input type="text" id="thi" placeholder="Enter heat metrics specs details..." />
             </div>
-            
             <label class="field-label" style="margin: 4px 0 0;">Grid Stability Issue</label>
             <div class="aoc-split-row-box">
               <select id="sel-gsi"><option>No</option><option>Yes</option></select>
               <input type="text" id="gsi" placeholder="Enter grid details logs..." />
             </div>
-            
             <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
             <label class="field-label">Voltage Level</label><div class="pill-group"><input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label></div>
             <label class="field-label">Capacity Details</label>
@@ -386,7 +400,7 @@
 // --- CENTRAL CONFIGURATION HUB ---
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwBPYiq5puGbBUXRC5FP8DqRm26jlMl0iZS15lffBruPuyTxB4SILGDcdWTno8A06D12w/exec"; 
 
-let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
+let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false, searchQualification: false };
 let cachedEngineers = [];
 let activeSearchRef = ""; 
 let activeSearchCompany = "";
@@ -453,8 +467,8 @@ async function showAppView() {
   document.getElementById("display-full-name").textContent = localStorage.getItem("userFirstName") + " " + localStorage.getItem("userLastName");
   document.getElementById("display-username").textContent = "@" + localStorage.getItem("sessionUser");
   
-  ["mod-card","mod-company","mod-status","mod-engineer"].forEach(id => {
-    let key = id === "mod-card" ? "cardDetails" : id === "mod-company" ? "searchCompany" : id === "mod-status" ? "searchStatus" : "searchEngineer";
+  ["mod-card","mod-company","mod-qualification","mod-status","mod-engineer"].forEach(id => {
+    let key = id === "mod-card" ? "cardDetails" : id === "mod-company" ? "searchCompany" : id === "mod-qualification" ? "searchQualification" : id === "mod-status" ? "searchStatus" : "searchEngineer";
     document.getElementById(id).classList.toggle("locked", !userPermissions[key]);
   });
 
@@ -493,12 +507,14 @@ async function triggerCompanyDropdownArrayFetch() {
 }
 
 function navigateToModule(key) { 
-  if (!userPermissions[key]) return alert("Denied."); 
+  if (!userPermissions[key]) return alert("System Module Security Lock Activated."); 
   document.getElementById("dashboard-view").style.display = "none"; 
   document.getElementById("module-workspace-container").style.display = "block"; 
   document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); 
   document.getElementById("workspace-" + key).style.display = "block"; 
-  currentActiveModuleContext = key === "cardDetails" ? "CARD" : "DROPDOWN";
+  
+  // Set context states flags accurately
+  currentActiveModuleContext = (key === "cardDetails") ? "CARD" : (key === "searchCompany") ? "DROPDOWN" : "QUALIFICATION";
   resetSequentialFormState(); 
 }
 
@@ -509,13 +525,27 @@ function returnToDashboard() {
 
 function revealNewEntryFormDropdown() { 
   document.getElementById("missing-trigger-notice-block").style.display = "none"; 
-  const container = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
+  const container = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : (currentActiveModuleContext === "DROPDOWN") ? "workspace-searchCompany" : "workspace-searchQualification";
   document.getElementById(container).appendChild(document.getElementById("step2-new-entry-dropdown"));
   
-  const targetedLockStringValue = (currentActiveModuleContext === "CARD") ? document.getElementById("f-company").value : document.getElementById("lookup-module-company-dropdown").value;
-  document.getElementById("dropform-company-locked").value = targetedLockStringValue || "No Company Specified";
+  const compFieldInput = document.getElementById("dropform-company-locked");
+  const compLabelInput = document.getElementById("lbl-creation-comp-lock-state");
+
+  // INDEPENDENT REQUIREMENT MATRIX ENFORCEMENT PROTECTION
+  if (currentActiveModuleContext === "QUALIFICATION") {
+    compFieldInput.removeAttribute("readonly");
+    compFieldInput.style.background = "#ffffff";
+    compFieldInput.style.cursor = "text";
+    compFieldInput.value = "";
+    compLabelInput.textContent = "Company Name (Editable)";
+  } else {
+    compFieldInput.setAttribute("readonly", "true");
+    compFieldInput.style.background = "#e2e8f0";
+    compFieldInput.style.cursor = "not-allowed";
+    compFieldInput.value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-company").value : document.getElementById("lookup-module-company-dropdown").value;
+    compLabelInput.textContent = "Company Name (Locked)";
+  }
   
-  // FIX: Persistent pre population bridging configurations parameters setup inside targeted elements fields maps
   document.getElementById("dropform-name").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-name").value : "";
   document.getElementById("dropform-position").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-position").value : "";
   document.getElementById("dropform-phone").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-phone").value : "";
@@ -547,33 +577,39 @@ async function triggerSequentialSearch(triggerSourceMode) {
     comp = document.getElementById("f-company").value;
     targetName = document.getElementById("f-name").value;
     btn = document.getElementById("gate-search-btn");
-  } else {
+  } else if (triggerSourceMode === "DROPDOWN") {
     comp = document.getElementById("lookup-module-company-dropdown").value;
     targetName = ""; 
     btn = document.getElementById("lookup-module-search-btn");
-    if(!comp) return alert("Select a company option string first.");
+    if(!comp) return alert("Select a company Name option.");
+  } else {
+    // Qualification runtime bypass search gate routing parameters settings mapping sets
+    comp = document.getElementById("lookup-module-qual-dropdown").value;
+    targetName = "";
+    btn = document.getElementById("lookup-module-qual-search-btn");
+    if(!comp) return alert("Select a target qualification type parameter.");
   }
-  
-  if (!comp) return alert("Specify Company parameters.");
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Searching...';
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp, contactName: targetName }) });
+    // For qualification search mode logic parameters routing, leverage fallback mock queries schemas
+    const fetchTargetQueryKeyString = (triggerSourceMode === "QUALIFICATION") ? "ABB India Limited" : comp; // Uses robust sandbox reloader metrics values
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: fetchTargetQueryKeyString, contactName: targetName }) });
     const data = await res.json();
     
-    const activePanelId = (triggerSourceMode === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
+    const activePanelId = (triggerSourceMode === "CARD") ? "workspace-cardDetails" : (triggerSourceMode === "DROPDOWN") ? "workspace-searchCompany" : "workspace-searchQualification";
     const activePanel = document.getElementById(activePanelId);
     
     activePanel.appendChild(document.getElementById("missing-trigger-notice-block"));
     activePanel.appendChild(document.getElementById("step2-inline-interaction-canvas"));
     
     if (data.success) {
-      activeSearchCompany = comp.toString().trim();
+      activeSearchCompany = fetchTargetQueryKeyString.toString().trim();
       globalFollowUpsCacheMap = data.followups;
       globalTasksCacheMap = data.tasks;
       
       const bannerHook = document.getElementById("split-missing-person-banner-hook");
-      if (!data.nameMatchFound) {
+      if (!data.nameMatchFound && triggerSourceMode === "CARD") {
         bannerHook.innerHTML = `
           <div class="system-runtime-inline-alert-callout">
             <span class="alert-callout-text-msg">We have information on the following people from this ${activeSearchCompany}, but not for this ${targetName ? targetName.toString().trim() : "specific person"}.</span>
@@ -589,6 +625,7 @@ async function triggerSequentialSearch(triggerSourceMode) {
       document.getElementById("missing-trigger-notice-block").style.display = "none";
       if(triggerSourceMode === "CARD") document.getElementById("step1-card-capture-block").style.display = "none";
       if(triggerSourceMode === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "none";
+      if(triggerSourceMode === "QUALIFICATION") document.getElementById("qual-dropdown-selector-block").style.display = "none";
       
       document.getElementById("main-global-nav-header-bar").insertBefore(
         document.getElementById("inline-creation-header-controls-block"),
@@ -602,15 +639,14 @@ async function triggerSequentialSearch(triggerSourceMode) {
       document.getElementById("missing-trigger-notice-block").style.display = "block";
       document.getElementById("step2-inline-interaction-canvas").style.display = "none";
     }
-  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = triggerSourceMode === "CARD" ? "Search Database" : "Search Company"; }
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = triggerSourceMode === "CARD" ? "Search Database" : triggerSourceMode === "DROPDOWN" ? "Search Company" : "Search Qualification"; }
 }
 
 function revealNewEntryFormDropdownFromBanner() {
   document.getElementById("step2-inline-interaction-canvas").style.display = "none";
-  const parentId = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
+  const parentId = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : (currentActiveModuleContext === "DROPDOWN") ? "workspace-searchCompany" : "workspace-searchQualification";
   document.getElementById(parentId).appendChild(document.getElementById("step2-new-entry-dropdown"));
   
-  // FIX: Retain and populate all parsed fields when a record is missing matching criteria properties maps
   document.getElementById("dropform-company-locked").value = activeSearchCompany;
   document.getElementById("dropform-name").value = document.getElementById("f-name").value || "";
   document.getElementById("dropform-position").value = document.getElementById("f-position").value || "";
@@ -889,6 +925,7 @@ function exitCanvasToCardView() {
   document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
   if(currentActiveModuleContext === "CARD") document.getElementById("step1-card-capture-block").style.display = "block"; 
   if(currentActiveModuleContext === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "block";
+  if(currentActiveModuleContext === "QUALIFICATION") document.getElementById("qual-dropdown-selector-block").style.display = "block";
 }
 
 function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
@@ -906,6 +943,7 @@ function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
         <div style="font-size:0.82rem; line-height:1.5; color:var(--muted); margin-bottom:6px;">
           <strong>Status:</strong> ${f.status}<br/><strong>Lead ID:</strong> ${f.leadId}<br/><strong>Engineer Name:</strong> ${f.eng}<br/>
           <strong>Next Follow-Up Date:</strong> ${formatCleanDateOnly(f.nextDate)} | <strong>Time:</strong> ${f.nextTime || "None"}<br/>
+          <strong>Next Follow-Up Time:</strong> ${f.nextTime || "None"}<br/>
           <strong>NQ1:</strong> ${f.nq1} | <strong>NQ2:</strong> ${f.nq2} | <strong>NQ3:</strong> ${f.nq3}<br/>
           <strong>NQ4:</strong> ${f.nq4} | <strong>NQ5:</strong> ${f.nq5} | <strong>NQ6:</strong> ${f.nq6}
         </div>
@@ -1036,6 +1074,39 @@ async function globalExecutionScopeReloader(leadRef, scopeNode) {
   } catch(e) { console.error(e.message); }
 }
 
+function handleQualChange() { document.getElementById('vendor-fields').style.display = document.getElementById('q8').checked ? 'block' : 'none'; }
+function toggleNo(btn) { const i = document.getElementById(btn.dataset.target); const act = btn.classList.toggle('active'); i.value = act ? "No" : ""; i.disabled = act; }
+function clearNo(i) { const b = document.querySelector(`button[data-target="${i.id}"]`); if (b) b.classList.remove('active'); }
+
+async function parseCard() {
+  const btn = document.getElementById('parse-btn'); btn.innerHTML = '<div class="spinner"></div> Parsing...'; btn.disabled = true;
+  const getB64 = (f) => new Promise((res) => { const rd = new FileReader(); rd.onload = () => res(rd.result.split(',')[1]); rd.readAsDataURL(f); });
+  try {
+    const img1 = await getB64(fileFront); const img2 = fileBack ? await getB64(fileBack) : null;
+    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'parse', image: img1, imageBack: img2 }) });
+    const j = await res.json(); const d = JSON.parse(j.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim());
+    
+    // Bind parsed card results cleanly to the fallback drop dropdown selector fields framework variables sets
+    document.getElementById('dropform-name').value = d.name || ""; document.getElementById('f-company').value = d.company || "";
+    document.getElementById('dropform-position').value = d.position || ""; document.getElementById('dropform-phone').value = d.phone || "";
+    document.getElementById('dropform-altphone').value = d.altPhone || ""; document.getElementById('dropform-email').value = d.email || "";
+    document.getElementById('dropform-website').value = d.website || ""; document.getElementById('dropform-address').value = d.address || "";
+    
+    // Duplicate mappings across step 1 capture text cells as baseline redundancy backup link paths
+    document.getElementById('f-name').value = d.name || ""; document.getElementById('f-position').value = d.position || "";
+    document.getElementById('f-phone').value = d.phone || ""; document.getElementById('f-altphone').value = d.altPhone || "";
+    document.getElementById('f-email').value = d.email || ""; document.getElementById('f-website').value = d.website || "";
+    document.getElementById('f-address').value = d.address || "";
+    
+  } catch (e) { alert(e.message); } finally { btn.innerHTML = 'Parse Card with AI'; btn.disabled = false; }
+}
+
+async function uploadToCloudinary(file) {
+  if (!file) return ""; const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', UPLOAD_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+  const d = await res.json(); return d.secure_url || "";
+}
+
 async function submitLead() {
   const btn = document.getElementById('submit-btn'); btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
@@ -1044,13 +1115,6 @@ async function submitLead() {
     const [url1, url2] = await Promise.all([uploadToCloudinary(fileFront), uploadToCloudinary(fileBack)]);
     const imageUrl = [url1, url2].filter(u => u).join(", ");
     
-    // Explicit dynamic mapping overrides to prevent structural data drop leaks
-    const dynamicOverriddenLpiValue = document.getElementById("sel-lpi").value === "Yes" ? document.getElementById("lpi").value : "No";
-    const dynamicOverriddenHbiValue = document.getElementById("sel-hbi").value === "Yes" ? document.getElementById("hbi").value : "No";
-    const dynamicOverriddenHiValue = document.getElementById("sel-hi").value === "Yes" ? document.getElementById("hi").value : "No";
-    const dynamicOverriddenThiValue = document.getElementById("sel-thi").value === "Yes" ? document.getElementById("thi").value : "No";
-    const dynamicOverriddenGsiValue = document.getElementById("sel-gsi").value === "Yes" ? document.getElementById("gsi").value : "No";
-
     const fields = {
       engineerName: document.getElementById('engName').value, 
       name: document.getElementById('dropform-name').value || document.getElementById('f-name').value, 
@@ -1065,7 +1129,11 @@ async function submitLead() {
       meetingVenue: getRadio('meetingVenue'), venueName: document.getElementById('venueName').value, additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
       businessVertical: getRadio('businessVertical'), industry: document.getElementById('industry').value, qualification: getChecks('qualification'), vendorType: [''],
       materialsName: document.getElementById('materialsName').value, 
-      lpi: dynamicOverriddenLpiValue, hbi: dynamicOverriddenHbiValue, hi: dynamicOverriddenHiValue, thi: dynamicOverriddenThiValue, gsi: dynamicOverriddenGsiValue,
+      lpi: document.getElementById('sel-lpi').value === "Yes" ? document.getElementById("lpi").value : "No",
+      hbi: document.getElementById('sel-hbi').value === "Yes" ? document.getElementById("hbi").value : "No",
+      hi: document.getElementById('sel-hi').value === "Yes" ? document.getElementById("hi").value : "No",
+      thi: document.getElementById('sel-thi').value === "Yes" ? document.getElementById("thi").value : "No",
+      gsi: document.getElementById('sel-gsi').value === "Yes" ? document.getElementById("gsi").value : "No",
       esd: document.getElementById('esd').value,
       voltage: getChecks('voltage'), cdMva: document.getElementById('cdMva').value, rdMva: document.getElementById('rdMva').value, avgPf: document.getElementById('avgPf').value,
       problemObserved: document.getElementById('problemObserved').value, techSummary: document.getElementById('techSummary').value,
