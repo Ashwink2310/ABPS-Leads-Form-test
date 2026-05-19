@@ -11,78 +11,78 @@
     --bg: #f0f4f8; --card: #ffffff; --border: #d0d9e4; --text: #1a2332;
     --muted: #6b7a8d; --radius: 6px;
   }
-  body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
+  body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 20px; }
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
-  .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 30px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
-  .auth-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; }
+  .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 25px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+  .auth-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; }
   label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 6px 0 2px; }
   input, select, textarea { width: 100%; padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
   
-  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 12px 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-  header h1 { font-size: 1.1rem; font-weight: 700; }
+  header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 10px 16px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+  header h1 { font-size: 1.05rem; font-weight: 700; }
   .header-actions-block { display: flex; flex-direction: column; align-items: flex-end; }
-  .user-full-name { font-size: 0.85rem; font-weight: 700; }
-  .user-display-username { font-size: 0.72rem; color: #d0d9e4; font-family: monospace; }
-  .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.68rem; margin-top: 2px; text-transform: uppercase; }
+  .user-full-name { font-size: 0.8rem; font-weight: 700; }
+  .user-display-username { font-size: 0.68rem; color: #d0d9e4; font-family: monospace; }
+  .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 2px 5px; border-radius: 4px; cursor: pointer; font-size: 0.65rem; margin-top: 1px; text-transform: uppercase; }
   
-  .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 24px 14px; }
+  .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 16px 12px; }
   @media(min-width: 600px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
-  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 20px; border-radius: var(--radius); cursor: pointer; font-weight: 700; }
+  .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 16px; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 0.95rem; text-align: center; }
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
   
-  .workspace-panel { padding: 4px 12px; }
-  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
-  .section-header { background: var(--brand); color: #fff; padding: 5px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
-  .section-body { padding: 8px; }
+  .workspace-panel { padding: 4px 10px; }
+  .section { background: var(--card); border-radius: var(--radius); margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
+  .section-header { background: var(--brand); color: #fff; padding: 5px 10px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+  .section-body { padding: 10px; }
   
-  /* High contrast multi line directory styling block metrics rules updates */
-  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  /* Mobile-first Layout Containers Rules Updates */
+  .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
   .contact-summary-header-row { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 10px; }
   @media(min-width: 800px) { .contact-summary-header-row { flex-direction: row; justify-content: space-between; align-items: center; } }
   
-  .contact-summary-title-info { font-size: 0.98rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; }
-  .contact-summary-title-info .row-block-line { display: inline-block; width: 100%; margin-bottom: 2px; }
-  @media(min-width: 800px) { .contact-summary-title-info .row-block-line { display: inline; width: auto; margin-bottom: 0; } }
-  .contact-summary-title-info span { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #edf2f7; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
-  .contact-summary-title-info strong { margin-right: 20px; color: #111827; }
+  /* Standard High Contrast Mobile Text Configurations */
+  .contact-summary-title-info { font-size: 0.95rem; font-weight: 700; color: var(--text); width: 100%; text-align: left; line-height: 1.5; }
+  .contact-summary-title-info .row-block-line { display: block; margin-bottom: 4px; }
+  @media(min-width: 800px) { .contact-summary-title-info .row-block-line { display: inline; margin-bottom: 0; } }
+  .contact-summary-title-info span { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #edf2f7; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+  .contact-summary-title-info strong { margin-right: 18px; color: #111827; }
   .directory-btn-actions-block { display: flex; gap: 6px; width: 100%; justify-content: flex-start; }
   @media(min-width: 800px) { .directory-btn-actions-block { width: auto; justify-content: flex-end; } }
 
-  /* Zero Scroll Compact Form Layout Adjustments 100% Zoom Mode Optimized */
-  .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; text-align: left; }
+  /* 100% Zoom Prevention Screen Matrix Padding Heights Rules */
+  .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; text-align: left; }
   @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
   @media(min-width: 950px) { .compact-fields-grid { grid-template-columns: repeat(6, 1fr); } }
-  .grid-cell-item { display: flex; flex-direction: column; background: #f8fafc; padding: 3px 5px; border: 1px solid #e2e8f0; border-radius: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
+  .grid-cell-item { display: flex; flex-direction: column; background: #f8fafc; padding: 2px 4px; border: 1px solid #e2e8f0; border-radius: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
   .grid-cell-item label { font-size: 0.58rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 1px; }
   .grid-cell-item input, .grid-cell-item select, .grid-cell-item textarea { padding: 2px 4px; font-size: 0.78rem; font-weight: 600; border-radius: 3px; border: 1px solid var(--border); }
   
   .span-two-units { grid-column: span 2; }
-  .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 3px 0; }
+  .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 2px 0; }
   
   .pill-group { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 1px; }
   .pill-group input { display: none; }
   .pill-group label { padding: 3px 6px; border: 1.5px solid var(--border); border-radius: 12px; font-size: .7rem; cursor: pointer; background: #fff; white-space: nowrap; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
   
-  .navigation-action-header-row { display: flex; justify-content: flex-end; align-items: center; padding: 4px 10px; background: #ffffff; border-radius: 6px; margin-bottom: 8px; border: 1px solid var(--border); }
-  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
+  .navigation-action-header-row { display: flex; justify-content: flex-end; align-items: center; padding: 4px 10px; background: #ffffff; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); }
+  .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
   .nav-btn-styled:hover { background: var(--brand-dk); }
   
   .btn { width: 100%; padding: 8px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.82rem; }
   .btn-sub { background: var(--brand); color: #fff; }
-  .btn-ai { background: var(--accent); color: #fff; margin-bottom: 8px; padding: 6px; }
+  .btn-ai { background: var(--accent); color: #fff; margin-bottom: 6px; padding: 5px; }
   .btn-warn { background: #718096; color: #fff; }
   
-  /* Fallback alert banners zero scroll placements layout properties */
   .system-runtime-inline-alert-callout { padding: 8px 12px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; text-align: left; box-shadow: 0 1px 2px rgba(0,0,0,0.01); }
   @media(min-width: 600px) { .system-runtime-inline-alert-callout { flex-direction: row; justify-content: space-between; align-items: center; } }
   .alert-callout-text-msg { font-size: 0.8rem; font-weight: 700; color: #dd6b20; line-height: 1.3; }
 
-  #missing-trigger-notice-block { padding: 10px; text-align: center; background: white; border-radius: var(--radius); border: 1px solid var(--warn); margin-bottom: 8px; }
-  #missing-trigger-notice-block p { font-size: 0.8rem; margin-bottom: 6px; }
+  #missing-trigger-notice-block { padding: 8px; text-align: center; background: white; border-radius: var(--radius); border: 1px solid var(--warn); margin-bottom: 6px; }
+  #missing-trigger-notice-block p { font-size: 0.78rem; font-weight: 700; color: #e53e3e; margin-bottom: 4px; }
 
-  .card-row { display: flex; gap: 8px; margin-bottom: 6px; }
-  .card-box { flex: 1; border: 2px dashed var(--border); padding: 8px; text-align: center; font-size: .75rem; cursor: pointer; border-radius: 4px; }
+  .card-row { display: flex; gap: 6px; margin-bottom: 6px; }
+  .card-box { flex: 1; border: 2px dashed var(--border); padding: 6px; text-align: center; font-size: .75rem; cursor: pointer; border-radius: 4px; }
   .card-box.done { border-color: var(--accent); color: var(--accent); font-weight: 700; }
   
   .fup-item-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 4px; text-align: left; overflow: hidden; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
@@ -92,7 +92,7 @@
   .task-double-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; grid-column: span 2; }
   .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #f1f5f9; padding: 10px; border-radius: 4px; margin: 6px 0; text-align: left; }
   .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 8px; border-radius: 4px; text-align: left; margin-bottom: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
-  .no-btn { padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 4px; background: #fff; cursor: pointer; font-size: .72rem; }
+  .no-btn { padding: 4px 6px; border: 1.5px solid var(--border); border-radius: 4px; background: #fff; cursor: pointer; font-size: .72rem; }
   .no-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
   .toggle-input-group { display: flex; gap: 4px; align-items: center; }
 </style>
@@ -137,16 +137,16 @@
     </div>
     
     <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
-      <div id="step1-card-capture-block" class="section">
+      <div id="step1-card-capture-block" class="section" style="margin-bottom: 4px;">
         <div class="section-header">Business Card Information</div>
-        <div class="section-body" style="padding: 8px;">
+        <div class="section-body" style="padding: 6px;">
           <div class="card-row">
             <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
             <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
           </div>
           <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
           <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
-          <button class="btn btn-ai" id="parse-btn" onclick="parseCard()" disabled>Parse Card with AI</button>
+          <button class="btn btn-ai" id="parse-btn" onclick="parseCard()">Parse Card with AI</button>
           
           <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter company..." />
           <label class="field-label">Contact Name</label><input type="text" id="f-name" />
@@ -155,9 +155,9 @@
           <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
           <label class="field-label">Email</label><input type="email" id="f-email" />
           <label class="field-label">Website</label><input type="url" id="f-website" />
-          <label class="field-label">Address</label><textarea id="f-address" style="min-height:35px;"></textarea>
+          <label class="field-label">Address</label><textarea id="f-address" style="min-height:30px;"></textarea>
           
-          <button class="btn btn-sub" id="gate-search-btn" onclick="triggerSequentialSearch('CARD')" style="margin-top:8px;">Search Database</button>
+          <button class="btn btn-sub" id="gate-search-btn" onclick="triggerSequentialSearch('CARD')" style="margin-top:6px;">Search Database</button>
         </div>
       </div>
     </div>
@@ -165,27 +165,27 @@
     <div id="workspace-searchCompany" class="workspace-panel" style="display: none;">
       <div id="company-dropdown-selector-block" class="section">
         <div class="section-header">Choose Target Company Profile</div>
-        <div class="section-body" style="padding: 10px; text-align: left;">
+        <div class="section-body" style="padding: 8px; text-align: left;">
           <label class="field-label">Select Company Entry Portfolio</label>
-          <select id="lookup-module-company-dropdown" style="margin-bottom: 12px;"><option value="">Loading unique corporate logs...</option></select>
+          <select id="lookup-module-company-dropdown" style="margin-bottom: 8px;"><option value="">Loading unique corporate logs...</option></select>
           <button class="btn btn-sub" id="lookup-module-search-btn" onclick="triggerSequentialSearch('DROPDOWN')">Search Profile Tab</button>
         </div>
       </div>
     </div>
 
     <div id="missing-trigger-notice-block" style="display:none;">
-      <p style="color:#e53e3e; font-weight:700;">No record matched your target company parameters.</p>
-      <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:5px 14px;">Create New Entry</button>
+      <p>No record matched your target company parameters.</p>
+      <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:5px 12px; font-size:0.78rem;">Create New Entry</button>
     </div>
 
-    <div id="step2-new-entry-dropdown" style="display: none; padding: 0 12px;">
-      <div class="navigation-action-header-row" id="staged-back-button-row" style="display:none; background:#fffaf0; border:1px solid #dd6b20; margin-bottom:8px; padding:3px 8px;">
-        <span style="font-size:0.75rem; font-weight:700; color:#dd6b20;">Lead Capture Form Active</span>
-        <button class="nav-btn-styled" style="background:#718096; padding:3px 8px; font-size:0.72rem;" onclick="returnToDirectoryCardsFromFormView()">Back to Company Contacts List</button>
+    <div id="step2-new-entry-dropdown" style="display: none; padding: 0 4px;">
+      <div class="navigation-action-header-row" id="staged-back-button-row" style="display:none; background:#fffaf0; border:1px solid #dd6b20; margin-bottom:6px; padding:2px 6px;">
+        <span style="font-size:0.72rem; font-weight:700; color:#dd6b20;">Lead Capture Form Active</span>
+        <button class="nav-btn-styled" style="background:#718096; padding:3px 6px; font-size:0.7rem;" onclick="returnToDirectoryCardsFromFormView()">Back to Company Contacts List</button>
       </div>
 
       <div id="success-screen" style="display:none; text-align:center; padding:15px;">
-        <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:8px 0;"></p>
+        <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:6px 0;"></p>
         <button class="btn btn-sub" onclick="resetSequentialFormState()">Process Another Card</button>
       </div>
 
@@ -264,8 +264,8 @@
       </div>
     </div>
 
-    <div id="step2-inline-interaction-canvas" style="display: none; padding: 0 12px;">
-      <div style="margin-bottom:8px; text-align:left;" id="canvas-back-btn-enclosure-row">
+    <div id="step2-inline-interaction-canvas" style="display: none; padding: 0 4px;">
+      <div style="margin-bottom:6px; text-align:left;">
         <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568;">Back to Search</button>
       </div>
       <div id="split-missing-person-banner-hook"></div>
@@ -280,8 +280,8 @@
 <div id="reusable-child-modules-template" style="display: none;">
   <div class="section followups-tracking-enclosure">
     <div class="section-header">Follow-Up Tracking</div>
-    <div class="section-body">
-      <div style="display:flex; gap:10px; margin-bottom:12px;">
+    <div class="section-body" style="padding:6px;">
+      <div style="display:flex; gap:10px; margin-bottom:10px;">
         <button class="btn btn-ai trigger-fup-open" style="margin:0; width:auto;">+ Create New Follow-Up</button>
         <button class="btn btn-warn trigger-fup-close" style="display:none; margin:0; width:auto;">Collapse</button>
       </div>
@@ -309,8 +309,8 @@
 
   <div class="section tasks-tracking-enclosure">
     <div class="section-header">Engineer Tasks</div>
-    <div class="section-body">
-      <div style="display:flex; gap:10px; margin-bottom:12px;">
+    <div class="section-body" style="padding:6px;">
+      <div style="display:flex; gap:10px; margin-bottom:10px;">
         <button class="btn btn-ai trigger-task-open" style="margin:0; width:auto; background:transparent; border:1px solid var(--brand); color:var(--brand);">+ Create New Task</button>
         <button class="btn btn-warn trigger-task-close" style="display:none; margin:0; width:auto;">Collapse</button>
       </div>
@@ -337,7 +337,7 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz34PZP2Gln6TCrS0jKOXmrcs3iaU49kFp4IirPpuPZDFOEAyTh3q1evRyU9FkwGkrs-w/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwacEy33l4s6CObwqnzQKrMMt9ZZQ12XzfH09_Bh7JEcMsl3UsQsaFfC6lkAIZ3-ZOGbA/exec"; 
 
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false };
 let cachedEngineers = [];
@@ -416,8 +416,6 @@ async function showAppView() {
     const data = await res.json();
     if (data.success) { cachedEngineers = data.engineers; populateEngineerDropdowns(); }
   } catch(e) { console.error(e.message); }
-  
-  // Pull unique lookups to synchronize selector dropdown arrays
   triggerCompanyDropdownArrayFetch();
 }
 
@@ -444,7 +442,7 @@ async function triggerCompanyDropdownArrayFetch() {
         drop.appendChild(op);
       });
     }
-  } catch(e) { console.error("Selector loading exception: " + e.message); }
+  } catch(e) { console.error(e.message); }
 }
 
 function navigateToModule(key) { 
@@ -453,7 +451,6 @@ function navigateToModule(key) {
   document.getElementById("module-workspace-container").style.display = "block"; 
   document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); 
   document.getElementById("workspace-" + key).style.display = "block"; 
-  
   currentActiveModuleContext = key === "cardDetails" ? "CARD" : "DROPDOWN";
   resetSequentialFormState(); 
 }
@@ -461,11 +458,9 @@ function navigateToModule(key) {
 function returnToDashboard() { showAppView(); }
 
 function revealNewEntryFormDropdown() { 
-  // Relocate elements dynamically straight inside viewport level bounds
   document.getElementById("missing-trigger-notice-block").style.display = "none"; 
   const container = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
   document.getElementById(container).appendChild(document.getElementById("step2-new-entry-dropdown"));
-  
   document.getElementById("step2-new-entry-dropdown").style.display = "block"; 
   window.scrollTo(0,0); 
 }
@@ -480,7 +475,7 @@ async function triggerSequentialSearch(triggerSourceMode) {
     btn = document.getElementById("gate-search-btn");
   } else {
     comp = document.getElementById("lookup-module-company-dropdown").value;
-    targetName = ""; // Drops directly to full corporate directory parsing loops
+    targetName = ""; 
     btn = document.getElementById("lookup-module-search-btn");
     if(!comp) return alert("Select a company option string first.");
   }
@@ -492,7 +487,6 @@ async function triggerSequentialSearch(triggerSourceMode) {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp, contactName: targetName }) });
     const data = await res.json();
     
-    // Clear and mount targets correctly across specific workspace context roots
     const activePanelId = (triggerSourceMode === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
     const activePanel = document.getElementById(activePanelId);
     
@@ -561,16 +555,16 @@ function buildMultiContactDirectoryInterface(leadsList) {
         <div class="contact-summary-title-info">
           <div class="row-block-line"><span>Company:</span><strong>${lead["Company"]}</strong></div>
           <div class="row-block-line"><span>Name:</span><strong>${lead["Name"] || "Unspecified"}</strong></div>
-          <div class="row-block-line" style="display:block; margin-top:3px; margin-bottom:0;"><span>Position:</span><strong>${lead["Position"] || "Unspecified"}</strong></div>
+          <div class="row-block-line" style="display:block; margin-top:2px; margin-bottom:0;"><span>Position:</span><strong>${lead["Position"] || "Unspecified"}</strong></div>
         </div>
         <div class="directory-btn-actions-block">
-          <button class="nav-btn-styled" style="font-size:0.92rem; padding:8px 14px;" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
-          <button class="nav-btn-styled" style="font-size:0.92rem; padding:8px 14px; background:var(--warn);" onclick="removeLeadRowEntirely('${tRef}')">Delete Record</button>
+          <button class="nav-btn-styled" style="font-size:0.92rem; padding:6px 14px;" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
+          <button class="nav-btn-styled" style="font-size:0.92rem; padding:6px 14px; background:var(--warn);" onclick="removeLeadRowEntirely('${tRef}')">Delete Record</button>
         </div>
       </div>
-      <div class="contact-expanded-workspace-payload-drawer" id="drawer-panel-${tRef}" style="display:none; padding-top:10px;">
+      <div class="contact-expanded-workspace-payload-drawer" id="drawer-panel-${tRef}" style="display:none; padding-top:4px;">
          <div class="leads-editable-fields-box-canvas" id="canvas-fields-${tRef}"></div>
-         <div class="child-injected-modules-mount-point" id="modules-mount-${tRef}" style="margin-top:12px;"></div>
+         <div class="child-injected-modules-mount-point" id="modules-mount-${tRef}" style="margin-top:10px;"></div>
       </div>
     `;
     container.appendChild(wrapperCard);
@@ -580,7 +574,7 @@ function buildMultiContactDirectoryInterface(leadsList) {
 function toggleContactExpansionView(leadRef, encodedLeadMap) {
   const drawer = document.getElementById(`drawer-panel-${leadRef}`);
   const triggerBtn = document.getElementById(`expand-trigger-${leadRef}`);
-  const mountPoint = document.getElementById(`modules-mount-${leadRef}`);
+  const mountPoint = document.getElementById('modules-mount-' + leadRef);
   
   if (drawer.style.display === "block") {
     drawer.style.display = "none"; triggerBtn.textContent = "View Details"; mountPoint.innerHTML = ""; 
@@ -595,7 +589,7 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
     buildTargetedLeadsFormCanvas(leadRef, leadMap);
     
     const templateClone = document.getElementById("reusable-child-modules-template").cloneNode(true);
-    templateClone.style.display = "block"; templateClone.id = `active-modules-clone-${leadRef}`;
+    templateClone.style.display = "block"; templateClone.id = 'active-modules-clone-' + leadRef;
     
     setupIsolatedModuleTriggersAndActions(leadRef, templateClone);
     mountPoint.appendChild(templateClone);
@@ -650,7 +644,7 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
 }
 
 function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
-  const canvas = document.getElementById(`canvas-fields-${leadRef}`); canvas.innerHTML = "";
+  const canvas = document.getElementById('canvas-fields-' + leadRef); canvas.innerHTML = "";
   const gridWrapper = document.createElement("div"); gridWrapper.className = "compact-fields-grid";
   
   const customSectionLayout = [
@@ -675,32 +669,32 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
       let label = document.createElement("label"); label.textContent = key; cell.appendChild(label);
 
       if (key === "Status") {
-        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         ["Status1", "Status2", "Status3", "Status4"].forEach(st => {
           let op = document.createElement("option"); op.textContent = st; if(leadMap[key] === st) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
       } else if (["Date of Meeting", "Expected Tender / RFQ Date"].indexOf(key) !== -1) {
-        let inp = document.createElement("input"); inp.type = "date"; inp.className = `live-lead-field-input-${leadRef}`;
+        let inp = document.createElement("input"); inp.type = "date"; inp.className = 'live-lead-field-input-' + leadRef;
         inp.dataset.headerKey = key; inp.value = formatCleanDateOnly(leadMap[key]); cell.appendChild(inp);
       } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
-        let inp = document.createElement("input"); inp.type = "time"; inp.className = `live-lead-field-input-${leadRef}`;
+        let inp = document.createElement("input"); inp.type = "time"; inp.className = 'live-lead-field-input-' + leadRef;
         inp.dataset.headerKey = key; inp.value = leadMap[key] ? (leadMap[key].toString().indexOf("T") !== -1 ? leadMap[key].toString().split("T")[1].substring(0,5) : leadMap[key]) : "";
         cell.appendChild(inp);
       } else if (["Assigned Engineer", "Engineer Name"].indexOf(key) !== -1) {
-        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         cachedEngineers.forEach(eng => {
           let op = document.createElement("option"); op.textContent = eng; if(leadMap[key] === eng) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
       } else if (key === "Send Offer") {
-        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         ["No", "Send Budgetary Offer", "Send Techno-Commercial Offer"].forEach(opText => {
           let op = document.createElement("option"); op.textContent = opText; if(leadMap[key] === opText) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
       } else if (["Meeting Venue", "ABPS Business Vertical", "Approx Business Potential", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
-        let sel = document.createElement("select"); sel.className = `live-lead-field-input-${leadRef}`; sel.dataset.headerKey = key;
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         let opts = ["No", "Yes"];
         if(key === "Meeting Venue") opts = ["Exhibition", "Customer Place"];
         if(key === "ABPS Business Vertical") opts = ["Industrial", "Power"];
@@ -715,20 +709,20 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         let currentValues = (leadMap[key] || "").toString().split(", ");
         opts.forEach(o => {
           let div = document.createElement("div"); div.style.display="flex"; div.style.gap="4px"; div.style.alignItems="center";
-          let chk = document.createElement("input"); chk.type="checkbox"; chk.value = o; chk.className = `live-lead-check-subset-${leadRef}`; chk.dataset.masterKey = key;
+          let chk = document.createElement("input"); chk.type="checkbox"; chk.value = o; chk.className = 'live-lead-check-subset-' + leadRef; chk.dataset.masterKey = key;
           if(currentValues.indexOf(o) !== -1) chk.checked = true;
           let span = document.createElement("span"); span.textContent = o; span.style.fontSize="0.72rem";
           div.appendChild(chk); div.appendChild(span); wrapper.appendChild(div);
         });
         cell.appendChild(wrapper);
       } else if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)" || key === "Company Address" || key === "Address" || key === "Existing System Details") {
-        let tx = document.createElement("textarea"); tx.className = `live-lead-field-input-${leadRef}`; tx.dataset.headerKey = key;
+        let tx = document.createElement("textarea"); tx.className = 'live-lead-field-input-' + leadRef; tx.dataset.headerKey = key;
         tx.value = leadMap[key] || ""; tx.style.minHeight = "45px"; cell.appendChild(tx);
       } else if (key === "Company") {
         let inp = document.createElement("input"); inp.type = "text"; inp.value = leadMap[key] || "";
         inp.disabled = true; inp.style.background = "#e2e8f0"; inp.style.cursor = "not-allowed"; cell.appendChild(inp);
       } else {
-        let inp = document.createElement("input"); inp.type = "text"; inp.className = `live-lead-field-input-${leadRef}`;
+        let inp = document.createElement("input"); inp.type = "text"; inp.className = 'live-lead-field-input-' + leadRef;
         inp.dataset.headerKey = key; inp.value = leadMap[key] || ""; cell.appendChild(inp);
       }
       gridWrapper.appendChild(cell);
@@ -736,18 +730,18 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
   });
   canvas.appendChild(gridWrapper);
   
-  let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; saveBtn.id = `save-leads-matrix-btn-${leadRef}`;
+  let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; saveBtn.id = 'save-leads-matrix-btn-' + leadRef;
   saveBtn.style.marginTop = "12px"; saveBtn.textContent = "Save Modifications";
   saveBtn.onclick = function() { commitTargetedLeadsMutationsRows(leadRef); }; canvas.appendChild(saveBtn);
 }
 
 async function commitTargetedLeadsMutationsRows(leadRef) {
-  const btn = document.getElementById(`save-leads-matrix-btn-${leadRef}`);
+  const btn = document.getElementById('save-leads-matrix-btn-' + leadRef);
   if(btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...'; }
   let fieldsPayload = {};
-  document.querySelectorAll(`.live-lead-field-input-${leadRef}`).forEach(el => { fieldsPayload[el.dataset.headerKey] = el.value; });
+  document.querySelectorAll('.live-lead-field-input-' + leadRef).forEach(el => { fieldsPayload[el.dataset.headerKey] = el.value; });
   let checkGroups = {};
-  document.querySelectorAll(`.live-lead-check-subset-${leadRef}`).forEach(el => {
+  document.querySelectorAll('.live-lead-check-subset-' + leadRef).forEach(el => {
     let mk = el.dataset.masterKey; if(!checkGroups[mk]) checkGroups[mk] = [];
     if(el.checked) checkGroups[mk].push(el.value);
   });
@@ -798,8 +792,8 @@ function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
       </div>`;
     box.appendChild(card);
     
-    document.getElementById(`trigger-inner-edit-fup-${leadRef}-${f.num}`).onclick = function() { editIsolatedFollowUpItem(leadRef, scopeNode, f); };
-    document.getElementById(`trigger-inner-delete-fup-${leadRef}-${f.num}`).onclick = function() { removeIsolatedFollowUpItem(leadRef, f.num); };
+    document.getElementById('trigger-inner-edit-fup-' + leadRef + '-' + f.num).onclick = function() { editIsolatedFollowUpItem(leadRef, scopeNode, f); };
+    document.getElementById('trigger-inner-delete-fup-' + leadRef + '-' + f.num).onclick = function() { removeIsolatedFollowUpItem(leadRef, f.num); };
   });
 }
 
@@ -852,7 +846,7 @@ async function removeIsolatedFollowUpItem(leadRef, fNum) {
   const fupId = leadRef + "||" + fNum;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteFollowUp", fupId: fupId }) });
-    const r = await res.json(); if (r.success) { const activeScopeNode = document.getElementById(`active-modules-clone-${leadRef}`); await globalExecutionScopeReloader(leadRef, activeScopeNode); }
+    const r = await res.json(); if (r.success) { const activeScopeNode = document.getElementById('active-modules-clone-' + leadRef); await globalExecutionScopeReloader(leadRef, activeScopeNode); }
   } catch(e) { alert(e.message); }
 }
 
@@ -869,8 +863,8 @@ function renderIsolatedTaskItemsList(leadRef, list, scopeNode) {
                        <button class="nav-btn-styled" id="trigger-inner-delete-task-${leadRef}-${t.id}" style="font-size:0.75rem; background:var(--warn); padding:2px 6px;">Delete</button>
                      </div>`;
     box.appendChild(div);
-    document.getElementById(`trigger-inner-edit-task-${leadRef}-${t.id}`).onclick = function() { editIsolatedTaskItem(leadRef, scopeNode, t); };
-    document.getElementById(`trigger-inner-delete-task-${leadRef}-${t.id}`).onclick = function() { removeIsolatedTaskItem(leadRef, t.id); };
+    document.getElementById('trigger-inner-edit-task-' + leadRef + '-' + t.id).onclick = function() { editIsolatedTaskItem(leadRef, scopeNode, t); };
+    document.getElementById('trigger-inner-delete-task-' + leadRef + '-' + t.id).onclick = function() { removeIsolatedTaskItem(leadRef, t.id); };
   });
 }
 
@@ -905,7 +899,7 @@ async function removeIsolatedTaskItem(leadRef, taskId) {
   if (!confirm("Confirm cancellation?")) return;
   try {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: taskId }) });
-    const r = await res.json(); if (r.success) { const activeScopeNode = document.getElementById(`active-modules-clone-${leadRef}`); await globalExecutionScopeReloader(leadRef, activeScopeNode); }
+    const r = await res.json(); if (r.success) { const activeScopeNode = document.getElementById('active-modules-clone-' + leadRef); await globalExecutionScopeReloader(leadRef, activeScopeNode); }
   } catch(e) { alert(e.message); }
 }
 
