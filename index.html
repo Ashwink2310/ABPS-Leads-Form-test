@@ -220,7 +220,8 @@
       </div>
 
       <div id="success-screen" style="display:none; text-align:center; padding:15px;">
-        <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:6px 0;"></p>
+        <h2>Submission Successful!</h2>
+        <p id="success-ref" style="font-weight:bold; color:var(--brand); margin:6px 0;"></p>
         <button class="btn btn-sub" onclick="resetSequentialFormState()">Create New Entry</button>
       </div>
 
@@ -605,6 +606,21 @@ async function triggerCompanyDropdownArrayFetch() {
       });
     }
   } catch(e) { console.error(e.message); }
+}
+
+function resetSequentialFormState() {
+  document.getElementById('remaining-sections-form').style.display = 'block';
+  document.getElementById('success-screen').style.display = 'none';
+  
+  // Clear all input fields
+  const inputs = document.querySelectorAll('#remaining-sections-form input, #remaining-sections-form textarea, #remaining-sections-form select');
+  inputs.forEach(input => {
+      if(input.type === 'checkbox' || input.type === 'radio') {
+          input.checked = false;
+      } else if (input.id !== 'dropform-company-locked') { // Don't clear the locked company
+          input.value = '';
+      }
+  });
 }
 
 function navigateToModule(key) { 
