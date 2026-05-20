@@ -908,9 +908,8 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         
         let rawDate = leadMap[key];
         if (rawDate) {
-            // Strip out the time component immediately, ignoring timezones
-            // Convert to string and take the first 10 characters (YYYY-MM-DD)
-            inp.value = rawDate.toString().substring(0, 10);
+            // Reuse the working clean helper format rule used by followups
+            inp.value = formatCleanDateOnly(rawDate);
         }
         cell.appendChild(inp);
       } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
@@ -918,20 +917,23 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         inp.type = "time";
         inp.className = 'live-lead-field-input-' + leadRef;
         inp.dataset.headerKey = key;
+        
         let rawTime = leadMap[key];
         if (rawTime) {
-            let timeStr = rawTime.toString();
-            if (timeStr.match(/^\d{1,2}:\d{2}/)) {
-                let [h, m] = timeStr.split(':');
-                inp.value = `${h.padStart(2, '0')}:${m.substring(0,2)}`;
-            } 
-            else if (timeStr.toLowerCase().includes("am") || timeStr.toLowerCase().includes("pm")) {
-                let [t, mod] = timeStr.split(' ');
-                let [h, m] = t.split(':');
-                h = parseInt(h);
-                if (mod.toLowerCase() === 'pm' && h < 12) h += 12;
-                if (mod.toLowerCase() === 'am' && h === 12) h = 0;
-                inp.value = `${h.toString().padStart(2, '0')}:${m.padStart(2, '0')}`;
+            let cleanTime = rawTime.toString().trim();
+            
+            // Convert dynamic sheet string time contexts cleanly 
+            if (cleanTime.includes('T')) {
+                inp.value = cleanTime.split('T')[1].substring(0, 5);
+            } else if (cleanTime.toLowerCase().includes("am") || cleanTime.toLowerCase().includes("pm")) {
+                let [t, modifier] = cleanTime.split(' ');
+                let [hours, minutes] = t.split(':');
+                hours = parseInt(hours, 10);
+                if (modifier.toLowerCase() === 'pm' && hours < 12) hours += 12;
+                if (modifier.toLowerCase() === 'am' && hours === 12) hours = 0;
+                inp.value = `${hours.toString().padStart(2, '0')}:${minutes.substring(0, 2).padStart(2, '0')}`;
+            } else {
+                inp.value = cleanTime.substring(0, 5);
             }
         }
         cell.appendChild(inp);
@@ -1030,6 +1032,21 @@ function exitCanvasToCardView() {
   document.getElementById("step2-inline-interaction-canvas").style.display = "none"; 
   if(currentActiveModuleContext === "CARD") document.getElementById("step1-card-capture-block").style.display = "block"; 
   if(currentActiveModuleContext === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "block";
+}
+
+function toggleFollowUpAccordion(headerElement) {
+  // Find the body block next to or within the parent wrapper card
+  const itemCard = headerElement.closest('.fup-item-card');
+  const bodyPanel = itemCard.querySelector('.fup-item-body');
+  const statusIndicator = headerElement.querySelector('span:last-child');
+  
+  if (bodyPanel.style.display === "block" || bodyPanel.style.display === "") {
+    bodyPanel.style.display = "none";
+    if (statusIndicator) statusIndicator.textContent = "View details ▾";
+  } else {
+    bodyPanel.style.display = "block";
+    if (statusIndicator) statusIndicator.textContent = "Collapse details ▴";
+  }
 }
 
 function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
