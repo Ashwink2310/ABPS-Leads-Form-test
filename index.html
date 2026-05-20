@@ -221,7 +221,7 @@
 
       <div id="success-screen" style="display:none; text-align:center; padding:15px;">
         <h2>Submission Successful!</h2><p id="success-ref" style="font-weight:bold; color:var(--brand); margin:6px 0;"></p>
-        <button class="btn btn-sub" onclick="resetSequentialFormState()">Process Another Card</button>
+        <button class="btn btn-sub" onclick="resetSequentialFormState()">Create New Entry</button>
       </div>
 
       <div id="remaining-sections-form">
@@ -924,8 +924,9 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         
         let rawDate = leadMap[key];
         if (rawDate) {
-            // Reuse the working clean helper format rule used by followups
-            inp.value = formatCleanDateOnly(rawDate);
+            // This regex ensures we only grab YYYY-MM-DD
+            let match = rawDate.toString().match(/(\d{4}-\d{2}-\d{2})/);
+            inp.value = match ? match[1] : "";
         }
         cell.appendChild(inp);
       } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
@@ -936,21 +937,9 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         
         let rawTime = leadMap[key];
         if (rawTime) {
-            let cleanTime = rawTime.toString().trim();
-            
-            // Convert dynamic sheet string time contexts cleanly 
-            if (cleanTime.includes('T')) {
-                inp.value = cleanTime.split('T')[1].substring(0, 5);
-            } else if (cleanTime.toLowerCase().includes("am") || cleanTime.toLowerCase().includes("pm")) {
-                let [t, modifier] = cleanTime.split(' ');
-                let [hours, minutes] = t.split(':');
-                hours = parseInt(hours, 10);
-                if (modifier.toLowerCase() === 'pm' && hours < 12) hours += 12;
-                if (modifier.toLowerCase() === 'am' && hours === 12) hours = 0;
-                inp.value = `${hours.toString().padStart(2, '0')}:${minutes.substring(0, 2).padStart(2, '0')}`;
-            } else {
-                inp.value = cleanTime.substring(0, 5);
-            }
+            // Extract HH:MM directly
+            let timeMatch = rawTime.toString().match(/(\d{1,2}:\d{2})/);
+            inp.value = timeMatch ? timeMatch[0] : "";
         }
         cell.appendChild(inp);
       } else if (["Assigned Engineer", "Engineer Name"].indexOf(key) !== -1) {
