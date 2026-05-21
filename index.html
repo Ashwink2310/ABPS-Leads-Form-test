@@ -599,14 +599,15 @@ async function triggerCompanyDropdownArrayFetch() {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getUniqueCompaniesList" }) });
     const d = await res.json();
     if (d.success) {
-      const drop = document.getElementById("lookup-module-company-dropdown");
-      drop.innerHTML = '<option value="">— Select Company Name —</option>';
-      d.companies.forEach(item => {
-        let op = document.createElement("option"); 
-        op.value = item.companyValue; // Ensure this matches exactly
-        op.textContent = item.displayLabel;
-        drop.appendChild(op);
-      });
+      document.getElementById('remaining-sections-form').style.display = 'none';
+      
+      const canvas = document.getElementById("step2-inline-interaction-canvas");
+      const successDiv = document.createElement("div");
+      successDiv.id = "temp-success-msg";
+      successDiv.innerHTML = `<h3>Submission Successful!</h3><p>Lead ID: ${d.leadRef}</p>`;
+      canvas.appendChild(successDiv); 
+      
+      triggerSequentialSearch(currentActiveModuleContext); 
     }
   } catch(e) { console.error(e.message); }
 }
@@ -1088,11 +1089,13 @@ function exitCanvasToCardView() {
   
   if(currentActiveModuleContext === "CARD") {
       document.getElementById("step1-card-capture-block").style.display = "block";
-  } else if(currentActiveModuleContext === "DROPDOWN") {
+  }  
+  if(currentActiveModuleContext === "DROPDOWN") {
       document.getElementById("company-dropdown-selector-block").style.display = "block";
       triggerCompanyDropdownArrayFetch();
   }
 }
+
 function toggleFollowUpAccordion(headerElement) {
   // Find the body block next to or within the parent wrapper card
   const itemCard = headerElement.closest('.fup-item-card');
@@ -1270,11 +1273,12 @@ async function uploadToCloudinary(file) {
 
 async function submitLead() {
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true; 
-  btn.innerHTML = '<div class="spinner"></div> Saving...';
 
   const statusField = document.getElementById('dropform-status');
   if (!statusField.value) { alert("Lead Status is compulsory."); return;}
+
+  btn.disabled = true; 
+  btn.innerHTML = '<div class="spinner"></div> Saving...';
   
   const meetingDate = document.getElementById('meetingDate').value; // Always YYYY-MM-DD
   const meetingTime = document.getElementById('meetingTime').value; // Always HH:MM
