@@ -143,7 +143,7 @@
       <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')"><div class="menu-title">Enter Card Details</div></div>
       <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')"><div class="menu-title">Search by Company Name</div></div>
       <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')"><div class="menu-title">Search by Qualification</div></div>
-      <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Lead Status</div></div>
+      <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Lead Status *</div></div>
       <div class="menu-card" id="mod-engineer" onclick="navigateToModule('searchEngineer')"><div class="menu-title"> Search Leads and Follow Ups by Engineer Name</div></div>
       <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')"><div class="menu-title">Search Tasks by Engineer Name</div></div>
       <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailWhatsapp')"><div class="menu-title">Email and Whatsapp Leads</div></div>
@@ -312,15 +312,49 @@
             <label class="field-label">Additional Details</label><textarea id="additionalMeetingDetails"></textarea>
           </div>
         </div>
+
         <div class="section">
           <div class="section-header">Section 3 — Technical Details</div>
           <div class="section-body">
             <label class="field-label">ABPS Business Vertical</label>
-            <div class="pill-group"><input type="radio" name="businessVertical" value="Industrial" id="bv1"><label for="bv1">Industrial</label><input type="radio" name="businessVertical" value="Power" id="bv2"><label for="bv2">Power</label></div>
-            <label class="field-label">Type of Industry</label><input type="text" id="industry" />
+            <div class="pill-group">
+              <input type="radio" name="businessVertical" value="Industrial" id="bv1" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv1">Industrial</label>
+              <input type="radio" name="businessVertical" value="Power" id="bv2" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv2">Power</label>
+              <input type="radio" name="businessVertical" value="Renewable" id="bv3" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv3">Renewable</label>
+              <input type="radio" name="businessVertical" value="Other" id="bv4" onchange="toggleOtherText(this,'businessVerticalOther')"><label for="bv4">Other</label>
+            </div>
+            <input type="text" id="businessVerticalOther" class="other-input" placeholder="Specify..." />
+
+            <label class="field-label">Type of Industry</label>
+            <input type="text" id="industry" />
+
             <label class="field-label">Qualification (Multiple)</label>
-            <div class="pill-group"><input type="checkbox" name="qualification" value="Industry" id="q1"><label for="q1">Industry</label><input type="checkbox" name="qualification" value="Vendor" id="q8"><label for="q8">Vendor</label></div>
-            <div id="vendor-fields" style="display:none; margin-top:10px;"><label class="field-label">Materials Name</label><input type="text" id="materialsName" /></div>
+            <div class="pill-group">
+              <input type="checkbox" name="qualification" value="Industry" id="q1" onchange="handleQualChange()"><label for="q1">Industry</label>
+              <input type="checkbox" name="qualification" value="EPC" id="q2" onchange="handleQualChange()"><label for="q2">EPC</label>
+              <input type="checkbox" name="qualification" value="Govt/PSU" id="q3" onchange="handleQualChange()"><label for="q3">Govt/PSU</label>
+              <input type="checkbox" name="qualification" value="Consultant" id="q4" onchange="handleQualChange()"><label for="q4">Consultant</label>
+              <input type="checkbox" name="qualification" value="Developer" id="q5" onchange="handleQualChange()"><label for="q5">Developer</label>
+              <input type="checkbox" name="qualification" value="Electrical Contractor" id="q6" onchange="handleQualChange()"><label for="q6">Electrical Contractor</label>
+              <input type="checkbox" name="qualification" value="Dealer" id="q7" onchange="handleQualChange()"><label for="q7">Dealer</label>
+              <input type="checkbox" name="qualification" value="Vendor" id="q8" onchange="handleQualChange()"><label for="q8">Vendor</label>
+              <input type="checkbox" name="qualification" value="Others" id="q9" onchange="handleQualChange()"><label for="q9">Others</label>
+            </div>
+            <input type="text" id="qualificationOther" class="other-input" placeholder="Specify other qualification..." style="margin-top:8px; display:none;" />
+
+            <div id="vendor-fields" style="display:none;" class="vendor-sub">
+              <label class="field-label">Type of Vendor (Multiple)</label>
+              <div class="pill-group">
+                <input type="checkbox" name="vendorType" value="Raw Materials supplier" id="vt1"><label for="vt1">Raw Materials</label>
+                <input type="checkbox" name="vendorType" value="MC Supplier" id="vt2"><label for="vt2">MC Supplier</label>
+                <input type="checkbox" name="vendorType" value="Capital Goods Supplier" id="vt3"><label for="vt3">Capital Goods</label>
+                <input type="checkbox" name="vendorType" value="Others" id="vto" onchange="toggleOtherCheck(this,'vtoText')"><label for="vto">Others</label>
+              </div>
+              <input type="text" id="vtoText" class="other-input" placeholder="Specify other vendor type..." style="margin-top:8px; display:none;" />
+
+              <label class="field-label">Name of Materials</label>
+              <input type="text" id="materialsName" />
+            </div>
           </div>
         </div>
         
@@ -329,36 +363,51 @@
           <div class="section-body" style="display: flex; flex-direction: column; gap: 8px;">
             <label class="field-label" style="margin: 4px 0 0;">Low Power Factor Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-lpi"><option>No</option><option>Yes</option></select>
+              <select id="sel-lpi" onchange="toggleDropdownNo(this, 'lpi')"><option>No</option><option>Yes</option></select>
               <input type="text" id="lpi" placeholder="Enter specific parameters issue details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">High Electricity Bill Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-hbi"><option>No</option><option>Yes</option></select>
+              <select id="sel-hbi" onchange="toggleDropdownNo(this, 'hbi')"><option>No</option><option>Yes</option></select>
               <input type="text" id="hbi" placeholder="Enter bill impact tracking details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">Harmonics Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-hi"><option>No</option><option>Yes</option></select>
+              <select id="sel-hi" onchange="toggleDropdownNo(this, 'hi')"><option>No</option><option>Yes</option></select>
               <input type="text" id="hi" placeholder="Enter metrics details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">Transformer Heating Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-thi"><option>No</option><option>Yes</option></select>
+              <select id="sel-thi" onchange="toggleDropdownNo(this, 'thi')"><option>No</option><option>Yes</option></select>
               <input type="text" id="thi" placeholder="Enter heat metrics specs details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">Grid Stability Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-gsi"><option>No</option><option>Yes</option></select>
+              <select id="sel-gsi" onchange="toggleDropdownNo(this, 'gsi')"><option>No</option><option>Yes</option></select>
               <input type="text" id="gsi" placeholder="Enter grid details logs..." />
             </div>
             
             <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
-            <label class="field-label">Voltage Level</label><div class="pill-group"><input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label></div>
+            
+            <label class="field-label">Voltage Level (Multi)</label>
+            <div class="pill-group">
+              <input type="checkbox" name="voltage" value="440V" id="vl1"><label for="vl1">440V</label>
+              <input type="checkbox" name="voltage" value="660V" id="vl11"><label for="vl11">660V</label>
+              <input type="checkbox" name="voltage" value="3.3KV" id="vl2"><label for="vl2">3.3KV</label>
+              <input type="checkbox" name="voltage" value="6.6KV" id="vl3"><label for="vl3">6.6KV</label>
+              <input type="checkbox" name="voltage" value="11KV" id="vl4"><label for="vl4">11KV</label>
+              <input type="checkbox" name="voltage" value="22KV" id="vl5"><label for="vl5">22KV</label>
+              <input type="checkbox" name="voltage" value="33KV" id="vl6"><label for="vl6">33KV</label>
+              <input type="checkbox" name="voltage" value="66KV" id="vl7"><label for="vl7">66KV</label>
+              <input type="checkbox" name="voltage" value="132KV" id="vl8"><label for="vl8">132KV</label>
+              <input type="checkbox" name="voltage" value="220KV" id="vl9"><label for="vl9">220KV</label>
+              <input type="checkbox" name="voltage" value="400KV" id="vl10"><label for="vl10">400KV</label>
+            </div>
+            
             <label class="field-label">Capacity Details</label>
             <input type="text" id="cdMva" placeholder="Contract Demand (MVA)" style="margin-bottom:4px;" />
             <input type="text" id="rdMva" placeholder="Running Demand (MVA)" style="margin-bottom:4px;" />
@@ -373,14 +422,32 @@
           <div class="section-body">
             <label class="field-label">Existing Project</label><input type="text" id="epInput" />
             <label class="field-label">Upcoming Project</label><input type="text" id="upInput" />
-            <label class="field-label">Products Discussed</label><div class="pill-group"><input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label></div>
+            <label class="field-label">Products Discussed</label>
+            <div class="pill-group">
+              <input type="checkbox" name="prod" value="APFC" id="pd1"><label for="pd1">APFC</label>
+              <input type="checkbox" name="prod" value="RPTFC" id="pd6"><label for="pd6">RPTFC</label>
+              <input type="checkbox" name="prod" value="Harmonic Filter" id="pd2"><label for="pd2">Harmonic Filter</label>
+              <input type="checkbox" name="prod" value="SVG" id="pd3"><label for="pd3">SVG</label>
+              <input type="checkbox" name="prod" value="MV Capacitor Bank" id="pd4"><label for="pd4">MV Capacitor Bank</label>
+              <input type="checkbox" name="prod" value="Reactor" id="pd5"><label for="pd5">Reactor</label>
+              <input type="checkbox" name="prod" value="Others" id="pdo" onchange="toggleOtherCheck(this,'pdoText')"><label for="pdo">Others</label>
+            </div>
+            <input type="text" id="pdoText" class="other-input" placeholder="Specify other product..." style="margin-top:8px; display:none;" />
+            
             <label class="field-label">Approx Requirement</label><input type="text" id="approxReq" />
-            <label class="field-label">Expected Tender Date</label><input type="date" id="tenderDate" />
+            <label class="field-label">Expected Tender / RFQ Date</label><input type="date" id="tenderDate" />
             <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
             <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
-            <label class="field-label">Approx Business Potential</label><div class="pill-group"><input type="radio" name="pot" value="&lt;10L" id="bp1"><label for="bp1">&lt; 10L</label></div>
+            <label class="field-label">Approx Business Potential (Single Select)</label>
+            <div class="pill-group">
+              <input type="radio" name="pot" value="<10L" id="bp1"><label for="bp1">&lt; 10L</label>
+              <input type="radio" name="pot" value="10-50L" id="bp2"><label for="bp2">10-50L</label>
+              <input type="radio" name="pot" value="50L-2cr" id="bp3"><label for="bp3">50L-2cr</label>
+              <input type="radio" name="pot" value=">2cr" id="bp4"><label for="bp4">&gt; 2cr</label>
+            </div>
           </div>
         </div>
+
         <div class="section">
           <div class="section-header">Section 6 — Action Plan</div>
           <div class="section-body">
@@ -392,6 +459,7 @@
             <label class="field-label">Follow-Up Required</label><select id="act7"><option>No</option><option>Yes</option></select>
           </div>
         </div>
+
         <div class="section">
           <div class="section-header">Section 7 — Engineer Info</div>
           <div class="section-body">
@@ -644,6 +712,25 @@ function resetSequentialFormState() {
           input.value = '';
       }
   });
+}
+
+function toggleOtherText(r, id) {
+  document.getElementById(id).style.display = (r.value === 'Other') ? 'block' : 'none';
+}
+function toggleOtherCheck(c, id) {
+  document.getElementById(id).style.display = c.checked ? 'block' : 'none';
+}
+function handleQualChange() {
+  document.getElementById('vendor-fields').style.display = document.getElementById('q8').checked ? 'block' : 'none';
+  document.getElementById('qualificationOther').style.display = document.getElementById('q9').checked ? 'block' : 'none';
+}
+function toggleDropdownNo(selectNode, inputId) {
+  const targetInput = document.getElementById(inputId);
+  if (selectNode.value === "No") {
+    targetInput.value = "No";
+  } else if (targetInput.value === "No") {
+    targetInput.value = "";
+  }
 }
 
 function navigateToModule(key) { 
@@ -1295,29 +1382,49 @@ async function uploadToCloudinary(file) {
 async function submitLead() {
   const btn = document.getElementById('submit-btn');
   const statusField = document.getElementById('dropform-status');
-  if (!statusField.value) { alert("Lead Status is compulsory."); return;}
+  if (!statusField.value) { alert("Lead Status is compulsory."); return; }
 
   const engineerField = document.getElementById('engName');
   if (!engineerField || !engineerField.value) { alert("Assign Creator Name is a compulsory question."); return; }
 
-  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  btn.disabled = true; 
+  btn.innerHTML = '<div class="spinner"></div> Saving...';
+  
   const meetingDate = document.getElementById('meetingDate').value;
   const meetingTime = document.getElementById('meetingTime').value;
 
   const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
   const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
+  
   try {
-    const [url1, url2] = await Promise.all([ uploadToCloudinary(fileFront), uploadToCloudinary(fileBack) ]);
+    // 1. Upload card images to Cloudinary first
+    const [url1, url2] = await Promise.all([
+      uploadToCloudinary(fileFront),
+      uploadToCloudinary(fileBack)
+    ]);
     const imageUrl = [url1, url2].filter(u => u).join(", ");
     
+    // 2. Resolve Area of Concerns drop-downs
     const dynamicOverriddenLpiValue = document.getElementById("sel-lpi").value === "Yes" ? document.getElementById("lpi").value : "No";
     const dynamicOverriddenHbiValue = document.getElementById("sel-hbi").value === "Yes" ? document.getElementById("hbi").value : "No";
     const dynamicOverriddenHiValue = document.getElementById("sel-hi").value === "Yes" ? document.getElementById("hi").value : "No";
     const dynamicOverriddenThiValue = document.getElementById("sel-thi").value === "Yes" ? document.getElementById("thi").value : "No";
     const dynamicOverriddenGsiValue = document.getElementById("sel-gsi").value === "Yes" ? document.getElementById("gsi").value : "No";
 
+    // 3. Combine multi-checkbox values and parse "Others" text inputs
+    const qualChecked = getChecks('qualification');
+    const qualFinal = qualChecked.map(v => v === 'Others' ? (document.getElementById('qualificationOther').value || 'Others') : v);
+
+    const vtChecked = getChecks('vendorType');
+    const vtFinal = vtChecked.map(v => v === 'Others' ? (document.getElementById('vtoText').value || 'Others') : v);
+
+    const prodChecked = getChecks('prod');
+    const prodFinal = prodChecked.map(v => v === 'Others' ? (document.getElementById('pdoText').value || 'Others') : v);
+
+    // 4. Build structural data payload fields mapping matrix rows
     const fields = {
-      status: statusField.value, engineerName: engineerField.value, 
+      status: statusField.value,
+      engineerName: engineerField.value, 
       name: document.getElementById('dropform-name').value.trim() || document.getElementById('f-name').value.trim(), 
       company: document.getElementById('dropform-company-locked').value.trim(),
       position: document.getElementById('dropform-position').value.trim() || document.getElementById('f-position').value.trim(), 
@@ -1326,40 +1433,79 @@ async function submitLead() {
       email: document.getElementById('dropform-email').value.trim() || document.getElementById('f-email').value.trim(), 
       website: document.getElementById('dropform-website').value.trim() || document.getElementById('f-website').value.trim(), 
       address: document.getElementById('dropform-address').value.trim() || document.getElementById('f-address').value.trim(),
-      meetingDate, meetingTime, meetingVenue: getRadio('meetingVenue'), venueName: document.getElementById('venueName').value, additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
-      businessVertical: getRadio('businessVertical'), industry: document.getElementById('industry').value, qualification: getChecks('qualification'), vendorType: [],
-      materialsName: document.getElementById('materialsName').value, lpi: dynamicOverriddenLpiValue, hbi: dynamicOverriddenHbiValue, hi: dynamicOverriddenHiValue, thi: dynamicOverriddenThiValue, gsi: dynamicOverriddenGsiValue,
-      esd: document.getElementById('esd').value, voltage: getChecks('voltage'), cdMva: document.getElementById('cdMva').value, rdMva: document.getElementById('rdMva').value, avgPf: document.getElementById('avgPf').value,
-      problemObserved: document.getElementById('problemObserved').value, techSummary: document.getElementById('techSummary').value,
-      existingProject: document.getElementById('epInput').value, upcomingProject: document.getElementById('upInput').value,
-      products: getChecks('prod'), approxReq: document.getElementById('approxReq').value, tenderDate: document.getElementById('tenderDate').value,
-      orderTimeline: document.getElementById('orderTimeline').value, competitors: document.getElementById('competitors').value, potential: getRadio('pot'),
-      sendProfile: document.getElementById('act1').value, sendPresentation: document.getElementById('act2').value, arrangeVisit: document.getElementById('act3').value,
-      getEnquiry: document.getElementById('act4').value, sendOffer: document.getElementById('actOffer').value, followUpRequired: document.getElementById('act7').value
+      meetingDate: meetingDate, 
+      meetingTime: meetingTime,
+      meetingVenue: getRadio('meetingVenue') === 'Other' ? document.getElementById('meetingVenueOther').value : getRadio('meetingVenue'), 
+      venueName: document.getElementById('venueName').value, 
+      additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
+      businessVertical: getRadio('businessVertical') === 'Other' ? document.getElementById('businessVerticalOther').value : getRadio('businessVertical'), 
+      industry: document.getElementById('industry').value, 
+      qualification: qualFinal, 
+      vendorType: vtFinal,
+      materialsName: document.getElementById('materialsName').value, 
+      lpi: dynamicOverriddenLpiValue, 
+      hbi: dynamicOverriddenHbiValue, 
+      hi: dynamicOverriddenHiValue, 
+      thi: dynamicOverriddenThiValue, 
+      gsi: dynamicOverriddenGsiValue,
+      esd: document.getElementById('esd').value,
+      voltage: getChecks('voltage'), 
+      cdMva: document.getElementById('cdMva').value, 
+      rdMva: document.getElementById('rdMva').value, 
+      avgPf: document.getElementById('avgPf').value,
+      problemObserved: document.getElementById('problemObserved').value, 
+      techSummary: document.getElementById('techSummary').value,
+      existingProject: document.getElementById('epInput').value, 
+      upcomingProject: document.getElementById('upInput').value,
+      products: prodFinal, 
+      approxReq: document.getElementById('approxReq').value, 
+      tenderDate: document.getElementById('tenderDate').value,
+      orderTimeline: document.getElementById('orderTimeline').value, 
+      competitors: document.getElementById('competitors').value, 
+      potential: getRadio('pot'),
+      sendProfile: document.getElementById('act1').value, 
+      sendPresentation: document.getElementById('act2').value, 
+      arrangeVisit: document.getElementById('act3').value,
+      getEnquiry: document.getElementById('act4').value, 
+      sendOffer: document.getElementById('actOffer').value, 
+      followUpRequired: document.getElementById('act7').value
     };
     
+    // 5. Submit structured object data packet to Apps Script endpoint
     const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'submit', fields, imageUrl }) });
     const d = await res.json();
     if (d.success) { 
       document.getElementById('remaining-sections-form').style.display = 'none'; 
-      const successScreen = document.getElementById('success-screen'); successScreen.style.display = 'block'; 
+      const successScreen = document.getElementById('success-screen'); 
+      successScreen.style.display = 'block'; 
       document.getElementById('success-ref').textContent = "Lead ID: " + (d.leadRef || "Error generating ID");
       
       const canvasNode = document.getElementById("step2-inline-interaction-canvas");
-      canvasNode.appendChild(successScreen);
+      if (canvasNode) {
+        canvasNode.appendChild(successScreen);
+      }
       
       if (currentActiveModuleContext === "CARD" || currentActiveModuleContext === "DROPDOWN") {
-         const compParamValue = fields.company; const targetPersonNameParam = fields.name;
+         const compParamValue = fields.company; 
+         const targetPersonNameParam = fields.name;
          const refreshRes = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: compParamValue, contactName: targetPersonNameParam }) });
          const refreshData = await refreshRes.json();
          if (refreshData.success) {
-            globalFollowUpsCacheMap = refreshData.followups; globalTasksCacheMap = refreshData.tasks;
+            globalFollowUpsCacheMap = refreshData.followups; 
+            globalTasksCacheMap = refreshData.tasks;
             buildMultiContactDirectoryInterface(refreshData.leads, targetPersonNameParam);
-            canvasNode.style.display = "block";
+            if (canvasNode) canvasNode.style.display = "block";
          }
       }
+    } else {
+      alert("Submission failed: " + (d.error || "Unknown server error."));
     }
-  } catch (e) { alert("Submission failed: " + e.message); } finally { btn.disabled = false; btn.innerHTML = 'Submit New Account Entry'; }
+  } catch (e) { 
+    alert("Submission failed. Please check your network connection.\n" + e.message); 
+  } finally { 
+    btn.disabled = false; 
+    btn.innerHTML = 'Submit Lead'; 
+  }
 }
 
 async function loadQualFilter() {
@@ -1569,7 +1715,7 @@ async function commitMatrixTaskMutations(formNode, fallbackLeadId, btnNode) {
 }
 
 async function removeMatrixTaskFromEngine(taskId, event) {
-  if (!confirm("Confirm task cancellation/removal?")) return;
+  if (!confirm("Confirm task removal?")) return;
   
   const btn = event.target;
   btn.classList.add("loading");
