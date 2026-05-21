@@ -118,13 +118,11 @@
 
 <div id="auth-container">
   <div class="auth-card" style="max-width: 440px; padding: 30px;">
-    <div class="auth-title" style="margin-bottom: 10px;">ABPS Portal Secure Access</div>
-    <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 20px;">zero-trust authentication channel verification loop</p>
+    <div class="auth-title" style="margin-bottom: 10px;">ABPS Portal</div>
     
     <div style="text-align: left; background: #f8fafc; padding: 15px; border: 1px dashed var(--border); border-radius: 8px; margin-bottom: 20px;">
-      <label class="field-label" style="margin-top:0; color:var(--brand);">1. Declare Your Identity Profile *</label>
       <select id="app-auth-active-engineer-identity" style="padding: 10px; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px;">
-        <option value="">— Select Your Engineer Profile —</option>
+        <option value="">— Select Your Name —</option>
         <option>Alok Kumar</option>
         <option>Debarshi Mukharjee</option>
         <option>H.K. Pawar</option>
@@ -132,10 +130,9 @@
         <option>Mohammad Asraf</option>
         <option>Pavan</option>
       </select>
-      <span style="font-size: 0.65rem; color: var(--muted); line-height: 1.2; display: block;">Select your name to sign your action trails in the historical Audit Log database.</span>
     </div>
 
-    <label class="field-label" style="text-align: left; color: var(--text); font-weight: 700;">2. VERIFY ACCESS DOMAIN ACCOUNT</label>
+    <label class="field-label" style="text-align: left; color: var(--text); font-weight: 700;">VERIFY ACCESS DOMAIN ACCOUNT</label>
     <div id="google-auth-button-mount-point" style="display: flex; justify-content: center; margin-top: 15px; min-height: 40px;"></div>
   </div>
 </div>
@@ -148,7 +145,7 @@
         <div class="user-full-name" id="display-full-name"></div>
         <div class="user-display-username" id="display-username"></div>
       </div>
-      <button class="logout-btn" onclick="executeLogout()" style="margin-top: 20px;">Sign Out</button>
+      <button class="logout-btn" onclick="executeLogout()" style="margin-top: 10px;">Sign Out</button>
     </div>
   </header>
 
@@ -577,7 +574,7 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbweWeE-IVCxJ2Kh4Wn3EExOp-ttEnXLrXc8XeEfoo8CVf_eFjSBB6rweZSr4Ui3Q-30-Q/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzh69PjE6v9DhInlTXzqUgI7QyDEt3NwoVlfiD1DeBNFMtqVBJzNJ6spRFR63RYLGllPA/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -644,7 +641,11 @@ async function handleGooglePlatformCredentialResponse(response) {
   try {
     const res = await fetch(GAS_URL, {
       method: "POST",
-      body: JSON.stringify({ action: "googleLogin", idToken: response.credential })
+      body: JSON.stringify({ 
+        action: "googleLogin", 
+        idToken: response.credential,
+        requestedEngineer: selectedEngineer // <-- Injects selection parameter explicitly
+      })
     });
     const data = await res.json();
     
@@ -662,6 +663,7 @@ async function handleGooglePlatformCredentialResponse(response) {
       userPermissions = data.permissions;
       showAppView();
     } else {
+      // This will catch the validation mismatch and block the dashboard redirect cleanly!
       alert("Authentication Error: " + data.error);
     }
   } catch (e) {
