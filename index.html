@@ -227,7 +227,7 @@
 
     <div id="workspace-searchCityState" class="workspace-panel" style="display: none;">
       <div class="section">
-        <div class="section-header">Filter Directory by Location Regions</div>
+        <div class="section-header">Filter Directory by Location</div>
         <div class="section-body">
           
           <label class="field-label" style="font-size: 0.8rem; color: var(--brand);">1. Select Target States (Multiple)</label>
@@ -295,7 +295,7 @@
 
     <div id="workspace-emailWhatsapp" class="workspace-panel" style="display: none;">
       <div class="section">
-        <div class="section-header">Email and Whatsapp Leads Management</div>
+        <div class="section-header" style="border: 4px solid red;">Email and Whatsapp Leads Management</div>
         <div class="section-body" style="padding: 30px; text-align: center; color: var(--muted);">
           <h3>Section Coming Soon</h3>
           <p style="font-size: 0.85rem; margin-top: 8px;">Functional integration modules will be populated here.</p>
@@ -918,7 +918,7 @@ async function triggerCityStateQuerySearchExecution() {
   if (selectedStates.length === 0) return alert("Select at least one geographic State area block parameter constraint.");
   if (selectedCities.length === 0) return alert("Select individual tracking City references maps or check 'All Cities' explicit toggle indicator block option.");
   
-  btn.classList.add("loading"); btn.textContent = "Searching Geographic Matrix...";
+  btn.classList.add("loading"); btn.textContent = "Searching...";
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
   
   try {
@@ -937,7 +937,7 @@ async function triggerCityStateQuerySearchExecution() {
         const canvas = document.getElementById("step2-inline-interaction-canvas");
         document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
           <div class="qualification-status-bar" style="width:100%; text-align:center; font-size:0.75rem;">
-             Geographic Matrix: [States: ${selectedStates.join(", ")}] | [Cities: ${selectedCities.length > 5 ? 'Multi Selected (' + selectedCities.length + ')' : selectedCities.join(", ")}]
+             Location: [States: ${selectedStates.join(", ")}] | [Cities: ${selectedCities.length > 5 ? 'Multi Selected (' + selectedCities.length + ')' : selectedCities.join(", ")}]
           </div>
         `;
         globalFollowUpsCacheMap = data.followups; 
@@ -951,7 +951,7 @@ async function triggerCityStateQuerySearchExecution() {
   } catch (e) {
      alert("Geographic layout tracking request connection crash: " + e.message);
   } finally {
-     btn.classList.remove("loading"); btn.textContent = "Search Location Matrix";
+     btn.classList.remove("loading"); btn.textContent = "Search Location";
   }
 }
 
