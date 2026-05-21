@@ -377,32 +377,32 @@
           <div class="section-body" style="display: flex; flex-direction: column; gap: 8px;">
             <label class="field-label" style="margin: 4px 0 0;">Low Power Factor Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-lpi" onchange="toggleDropdownNo(this, 'lpi')"><option>No</option></select>
+              <select id="sel-lpi" onchange="toggleDropdownNo(this, 'lpi')"><option>No</option><option>Yes</option></select>
               <input type="text" id="lpi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">High Electricity Bill Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-hbi" onchange="toggleDropdownNo(this, 'hbi')"><option>No</option></select>
-              <input type="text" id="lpi" placeholder="Enter issue details..." />
+              <select id="sel-hbi" onchange="toggleDropdownNo(this, 'hbi')"><option>No</option><option>Yes</option></select>
+              <input type="text" id="hbi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">Harmonics Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-hi" onchange="toggleDropdownNo(this, 'hi')"><option>No</option></select>
-              <input type="text" id="lpi" placeholder="Enter issue details..." />
+              <select id="sel-hi" onchange="toggleDropdownNo(this, 'hi')"><option>No</option><option>Yes</option></select>
+              <input type="text" id="hi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">Transformer Heating Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-thi" onchange="toggleDropdownNo(this, 'thi')"><option>No</option></select>
-              <input type="text" id="lpi" placeholder="Enter issue details..." />
+              <select id="sel-thi" onchange="toggleDropdownNo(this, 'thi')"><option>No</option><option>Yes</option></select>
+              <input type="text" id="thi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">Grid Stability Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-gsi" onchange="toggleDropdownNo(this, 'gsi')"><option>No</option></select>
-              <input type="text" id="lpi" placeholder="Enter issue details..." />
+              <select id="sel-gsi" onchange="toggleDropdownNo(this, 'gsi')"><option>No</option><option>Yes</option></select>
+              <input type="text" id="gsi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
@@ -577,12 +577,23 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycby8h6xPESdx4d9ovV3RZGuzLZbNms1rqYuGvrbUu_yFBYRpoxZAjAYYbDt9lOuaI-OkjA/exec"; 
-const CLOUD_NAME = "your_actual_cloud_name"; 
-const UPLOAD_PRESET = "your_actual_upload_preset"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxsVZXLFG2QysmDU1YP5vpXnD-0Y2QvJ7Jgp_Ja3askO2X6jHj5kLG58M-m3d6lKJguvQ/exec"; 
+const CLOUD_NAME   = "dcdhahrhz";              
+const UPLOAD_PRESET = "ABPS Leads Form";
 
 let appActiveOperatorIdentityString = "";
+let fileFront = null, fileBack = null;
+let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false, searchTasks: false, emailWhatsapp: false };
+let cachedEngineers = [];
+let activeSearchRef = ""; 
+let activeSearchCompany = "";
+let currentFollowUpCount = 0;
+let currentActiveModuleContext = "CARD"; 
 
+let globalFollowUpsCacheMap = {};
+let globalTasksCacheMap = {};
+
+// FIX: Combined lone window.onload logic to explicitly drive Google OAuth mounting procedures securely
 window.onload = function() {
   const token = localStorage.getItem("sessionToken"); 
   const expires = localStorage.getItem("sessionExpiry"); 
@@ -604,7 +615,6 @@ function initializeGoogleAuthPlatformEngine() {
   document.getElementById("app-container").style.display = "none";
   document.getElementById("auth-container").style.display = "flex";
   
-  // FIX: Introduce a short 200ms delay to let the browser mount point render completely
   setTimeout(() => {
     const mountNode = document.getElementById("google-auth-button-mount-point");
     if (!mountNode) {
@@ -612,13 +622,11 @@ function initializeGoogleAuthPlatformEngine() {
       return;
     }
 
-    // Initialize the official Google One Tap / Sign In framework
     google.accounts.id.initialize({
-      client_id: "907687324445-27vfv4ksb19dbg74his0ms5j33eb0int.apps.googleusercontent.com",
+      client_id: "374058137880-64dt8h9eem9impq61bpb0n9iselso76e.apps.googleusercontent.com",
       callback: handleGooglePlatformCredentialResponse
     });
     
-    // Render the button inside the verified target container
     google.accounts.id.renderButton(
       mountNode,
       { theme: "outline", size: "large", width: "320" }
@@ -648,7 +656,6 @@ async function handleGooglePlatformCredentialResponse(response) {
       localStorage.setItem("userLastName", data.lastName);
       localStorage.setItem("userPermissions", JSON.stringify(data.permissions));
       
-      // Permanently lock signature selection directly into operational storage trees
       localStorage.setItem("activeOperatorSignature", selectedEngineer);
       appActiveOperatorIdentityString = selectedEngineer;
       
@@ -681,16 +688,6 @@ document.getElementById('card-back').onchange = (e) => {
   document.getElementById('back-box').classList.add('done');
 };
 
-let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false, searchTasks: false, emailWhatsapp: false };
-let cachedEngineers = [];
-let activeSearchRef = ""; 
-let activeSearchCompany = "";
-let currentFollowUpCount = 0;
-let currentActiveModuleContext = "CARD"; 
-
-let globalFollowUpsCacheMap = {};
-let globalTasksCacheMap = {};
-
 function cleanISTTimestamp(rawStr) {
   if (!rawStr) return "";
   let str = rawStr.toString().trim();
@@ -712,29 +709,6 @@ function formatCleanDateOnly(rawStr) {
   if (s.indexOf(" ") !== -1) s = s.split(" ")[0];
   return s;
 }
-
-window.onload = function() {
-  const token = localStorage.getItem("sessionToken"); const expires = localStorage.getItem("sessionExpiry"); const savedPerms = localStorage.getItem("userPermissions");
-  if (token && expires && new Date() < new Date(expires) && savedPerms) { userPermissions = JSON.parse(savedPerms); showAppView(); } else executeLogout();
-};
-
-async function executeLogin() {
-  const userField = document.getElementById("auth-user"); const passField = document.getElementById("auth-pass");
-  const btn = document.getElementById("login-btn");
-  if (!userField.value || !passField.value) return alert("Complete credential fields.");
-  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Verifying...';
-  try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "login", username: userField.value, password: passField.value }) });
-    const r = await res.json();
-    if (r.success) {
-      localStorage.setItem("sessionToken", r.sessionToken); localStorage.setItem("sessionExpiry", r.expires); localStorage.setItem("sessionUser", r.username);
-      localStorage.setItem("userFirstName", r.firstName); localStorage.setItem("userLastName", r.lastName); localStorage.setItem("userPermissions", JSON.stringify(r.permissions));
-      userPermissions = r.permissions; showAppView();
-    } else alert(r.error);
-  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Login"; }
-}
-
-function executeLogout() { localStorage.clear(); document.getElementById("app-container").style.display = "none"; document.getElementById("auth-container").style.display = "flex"; }
 
 async function showAppView() {
   document.getElementById("auth-container").style.display = "none"; 
@@ -763,7 +737,14 @@ async function showAppView() {
   });
 
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getEngineers" }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "getEngineers",
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString
+      }) 
+    });
     const data = await res.json();
     if (data.success) { 
       cachedEngineers = data.engineers; 
@@ -827,7 +808,6 @@ function resetSequentialFormState() {
   document.getElementById('remaining-sections-form').style.display = 'block';
   document.getElementById('success-screen').style.display = 'none';
   
-  // Clear all input fields
   const inputs = document.querySelectorAll('#remaining-sections-form input, #remaining-sections-form textarea, #remaining-sections-form select');
   inputs.forEach(input => {
       if(input.type === 'checkbox' || input.type === 'radio') {
@@ -887,7 +867,6 @@ function navigateToModule(key) {
     const taskOutputNode = document.getElementById("task-matrix-results-output-node");
     if (taskOutputNode) taskOutputNode.innerHTML = "";
     
-    // Clear dynamic selection states from previous sessions
     document.querySelectorAll('input[name="taskMatrixStatus"], input[name="taskMatrixEngineer"]').forEach(cb => cb.checked = false);
 
     currentActiveModuleContext = key === "cardDetails" ? "CARD" : "DROPDOWN";
@@ -897,7 +876,6 @@ function navigateToModule(key) {
 function returnToDashboard() { 
   collapseNewEntryDropdownFormExplicitly(); 
   document.getElementById("module-workspace-container").style.display = "none";
-  
   document.getElementById("dashboard-view").style.display = "block";
   
   const canvas = document.getElementById("step2-inline-interaction-canvas");
@@ -1148,6 +1126,7 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
   const fupClose = nodeScope.querySelector(".trigger-fup-close");
   const fupEngSelect = nodeScope.querySelector(".fup-eng-select");
   
+  fupEngSelect.innerHTML = "";
   cachedEngineers.forEach(eng => {
     let o1 = document.createElement("option"); o1.textContent = eng; fupEngSelect.appendChild(o1);
   });
@@ -1169,6 +1148,7 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
   const taskEngSelect = nodeScope.querySelector(".task-eng-select");
   const taskAssignerSelect = nodeScope.querySelector(".task-assigner-select");
 
+  taskEngSelect.innerHTML = ""; taskAssignerSelect.innerHTML = "";
   cachedEngineers.forEach(eng => {
     let o2 = document.createElement("option"); o2.textContent = eng; taskEngSelect.appendChild(o2);
     let o3 = document.createElement("option"); o3.textContent = eng; taskAssignerSelect.appendChild(o3);
@@ -1435,11 +1415,9 @@ async function commitIsolatedFollowUpItem(leadRef, scopeNode) {
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Follow-Up"; }
 }
 
-// Update the function signature to capture the execution event context
 async function removeIsolatedFollowUpItem(leadRef, fNum, event) {
   if(!confirm("Confirm deletion?")) return;
   
-  // Capture the clicked button element and apply the loading style state
   const btn = event.target;
   btn.classList.add("loading");
   btn.textContent = "Deleting...";
@@ -1462,7 +1440,6 @@ async function removeIsolatedFollowUpItem(leadRef, fNum, event) {
     }
   } catch(e) { 
     alert(e.message); 
-    // Rollback button state if the network request drops
     btn.classList.remove("loading");
     btn.textContent = "Delete Follow-Up";
   }
@@ -1524,7 +1501,6 @@ async function commitIsolatedTaskItem(leadRef, scopeNode) {
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Task"; }
 }
 
-// Update the function signature to pass the click event wrapper context
 async function removeIsolatedTaskItem(leadRef, taskId, event) {
   if (!confirm("Confirm cancellation?")) return;
   
@@ -1595,21 +1571,18 @@ async function submitLead() {
   const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
   
   try {
-    // 1. Upload card images to Cloudinary first
     const [url1, url2] = await Promise.all([
       uploadToCloudinary(fileFront),
       uploadToCloudinary(fileBack)
     ]);
     const imageUrl = [url1, url2].filter(u => u).join(", ");
     
-    // 2. Resolve Area of Concerns drop-downs
     const dynamicOverriddenLpiValue = document.getElementById("sel-lpi").value === "Yes" ? document.getElementById("lpi").value : "No";
     const dynamicOverriddenHbiValue = document.getElementById("sel-hbi").value === "Yes" ? document.getElementById("hbi").value : "No";
     const dynamicOverriddenHiValue = document.getElementById("sel-hi").value === "Yes" ? document.getElementById("hi").value : "No";
     const dynamicOverriddenThiValue = document.getElementById("sel-thi").value === "Yes" ? document.getElementById("thi").value : "No";
     const dynamicOverriddenGsiValue = document.getElementById("sel-gsi").value === "Yes" ? document.getElementById("gsi").value : "No";
 
-    // 3. Combine multi-checkbox values and parse "Others" text inputs
     const qualChecked = getChecks('qualification');
     const qualFinal = qualChecked.map(v => v === 'Others' ? (document.getElementById('qualificationOther').value || 'Others') : v);
 
@@ -1619,7 +1592,6 @@ async function submitLead() {
     const prodChecked = getChecks('prod');
     const prodFinal = prodChecked.map(v => v === 'Others' ? (document.getElementById('pdoText').value || 'Others') : v);
 
-    // 4. Build structural data payload fields mapping matrix rows
     const fields = {
       status: statusField.value,
       engineerName: engineerField.value, 
@@ -1669,7 +1641,6 @@ async function submitLead() {
       followUpRequired: document.getElementById('act7').value
     };
     
-    // 5. Submit structured object data packet to Apps Script endpoint
     const res = await fetch(GAS_URL, {
       method: 'POST',
       body: JSON.stringify({ 
@@ -1695,7 +1666,16 @@ async function submitLead() {
       if (currentActiveModuleContext === "CARD" || currentActiveModuleContext === "DROPDOWN") {
          const compParamValue = fields.company; 
          const targetPersonNameParam = fields.name;
-         const refreshRes = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: compParamValue, contactName: targetPersonNameParam }) });
+         const refreshRes = await fetch(GAS_URL, { 
+           method: "POST", 
+           body: JSON.stringify({ 
+             action: "searchCompanyData",
+             sessionToken: localStorage.getItem("sessionToken"),
+             activeEngineer: appActiveOperatorIdentityString, 
+             companyName: compParamValue, 
+             contactName: targetPersonNameParam 
+           }) 
+         });
          const refreshData = await refreshRes.json();
          if (refreshData.success) {
             globalFollowUpsCacheMap = refreshData.followups; 
@@ -1851,8 +1831,6 @@ async function executeTaskMatrixSearch() {
         let card = document.createElement("div");
         card.className = "task-item-card"; card.style.padding = "12px"; card.style.borderLeft = "4px solid var(--brand)"; card.style.background = "#fff"; card.style.marginBottom = "6px"; card.style.boxShadow = "0 1px 3px rgba(0,0,0,0.02)";
         
-        let escapedDesc = (t.desc || "").replace(/`/g, "\\`").replace(/"/g, "&quot;");
-
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #edf2f7; padding-bottom:4px; margin-bottom:6px;">
             <strong style="color:var(--brand); font-size:0.9rem;">${t.type}</strong>
@@ -1874,7 +1852,6 @@ async function executeTaskMatrixSearch() {
         `;
         outputNode.appendChild(card);
 
-        // Bind interactive inline form injection functions
         document.getElementById(`matrix-edit-task-btn-${t.id}`).onclick = function() {
           injectMatrixInlineTaskForm(t, card);
         };
@@ -1895,11 +1872,9 @@ function injectMatrixInlineTaskForm(taskItem, parentCardNode) {
     return;
   }
 
-  // Clone template structures directly
   const templateClone = document.getElementById("reusable-child-modules-template").cloneNode(true);
   const coreTaskForm = templateClone.querySelector(".template-task-form");
   
-  // Set up dropdown selectors
   const taskEngSelect = coreTaskForm.querySelector(".task-eng-select");
   const taskAssignerSelect = coreTaskForm.querySelector(".task-assigner-select");
   
@@ -1909,7 +1884,6 @@ function injectMatrixInlineTaskForm(taskItem, parentCardNode) {
     let o2 = document.createElement("option"); o2.textContent = eng; if(taskItem.assigner === eng) o2.selected = true; taskAssignerSelect.appendChild(o2);
   });
 
-  // Populate row elements 
   coreTaskForm.querySelector(".task-edit-id").value = taskItem.id;
   coreTaskForm.querySelector(".task-status-select").value = taskItem.status;
   coreTaskForm.querySelector(".task-type-select").value = taskItem.type;
@@ -1917,10 +1891,8 @@ function injectMatrixInlineTaskForm(taskItem, parentCardNode) {
   coreTaskForm.querySelector(".task-shift-select").value = taskItem.shift || "Morning";
   coreTaskForm.querySelector(".task-targetdate-input").value = formatCleanDateOnly(taskItem.targetDate);
   
-  // Force field view grid layout style values
   coreTaskForm.style.display = "grid";
   
-  // Update the button event handler to route through matrix updater instead of workspace reloader
   const commitBtn = coreTaskForm.querySelector(".commit-task-btn-trigger");
   commitBtn.onclick = async function() {
     commitMatrixTaskMutations(coreTaskForm, taskItem.leadId, commitBtn);
@@ -1964,7 +1936,7 @@ async function commitMatrixTaskMutations(formNode, fallbackLeadId, btnNode) {
     const r = await res.json();
     if (r.success) {
       alert("Task modifications saved successfully.");
-      executeTaskMatrixSearch(); // Instant refresh
+      executeTaskMatrixSearch(); 
     }
   } catch(e) { alert("Matrix Update Error: " + e.message); }
 }
@@ -1994,7 +1966,6 @@ async function removeMatrixTaskFromEngine(taskId, event) {
     btn.textContent = "Delete";
   }
 }
-
 </script>
 </body>
 </html>
