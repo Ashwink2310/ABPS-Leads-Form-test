@@ -114,6 +114,7 @@
   .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #f1f5f9; padding: 10px; border-radius: 4px; margin: 6px 0; text-align: left; }
   .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 8px; border-radius: 4px; text-align: left; margin-bottom: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
 
+  .btn-warn.loading { opacity: 0.5; cursor: progress; transform: scale(0.95); }
 </style>
 </head>
 <body>
@@ -601,7 +602,9 @@ async function triggerCompanyDropdownArrayFetch() {
       const drop = document.getElementById("lookup-module-company-dropdown");
       drop.innerHTML = '<option value="">— Select Company Name —</option>';
       d.companies.forEach(item => {
-        let op = document.createElement("option"); op.value = item.companyValue; op.textContent = item.displayLabel;
+        let op = document.createElement("option"); 
+        op.value = item.companyValue; // Ensure this matches exactly
+        op.textContent = item.displayLabel;
         drop.appendChild(op);
       });
     }
@@ -787,9 +790,14 @@ function buildMultiContactDirectoryInterface(leadsList, targetSearchName) {
     let bNameClean = (b["Name"] || "").toString().replace(/\s+/g, '').toLowerCase();
     let aMatches = (sanitizedTargetName !== "" && aNameClean === sanitizedTargetName);
     let bMatches = (sanitizedTargetName !== "" && bNameClean === sanitizedTargetName);
+    
     if (aMatches && !bMatches) return -1;
     if (!aMatches && bMatches) return 1;
-    return 0;
+    
+    // Sort by Lead ID (descending)
+    let aId = parseInt(a["Lead ID"].split("-")[1]);
+    let bId = parseInt(b["Lead ID"].split("-")[1]);
+    return bId - aId; 
   });
 
   leadsList.forEach(lead => {
@@ -1046,17 +1054,21 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
 }
 
 async function removeLeadRowEntirely(leadRef) {
-    if (!confirm("Confirm Lead Deletion")) return;
+    if (!confirm("Confirm record removal?")) return;
     
-    // Find the button within the card for this specific record
-    const btn = document.querySelector(`[onclick="removeLeadRowEntirely('${leadRef}')"]`);
-    if(btn) { btn.classList.add("loading"); btn.textContent = "Deleting..."; }
+    const btn = event.target; 
+    btn.classList.add("loading"); 
+    btn.textContent = "Deleting...";
     
     try {
         const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteLeadRow", leadRef: leadRef }) });
         const r = await res.json();
         if (r.success) triggerSequentialSearch(currentActiveModuleContext);
-    } catch(e) { alert(e.message); btn.classList.remove("loading"); btn.textContent = "Delete Record"; }
+    } catch(e) { 
+        alert(e.message); 
+        btn.classList.remove("loading"); 
+        btn.textContent = "Delete Record"; 
+    }
 }
 
 function exitCanvasToCardView() {
@@ -1298,7 +1310,12 @@ async function submitLead() {
     };
     const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'submit', fields, imageUrl }) });
     const d = await res.json();
-    if (d.success) { document.getElementById('remaining-sections-form').style.display = 'none'; document.getElementById('success-screen').style.display = 'block'; document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef; }
+    if (d.success) { 
+      document.getElementById('remaining-sections-form').style.display = 'none'; 
+      document.getElementById('success-screen').style.display = 'block'; 
+      document.getElementById('success-ref').textContent = "Lead ID: " + d.leadRef;
+      triggerSequentialSearch(currentActiveModuleContext); 
+    }
   } catch (e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = 'Submit New Account Entry'; }
 }
 
