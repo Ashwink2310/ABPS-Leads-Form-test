@@ -455,7 +455,7 @@
 
 <script>
 // --- CENTRAL CONFIGURATION HUB ---
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyH8TEVhQdrpFtonry784klBXIn2QJ3WYQrgejtRFwQ25F9ls3Wj971aTNp84TTJBRcNg/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw4opBzfzaoMH0-KIu53zT1BApELh0WzgyE4fr1BVTSTPbVviisWCb9EE48ZsfVBwfV2w/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";          
 const UPLOAD_PRESET = "ABPS Leads Form";      
 
@@ -638,21 +638,30 @@ function resetSequentialFormState() {
 function navigateToModule(key) { 
     if (!userPermissions[key]) return alert("Denied."); 
     
-    // Hide dashboard
+    // 1. Reset and move the reusable canvas element back to the main body root safely
+    const canvas = document.getElementById("step2-inline-interaction-canvas");
+    if (canvas) {
+        canvas.style.display = "none";
+        document.body.appendChild(canvas); // Keeps it safe from being wiped out or lost inside a hidden panel
+    }
+    
+    // 2. Hide dashboard view panel
     document.getElementById("dashboard-view").style.display = "none"; 
     document.getElementById("module-workspace-container").style.display = "block"; 
     
-    // Hide all panels
+    // 3. Hide all module workspace panels completely
     document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); 
+    
+    // 4. Reveal the target panel fresh
     document.getElementById("workspace-" + key).style.display = "block"; 
     
-    // RESET: Clear results and force-hide contextual entry buttons across tabs
-    document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+    // 5. Clean stale data strings out of your interaction layout views
     document.getElementById("multi-contact-records-container").innerHTML = "";
     document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
     document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
     document.getElementById("missing-trigger-notice-block").style.display = "none";
     
+    // 6. Manage state context
     currentActiveModuleContext = key === "cardDetails" ? "CARD" : "DROPDOWN";
     resetSequentialFormState(); 
 }
@@ -1127,13 +1136,15 @@ function exitCanvasToCardView() {
   collapseNewEntryDropdownFormExplicitly();
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
   document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+  document.getElementById("missing-trigger-notice-block").style.display = "none";
   
   if(currentActiveModuleContext === "CARD") {
       document.getElementById("step1-card-capture-block").style.display = "block";
   }  
   if(currentActiveModuleContext === "DROPDOWN") {
       document.getElementById("company-dropdown-selector-block").style.display = "block";
-      triggerCompanyDropdownArrayFetch();
+      // This will safely reload your dropdown elements without wiping structural layout trees
+      triggerCompanyDropdownArrayFetch(); 
   }
 }
 
