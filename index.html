@@ -596,7 +596,7 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwUhGLdDMlnBYFa_rni8H_5pRsJVtTQHX_dKlb7jOQP8nZXkKjUlTfDBzBUs1K-pjMPfw/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbytfMdcVhDi4qBdleS59ekFbvcLHGeOPuglRlPz8Vx9ITR2SgELlXzEkdevJqZbATGYNA/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -985,7 +985,7 @@ async function triggerCompanyDropdownArrayFetch() {
 }
 
 function navigateToModule(key) { 
-    if (!userPermissions[key]) return alert("Access Denied: Missing permissions configuration criteria profile maps."); 
+    if (!userPermissions[key]) return alert("Access Denied: Missing permission"); 
     
     const canvas = document.getElementById("step2-inline-interaction-canvas");
     if (canvas) {
