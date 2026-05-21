@@ -1046,7 +1046,7 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
 }
 
 async function removeLeadRowEntirely(leadRef) {
-    if (!confirm("Confirm record row extraction removal?")) return;
+    if (!confirm("Confirm Lead Deletion")) return;
     
     // Find the button within the card for this specific record
     const btn = document.querySelector(`[onclick="removeLeadRowEntirely('${leadRef}')"]`);
