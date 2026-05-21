@@ -64,7 +64,7 @@
   .span-two-units { grid-column: span 2; }
   .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 2px 0; }
   
-  .pill-group { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 1px; }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .pill-group input { display: none; }
   .pill-group label { padding: 3px 6px; border: 1.5px solid var(--border); border-radius: 12px; font-size: .7rem; cursor: pointer; background: #fff; white-space: nowrap; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
@@ -143,7 +143,7 @@
       <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')"><div class="menu-title">Enter Card Details</div></div>
       <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')"><div class="menu-title">Search by Company Name</div></div>
       <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')"><div class="menu-title">Search by Qualification</div></div>
-      <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Lead Status *</div></div>
+      <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Lead Status</div></div>
       <div class="menu-card" id="mod-engineer" onclick="navigateToModule('searchEngineer')"><div class="menu-title"> Search Leads and Follow Ups by Engineer Name</div></div>
       <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')"><div class="menu-title">Search Tasks by Engineer Name</div></div>
       <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailWhatsapp')"><div class="menu-title">Email and Whatsapp Leads</div></div>
@@ -363,32 +363,32 @@
           <div class="section-body" style="display: flex; flex-direction: column; gap: 8px;">
             <label class="field-label" style="margin: 4px 0 0;">Low Power Factor Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-lpi" onchange="toggleDropdownNo(this, 'lpi')"><option>No</option><option>Yes</option></select>
-              <input type="text" id="lpi" placeholder="Enter specific parameters issue details..." />
+              <select id="sel-lpi" onchange="toggleDropdownNo(this, 'lpi')"><option>No</option></select>
+              <input type="text" id="lpi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">High Electricity Bill Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-hbi" onchange="toggleDropdownNo(this, 'hbi')"><option>No</option><option>Yes</option></select>
-              <input type="text" id="hbi" placeholder="Enter bill impact tracking details..." />
+              <select id="sel-hbi" onchange="toggleDropdownNo(this, 'hbi')"><option>No</option></select>
+              <input type="text" id="lpi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">Harmonics Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-hi" onchange="toggleDropdownNo(this, 'hi')"><option>No</option><option>Yes</option></select>
-              <input type="text" id="hi" placeholder="Enter metrics details..." />
+              <select id="sel-hi" onchange="toggleDropdownNo(this, 'hi')"><option>No</option></select>
+              <input type="text" id="lpi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">Transformer Heating Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-thi" onchange="toggleDropdownNo(this, 'thi')"><option>No</option><option>Yes</option></select>
-              <input type="text" id="thi" placeholder="Enter heat metrics specs details..." />
+              <select id="sel-thi" onchange="toggleDropdownNo(this, 'thi')"><option>No</option></select>
+              <input type="text" id="lpi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label" style="margin: 4px 0 0;">Grid Stability Issue</label>
             <div class="aoc-split-row-box">
-              <select id="sel-gsi" onchange="toggleDropdownNo(this, 'gsi')"><option>No</option><option>Yes</option></select>
-              <input type="text" id="gsi" placeholder="Enter grid details logs..." />
+              <select id="sel-gsi" onchange="toggleDropdownNo(this, 'gsi')"><option>No</option></select>
+              <input type="text" id="lpi" placeholder="Enter issue details..." />
             </div>
             
             <label class="field-label">Existing System Details</label><textarea id="esd"></textarea>
@@ -438,7 +438,7 @@
             <label class="field-label">Expected Tender / RFQ Date</label><input type="date" id="tenderDate" />
             <label class="field-label">Expected Order Timeline</label><input type="text" id="orderTimeline" />
             <label class="field-label">Competitor Details</label><input type="text" id="competitors" />
-            <label class="field-label">Approx Business Potential (Single Select)</label>
+            <label class="field-label">Approx Business Potential</label>
             <div class="pill-group">
               <input type="radio" name="pot" value="<10L" id="bp1"><label for="bp1">&lt; 10L</label>
               <input type="radio" name="pot" value="10-50L" id="bp2"><label for="bp2">10-50L</label>
@@ -466,7 +466,7 @@
             <label class="field-label">Assign Creator Name *</label>
             <select id="engName"><option value="">Loading Dynamic Listing...</option></select>
             
-            <label class="field-label">Lead Status</label>
+            <label class="field-label">Lead Status *</label>
             <select id="dropform-status">
               <option value="Status1">Status1</option>
               <option value="Status2">Status2</option>
