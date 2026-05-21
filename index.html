@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>ABPS</title>
@@ -64,7 +65,7 @@
   .span-two-units { grid-column: span 2; }
   .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 2px 0; }
   
-  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; margin-bottom: 10px;}
   .pill-group input { display: none; }
   .pill-group label { padding: 3px 6px; border: 1.5px solid var(--border); border-radius: 12px; font-size: .7rem; cursor: pointer; background: #fff; white-space: nowrap; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
@@ -116,13 +117,26 @@
 <body>
 
 <div id="auth-container">
-  <div class="auth-card">
-    <div class="auth-title">ABPS Portal</div>
-    <div style="text-align: left;">
-      <label class="field-label">Username</label><input type="text" id="auth-user" placeholder="Enter username..." />
-      <label class="field-label">Password</label><input type="password" id="auth-pass" placeholder="Enter password..." />
-      <button class="btn btn-sub" id="login-btn" onclick="executeLogin()" style="margin-top:15px;">Login</button>
+  <div class="auth-card" style="max-width: 440px; padding: 30px;">
+    <div class="auth-title" style="margin-bottom: 10px;">ABPS Portal Secure Access</div>
+    <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 20px;">zero-trust authentication channel verification loop</p>
+    
+    <div style="text-align: left; background: #f8fafc; padding: 15px; border: 1px dashed var(--border); border-radius: 8px; margin-bottom: 20px;">
+      <label class="field-label" style="margin-top:0; color:var(--brand);">1. Declare Your Identity Profile *</label>
+      <select id="app-auth-active-engineer-identity" style="padding: 10px; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px;">
+        <option value="">— Select Your Engineer Profile —</option>
+        <option>Alok Kumar</option>
+        <option>Debarshi Mukharjee</option>
+        <option>H.K. Pawar</option>
+        <option>Aritra Roy</option>
+        <option>Mohammad Asraf</option>
+        <option>Pavan</option>
+      </select>
+      <span style="font-size: 0.65rem; color: var(--muted); line-height: 1.2; display: block;">Select your name to sign your action trails in the historical Audit Log database.</span>
     </div>
+
+    <label class="field-label" style="text-align: left; color: var(--text);">2. Verify Access Domain Account</label>
+    <div id="google-auth-button-mount-point" style="display: flex; justify-content: center; margin-top: 10px;"></div>
   </div>
 </div>
 
@@ -563,11 +577,87 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzqiSx4eeItUMEnk2YKL3X4OSpw4uugjsR66YlNOWddNqqCCNWQUtT20wWjTim24pyC9g/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycby8h6xPESdx4d9ovV3RZGuzLZbNms1rqYuGvrbUu_yFBYRpoxZAjAYYbDt9lOuaI-OkjA/exec"; 
 const CLOUD_NAME = "your_actual_cloud_name"; 
 const UPLOAD_PRESET = "your_actual_upload_preset"; 
 
-let fileFront = null, fileBack = null;
+let appActiveOperatorIdentityString = "";
+
+window.onload = function() {
+  const token = localStorage.getItem("sessionToken"); 
+  const expires = localStorage.getItem("sessionExpiry"); 
+  const savedPerms = localStorage.getItem("userPermissions");
+  const cachedOperator = localStorage.getItem("activeOperatorSignature");
+  
+  if (token && expires && new Date() < new Date(expires) && savedPerms && cachedOperator) { 
+    userPermissions = JSON.parse(savedPerms); 
+    appActiveOperatorIdentityString = cachedOperator;
+    showAppView(); 
+  } else {
+    initializeGoogleAuthPlatformEngine();
+  }
+};
+
+function initializeGoogleAuthPlatformEngine() {
+  localStorage.clear();
+  appActiveOperatorIdentityString = "";
+  document.getElementById("app-container").style.display = "none";
+  document.getElementById("auth-container").style.display = "flex";
+  
+  // Render the official Google Auth platform login rendering workflow button elements
+  google.accounts.id.initialize({
+    client_id: "374058137880-64dt8h9eem9impq61bpb0n9iselso76e.apps.googleusercontent.com",
+    callback: handleGooglePlatformCredentialResponse
+  });
+  
+  google.accounts.id.renderButton(
+    document.getElementById("google-auth-button-mount-point"),
+    { theme: "outline", size: "large", width: "320" }
+  );
+}
+
+async function handleGooglePlatformCredentialResponse(response) {
+  const selectedEngineer = document.getElementById("app-auth-active-engineer-identity").value;
+  if (!selectedEngineer) {
+    alert("Identity Verification Failed: You must select your individual Engineer Name before logging in with your Google Account credentials.");
+    return;
+  }
+  
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "googleLogin", idToken: response.credential })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      localStorage.setItem("sessionToken", data.sessionToken);
+      localStorage.setItem("sessionExpiry", data.expires);
+      localStorage.setItem("sessionUser", data.email);
+      localStorage.setItem("userFirstName", data.firstName);
+      localStorage.setItem("userLastName", data.lastName);
+      localStorage.setItem("userPermissions", JSON.stringify(data.permissions));
+      
+      // Permanently lock signature selection directly into operational storage trees
+      localStorage.setItem("activeOperatorSignature", selectedEngineer);
+      appActiveOperatorIdentityString = selectedEngineer;
+      
+      userPermissions = data.permissions;
+      showAppView();
+    } else {
+      alert("Authentication Error: " + data.error);
+    }
+  } catch (e) {
+    alert("Connection verification failure payload dropped: " + e.message);
+  }
+}
+
+function executeLogout() { 
+  localStorage.clear(); 
+  appActiveOperatorIdentityString = "";
+  document.getElementById("app-container").style.display = "none"; 
+  initializeGoogleAuthPlatformEngine();
+}
 
 document.getElementById('card-front').onchange = (e) => {
   fileFront = e.target.files[0];
@@ -703,7 +793,14 @@ function populateEngineerDropdowns() {
 
 async function triggerCompanyDropdownArrayFetch() {
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getUniqueCompaniesList" }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "getUniqueCompaniesList",
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString
+      }) 
+    });
     const d = await res.json();
     if (d.success) {
       const dropdown = document.getElementById("lookup-module-company-dropdown");
@@ -865,7 +962,16 @@ async function triggerSequentialSearch(triggerSourceMode) {
       headerRowEnclosure.innerHTML = `<button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568;">Back to Search</button>`;
     }
 
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: comp, contactName: targetName }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "searchCompanyData", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        companyName: comp, 
+        contactName: targetName 
+      }) 
+    });
     const data = await res.json();
     
     const activePanelId = (triggerSourceMode === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
@@ -1174,7 +1280,16 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
   });
   Object.keys(checkGroups).forEach(key => { fieldsPayload[key] = checkGroups[key].join(", "); });
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "updateLeadFull", leadRef: leadRef, fields: fieldsPayload }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "updateLeadFull", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        leadRef: leadRef, 
+        fields: fieldsPayload 
+      }) 
+    });
     const r = await res.json(); 
     if (r.success) {
       alert("Modifications Saved.");
@@ -1196,7 +1311,15 @@ async function removeLeadRowEntirely(leadRef) {
     if (!confirm("Confirm record removal?")) return;
     const btn = event.target; btn.classList.add("loading"); btn.textContent = "Deleting...";
     try {
-        const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteLeadRow", leadRef: leadRef }) });
+        const res = await fetch(GAS_URL, { 
+          method: "POST", 
+          body: JSON.stringify({ 
+            action: "deleteLeadRow", 
+            sessionToken: localStorage.getItem("sessionToken"),
+            activeEngineer: appActiveOperatorIdentityString,
+            leadRef: leadRef 
+          }) 
+        });
         const r = await res.json();
         if (r.success) triggerSequentialSearch(currentActiveModuleContext);
     } catch(e) { alert(e.message); btn.classList.remove("loading"); btn.textContent = "Delete Record"; }
@@ -1288,7 +1411,15 @@ async function commitIsolatedFollowUpItem(leadRef, scopeNode) {
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveFollowUp", followUpData }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "saveFollowUp", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        followUpData 
+      }) 
+    });
     const r = await res.json();
     if (r.success) { form.style.display = "none"; scopeNode.querySelector(".trigger-fup-open").style.display = "inline-flex"; scopeNode.querySelector(".trigger-fup-close").style.display = "none"; await globalExecutionScopeReloader(leadRef, scopeNode); }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Follow-Up"; }
@@ -1305,8 +1436,16 @@ async function removeIsolatedFollowUpItem(leadRef, fNum, event) {
   
   const fupId = leadRef + "||" + fNum;
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteFollowUp", fupId: fupId }) });
-    const r = await res.json(); 
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "deleteFollowUp", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        fupId: fupId 
+      }) 
+    });
+    const r = await res.json();
     if (r.success) { 
       const activeScopeNode = document.getElementById('active-modules-clone-' + leadRef); 
       await globalExecutionScopeReloader(leadRef, activeScopeNode); 
@@ -1361,7 +1500,15 @@ async function commitIsolatedTaskItem(leadRef, scopeNode) {
   if (!desc || desc.trim() === "") return alert("Task Description is a compulsory field.");
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveTask", taskData }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "saveTask", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        taskData 
+      }) 
+    });
     const r = await res.json();
     if (r.success) { form.style.display = "none"; scopeNode.querySelector(".trigger-task-open").style.display = "inline-flex"; scopeNode.querySelector(".trigger-task-close").style.display = "none"; await globalExecutionScopeReloader(leadRef, scopeNode); }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Task"; }
@@ -1376,8 +1523,16 @@ async function removeIsolatedTaskItem(leadRef, taskId, event) {
   btn.textContent = "Deleting...";
   
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: taskId }) });
-    const r = await res.json(); 
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "deleteTask", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        taskId: taskId 
+      }) 
+    });
+    const r = await res.json();
     if (r.success) { 
       const activeScopeNode = document.getElementById('active-modules-clone-' + leadRef); 
       await globalExecutionScopeReloader(leadRef, activeScopeNode); 
@@ -1391,7 +1546,15 @@ async function removeIsolatedTaskItem(leadRef, taskId, event) {
 
 async function globalExecutionScopeReloader(leadRef, scopeNode) {
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchCompanyData", companyName: activeSearchCompany }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "searchCompanyData", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        companyName: activeSearchCompany 
+      }) 
+    });
     const data = await res.json();
     if (data.success) { globalFollowUpsCacheMap = data.followups; globalTasksCacheMap = data.tasks; currentFollowUpCount = data.followups[leadRef] ? data.followups[leadRef].length : 0; renderIsolatedFollowUpTimeline(leadRef, data.followups[leadRef] || [], scopeNode); renderIsolatedTaskItemsList(leadRef, data.tasks[leadRef] || [], scopeNode); }
   } catch(e) { console.error(e.message); }
@@ -1497,7 +1660,16 @@ async function submitLead() {
     };
     
     // 5. Submit structured object data packet to Apps Script endpoint
-    const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'submit', fields, imageUrl }) });
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ 
+        action: 'submit', 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        fields, 
+        imageUrl 
+      })
+    });
     const d = await res.json();
     if (d.success) { 
       document.getElementById('remaining-sections-form').style.display = 'none'; 
@@ -1534,7 +1706,14 @@ async function submitLead() {
 }
 
 async function loadQualFilter() {
-  const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getUniqueQualifications" }) });
+  const res = await fetch(GAS_URL, { 
+    method: "POST", 
+    body: JSON.stringify({ 
+      action: "getUniqueQualifications",
+      sessionToken: localStorage.getItem("sessionToken"),
+      activeEngineer: appActiveOperatorIdentityString
+    }) 
+  });
   const data = await res.json();
   const container = document.getElementById("qual-filter-checkboxes"); container.innerHTML = "";
   data.quals.forEach(q => {
@@ -1554,7 +1733,15 @@ async function triggerQualificationSearch() {
     if(selected.length === 0) return alert("Select at least one qualification.");
     btn.classList.add("loading"); btn.textContent = "Searching...";
     try {
-        const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchByQualifications", qualifications: selected }) });
+        const res = await fetch(GAS_URL, { 
+          method: "POST", 
+          body: JSON.stringify({ 
+            action: "searchByQualifications", 
+            sessionToken: localStorage.getItem("sessionToken"),
+            activeEngineer: appActiveOperatorIdentityString,
+            qualifications: selected 
+          }) 
+        });
         const data = await res.json();
         if (data.success) {
             const canvas = document.getElementById("step2-inline-interaction-canvas");
@@ -1574,7 +1761,15 @@ async function triggerStatusSearch() {
     if(!statusVal) return alert("Please select a status.");
     btn.classList.add("loading"); btn.textContent = "Searching...";
     try {
-        const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchByStatus", statusValue: statusVal }) });
+        const res = await fetch(GAS_URL, { 
+          method: "POST", 
+          body: JSON.stringify({ 
+            action: "searchByStatus", 
+            sessionToken: localStorage.getItem("sessionToken"),
+            activeEngineer: appActiveOperatorIdentityString,
+            statusValue: statusVal 
+          }) 
+        });
         const data = await res.json();
         if (data.success) {
             const canvas = document.getElementById("step2-inline-interaction-canvas");
@@ -1593,7 +1788,15 @@ async function triggerEngineerSearch() {
     if(!engVal) return alert("Please select an engineer.");
     btn.classList.add("loading"); btn.textContent = "Searching...";
     try {
-        const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchByEngineer", engName: engVal }) });
+        const res = await fetch(GAS_URL, { 
+          method: "POST", 
+          body: JSON.stringify({ 
+            action: "searchByEngineer", 
+            sessionToken: localStorage.getItem("sessionToken"),
+            activeEngineer: appActiveOperatorIdentityString,
+            engName: engVal 
+          }) 
+        });
         const data = await res.json();
         if (data.success) {
           const canvas = document.getElementById("step2-inline-interaction-canvas");
@@ -1616,7 +1819,16 @@ async function executeTaskMatrixSearch() {
 
   btn.classList.add("loading"); btn.textContent = "Filtering Tasks...";
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "searchTasksMatrix", engineers: checkedEngineers, statuses: checkedStatuses }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "searchTasksMatrix", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        engineers: checkedEngineers, 
+        statuses: checkedStatuses 
+      }) 
+    });
     const data = await res.json();
 
     if (data.success) {
@@ -1730,7 +1942,15 @@ async function commitMatrixTaskMutations(formNode, fallbackLeadId, btnNode) {
 
   btnNode.disabled = true; btnNode.innerHTML = 'Saving Changes...';
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "saveTask", taskData }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "saveTask", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        taskData 
+      }) 
+    });
     const r = await res.json();
     if (r.success) {
       alert("Task modifications saved successfully.");
@@ -1747,7 +1967,15 @@ async function removeMatrixTaskFromEngine(taskId, event) {
   btn.textContent = "Deleting...";
   
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "deleteTask", taskId: taskId }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "deleteTask", 
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        taskId: taskId 
+      }) 
+    });
     const r = await res.json();
     if (r.success) { executeTaskMatrixSearch(); }
   } catch(e) { 
