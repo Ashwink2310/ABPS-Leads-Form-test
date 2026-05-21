@@ -135,8 +135,8 @@
       <span style="font-size: 0.65rem; color: var(--muted); line-height: 1.2; display: block;">Select your name to sign your action trails in the historical Audit Log database.</span>
     </div>
 
-    <label class="field-label" style="text-align: left; color: var(--text);">2. Verify Access Domain Account</label>
-    <div id="google-auth-button-mount-point" style="display: flex; justify-content: center; margin-top: 10px;"></div>
+    <label class="field-label" style="text-align: left; color: var(--text); font-weight: 700;">2. VERIFY ACCESS DOMAIN ACCOUNT</label>
+    <div id="google-auth-button-mount-point" style="display: flex; justify-content: center; margin-top: 15px; min-height: 40px;"></div>
   </div>
 </div>
 
@@ -604,16 +604,26 @@ function initializeGoogleAuthPlatformEngine() {
   document.getElementById("app-container").style.display = "none";
   document.getElementById("auth-container").style.display = "flex";
   
-  // Render the official Google Auth platform login rendering workflow button elements
-  google.accounts.id.initialize({
-    client_id: "374058137880-64dt8h9eem9impq61bpb0n9iselso76e.apps.googleusercontent.com",
-    callback: handleGooglePlatformCredentialResponse
-  });
-  
-  google.accounts.id.renderButton(
-    document.getElementById("google-auth-button-mount-point"),
-    { theme: "outline", size: "large", width: "320" }
-  );
+  // FIX: Introduce a short 200ms delay to let the browser mount point render completely
+  setTimeout(() => {
+    const mountNode = document.getElementById("google-auth-button-mount-point");
+    if (!mountNode) {
+      console.error("Critical Render Error: google-auth-button-mount-point container not found in DOM.");
+      return;
+    }
+
+    // Initialize the official Google One Tap / Sign In framework
+    google.accounts.id.initialize({
+      client_id: "907687324445-27vfv4ksb19dbg74his0ms5j33eb0int.apps.googleusercontent.com",
+      callback: handleGooglePlatformCredentialResponse
+    });
+    
+    // Render the button inside the verified target container
+    google.accounts.id.renderButton(
+      mountNode,
+      { theme: "outline", size: "large", width: "320" }
+    );
+  }, 200); 
 }
 
 async function handleGooglePlatformCredentialResponse(response) {
