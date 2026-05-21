@@ -628,37 +628,57 @@ function resetSequentialFormState() {
 
 function navigateToModule(key) { 
     if (!userPermissions[key]) return alert("Denied."); 
+    
+    // Hide dashboard
     document.getElementById("dashboard-view").style.display = "none"; 
     document.getElementById("module-workspace-container").style.display = "block"; 
+    
+    // Hide all panels
     document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); 
     document.getElementById("workspace-" + key).style.display = "block"; 
     
-    // Reset buttons
-    document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
-    document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
+    // RESET: Clear results when entering a module fresh
+    document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+    document.getElementById("multi-contact-records-container").innerHTML = "";
     
     currentActiveModuleContext = key === "cardDetails" ? "CARD" : "DROPDOWN";
     resetSequentialFormState(); 
 }
 
 function returnToDashboard() { 
+  // 1. Force-collapse the form if open
   collapseNewEntryDropdownFormExplicitly(); 
-  showAppView(); 
+  
+  // 2. Hide the workspace entirely
+  document.getElementById("module-workspace-container").style.display = "none";
+  document.getElementById("dashboard-view").style.display = "block";
+  
+  // 3. Clear the interaction canvas to ensure it's "fresh" next time
+  const canvas = document.getElementById("step2-inline-interaction-canvas");
+  canvas.style.display = "none";
+  document.getElementById("multi-contact-records-container").innerHTML = "";
+  
+  // 4. Reset specific module visibility
+  document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none");
 }
 
 function revealNewEntryFormDropdown() { 
-  document.getElementById("missing-trigger-notice-block").style.display = "none";
   const container = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
-  document.getElementById(container).appendChild(document.getElementById("step2-new-entry-dropdown"));
+  document.getElementById(container).appendChild(document.getElementById("step2-new-entry-dropdown"));;
 
   let companyName = "";
-  if (currentActiveModuleContext === "CARD") {
-      companyName = document.getElementById("f-company").value;
-  } else {
-      // In Search by Company, the value is in the dropdown selector
-      companyName = document.getElementById("lookup-module-company-dropdown").value;
-  }
-  document.getElementById("dropform-company-locked").value = companyName || "No Company Specified";
+    if (currentActiveModuleContext === "CARD") {
+        companyName = document.getElementById("f-company").value;
+    } else {
+        const dropdown = document.getElementById("lookup-module-company-dropdown");
+        // Use the text content of the selected option, not just the value if value is missing
+        companyName = dropdown.options[dropdown.selectedIndex].text;
+        
+        // If the dropdown is set to the default "Select..." option, show "No Company Specified"
+        if (dropdown.selectedIndex === 0) companyName = "No Company Specified";
+    }
+    
+    document.getElementById("dropform-company-locked").value = companyName;
   
   const targetedLockStringValue = (currentActiveModuleContext === "CARD") ? document.getElementById("f-company").value : document.getElementById("lookup-module-company-dropdown").value;
   
