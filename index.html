@@ -107,17 +107,7 @@
   .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 8px; border-radius: 4px; text-align: left; margin-bottom: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
 
   .btn-warn.loading { opacity: 0.5; cursor: progress; transform: scale(0.95); }
-
-  .form-layout-card-block { grid-column: 1 / -1; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin: 4px 0; text-align: left; }
-  .form-card-inner-title { font-size: 0.72rem; font-weight: 700; color: var(--brand); text-transform: uppercase; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
-  .checkbox-flex-line-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; align-items: center; }
-  .checkbox-inline-item { display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; font-weight: 600; color: var(--text); cursor: pointer; }
-  .checkbox-inline-item input[type="checkbox"] { width: auto; cursor: pointer; }
-  .compact-vertical-input-group { margin-bottom: 8px; }
-  .compact-vertical-input-group:last-child { margin-bottom: 0; }
-  .compact-vertical-input-group label { display: block; font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 3px; }
-  .inline-text-input-field { margin-top: 4px; max-width: 250px; }
-
+  
   @keyframes spin { to { transform: rotate(360deg); }}
 </style>
 </head>
@@ -1513,284 +1503,42 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
 }
 
 function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
-  const canvas = document.getElementById('canvas-fields-' + leadRef); 
-  if (!canvas) return;
-  canvas.innerHTML = "";
+  const canvas = document.getElementById('canvas-fields-' + leadRef); canvas.innerHTML = "";
+  const gridWrapper = document.createElement("div"); gridWrapper.className = "compact-fields-grid";
   
-  const gridWrapper = document.createElement("div"); 
-  gridWrapper.className = "compact-fields-grid";
+  // Custom parsing utility to pull structured "Other" inputs out of raw comma-separated lists
+  const extractOthersValueText = (rawStr, coreOptions) => {
+    if (!rawStr) return "";
+    const items = rawStr.split(",").map(v => v.trim());
+    const lowerCore = coreOptions.map(c => c.toLowerCase());
+    const others = items.filter(i => lowerCore.indexOf(i.toLowerCase()) === -1);
+    return others.join(", ");
+  };
   
   const customSectionLayout = [
     { type: "META", keys: ["Status", "Engineer Name"] },
     { type: "CARD", keys: ["Name", "Company", "Position", "Phone", "Alt Phone", "Email", "Website", "City", "State", "Company Address"] },
     { type: "SEC1", keys: ["Date of Meeting", "Time of Meeting", "Meeting Venue", "Venue Name / City", "Additional Meeting Details (if any)"] },
     { type: "SEC2", keys: ["ABPS Business Vertical", "Type of Industry", "Qualification", "Type of Vendor", "Name of Materials"] },
-    { type: "SEC3", keys: ["Low Power Factor Issue", "High Electricity Bill Issue", "Harmonics Issue", "Transformer Heating / Breakdown Issue", "Grid Stability Issue", "Existing System Details", "Voltage Level", "Contract Demand (MVA)", "Running Demand (MVA)", "Monthly Average Power Factor", "Problem Observed", "Technical Discussion Summary"] },
-    { type: "SEC4", keys: ["Existing Project", "Upcoming Project", "Products Discussed", "Approx Requirement", "Expected Tender / RFQ Date", "Expected Order Timeline", "Competitor Details", "Approx Business Potential"] },
+    { type: "SEC3", keys: ["Low Power Factor Issue", "High Electricity Bill Issue", "Harmonics Issue", "Transformer Heating / Breakdown Issue", "Grid Stability Issue", "Existing System Details", "Voltage Level", "Contract Demand (MVA)"] }, // Merged capacity blocks inside Contract Demand cell root
+    { type: "SEC4", keys: ["Existing Project", "Products Discussed", "Approx Requirement", "Expected Tender / RFQ Date", "Competitor Details", "Approx Business Potential"] }, // Merged timeline blocks inside target fields
     { type: "SEC5", keys: ["Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Send Offer", "Follow-Up Required"] }
   ];
-
-  // Helper utility to safely parse and split comma-separated database fields
-  const parseCurrentValues = (key) => (leadMap[key] || "").toString().split(",").map(v => v.trim());
 
   customSectionLayout.forEach((sec, sIdx) => {
     if (sIdx > 0) {
       let line = document.createElement("div"); line.className = "section-divider-line"; gridWrapper.appendChild(line);
     }
-    
     sec.keys.forEach(key => {
-      if (leadMap[key] === undefined) return;
-      
-      // ----------------------------------------------------
-      // INTERCEPTOR 1: COMPACT BLOCK STRUCTURAL GROUPINGS
-      // ----------------------------------------------------
-      if (key === "Contract Demand (MVA)") {
-        let block = document.createElement("div");
-        block.className = "form-layout-card-block";
-        block.innerHTML = `
-          <div class="form-card-inner-title">Power Parameters Metrics Block</div>
-          <div class="compact-vertical-input-group">
-            <label>Contract Demand (MVA)</label>
-            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Contract Demand (MVA)" value="${leadMap["Contract Demand (MVA)"] || ""}" />
-          </div>
-          <div class="compact-vertical-input-group">
-            <label>Running Demand (MVA)</label>
-            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Running Demand (MVA)" value="${leadMap["Running Demand (MVA)"] || ""}" />
-          </div>
-          <div class="compact-vertical-input-group">
-            <label>Monthly Average Power Factor</label>
-            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Monthly Average Power Factor" value="${leadMap["Monthly Average Power Factor"] || ""}" />
-          </div>
-        `;
-        gridWrapper.appendChild(block);
-        return;
-      }
-      // Skip child iterations as they are captured by the main block parent container above
-      if (key === "Running Demand (MVA)" || key === "Monthly Average Power Factor") return;
-
-      if (key === "Existing Project") {
-        let block = document.createElement("div");
-        block.className = "form-layout-card-block";
-        block.innerHTML = `
-          <div class="form-card-inner-title">Project Pipeline Tracking Matrix</div>
-          <div class="compact-vertical-input-group">
-            <label>Existing Project</label>
-            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Existing Project" value="${leadMap["Existing Project"] || ""}" />
-          </div>
-          <div class="compact-vertical-input-group">
-            <label>Upcoming Project</label>
-            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Upcoming Project" value="${leadMap["Upcoming Project"] || ""}" />
-          </div>
-        `;
-        gridWrapper.appendChild(block);
-        return;
-      }
-      if (key === "Upcoming Project") return;
-
-      if (key === "Expected Tender / RFQ Date") {
-        let block = document.createElement("div");
-        block.className = "form-layout-card-block";
-        block.innerHTML = `
-          <div class="form-card-inner-title">Tender Order Timeline Lifespan</div>
-          <div class="compact-vertical-input-group">
-            <label>Expected Tender / RFQ Date</label>
-            <input type="date" class="live-lead-field-input-${leadRef}" data-header-key="Expected Tender / RFQ Date" value="${formatCleanDateOnly(leadMap["Expected Tender / RFQ Date"])}" />
-          </div>
-          <div class="compact-vertical-input-group">
-            <label>Expected Order Timeline</label>
-            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Expected Order Timeline" value="${leadMap["Expected Order Timeline"] || ""}" />
-          </div>
-        `;
-        gridWrapper.appendChild(block);
-        return;
-      }
-      if (key === "Expected Order Timeline") return;
-
-      // ----------------------------------------------------
-      // INTERCEPTOR 2: DYNAMIC INTUITIVE CHECKBOXES
-      // ----------------------------------------------------
-      if (key === "Voltage Level") {
-        let block = document.createElement("div");
-        block.className = "form-layout-card-block";
-        block.innerHTML = `<div class="form-card-inner-title">Voltage Level (Multi-Select)</div>`;
-        
-        const levels = ["440V", "660V", "3.3KV", "6.6KV", "11KV", "22KV", "33KV", "66KV", "132KV", "220KV", "400KV"];
-        let currentValues = parseCurrentValues("Voltage Level");
-        
-        // Loop chunks items into rows of 4 options
-        for (let i = 0; i < levels.length; i += 4) {
-          let rowChunk = levels.slice(i, i + 4);
-          let rowHtml = document.createElement("div");
-          rowHtml.className = "checkbox-flex-line-row";
-          
-          rowChunk.forEach(v => {
-            let isChecked = currentValues.indexOf(v) !== -1 ? "checked" : "";
-            rowHtml.innerHTML += `
-              <label class="checkbox-inline-item">
-                <input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Voltage Level" ${isChecked}>
-                <span>${v}</span>
-              </label>
-            `;
-          });
-          block.appendChild(rowHtml);
-        }
-        gridWrapper.appendChild(block);
-        return;
-      }
-
-      if (key === "Qualification") {
-        let block = document.createElement("div");
-        block.className = "form-layout-card-block";
-        block.innerHTML = `<div class="form-card-inner-title">Core Qualifications Profile</div>`;
-        
-        let currentValues = parseCurrentValues("Qualification");
-        
-        // Line 1 Row Array
-        let r1 = document.createElement("div"); r1.className = "checkbox-flex-line-row";
-        ["Industry", "EPC", "Govt/PSU", "Consultant"].forEach(v => {
-          r1.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Qualification" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
-        });
-        block.appendChild(r1);
-        
-        // Line 2 Row Array
-        let r2 = document.createElement("div"); r2.className = "checkbox-flex-line-row";
-        ["Developer", "Electrical Contractor", "Dealer", "Vendor"].forEach(v => {
-          r2.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Qualification" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
-        });
-        block.appendChild(r2);
-        
-        // Line 3 Row Array with dynamic Input Field
-        let r3 = document.createElement("div"); r3.className = "checkbox-flex-line-row";
-        let hasCustomQual = currentValues.some(v => ["Industry", "EPC", "Govt/PSU", "Consultant", "Developer", "Electrical Contractor", "Dealer", "Vendor"].indexOf(v) === -1 && v !== "");
-        let customQualValue = hasCustomQual ? currentValues.filter(v => ["Industry", "EPC", "Govt/PSU", "Consultant", "Developer", "Electrical Contractor", "Dealer", "Vendor"].indexOf(v) === -1).join(", ") : "";
-        
-        r3.innerHTML += `
-          <label class="checkbox-inline-item">
-            <input type="checkbox" value="Others" id="edit_qual_others_trigger_${leadRef}" ${hasCustomQual ? "checked" : ""} onchange="document.getElementById('edit_qual_others_input_${leadRef}').style.display = this.checked ? 'block' : 'none'">
-            <span>Others</span>
-          </label>
-          <input type="text" id="edit_qual_others_input_${leadRef}" class="inline-text-input-field" placeholder="Specify custom qualification..." value="${customQualValue}" style="display: ${hasCustomQual ? 'block' : 'none'};" />
-        `;
-        block.appendChild(r3);
-        gridWrapper.appendChild(block);
-        return;
-      }
-
-      if (key === "Type of Vendor") {
-        let block = document.createElement("div");
-        block.className = "form-layout-card-block";
-        block.innerHTML = `<div class="form-card-inner-title">Vendor Classification Matrix</div>`;
-        
-        let currentValues = parseCurrentValues("Type of Vendor");
-        
-        let r1 = document.createElement("div"); r1.className = "checkbox-flex-line-row";
-        ["Raw Materials supplier", "MC Supplier"].forEach(v => {
-          r1.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Type of Vendor" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v === 'Raw Materials supplier' ? 'Raw Materials' : v}</span></label>`;
-        });
-        block.appendChild(r1);
-        
-        let r2 = document.createElement("div"); r2.className = "checkbox-flex-line-row";
-        ["Capital Goods Supplier"].forEach(v => {
-          r2.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Type of Vendor" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
-        });
-        block.appendChild(r2);
-        
-        let r3 = document.createElement("div"); r3.className = "checkbox-flex-line-row";
-        let hasCustomVendor = currentValues.some(v => ["Raw Materials supplier", "MC Supplier", "Capital Goods Supplier"].indexOf(v) === -1 && v !== "");
-        let customVendorValue = hasCustomVendor ? currentValues.filter(v => ["Raw Materials supplier", "MC Supplier", "Capital Goods Supplier"].indexOf(v) === -1).join(", ") : "";
-        
-        r3.innerHTML += `
-          <label class="checkbox-inline-item">
-            <input type="checkbox" value="Others" id="edit_vendor_others_trigger_${leadRef}" ${hasCustomVendor ? "checked" : ""} onchange="document.getElementById('edit_vendor_others_input_${leadRef}').style.display = this.checked ? 'block' : 'none'">
-            <span>Others</span>
-          </label>
-          <input type="text" id="edit_vendor_others_input_${leadRef}" class="inline-text-input-field" placeholder="Specify custom vendor parameter..." value="${customVendorValue}" style="display: ${hasCustomVendor ? 'block' : 'none'};" />
-        `;
-        block.appendChild(r3);
-        gridWrapper.appendChild(block);
-        return;
-      }
-
-      if (key === "Products Discussed") {
-        let block = document.createElement("div");
-        block.className = "form-layout-card-block";
-        block.innerHTML = `<div class="form-card-inner-title">Products Portfolio Matrix</div>`;
-        
-        let currentValues = parseCurrentValues("Products Discussed");
-        
-        let r1 = document.createElement("div"); r1.className = "checkbox-flex-line-row";
-        ["APFC", "RPTFC", "Harmonic Filter"].forEach(v => {
-          r1.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Products Discussed" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
-        });
-        block.appendChild(r1);
-        
-        let r2 = document.createElement("div"); r2.className = "checkbox-flex-line-row";
-        ["SVG", "MV Capacitor Bank", "Reactor"].forEach(v => {
-          r2.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Products Discussed" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
-        });
-        block.appendChild(r2);
-        
-        let r3 = document.createElement("div"); r3.className = "checkbox-flex-line-row";
-        let hasCustomProd = currentValues.some(v => ["APFC", "RPTFC", "Harmonic Filter", "SVG", "MV Capacitor Bank", "Reactor"].indexOf(v) === -1 && v !== "");
-        let customProdValue = hasCustomProd ? currentValues.filter(v => ["APFC", "RPTFC", "Harmonic Filter", "SVG", "MV Capacitor Bank", "Reactor"].indexOf(v) === -1).join(", ") : "";
-        
-        r3.innerHTML += `
-          <label class="checkbox-inline-item">
-            <input type="checkbox" value="Others" id="edit_prod_others_trigger_${leadRef}" ${hasCustomProd ? "checked" : ""} onchange="document.getElementById('edit_prod_others_input_${leadRef}').style.display = this.checked ? 'block' : 'none'">
-            <span>Others</span>
-          </label>
-          <input type="text" id="edit_prod_others_input_${leadRef}" class="inline-text-input-field" placeholder="Specify other engineering item..." value="${customProdValue}" style="display: ${hasCustomProd ? 'block' : 'none'};" />
-        `;
-        block.appendChild(r3);
-        gridWrapper.appendChild(block);
-        return;
-      }
-
-      // ----------------------------------------------------
-      // INTERCEPTOR 3: ABPS BUSINESS VERTICAL SELECTION
-      // ----------------------------------------------------
-      if (key === "ABPS Business Vertical") {
-        let block = document.createElement("div");
-        block.className = "grid-cell-item";
-        
-        let label = document.createElement("label"); label.textContent = key; block.appendChild(label);
-        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
-        
-        const coreVerticals = ["Industrial", "Power", "Renewable"];
-        let currentValue = (leadMap[key] || "").toString().trim();
-        let isCustomVertical = currentValue !== "" && coreVerticals.indexOf(currentValue) === -1;
-        
-        coreVerticals.forEach(v => {
-          let op = document.createElement("option"); op.textContent = v; if(currentValue === v) op.selected = true; sel.appendChild(op);
-        });
-        
-        let opOther = document.createElement("option"); opOther.textContent = "Other"; if(isCustomVertical) opOther.selected = true; sel.appendChild(opOther);
-        block.appendChild(sel);
-        
-        let inputText = document.createElement("input");
-        inputText.type = "text";
-        inputText.id = `edit_vertical_custom_input_${leadRef}`;
-        inputText.className = "inline-text-input-field";
-        inputText.placeholder = "Specify operational vertical...";
-        inputText.value = isCustomVertical ? currentValue : "";
-        inputText.style.display = isCustomVertical ? "block" : "none";
-        block.appendChild(inputText);
-        
-        sel.onchange = function() {
-          inputText.style.display = (this.value === "Other") ? "block" : "none";
-        };
-        
-        gridWrapper.appendChild(block);
-        return;
-      }
-
-      // ----------------------------------------------------
-      // BASELINE STANDARDIZED DROPDOWN & TEXTAREA GENERATORS
-      // ----------------------------------------------------
+      if (leadMap[key] === undefined && key !== "Contract Demand (MVA)" && key !== "Existing Project" && key !== "Expected Tender / RFQ Date") return;
       let cell = document.createElement("div"); cell.className = "grid-cell-item";
-      if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)") cell.className += " span-two-units";
       
-      let labelNode = document.createElement("label"); labelNode.textContent = key; cell.appendChild(labelNode);
+      // Expand structural items to full span rows where deep notes are captured
+      if (["Technical Discussion Summary", "Additional Meeting Details (if any)", "Qualification", "Type of Vendor", "Products Discussed", "Voltage Level", "Contract Demand (MVA)", "Existing Project", "Expected Tender / RFQ Date"].indexOf(key) !== -1) {
+        cell.className += " span-two-units";
+      }
+      
+      let label = document.createElement("label"); label.textContent = key; cell.appendChild(label);
 
       if (key === "Status") {
         let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
@@ -1798,17 +1546,17 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           let op = document.createElement("option"); op.textContent = st; if(leadMap[key] === st) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
-      } else if (["Date of Meeting"].indexOf(key) !== -1) {
+      } else if (key === "Date of Meeting") {
         let inp = document.createElement("input"); inp.type = "date"; inp.className = 'live-lead-field-input-' + leadRef; inp.dataset.headerKey = key;
         let rawDate = leadMap[key];
         if (rawDate) { let match = rawDate.toString().match(/(\d{4}-\d{2}-\d{2})/); inp.value = match ? match[1] : ""; }
         cell.appendChild(inp);
-      } else if (["Time of Meeting", "Meeting Time"].indexOf(key) !== -1) {
+      } else if (key === "Time of Meeting") {
         let inp = document.createElement("input"); inp.type = "time"; inp.className = 'live-lead-field-input-' + leadRef; inp.dataset.headerKey = key;
         let rawTime = leadMap[key];
         if (rawTime) { let timeMatch = rawTime.toString().match(/(\d{1,2}:\d{2})/); inp.value = timeMatch ? timeMatch[0] : ""; }
         cell.appendChild(inp);
-      } else if (["Assigned Engineer", "Engineer Name"].indexOf(key) !== -1) {
+      } else if (key === "Assigned Engineer" || key === "Engineer Name") {
         let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         cachedEngineers.forEach(eng => {
           let op = document.createElement("option"); op.textContent = eng; if(leadMap[key] === eng) op.selected = true; sel.appendChild(op);
@@ -1820,14 +1568,148 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           let op = document.createElement("option"); op.textContent = opText; if(leadMap[key] === opText) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
-      } else if (["Meeting Venue", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
+      } else if (key === "ABPS Business Vertical") {
+        let container = document.createElement("div");
+        container.style.display = "flex"; container.style.flexDirection = "column"; container.style.gap = "4px";
+        
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
+        const opts = ["Industrial", "Power", "Renewable", "Other"];
+        
+        // Check if value is custom
+        let isOther = leadMap[key] && opts.indexOf(leadMap[key].toString().trim()) === -1 && leadMap[key].toString().trim() !== "";
+        opts.forEach(o => {
+          let op = document.createElement("option"); op.textContent = o; 
+          if(leadMap[key] === o || (o === "Other" && isOther)) op.selected = true; 
+          sel.appendChild(op);
+        });
+        
+        let otherInp = document.createElement("input"); otherInp.type = "text";
+        otherInp.id = `live-bv-other-${leadRef}`; otherInp.placeholder = "Specify other vertical...";
+        otherInp.style.marginTop = "4px"; otherInp.style.display = isOther ? "block" : "none";
+        otherInp.value = isOther ? leadMap[key] : "";
+        
+        sel.onchange = function() { otherInp.style.display = (sel.value === "Other") ? "block" : "none"; };
+        container.appendChild(sel); container.appendChild(otherInp); cell.appendChild(container);
+      } else if (["Meeting Venue", "Approx Business Potential", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
         let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         let opts = ["No", "Yes"];
         if(key === "Meeting Venue") opts = ["Exhibition", "Customer Place"];
+        if(key === "Approx Business Potential") opts = ["<10L", "10-50L", "50L-2cr", ">2cr"];
         opts.forEach(o => {
           let op = document.createElement("option"); op.textContent = o; if(leadMap[key] === o) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
+      } 
+      
+      // COMPACT CONSOLE BLOCKS: Unifies multiple parameters down to clean inputs groups
+      else if (key === "Contract Demand (MVA)") {
+        label.textContent = "Capacity Details Matrix";
+        let wrapper = document.createElement("div"); wrapper.style.display = "flex"; wrapper.style.flexDirection = "column"; wrapper.style.gap = "6px"; wrapper.style.padding = "4px 0";
+        
+        wrapper.innerHTML = `
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted);">Contract Demand (MVA)</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Contract Demand (MVA)" value="${leadMap["Contract Demand (MVA)"] || ""}"></div>
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted);">Running Demand (MVA)</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Running Demand (MVA)" value="${leadMap["Running Demand (MVA)"] || ""}"></div>
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted);">Monthly Average Power Factor</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Monthly Average Power Factor" value="${leadMap["Monthly Average Power Factor"] || ""}"></div>
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted);">Problem Observed</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Problem Observed" value="${leadMap["Problem Observed"] || ""}"></div>
+        `;
+        cell.appendChild(wrapper);
+      } else if (key === "Existing Project") {
+        label.textContent = "Project Opportunities";
+        let wrapper = document.createElement("div"); wrapper.style.display = "flex"; wrapper.style.flexDirection = "column"; wrapper.style.gap = "6px";
+        wrapper.innerHTML = `
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted);">Existing Project</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Existing Project" value="${leadMap["Existing Project"] || ""}"></div>
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted);">Upcoming Project</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Upcoming Project" value="${leadMap["Upcoming Project"] || ""}"></div>
+        `;
+        cell.appendChild(wrapper);
+      } else if (key === "Expected Tender / RFQ Date") {
+        label.textContent = "Tender Timeline Tracker";
+        let wrapper = document.createElement("div"); wrapper.style.display = "flex"; wrapper.style.flexDirection = "column"; wrapper.style.gap = "6px";
+        let rawDate = leadMap["Expected Tender / RFQ Date"];
+        let cleanDate = "";
+        if (rawDate) { let match = rawDate.toString().match(/(\d{4}-\d{2}-\d{2})/); cleanDate = match ? match[1] : ""; }
+        
+        wrapper.innerHTML = `
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted);">Expected Tender / RFQ Date</span><input type="date" class="live-lead-field-input-${leadRef}" data-header-key="Expected Tender / RFQ Date" value="${cleanDate}"></div>
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted);">Expected Order Timeline</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Expected Order Timeline" value="${leadMap["Expected Order Timeline"] || ""}"></div>
+        `;
+        cell.appendChild(wrapper);
+      }
+      
+      // MULTI-LINE COMPACT PILL WRAPPERS: Handles row limits and inline text input boxes flawlessly
+      else if (["Voltage Level", "Products Discussed", "Qualification", "Type of Vendor"].indexOf(key) !== -1) {
+        let mainWrapper = document.createElement("div"); mainWrapper.style.display = "flex"; mainWrapper.style.flexDirection = "column"; mainWrapper.style.gap = "4px";
+        let currentValues = (leadMap[key] || "").toString().split(",").map(v => v.trim());
+        
+        let rowsData = [];
+        let hasOtherInputBox = false;
+        let otherHeaderKeyString = key === "Qualification" ? "Qualification" : (key === "Products Discussed" ? "Products Discussed" : (key === "Type of Vendor" ? "Type of Vendor" : ""));
+        
+        if (key === "Voltage Level") {
+          rowsData = [
+            ["440V", "660V", "3.3KV", "6.6KV"],
+            ["11KV", "22KV", "33KV", "66KV"],
+            ["132KV", "220KV", "400KV"]
+          ];
+        } else if (key === "Qualification") {
+          rowsData = [
+            ["Industry", "EPC", "Govt/PSU", "Consultant"],
+            ["Developer", "Electrical Contractor", "Dealer", "Vendor"],
+            ["Others"]
+          ];
+          hasOtherInputBox = true;
+        } else if (key === "Type of Vendor") {
+          rowsData = [
+            ["Raw Materials supplier", "MC Supplier"],
+            ["Capital Goods Supplier"],
+            ["Others"]
+          ];
+          hasOtherInputBox = true;
+        } else if (key === "Products Discussed") {
+          rowsData = [
+            ["APFC", "RPTFC", "Harmonic Filter"],
+            ["SVG", "MV Capacitor Bank", "Reactor"],
+            ["Others"]
+          ];
+          hasOtherInputBox = true;
+        }
+
+        // Loop and paint lines
+        rowsData.forEach(rowItems => {
+          let pillGroup = document.createElement("div"); pillGroup.className = "pill-group"; pillGroup.style.margin = "2px 0";
+          rowItems.forEach(o => {
+            const uniqueIdStr = `live_chk_${leadRef}_${key.replace(/\s+/g,'_')}_${o.replace(/\s+/g,'_')}`;
+            let chk = document.createElement("input"); chk.type = "checkbox"; chk.value = o;
+            chk.id = uniqueIdStr; chk.className = `live-lead-check-subset-${leadRef}`; chk.dataset.masterKey = key;
+            
+            // Handle cross-check selection matching criteria loops
+            let matchFound = currentValues.indexOf(o) !== -1;
+            if (!matchFound && o === "Others" && extractOthersValueText(leadMap[key], ["Industry","EPC","Govt/PSU","Consultant","Developer","Electrical Contractor","Dealer","Vendor","Raw Materials supplier","MC Supplier","Capital Goods Supplier","APFC","RPTFC","Harmonic Filter","SVG","MV Capacitor Bank","Reactor"])) {
+              matchFound = true; 
+            }
+            if (matchFound) chk.checked = true;
+
+            let lbl = document.createElement("label"); lbl.htmlFor = uniqueIdStr; lbl.textContent = o;
+            pillGroup.appendChild(chk); pillGroup.appendChild(lbl);
+          });
+          mainWrapper.appendChild(pillGroup);
+        });
+
+        // If an explicit text box modifier is required on the final line
+        if (hasOtherInputBox) {
+          let txtBox = document.createElement("input"); txtBox.type = "text";
+          txtBox.id = `live-subset-other-text-${leadRef}-${key.replace(/\s+/g, '_')}`;
+          txtBox.placeholder = "Enter custom parameters details...";
+          txtBox.style.marginTop = "2px";
+          
+          let excludedKeywords = [];
+          if(key === "Qualification") excludedKeywords = ["Industry","EPC","Govt/PSU","Consultant","Developer","Electrical Contractor","Dealer","Vendor"];
+          if(key === "Type of Vendor") excludedKeywords = ["Raw Materials supplier","MC Supplier","Capital Goods Supplier"];
+          if(key === "Products Discussed") excludedKeywords = ["APFC","RPTFC","Harmonic Filter","SVG","MV Capacitor Bank","Reactor"];
+          
+          txtBox.value = extractOthersValueText(leadMap[key], excludedKeywords);
+          mainWrapper.appendChild(txtBox);
+        }
+        cell.appendChild(mainWrapper);
       } else if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)" || key === "Company Address" || key === "Address" || key === "Existing System Details") {
         let tx = document.createElement("textarea"); tx.className = 'live-lead-field-input-' + leadRef; tx.dataset.headerKey = key;
         tx.value = leadMap[key] || ""; tx.style.minHeight = "45px"; cell.appendChild(tx);
@@ -1854,51 +1736,36 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
   
   let fieldsPayload = {};
   
-  // 1. Gather text field values
+  // 1. Gather all default standard form fields inputs
   document.querySelectorAll('.live-lead-field-input-' + leadRef).forEach(el => { 
-    fieldsPayload[el.dataset.headerKey] = el.value; 
+    if (el.dataset.headerKey) fieldsPayload[el.dataset.headerKey] = el.value; 
   });
   
-  // OVERRIDE: Check if dynamic ABPS Business Vertical custom input parameter applies
-  const verticalSelector = document.querySelector(`select[data-header-key="ABPS Business Vertical"].live-lead-field-input-${leadRef}`);
-  if (verticalSelector && verticalSelector.value === "Other") {
-    fieldsPayload["ABPS Business Vertical"] = document.getElementById(`edit_vertical_custom_input_${leadRef}`).value.trim() || "Other";
+  // Handle ABPS Business Vertical "Other" field override criteria check
+  const bvSelect = Array.from(document.querySelectorAll('.live-lead-field-input-' + leadRef)).find(el => el.dataset.headerKey === "ABPS Business Vertical");
+  if (bvSelect && bvSelect.value === "Other") {
+    const customBvText = document.getElementById(`live-bv-other-${leadRef}`).value.trim();
+    fieldsPayload["ABPS Business Vertical"] = customBvText || "Other";
   }
   
-  // 2. Gather checkbox collection metrics strings
-  let checkGroups = {};
-  document.querySelectorAll('.live-lead-check-subset-' + leadRef).forEach(el => {
-    let mk = el.dataset.masterKey; 
-    if(!checkGroups[mk]) checkGroups[mk] = [];
-    if(el.checked && el.value !== "Others") {
-      checkGroups[mk].push(el.value);
+  // 2. Map and stitch multi-select arrays context definitions
+  const targetCheckKeys = ["Voltage Level", "Products Discussed", "Qualification", "Type of Vendor"];
+  
+  targetCheckKeys.forEach(masterKey => {
+    let selectedPillsList = [];
+    document.querySelectorAll(`.live-lead-check-subset-${leadRef}[data-master-key="${masterKey}"]:checked`).forEach(chk => {
+      if (chk.value !== "Others") selectedPillsList.push(chk.value);
+    });
+    
+    // Check if custom text was added inside the line item box element
+    const textInputNode = document.getElementById(`live-subset-other-text-${leadRef}-${masterKey.replace(/\s+/g, '_')}`);
+    if (textInputNode && textInputNode.value.trim() !== "") {
+      selectedPillsList.push(textInputNode.value.trim());
     }
+    
+    fieldsPayload[masterKey] = selectedPillsList.join(", ");
   });
-  
-  // OVERRIDE: Process explicit dynamic text input values for checkboxes
-  const qualOthersCheck = document.getElementById(`edit_qual_others_trigger_${leadRef}`);
-  if (qualOthersCheck && qualOthersCheck.checked) {
-    let customText = document.getElementById(`edit_qual_others_input_${leadRef}`).value.trim();
-    if (customText) checkGroups["Qualification"].push(customText);
-  }
-  
-  const vendorOthersCheck = document.getElementById(`edit_vendor_others_trigger_${leadRef}`);
-  if (vendorOthersCheck && vendorOthersCheck.checked) {
-    let customText = document.getElementById(`edit_vendor_others_input_${leadRef}`).value.trim();
-    if (customText) checkGroups["Type of Vendor"].push(customText);
-  }
-  
-  const prodOthersCheck = document.getElementById(`edit_prod_others_trigger_${leadRef}`);
-  if (prodOthersCheck && prodOthersCheck.checked) {
-    let customText = document.getElementById(`edit_prod_others_input_${leadRef}`).value.trim();
-    if (customText) checkGroups["Products Discussed"].push(customText);
-  }
-  
-  // Flatten maps arrays cleanly using standard comma strings
-  Object.keys(checkGroups).forEach(key => { 
-    fieldsPayload[key] = checkGroups[key].join(", "); 
-  });
-  
+
   try {
     const res = await fetch(GAS_URL, { 
       method: "POST", 
@@ -1913,16 +1780,13 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
     const r = await res.json(); 
     if (r.success) {
       alert("Modifications Saved.");
-      const updatedNameText = fieldsPayload["Name"] && fieldsPayload["Name"].trim() !== "" ? fieldsPayload["Name"] : "Unspecified";
-      const updatedPositionText = fieldsPayload["Position"] && fieldsPayload["Position"].trim() !== "" ? fieldsPayload["Position"] : "Unspecified";
-      const updatedStatusText = fieldsPayload["Status"] && fieldsPayload["Status"].trim() !== "" ? fieldsPayload["Status"] : "N/A";
+      const updatedNameText = fieldsPayload["Name"] || "Unspecified";
+      const updatedPositionText = fieldsPayload["Position"] || "Unspecified";
+      const updatedStatusText = fieldsPayload["Status"] || "N/A";
       
-      const targetLblNameNode = document.getElementById(`card-lbl-name-${leadRef}`);
-      const targetLblPosNode = document.getElementById(`card-lbl-pos-${leadRef}`);
-      const targetLblStatusNode = document.getElementById(`card-lbl-status-${leadRef}`);
-      if (targetLblNameNode) targetLblNameNode.textContent = updatedNameText;
-      if (targetLblPosNode) targetLblPosNode.textContent = updatedPositionText;
-      if (targetLblStatusNode) targetLblStatusNode.textContent = updatedStatusText;
+      if (document.getElementById(`card-lbl-name-${leadRef}`)) document.getElementById(`card-lbl-name-${leadRef}`).textContent = updatedNameText;
+      if (document.getElementById(`card-lbl-pos-${leadRef}`)) document.getElementById(`card-lbl-pos-${leadRef}`).textContent = updatedPositionText;
+      if (document.getElementById(`card-lbl-status-${leadRef}`)) document.getElementById(`card-lbl-status-${leadRef}`).textContent = updatedStatusText;
     }
   } catch(e) { alert(e.message); } finally { if(btn) { btn.disabled = false; btn.innerHTML = "Save Modifications"; } }
 }
