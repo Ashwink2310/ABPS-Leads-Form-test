@@ -134,6 +134,11 @@
 
     <label class="field-label" style="text-align: left; color: var(--text); font-weight: 700;">VERIFY ACCESS ACCOUNT</label>
     <div id="google-auth-button-mount-point" style="display: flex; justify-content: center; margin-top: 15px; min-height: 40px;"></div>
+    
+    <div id="auth-portal-processing-loader" style="display: none; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; padding: 10px; background: var(--highlight-bg); border: 1px solid var(--border); border-radius: 4px;">
+       <div class="spinner" style="width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+       <span style="font-size: 0.85rem; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: 0.5px;">Logging in... Please wait</span>
+    </div>
   </div>
 </div>
 
