@@ -2040,6 +2040,8 @@ async function submitLead() {
 async function loadQualFilter() {
   const container = document.getElementById("qual-filter-checkboxes"); 
   if (!container) return;
+  
+  // Clean initialization ensures old pills are dropped before hitting the server
   container.innerHTML = "";
   
   try {
@@ -2059,7 +2061,7 @@ async function loadQualFilter() {
         "developer", "electrical contractor", "dealer", "vendor"
       ];
       
-      // FIX 1: Use a local Set to deduplicate custom qualification entries instantly
+      // Use a local Set to deduplicate raw text values coming from rows
       let uniqueCustomQualsSet = new Set();
       data.quals.forEach(q => {
         let cleanQual = q.toString().trim();
@@ -2070,16 +2072,17 @@ async function loadQualFilter() {
         }
       });
       
+      // CRITICAL OVERWRITE FIX: Empty the container right before rendering 
+      // This stops multiple navigateToModule clicks from stacking copies back-to-back!
+      container.innerHTML = "";
       let customOptionsCount = 0;
       
-      // FIX 2: Loop through unique items and wrap them tightly in matching pill-group templates
       uniqueCustomQualsSet.forEach(cleanQual => {
         const cleanId = "custom_q_" + cleanQual.replace(/\s+/g, '_');
         
-        // This structural markup forces your custom choices to match your core selection sizes perfectly
         container.innerHTML += `
           <input type="checkbox" name="searchQual" value="${cleanQual}" id="${cleanId}" onchange="updateSelectedDisplay()">
-          <label for="${cleanId}" style="padding: 3px 6px; font-size: 0.7rem; border-radius: 12px;">${cleanQual}</label>
+          <label for="${cleanId}">${cleanQual}</label>
         `;
         customOptionsCount++;
       });
