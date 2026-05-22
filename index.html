@@ -112,6 +112,7 @@
   .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 8px; border-radius: 4px; text-align: left; margin-bottom: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
 
   .btn-warn.loading { opacity: 0.5; cursor: progress; transform: scale(0.95); }
+  @keyframes spin { to { transform: rotate(360deg); }}
 </style>
 </head>
 <body>
@@ -638,6 +639,11 @@ window.onload = function() {
 };
 
 function initializeGoogleAuthPlatformEngine() {
+
+  if (document.getElementById("auth-portal-processing-loader")) {
+    document.getElementById("auth-portal-processing-loader").style.display = "none";
+  }
+  
   localStorage.clear();
   appActiveOperatorIdentityString = "";
   document.getElementById("app-container").style.display = "none";
@@ -669,13 +675,20 @@ async function handleGooglePlatformCredentialResponse(response) {
     return;
   }
   
+  // UI VISIBILITY STATE SWITCH: Toggle processing view flags
+  const googleBtnMount = document.getElementById("google-auth-button-mount-point");
+  const processingLoader = document.getElementById("auth-portal-processing-loader");
+  
+  if (googleBtnMount) googleBtnMount.style.display = "none";
+  if (processingLoader) processingLoader.style.display = "flex";
+  
   try {
     const res = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({ 
         action: "googleLogin", 
         idToken: response.credential,
-        requestedEngineer: selectedEngineer // <-- Injects selection parameter explicitly
+        requestedEngineer: selectedEngineer
       })
     });
     const data = await res.json();
@@ -694,11 +707,16 @@ async function handleGooglePlatformCredentialResponse(response) {
       userPermissions = data.permissions;
       showAppView();
     } else {
-      // This will catch the validation mismatch and block the dashboard redirect cleanly!
       alert("Authentication Error: " + data.error);
+      // RESTORATION FALLBACK: Bring the button back if access is explicitly denied by server row checks
+      if (googleBtnMount) googleBtnMount.style.display = "flex";
+      if (processingLoader) processingLoader.style.display = "none";
     }
   } catch (e) {
     alert("Connection verification failure payload dropped: " + e.message);
+    // RESTORATION FALLBACK: Bring the button back if the network drops out completely
+    if (googleBtnMount) googleBtnMount.style.display = "flex";
+    if (processingLoader) processingLoader.style.display = "none";
   }
 }
 
