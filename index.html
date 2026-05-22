@@ -2056,28 +2056,35 @@ async function loadQualFilter() {
     });
     const data = await res.json();
     if (data.success) {
-      // Core configuration array strings to strip out from the lower sub-drawer area
+      // Baseline core options to strip from the 'Others' sub-drawer completely
       const baselineCoreQualifications = [
         "industry", "epc", "govt/psu", "consultant", 
         "developer", "electrical contractor", "dealer", "vendor"
       ];
       
-      let customOptionsCount = 0;
+      // FIX 1: Use a local Set to deduplicate custom qualification entries instantly
+      let uniqueCustomQualsSet = new Set();
       data.quals.forEach(q => {
         let cleanQual = q.toString().trim();
         if (!cleanQual) return;
         
-        // Only build custom elements if they do not match our 8 static baseline headers
         if (baselineCoreQualifications.indexOf(cleanQual.toLowerCase()) === -1) {
-          const cleanId = "custom_q_" + cleanQual.replace(/\s+/g, '_');
-          
-          // FIX: Strictly matches the inputs and label templates used in Select Qualifications
-          container.innerHTML += `
-            <input type="checkbox" name="searchQual" value="${cleanQual}" id="${cleanId}" onchange="updateSelectedDisplay()">
-            <label for="${cleanId}">${cleanQual}</label>
-          `;
-          customOptionsCount++;
+          uniqueCustomQualsSet.add(cleanQual);
         }
+      });
+      
+      let customOptionsCount = 0;
+      
+      // FIX 2: Loop through unique items and wrap them tightly in matching pill-group templates
+      uniqueCustomQualsSet.forEach(cleanQual => {
+        const cleanId = "custom_q_" + cleanQual.replace(/\s+/g, '_');
+        
+        // This structural markup forces your custom choices to match your core selection sizes perfectly
+        container.innerHTML += `
+          <input type="checkbox" name="searchQual" value="${cleanQual}" id="${cleanId}" onchange="updateSelectedDisplay()">
+          <label for="${cleanId}" style="padding: 3px 6px; font-size: 0.7rem; border-radius: 12px;">${cleanQual}</label>
+        `;
+        customOptionsCount++;
       });
       
       if (customOptionsCount === 0) {
