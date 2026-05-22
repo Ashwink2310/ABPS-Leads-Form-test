@@ -28,7 +28,7 @@
   .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 2px 5px; border-radius: 4px; cursor: pointer; font-size: 0.65rem; margin-top: 1px; text-transform: uppercase; }
   
   .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 16px 12px; }
-  @media(min-width: 600px) { .dashboard-grid { grid-template-columns: 1fr 1fr; } }
+  @media(min-width: 600px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr) !important; } }
   .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 16px; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 0.95rem; text-align: center; }
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
   
@@ -166,18 +166,22 @@
   </header>
 
   <div id="dashboard-view">
-    <div class="dashboard-grid">
+    <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr; gap: 12px; padding: 16px 12px;">
+      
+      <!-- Row 1: Core Entries and Lookup Blocks -->
       <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')"><div class="menu-title">Enter Card Details</div></div>
       <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')"><div class="menu-title">Search by Company Name</div></div>
       
-      <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailWhatsapp')"  style="border: 4px solid blue;"><div class="menu-title">Email and Whatsapp Leads</div></div>
+      <!-- Row 2: Marketing Leads Core Block Span Across Full Screen Width -->
+      <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailWhatsapp')" style="grid-column: 1 / -1; border: 2px solid var(--border); background: var(--card); color: var(--text); padding: 20px;"> <div class="menu-title" style="font-size: 1.1rem; color: var(--brand); font-weight: 700;">Email Leads</div> </div>
+      <!-- Row 3: Engineering Follow-ups Matrices (Side by Side) -->
       <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')"><div class="menu-title">Search Tasks by Engineer Name</div></div>
-      
-      <div class="menu-card" id="mod-engineer" onclick="navigateToModule('searchEngineer')" style="border: 4px solid red;"><div class="menu-title">Search Leads and Follow Ups by Engineer Name</div></div>
       <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Lead Status</div></div>
       
+      <!-- Row 4: Secondary Filters Blocks (Side by Side) -->
       <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')"><div class="menu-title">Search by Qualification</div></div>
       <div class="menu-card" id="mod-city-state" onclick="navigateToModule('searchCityState')"><div class="menu-title">Search by City and State</div></div>
+      
     </div>
   </div>
 
@@ -334,10 +338,16 @@
 
     <div id="workspace-emailWhatsapp" class="workspace-panel" style="display: none;">
       <div class="section">
-        <div class="section-header">Email and Whatsapp Leads Management</div>
-        <div class="section-body" style="padding: 30px; text-align: center; color: var(--muted);">
-          <h3>Section Coming Soon</h3>
-          <p style="font-size: 0.85rem; margin-top: 8px;">Functional integration modules will be populated here.</p>
+        <div class="section-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Inbound AI-Parsed Email Leads Directory</span>
+          <button class="nav-btn-styled" id="email-sync-trigger-btn" style="background:var(--accent); font-size:0.68rem; padding:2px 8px;" onclick="executeInboundEmailSyncPipelineFetch()">Sync Inbox Streams</button>
+        </div>
+        <div class="section-body" style="padding: 10px;">
+          <!-- Live Status Loading Tracker Placeholder -->
+          <div id="email-leads-runtime-status-feedback" style="display:none; margin-bottom:10px; padding:8px; border-radius:4px; font-size:0.8rem; font-weight:700; text-align:center;"></div>
+          
+          <!-- Central Feed Container Grid Layout -->
+          <div id="email-leads-inbound-feed-canvas" style="display:flex; flex-direction:column; gap:12px;"></div>
         </div>
       </div>
     </div>
@@ -655,7 +665,7 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzh7We6TlQl0vBg8ydhLW_PC3M0BhJy-vQYZhgFH0PTU-b-9CttjvcjiKTBHsLg2xm_Dg/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwtXYCEcPtbZFxK1ZwYzInaVRY86WFf0ghR4VlaG01Q3MnNqPwvqupyQ-RYLmgxbFn6eA/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -671,6 +681,7 @@ let currentActiveModuleContext = "CARD";
 let globalFollowUpsCacheMap = {};
 let globalTasksCacheMap = {};
 let globalLocationDatabaseCacheMap = {};
+let cachedInboundEmailLeadsArray = [];
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken"); 
@@ -1074,16 +1085,15 @@ async function showAppView() {
   
   loadQualFilter();
 
-const menuPermissions = [
-  { id: "mod-card", key: "cardDetails" },
-  { id: "mod-company", key: "searchCompany" },
-  { id: "mod-email-whatsapp", key: "emailWhatsapp" },
-  { id: "mod-tasks", key: "searchTasks" },
-  { id: "mod-engineer", key: "searchEngineer" },
-  { id: "mod-status", key: "searchStatus" },
-  { id: "mod-qual", key: "searchQualification" },
-  { id: "mod-city-state", key: "searchCityState" } 
-];
+  const menuPermissions = [
+    { id: "mod-card", key: "cardDetails" },
+    { id: "mod-company", key: "searchCompany" },
+    { id: "mod-email-whatsapp", key: "emailLeads" },
+    { id: "mod-tasks", key: "searchTasks" },
+    { id: "mod-status", key: "searchStatus" },
+    { id: "mod-qual", key: "searchQualification" },
+    { id: "mod-city-state", key: "searchCityState" } 
+  ];
 
   menuPermissions.forEach(item => {
     const el = document.getElementById(item.id);
@@ -1581,14 +1591,13 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
     return others.join(", ");
   };
   
-  // Custom schema definition to group and order inputs cleanly
   const customSectionLayout = [
     { type: "META", keys: ["Status", "Engineer Name"] },
     { type: "CARD", keys: ["Name", "Company", "Position", "Phone", "Alt Phone", "Email", "Website", "City", "State", "Company Address"] },
     { type: "SEC1", keys: ["Date of Meeting", "Time of Meeting", "Meeting Venue", "Venue Name / City", "Additional Meeting Details (if any)"] },
     { type: "SEC2", keys: ["ABPS Business Vertical", "Type of Industry", "Qualification", "Type of Vendor", "Name of Materials"] },
     { type: "SEC3", keys: ["Low Power Factor Issue", "High Electricity Bill Issue", "Harmonics Issue", "Transformer Heating / Breakdown Issue", "Grid Stability Issue", "Existing System Details", "Voltage Level", "Contract Demand (MVA)", "Problem Observed"] }, 
-    { type: "SEC4", keys: ["Existing Project", "Products Discussed", "Approx Requirement"] }, 
+    { type: "SEC4", keys: ["Existing Project", "Products Discussed", "Expected Tender / RFQ Date", "Approx Requirement"] }, // Reordered sequence blocks maps
     { type: "SEC5", keys: ["Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Send Offer", "Follow-Up Required"] }
   ];
 
@@ -1597,13 +1606,13 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
       let line = document.createElement("div"); line.className = "section-divider-line"; gridWrapper.appendChild(line);
     }
     sec.keys.forEach(key => {
-      // Skip structural virtual field skips to avoid double-rendering loops
       if (key === "Name of Materials") return; 
+      if (leadMap[key] === undefined && ["Contract Demand (MVA)", "Existing Project", "Expected Tender / RFQ Date", "Approx Requirement"].indexOf(key) === -1) return;
       
-      if (leadMap[key] === undefined && ["Contract Demand (MVA)", "Existing Project", "Approx Requirement"].indexOf(key) === -1) return;
       let cell = document.createElement("div"); cell.className = "grid-cell-item";
       
-      if (["Technical Discussion Summary", "Additional Meeting Details (if any)", "Qualification", "Type of Vendor", "Products Discussed", "Voltage Level", "Contract Demand (MVA)", "Existing Project", "Approx Requirement"].indexOf(key) !== -1) {
+      // GRID GEOMETRY CONFIGURATION MATRIX: Adjust spans weights to keep pairs clean side-by-side
+      if (["Technical Discussion Summary", "Additional Meeting Details (if any)", "Qualification", "Type of Vendor", "Products Discussed", "Expected Tender / RFQ Date", "Voltage Level", "Contract Demand (MVA)", "Existing Project", "Approx Requirement"].indexOf(key) !== -1) {
         cell.className += " span-two-units";
       }
       
@@ -1658,22 +1667,20 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         
         sel.onchange = function() { otherInp.style.display = (sel.value === "Other") ? "block" : "none"; };
         container.appendChild(sel); container.appendChild(otherInp); cell.appendChild(container);
-      } else if (["Meeting Venue", "Approx Business Potential", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
+      } else if (["Meeting Venue", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
         let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         let opts = ["No", "Yes"];
         if(key === "Meeting Venue") opts = ["Exhibition", "Customer Place"];
-        if(key === "Approx Business Potential") opts = ["<10L", "10-50L", "50L-2cr", ">2cr"];
         opts.forEach(o => {
           let op = document.createElement("option"); op.textContent = o; if(leadMap[key] === o) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
       } 
       
-      // FIX: Renders questions directly with no "Capacity Details Matrix" header text block
+      // FIX: Clean split stripping header blocks from capacity fields rows inputs
       else if (key === "Contract Demand (MVA)") {
         label.style.display = "none"; 
         let wrapper = document.createElement("div"); wrapper.style.display = "flex"; wrapper.style.flexDirection = "column"; wrapper.style.gap = "6px"; wrapper.style.padding = "4px 0";
-        
         wrapper.innerHTML = `
           <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Contract Demand (MVA)</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Contract Demand (MVA)" value="${leadMap["Contract Demand (MVA)"] || ""}"></div>
           <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Running Demand (MVA)</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Running Demand (MVA)" value="${leadMap["Running Demand (MVA)"] || ""}"></div>
@@ -1682,23 +1689,36 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         cell.appendChild(wrapper);
       } 
       
-      // FIX: Groups Approx Requirement, Competitor Details, and Approx Business Potential dynamically inside one clean block
+      // FIX: Isolated single field question block for standalone problem observations
+      else if (key === "Problem Observed") {
+        let inp = document.createElement("input"); inp.type = "text"; inp.className = 'live-lead-field-input-' + leadRef;
+        inp.dataset.headerKey = key; inp.value = leadMap[key] || ""; cell.appendChild(inp);
+      }
+      
+      // FIX: Dedicated timeline tracker placed side-by-side right next to Products Discussed card box
+      else if (key === "Expected Tender / RFQ Date") {
+        label.textContent = "Tender Timeline Tracker";
+        let wrapper = document.createElement("div"); wrapper.style.display = "flex"; wrapper.style.flexDirection = "column"; wrapper.style.gap = "6px";
+        let rawDate = leadMap["Expected Tender / RFQ Date"];
+        let cleanDate = "";
+        if (rawDate) { let match = rawDate.toString().match(/(\d{4}-\d{2}-\d{2})/); cleanDate = match ? match[1] : ""; }
+        
+        wrapper.innerHTML = `
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--brand); text-transform:uppercase;">Expected Tender / RFQ Date</span><input type="date" class="live-lead-field-input-${leadRef}" data-header-key="Expected Tender / RFQ Date" value="${cleanDate}"></div>
+          <div><span style="font-size:0.62rem; font-weight:700; color:var(--brand); text-transform:uppercase;">Expected Order Timeline</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Expected Order Timeline" value="${leadMap["Expected Order Timeline"] || ""}"></div>
+        `;
+        cell.appendChild(wrapper);
+      } 
+      
+      // FIX: Horizontal split layout presenting Approx Requirement, Competitors, and Potential values inline
       else if (key === "Approx Requirement") {
         label.style.display = "none";
-        let wrapper = document.createElement("div"); wrapper.style.display = "flex"; wrapper.style.flexDirection = "column"; wrapper.style.gap = "6px";
+        let wrapper = document.createElement("div"); wrapper.style.cssText = "display: flex; gap: 10px; width: 100%; text-align: left;";
         
-        let tenderDateRaw = leadMap["Expected Tender / RFQ Date"];
-        let cleanTenderDate = "";
-        if (tenderDateRaw) { let match = tenderDateRaw.toString().match(/(\d{4}-\d{2}-\d{2})/); cleanTenderDate = match ? match[1] : ""; }
-
         wrapper.innerHTML = `
-          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Approx Requirement</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Approx Requirement" value="${leadMap["Approx Requirement"] || ""}"></div>
-          <div style="background:#fffaf0; padding:6px; border:1px solid #feebc8; border-radius:4px; margin:2px 0;">
-            <div style="margin-bottom:4px;"><span style="font-size:0.62rem; font-weight:700; color:#dd6b20; text-transform:uppercase;">Expected Tender / RFQ Date</span><input type="date" class="live-lead-field-input-${leadRef}" data-header-key="Expected Tender / RFQ Date" value="${cleanTenderDate}"></div>
-            <div><span style="font-size:0.62rem; font-weight:700; color:#dd6b20; text-transform:uppercase;">Expected Order Timeline</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Expected Order Timeline" value="${leadMap["Expected Order Timeline"] || ""}"></div>
-          </div>
-          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Competitor Details</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Competitor Details" value="${leadMap["Competitor Details"] || ""}"></div>
-          <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Approx Business Potential</span>
+          <div style="flex: 1;"><span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Approx Requirement</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Approx Requirement" value="${leadMap["Approx Requirement"] || ""}"></div>
+          <div style="flex: 1;"><span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Competitor Details</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Competitor Details" value="${leadMap["Competitor Details"] || ""}"></div>
+          <div style="flex: 1;"><span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Approx Business Potential</span>
             <select class="live-lead-field-input-${leadRef}" data-header-key="Approx Business Potential" style="margin-top:2px;">
               <option value="&lt;10L" ${leadMap["Approx Business Potential"] === "<10L" ? "selected" : ""}>&lt;10L</option>
               <option value="10-50L" ${leadMap["Approx Business Potential"] === "10-50L" ? "selected" : ""}>10-50L</option>
@@ -1716,10 +1736,7 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           <div><span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Upcoming Project</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Upcoming Project" value="${leadMap["Upcoming Project"] || ""}"></div>
         `;
         cell.appendChild(wrapper);
-      }
-      
-      // FIX: Combined Type of Vendor and Name of Materials layout elements inside one single field card box panel
-      else if (key === "Type of Vendor") {
+      } else if (key === "Type of Vendor") {
         label.textContent = "Vendor Specifications Block";
         let mainWrapper = document.createElement("div"); mainWrapper.style.display = "flex"; mainWrapper.style.flexDirection = "column"; mainWrapper.style.gap = "4px";
         let currentValues = (leadMap[key] || "").toString().split(",").map(v => v.trim());
@@ -1737,7 +1754,6 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           pillGroup.appendChild(chk); pillGroup.appendChild(lbl);
         });
         
-        // Add Others Toggle option matching layouts
         const otherIdStr = `live_chk_${leadRef}_VendorType_Others`;
         let otherChk = document.createElement("input"); otherChk.type = "checkbox"; otherChk.value = "Others"; otherChk.id = otherIdStr;
         otherChk.className = `live-lead-check-subset-${leadRef}`; otherChk.dataset.masterKey = key;
@@ -1755,7 +1771,6 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         txtBox.value = customTextVal;
         mainWrapper.appendChild(txtBox);
         
-        // Append Name of Materials directly underneath in the same box context
         let matLabel = document.createElement("div"); matLabel.style = "font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:8px; margin-bottom:2px;";
         matLabel.textContent = "Name of Materials";
         let matInput = document.createElement("input"); matInput.type = "text";
@@ -1764,10 +1779,7 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         
         mainWrapper.appendChild(matLabel); mainWrapper.appendChild(matInput);
         cell.appendChild(mainWrapper);
-      }
-      
-      // MULTI-LINE ARRAY HANDLING FOR CHECKBOX PILLS
-      else if (key === "Qualification" || key === "Products Discussed" || key === "Voltage Level") {
+      } else if (key === "Qualification" || key === "Products Discussed" || key === "Voltage Level") {
         let mainWrapper = document.createElement("div"); mainWrapper.style.display = "flex"; mainWrapper.style.flexDirection = "column"; mainWrapper.style.gap = "4px";
         let currentValues = (leadMap[key] || "").toString().split(",").map(v => v.trim());
         
@@ -1788,7 +1800,7 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           ];
           hasOtherInputBox = true;
         } else if (key === "Products Discussed") {
-          // FIX: Enforces updated custom layout lines
+          // FIX: Updated inline multi-choice sets rows layout structure bounds
           rowsData = [
             ["APFC", "RPTFC", "Harmonic Filter", "SVG"],
             ["MV Capacitor Bank", "Reactor", "Others"]
@@ -1829,7 +1841,7 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           mainWrapper.appendChild(txtBox);
         }
         cell.appendChild(mainWrapper);
-      } else if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)" || key === "Company Address" || key === "Address" || key === "Existing System Details") {
+      } else if (key === "Technical Discussion Summary" || key === "Company Address" || key === "Address" || key === "Existing System Details") {
         let tx = document.createElement("textarea"); tx.className = 'live-lead-field-input-' + leadRef; tx.dataset.headerKey = key;
         tx.value = leadMap[key] || ""; tx.style.minHeight = "45px"; cell.appendChild(tx);
       } else if (key === "Company") {
@@ -2700,6 +2712,207 @@ async function executeLeadMatrixFilterSearch() {
   } finally {
     btn.classList.remove("loading"); btn.textContent = "Run Leads Search";
   }
+}
+
+async function executeInboundEmailSyncPipelineFetch() {
+  const syncBtn = document.getElementById("email-sync-trigger-btn");
+  const feedbackNode = document.getElementById("email-leads-runtime-status-feedback");
+  const feedCanvas = document.getElementById("email-leads-inbound-feed-canvas");
+  
+  syncBtn.disabled = true; syncBtn.textContent = "Syncing...";
+  feedbackNode.style.cssText = "display:block; background:var(--highlight-bg); border:1px solid var(--brand); color:var(--brand);";
+  feedbackNode.textContent = "Connecting to mail server layers... Running AI qualification filters rules...";
+  
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "fetchAndProcessInboundEmailLeads",
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString
+      })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      cachedInboundEmailLeadsArray = data.emailLeads;
+      renderEmailLeadsFeedInterface(cachedInboundEmailLeadsArray);
+      feedbackNode.style.display = "none";
+    } else {
+      feedbackNode.style.cssText = "display:block; background:#fff5f5; border:1px solid var(--warn); color:var(--warn);";
+      feedbackNode.textContent = "Sync failed: " + data.error;
+    }
+  } catch (e) {
+    feedbackNode.style.cssText = "display:block; background:#fff5f5; border:1px solid var(--warn); color:var(--warn);";
+    feedbackNode.textContent = "Network runtime failure: " + e.message;
+  } finally {
+    syncBtn.disabled = false; syncBtn.textContent = "Sync Inbox Streams";
+  }
+}
+
+function renderEmailLeadsFeedInterface(emailLeadsList) {
+  const canvas = document.getElementById("email-leads-inbound-feed-canvas");
+  canvas.innerHTML = "";
+  
+  if (emailLeadsList.length === 0) {
+    canvas.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted); font-size:0.9rem; background:#fff; border:1px solid var(--border); border-radius:6px;">
+      <h3>Inbox Streams Clear</h3><p style="font-size:0.8rem; margin-top:4px;">No unsubmitted commercial leads matched current allowlist criteria rules.</p>
+    </div>`;
+    return;
+  }
+  
+  emailLeadsList.forEach((mail, mIdx) => {
+    let card = document.createElement("div");
+    card.className = "contact-summary-card-parent";
+    card.id = `email-lead-wrapper-node-${mIdx}`;
+    card.style.borderLeft = "4px solid var(--accent)";
+    
+    const attsLabel = mail.attachments && mail.attachments.length > 0 ? mail.attachments.join(", ") : "None";
+    
+    card.innerHTML = `
+      <div class="contact-summary-header-row" style="margin-bottom:6px;">
+        <div class="contact-summary-title-info">
+          <div class="meta-row-line-block">
+            <span style="background:var(--accent); color:#fff;">SOURCE: EMAIL</span>
+            <span style="background:var(--highlight-bg); border:1px solid var(--brand); color:var(--brand); font-family:monospace; text-transform:none;">${mail.destinationInboxAccount}</span>
+          </div>
+          <div class="meta-row-line-block" style="margin-top:6px;">
+            <span style="background:#e2e8f0;">Company:</span><strong style="margin-right:20px; color:var(--brand);">${mail.extractedCompany}</strong>
+            <span style="background:#edf2f7;">Contact Name:</span><strong>${mail.extractedContactName}</strong>
+          </div>
+        </div>
+        <div class="directory-btn-actions-block" style="margin-top:4px;">
+          <button class="nav-btn-styled" style="background:var(--brand); font-size:0.75rem; padding:4px 8px;" onclick="toggleEmailSubjectBodyAccordionDrawer(${mIdx})">View Details</button>
+          <a href="${mail.originalDeepLinkThreadUrl}" target="_blank" class="nav-btn-styled" style="background:#4a5568; text-decoration:none; font-size:0.75rem; padding:4px 8px; display:inline-flex; align-items:center;">Open Email ↗</a>
+          <button class="nav-btn-styled" style="background:var(--warn); font-size:0.75rem; padding:4px 8px;" onclick="purgeEmailLeadCardViewFromScreen(${mIdx})">Delete</button>
+        </div>
+      </div>
+      
+      <!-- 50-Word AI Summary Block Row -->
+      <div style="font-size:0.85rem; background:#f8fafc; border:1px solid #e2e8f0; padding:8px; border-radius:4px; margin:6px 0; line-height:1.4; color:var(--text);">
+        <strong>AI Executive Summary:</strong> ${mail.aiSummaryText}
+      </div>
+      
+      <!-- Filenames Attachments Label Matrix -->
+      <div style="font-size:0.72rem; font-weight:700; color:var(--muted); margin-bottom:8px;">
+        📎 Attachments: <span style="color:#4a5568; font-family:monospace;">${attsLabel}</span>
+      </div>
+      
+      <!-- Asynchronous Actions Row Grid Anchor Button -->
+      <div style="margin-top:10px;" id="email-action-response-mount-zone-${mIdx}">
+        <button class="btn btn-sub" style="width:auto; font-size:0.78rem; padding:5px 12px;" onclick="triggerEmailLeadDatabaseActionPipeline(${mIdx})">Create New Entry</button>
+      </div>
+      
+      <!-- Hidden Collapsible Complete Email Message Subject & Body Accordion Panel Layout -->
+      <div id="email-lead-message-body-accordion-drawer-${mIdx}" style="display:none; margin-top:10px; padding-top:8px; border-top:1px dashed var(--border); text-align:left;">
+         <div style="font-size:0.82rem; font-weight:700; margin-bottom:4px; color:var(--brand);">Subject: ${mail.fullSubjectLine}</div>
+         <div style="font-size:0.82rem; background:#fff; border:1px solid var(--border); padding:10px; border-radius:4px; max-height:220px; overflow-y:auto; font-family:monospace; white-space:pre-wrap; color:#2d3748;">${mail.fullMessageBodyText}</div>
+      </div>
+      
+      <!-- Dynamic Nested Placement Mount Panel Box Anchor Point -->
+      <div id="email-nested-inline-database-workspace-anchor-${mIdx}" style="margin-top:10px; display:none; background:#f1f5f9; padding:8px; border-radius:6px; border:1px solid var(--border);"></div>
+    `;
+    canvas.appendChild(card);
+  });
+}
+
+function toggleEmailSubjectBodyAccordionDrawer(index) {
+  const drawer = document.getElementById(`email-lead-message-body-accordion-drawer-${index}`);
+  drawer.style.display = (drawer.style.display === "none") ? "block" : "none";
+}
+
+function purgeEmailLeadCardViewFromScreen(index) {
+  if (confirm("Remove this email lead from your visible staging feed?")) {
+    const cardNode = document.getElementById(`email-lead-wrapper-node-${index}`);
+    if (cardNode) cardNode.remove();
+  }
+}
+
+async function triggerEmailLeadDatabaseActionPipeline(index) {
+  const mailObject = cachedInboundEmailLeadsArray[index];
+  const responseMountZone = document.getElementById(`email-action-response-mount-zone-${index}`);
+  const nestedWorkspace = document.getElementById(`email-nested-inline-database-workspace-anchor-${index}`);
+  
+  const actionBtn = responseMountZone.querySelector("button");
+  actionBtn.disabled = true; actionBtn.textContent = "Verifying Spreadsheet Database...";
+  
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "searchCompanyData",
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        companyName: mailObject.extractedCompany,
+        contactName: mailObject.extractedContactName
+      })
+    });
+    const data = await res.json();
+    
+    // --- SCENARIO A: COMPANY EXISTS IN DATABASE MATRIX ---
+    if (data.success) {
+      actionBtn.textContent = "Linked to Existing Company";
+      nestedWorkspace.innerHTML = `
+        <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--brand); margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid var(--border);">
+          🏢 Existing Database Records found for ${mailObject.extractedCompany}:
+        </div>
+        <div id="nested-email-contacts-mount-canvas-${index}"></div>
+      `;
+      nestedWorkspace.style.display = "block";
+      
+      // Cache values global maps hooks down into timeline interfaces frameworks
+      globalFollowUpsCacheMap = data.followups;
+      globalTasksCacheMap = data.tasks;
+      
+      // Direct structural hijack append layout canvas maps
+      const oldCanvasNode = document.getElementById("step2-inline-interaction-canvas");
+      const oldDirectoryContainer = document.getElementById("multi-contact-records-container");
+      
+      // Temporarily swap document root anchor targets to build cards inline 
+      document.body.appendChild(oldCanvasNode);
+      const targetSubMount = nestedWorkspace.querySelector(`#nested-email-contacts-mount-canvas-${index}`);
+      targetSubMount.appendChild(oldDirectoryContainer);
+      
+      // Draw cards using the standard UI engine
+      buildMultiContactDirectoryInterface(data.leads, mailObject.extractedContactName);
+    } 
+    // --- SCENARIO B: BRAND NEW COMPANY — OPEN CREATION FORM ---
+    else {
+      actionBtn.textContent = "Staging Onboarding Form...";
+      nestedWorkspace.innerHTML = `
+        <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--accent); margin-bottom:6px;">
+          ➕ Open Account Entry Form:
+        </div>
+        <div id="nested-email-creation-form-mount-${index}"></div>
+      `;
+      nestedWorkspace.style.display = "block";
+      
+      const formWrapperContainer = document.getElementById("step2-new-entry-dropdown");
+      nestedWorkspace.querySelector(`#nested-email-creation-form-mount-${index}`).appendChild(formWrapperContainer);
+      
+      // Reset form variables data states properties configurations
+      resetSequentialFormState();
+      
+      // Pre-fill fields with AI-extracted contact details data
+      document.getElementById("dropform-company-locked").value = mailObject.extractedCompany;
+      document.getElementById("dropform-name").value = mailObject.extractedContactName;
+      
+      // Set view visibility parameters states flags
+      document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
+      document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
+      document.getElementById("staged-back-button-row").style.display = "none";
+      formWrapperContainer.style.display = "block";
+    }
+  } catch(e) {
+    alert("Email database workflow assignment sync crash: " + e.message);
+    actionBtn.disabled = false; actionBtn.textContent = "Create New Entry";
+  }
+}
+
+// Ensure the module router initializes a clean synchronization hit upon navigation
+// Add this trigger right inside your existing navigateToModule(key) function loop tracker:
+if (key === "emailWhatsapp") {
+  executeInboundEmailSyncPipelineFetch();
 }
 
 </script>
