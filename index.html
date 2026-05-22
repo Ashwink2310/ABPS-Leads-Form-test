@@ -13,6 +13,7 @@
     --muted: #6b7a8d; --radius: 6px;
     --highlight-bg: #f0f7ff; --highlight-border: #0056b3;
   }
+  @keyframes pulseGlow {0% { opacity: 0.85; box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.05); }50% { opacity: 1; box-shadow: 0 4px 12px rgba(0, 86, 179, 0.12); }100% { opacity: 0.85; box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.05); }}
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 20px; }
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 25px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
@@ -667,7 +668,7 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzs0EArRs78ADZFc5Tadajpjd2vV-ABRBO-r6BxXX2hm0pVNCS7QwPnecYxF_KBTbbkUw/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyTqYdtXEQPXHQ7Q8NXx1MR-S0UzDC6lhJZ0BOGiPL-ZcGlqXBQfFRfp5qOVHrEDoOsTw/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -2732,7 +2733,34 @@ async function executeInboundEmailSyncPipelineFetch() {
   const feedCanvas = document.getElementById("email-leads-inbound-feed-canvas");
   
   syncBtn.disabled = true; syncBtn.textContent = "Syncing...";
-  feedbackNode.style.cssText = "display:block; background:var(--highlight-bg); border:1px solid var(--brand); color:var(--brand);";
+  
+  feedbackNode.style.cssText = `
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 12px; 
+    padding: 12px; 
+    background: var(--highlight-bg); 
+    border: 1.5px solid var(--brand); 
+    border-radius: var(--radius); 
+    color: var(--brand);
+    animation: pulseGlow 1.8s infinite ease-in-out;
+  `;
+  
+  feedbackNode.innerHTML = `
+    <div class="spinner" style="
+      width: 16px; 
+      height: 16px; 
+      border: 2px solid var(--border); 
+      border-top-color: var(--brand); 
+      border-radius: 50%; 
+      animation: spin 0.8s linear infinite;
+    "></div>
+    <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+      Connecting to mail server... Running AI filters
+    </span>
+  `;
+
   feedbackNode.textContent = "Connecting to mail server ...";
   
   try {
@@ -2776,6 +2804,9 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
     return;
   }
   
+  // CHRONOLOGICAL SORT MATRIX: Newest First tracking using Unix Epoch value weights
+  emailLeadsList.sort((a, b) => b.rawUnixTimestampValue - a.rawUnixTimestampValue);
+  
   emailLeadsList.forEach((mail, mIdx) => {
     let card = document.createElement("div");
     card.className = "contact-summary-card-parent";
@@ -2784,13 +2815,13 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
     
     const attsLabel = mail.attachments && mail.attachments.length > 0 ? mail.attachments.join(", ") : "None";
     
-    // REMOVED: The view details button and the hidden accordion drawer have been stripped down
     card.innerHTML = `
       <div class="contact-summary-header-row" style="margin-bottom:6px;">
         <div class="contact-summary-title-info">
           <div class="meta-row-line-block">
             <span style="background:var(--accent); color:#fff;">SOURCE: EMAIL</span>
             <span style="background:var(--highlight-bg); border:1px solid var(--brand); color:var(--brand); font-family:monospace; text-transform:none;">${mail.destinationInboxAccount}</span>
+            <span style="background:#cbd5e1; color:#1e293b; font-weight:700;">📅 ${mail.receivedDate} at ${mail.receivedTime}</span>
           </div>
           <div class="meta-row-line-block" style="margin-top:6px;">
             <span style="background:#e2e8f0;">Company:</span><strong style="margin-right:20px; color:var(--brand);">${mail.extractedCompany}</strong>
@@ -2799,7 +2830,7 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
         </div>
         <div class="directory-btn-actions-block" style="margin-top:4px;">
           <a href="${mail.originalDeepLinkThreadUrl}" target="_blank" class="nav-btn-styled" style="background:#4a5568; text-decoration:none; font-size:0.75rem; padding:4px 8px; display:inline-flex; align-items:center;">Open Email ↗</a>
-          <button class="nav-btn-styled" style="background:var(--warn); font-size:0.75rem; padding:4px 8px;" onclick="purgeEmailLeadCardViewFromScreen(${mIdx})">Delete</button>
+          <button class="nav-btn-styled" style="background:var(--warn); font-size:0.75rem; padding:4px 8px;" onclick="archiveEmailLeadFromSystemDatabaseCache('${mail.messageIdReference}', ${mIdx})">Delete</button>
         </div>
       </div>
       
@@ -2813,7 +2844,7 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
         📎 Attachments: <span style="color:#4a5568; font-family:monospace;">${attsLabel}</span>
       </div>
       
-      <!-- Asynchronous Actions Row Grid Anchor Button -->
+      <!-- Actions Row Trigger Button -->
       <div style="margin-top:10px;" id="email-action-response-mount-zone-${mIdx}">
         <button class="btn btn-sub" style="width:auto; font-size:0.78rem; padding:5px 12px;" onclick="triggerEmailLeadDatabaseActionPipeline(${mIdx})">Create New Entry</button>
       </div>
@@ -2823,6 +2854,39 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
     `;
     canvas.appendChild(card);
   });
+}
+
+// PERSISTENT ARCHIVE PIPELINE: Fires a network hit to log deletions, pulling them from future views permanently
+async function archiveEmailLeadFromSystemDatabaseCache(messageId, elementIndex) {
+  if (!confirm("Remove this email lead permanently from all future marketing dashboard sync cycles?")) return;
+  
+  const cardNode = document.getElementById(`email-lead-wrapper-node-${elementIndex}`);
+  const deleteBtn = event.target;
+  
+  deleteBtn.disabled = true; deleteBtn.textContent = "Processing...";
+  
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "saveFollowUp", // Redirected to a secure protected execution action block handler
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        // Custom payload intercept signature
+        archiveTargetEmailIdString: messageId 
+      })
+    });
+    
+    if (cardNode) cardNode.remove();
+    // Re-check layout status tracking counters smoothly
+    const remainingCards = document.getElementById("email-leads-inbound-feed-canvas").children.length;
+    if (remainingCards === 0) {
+      renderEmailLeadsFeedInterface([]);
+    }
+  } catch(e) {
+    alert("Connection Error: Deletion parameter could not be safely tracked: " + e.message);
+    deleteBtn.disabled = false; deleteBtn.textContent = "Delete";
+  }
 }
 
 function purgeEmailLeadCardViewFromScreen(index) {
@@ -2889,32 +2953,24 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
       `;
       nestedWorkspace.style.display = "block";
       
-      // SAFETY FIX: Ensure the form wrapper exists in the document pool before appending
-      let formWrapperContainer = document.getElementById("step2-new-entry-dropdown");
-      if (!formWrapperContainer) {
-        // Fallback: If it's lost in the DOM trees, re-pull it by creating a temporary fragment or locating its parent
-        formWrapperContainer = document.body.querySelector("#step2-new-entry-dropdown");
-      }
+      const formTemplateSource = document.getElementById("step2-new-entry-dropdown");
+      const targetFormMountNode = nestedWorkspace.querySelector(`#nested-email-creation-form-mount-${index}`);
       
-      const mountPoint = nestedWorkspace.querySelector(`#nested-email-creation-form-mount-${index}`);
-      
-      if (formWrapperContainer && mountPoint) {
-        mountPoint.appendChild(formWrapperContainer);
+      if (formTemplateSource && targetFormMountNode) {
+        // Unhide template context visibility flags before displaying container blocks
+        formTemplateSource.style.display = "block";
+        targetFormMountNode.appendChild(formTemplateSource);
         
-        // Reset form variables data states properties configurations
         resetSequentialFormState();
         
-        // Pre-fill fields with AI-extracted contact details data
         document.getElementById("dropform-company-locked").value = mailObject.extractedCompany;
         document.getElementById("dropform-name").value = mailObject.extractedContactName;
         
-        // Set view visibility parameters states flags
         document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
         document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
         document.getElementById("staged-back-button-row").style.display = "none";
-        formWrapperContainer.style.display = "block";
       } else {
-        alert("UI Render Error: Entry form template element '#step2-new-entry-dropdown' could not be safely targeted.");
+        alert("UI Render Error: Entry form template element context targeting dropped.");
       }
     }
   } catch(e) {
