@@ -69,7 +69,7 @@
   .pill-group input { display: none; }
   .pill-group label { padding: 3px 6px; border: 1.5px solid var(--border); border-radius: 12px; font-size: .7rem; cursor: pointer; background: #fff; white-space: nowrap; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
-  
+
   .navigation-action-header-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: #ffffff; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); }
   .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
   .nav-btn-styled:hover { background: var(--brand-dk); }
@@ -2056,6 +2056,7 @@ async function loadQualFilter() {
     });
     const data = await res.json();
     if (data.success) {
+      // Core configuration array strings to strip out from the lower sub-drawer area
       const baselineCoreQualifications = [
         "industry", "epc", "govt/psu", "consultant", 
         "developer", "electrical contractor", "dealer", "vendor"
@@ -2066,10 +2067,11 @@ async function loadQualFilter() {
         let cleanQual = q.toString().trim();
         if (!cleanQual) return;
         
+        // Only build custom elements if they do not match our 8 static baseline headers
         if (baselineCoreQualifications.indexOf(cleanQual.toLowerCase()) === -1) {
           const cleanId = "custom_q_" + cleanQual.replace(/\s+/g, '_');
           
-          // UPGRADED: Wrapped the element directly in your standard pill structure to enforce matching font size, margins, and border radii
+          // FIX: Strictly matches the inputs and label templates used in Select Qualifications
           container.innerHTML += `
             <input type="checkbox" name="searchQual" value="${cleanQual}" id="${cleanId}" onchange="updateSelectedDisplay()">
             <label for="${cleanId}">${cleanQual}</label>
