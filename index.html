@@ -221,12 +221,30 @@
 
     <div id="workspace-searchQualification" class="workspace-panel" style="display: none;">
       <div class="section">
-        <div class="section-header">Filter Leads by Qualification</div>
+        <div class="section-header">Filter Directory by Core Qualification</div>
         <div class="section-body">
-          <label class="field-label" style="font-size: 0.8rem;">Select Qualifications</label>
-          <div id="selected-quals-display" style="font-size: 0.8rem; font-weight: bold; color: var(--brand); margin-bottom: 6px;"></div>
-          <div class="pill-group" id="qual-filter-checkboxes" style="margin: 10px 0;"></div>
-          <button class="btn btn-sub" id="qual-search-btn" onclick="triggerQualificationSearch()">Search Qualifications</button>
+          <label class="field-label" style="font-size: 0.8rem; color: var(--brand);">Select Qualifications</label>
+          <div id="selected-quals-display" style="font-size: 0.8rem; font-weight: bold; color: var(--brand); margin-bottom: 8px;"></div>
+          
+          <div class="pill-group" id="core-qualification-static-pills" style="margin: 10px 0 5px;">
+            <input type="checkbox" name="searchQual" value="Industry" id="sq_industry" onchange="updateSelectedDisplay()"><label for="sq_industry">Industry</label>
+            <input type="checkbox" name="searchQual" value="EPC" id="sq_epc" onchange="updateSelectedDisplay()"><label for="sq_epc">EPC</label>
+            <input type="checkbox" name="searchQual" value="Govt/PSU" id="sq_govt" onchange="updateSelectedDisplay()"><label for="sq_govt">Govt/PSU</label>
+            <input type="checkbox" name="searchQual" value="Consultant" id="sq_consultant" onchange="updateSelectedDisplay()"><label for="sq_consultant">Consultant</label>
+            <input type="checkbox" name="searchQual" value="Developer" id="sq_developer" onchange="updateSelectedDisplay()"><label for="sq_developer">Developer</label>
+            <input type="checkbox" name="searchQual" value="Electrical Contractor" id="sq_contractor" onchange="updateSelectedDisplay()"><label for="sq_contractor">Electrical Contractor</label>
+            <input type="checkbox" name="searchQual" value="Dealer" id="sq_dealer" onchange="updateSelectedDisplay()"><label for="sq_dealer">Dealer</label>
+            <input type="checkbox" name="searchQual" value="Vendor" id="sq_vendor" onchange="updateSelectedDisplay()"><label for="sq_vendor">Vendor</label>
+            
+            <input type="checkbox" id="sq_others_trigger" onchange="handleOthersQualificationToggleDrawer(this)"><label for="sq_others_trigger" style="border-color: var(--brand); font-weight: 700; color: var(--brand);">Others ▾</label>
+          </div>
+          
+          <div id="custom-qualifications-sub-drawer" style="display: none; background: #f8fafc; border: 1px dashed var(--border); border-radius: var(--radius); padding: 10px; margin: 5px 0 15px; text-align: left;">
+             <span style="display: block; font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">Dynamic Custom Database Qualifications</span>
+             <div class="pill-group" id="qual-filter-checkboxes" style="margin: 0; gap: 6px;"></div>
+          </div>
+          
+          <button class="btn btn-sub" id="qual-search-btn" onclick="triggerQualificationSearch()" style="margin-top: 5px;">Search Qualifications Matrix</button>
         </div>
       </div>
     </div>
@@ -251,7 +269,7 @@
 
     <div id="workspace-searchStatus" class="workspace-panel" style="display: none;">
       <div class="section">
-        <div class="section-header">Advanced Leads Combination Matrix Filter</div>
+        <div class="section-header">Leads Filter</div>
         <div class="section-body" style="text-align: left;">
           
           <label class="field-label" style="font-size:0.8rem; color: var(--brand);">Filter By Engineers</label>
@@ -1128,8 +1146,13 @@ function navigateToModule(key) {
          triggerSequentialSearch('CARD');
       }
     } else if (key === "searchQualification") {
-      const checkedQuals = Array.from(document.querySelectorAll('input[name="searchQual"]:checked'));
-      if (checkedQuals.length > 0) triggerQualificationSearch();
+      document.querySelectorAll('input[name="searchQual"], #sq_others_trigger').forEach(cb => cb.checked = false);
+      const drawerPanel = document.getElementById("custom-qualifications-sub-drawer");
+      if (drawerPanel) drawerPanel.style.display = "none";
+      const triggerLabel = document.querySelector('label[for="sq_others_trigger"]');
+      if (triggerLabel) triggerLabel.textContent = "Others ▾";
+      document.getElementById("selected-quals-display").textContent = "";
+      loadQualFilter(); 
     } else if (key === "searchStatus") {
       document.querySelectorAll('input[name="leadMatrixStatusFilter"]').forEach(cb => cb.checked = false);
       renderLeadMatrixEngineerCheckboxes();
@@ -2018,24 +2041,70 @@ async function submitLead() {
 }
 
 async function loadQualFilter() {
-  const res = await fetch(GAS_URL, { 
-    method: "POST", 
-    body: JSON.stringify({ 
-      action: "getUniqueQualifications",
-      sessionToken: localStorage.getItem("sessionToken"),
-      activeEngineer: appActiveOperatorIdentityString
-    }) 
-  });
-  const data = await res.json();
-  const container = document.getElementById("qual-filter-checkboxes"); container.innerHTML = "";
-  data.quals.forEach(q => {
-    container.innerHTML += `<input type="checkbox" name="searchQual" value="${q}" id="q_${q}" onchange="updateSelectedDisplay()"><label for="q_${q}">${q}</label>`;
-  });
+  const container = document.getElementById("qual-filter-checkboxes"); 
+  if (!container) return;
+  container.innerHTML = "";
+  
+  try {
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "getUniqueQualifications",
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString
+      }) 
+    });
+    const data = await res.json();
+    if (data.success) {
+      // List of core credentials to strip from the 'Others' sub-drawer display array
+      const baselineCoreQualifications = [
+        "industry", "epc", "govt/psu", "consultant", 
+        "developer", "electrical contractor", "dealer", "vendor"
+      ];
+      
+      let customOptionsCount = 0;
+      data.quals.forEach(q => {
+        let cleanQual = q.toString().trim();
+        if (!cleanQual) return;
+        
+        // Only append to the sub-drawer if it doesn't match one of our 8 core items
+        if (baselineCoreQualifications.indexOf(cleanRowNameString = cleanQual.toLowerCase()) === -1) {
+          const cleanId = "custom_q_" + cleanQual.replace(/\s+/g, '_');
+          container.innerHTML += `<input type="checkbox" name="searchQual" value="${cleanQual}" id="${cleanId}" onchange="updateSelectedDisplay()"><label for="${cleanId}">${cleanQual}</label>`;
+          customOptionsCount++;
+        }
+      });
+      
+      if (customOptionsCount === 0) {
+        container.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600; padding:4px 0;">No unlisted custom qualifications stored in database tracking logs yet.</p>';
+      }
+    }
+  } catch(e) { console.error("Custom qualifications load failed:", e.message); }
 }
 
 function updateSelectedDisplay() {
   const checked = Array.from(document.querySelectorAll('input[name="searchQual"]:checked')).map(i => i.value);
   document.getElementById("selected-quals-display").textContent = checked.length > 0 ? "Filtering for: " + checked.join(", ") : "";
+}
+
+function handleOthersQualificationToggleDrawer(triggerNode) {
+  const drawerPanel = document.getElementById("custom-qualifications-sub-drawer");
+  const triggerLabel = triggerNode.nextElementSibling;
+  
+  if (triggerNode.checked) {
+     // Expand the sub-drawer panel and rotate arrow indicator indicator label element
+     drawerPanel.style.display = "block";
+     if(triggerLabel) triggerLabel.textContent = "Others ▴";
+  } else {
+     // Collapse the view drawer
+     drawerPanel.style.display = "none";
+     if(triggerLabel) triggerLabel.textContent = "Others ▾";
+     
+     // Wipe any active checkbox choices inside the hidden drawer to prevent confusion
+     const customCheckboxes = drawerPanel.querySelectorAll('input[name="searchQual"]');
+     customCheckboxes.forEach(cb => cb.checked = false);
+     updateSelectedDisplay();
+  }
 }
 
 async function triggerQualificationSearch() {
@@ -2311,7 +2380,7 @@ async function executeLeadMatrixFilterSearch() {
   // If entering panel fresh with nothing selected, do not execute blank request hits
   if (checkedEngineers.length === 0 && checkedStatuses.length === 0) return;
 
-  btn.classList.add("loading"); btn.textContent = "Filtering Matrix Leads...";
+  btn.classList.add("loading"); btn.textContent = "Filtering Leads...";
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
   
   try {
@@ -2329,13 +2398,6 @@ async function executeLeadMatrixFilterSearch() {
     
     if (data.success) {
       const canvas = document.getElementById("step2-inline-interaction-canvas");
-      
-      // Update heading context layout info dynamically 
-      document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
-        <div class="qualification-status-bar" style="width: 100%;">
-          Leads Combined Matrix Filter Active
-        </div>
-      `;
       
       globalFollowUpsCacheMap = data.followups;
       globalTasksCacheMap = data.tasks;
