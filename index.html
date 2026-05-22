@@ -133,6 +133,7 @@
     <div style="text-align: left; background: #f8fafc; padding: 15px; border: 1px dashed var(--border); border-radius: 8px; margin-bottom: 20px;">
       <select id="app-auth-active-engineer-identity" style="padding: 10px; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px;">
         <option value="">— Select Your Name —</option>
+        <option>Ashwin Kumar</option>
         <option>Alok Kumar</option>
         <option>Debarshi Mukharjee</option>
         <option>H.K. Pawar</option>
@@ -286,10 +287,10 @@
           
           <label class="field-label" style="font-size:0.8rem; color: var(--brand);">Filter By Lead Status</label>
           <div class="pill-group" id="lead-matrix-status-checkboxes-mount" style="margin:8px 0 16px;">
-            <input type="checkbox" name="leadMatrixStatusFilter" value="Status1" id="lms_st1" onchange="executeLeadMatrixFilterSearch()"><label for="lms_st1">Status1</label>
-            <input type="checkbox" name="leadMatrixStatusFilter" value="Status2" id="lms_st2" onchange="executeLeadMatrixFilterSearch()"><label for="lms_st2">Status2</label>
-            <input type="checkbox" name="leadMatrixStatusFilter" value="Status3" id="lms_st3" onchange="executeLeadMatrixFilterSearch()"><label for="lms_st3">Status3</label>
-            <input type="checkbox" name="leadMatrixStatusFilter" value="Status4" id="lms_st4" onchange="executeLeadMatrixFilterSearch()"><label for="lms_st4">Status4</label>
+            <input type="checkbox" name="leadMatrixStatusFilter" value="New Lead" id="lms_st1" onchange="executeLeadMatrixFilterSearch()"><label for="lms_st1">New Lead</label>
+            <input type="checkbox" name="leadMatrixStatusFilter" value="Technical Discussion" id="lms_st2" onchange="executeLeadMatrixFilterSearch()"><label for="lms_st2">Technical Discussion</label>
+            <input type="checkbox" name="leadMatrixStatusFilter" value="Offer Submitted" id="lms_st3" onchange="executeLeadMatrixFilterSearch()"><label for="lms_st3">Offer Submitted</label>
+            <input type="checkbox" name="leadMatrixStatusFilter" value="Won / Closed" id="lms_st4" onchange="executeLeadMatrixFilterSearch()"><label for="lms_st4">Won / Closed</label>
           </div>
           
           <button class="btn btn-sub" id="lead-matrix-search-submit-btn" onclick="executeLeadMatrixFilterSearch()">Run Leads Search</button>
@@ -319,11 +320,12 @@
           
           <label class="field-label" style="font-size:0.8rem;">Filter By Task Status</label>
           <div class="pill-group" id="task-matrix-status-checkboxes" style="margin:8px 0 16px;">
-            <input type="checkbox" name="taskMatrixStatus" value="TS1" id="tms_ts1" onchange="executeTaskMatrixSearch()"><label for="tms_ts1">TS1</label>
-            <input type="checkbox" name="taskMatrixStatus" value="TS2" id="tms_ts2" onchange="executeTaskMatrixSearch()"><label for="tms_ts2">TS2</label>
-            <input type="checkbox" name="taskMatrixStatus" value="TS3" id="tms_ts3" onchange="executeTaskMatrixSearch()"><label for="tms_ts3">TS3</label>
-            <input type="checkbox" name="taskMatrixStatus" value="TS4" id="tms_ts4" onchange="executeTaskMatrixSearch()"><label for="tms_ts4">TS4</label>
+            <input type="checkbox" name="taskMatrixStatus" value="Assigned" id="tms_ts1" onchange="executeTaskMatrixSearch()"><label for="tms_ts1">Assigned</label>
+            <input type="checkbox" name="taskMatrixStatus" value="In Progress" id="tms_ts2" onchange="executeTaskMatrixSearch()"><label for="tms_ts2">In Progress</label>
+            <input type="checkbox" name="taskMatrixStatus" value="Under Review" id="tms_ts3" onchange="executeTaskMatrixSearch()"><label for="tms_ts3">Under Review</label>
+            <input type="checkbox" name="taskMatrixStatus" value="Resolved" id="tms_ts4" onchange="executeTaskMatrixSearch()"><label for="tms_ts4">Resolved</label>
           </div>
+          
           <button class="btn btn-sub" id="task-matrix-search-btn" onclick="executeTaskMatrixSearch()">Run Search Filter</button>
         </div>
       </div>
@@ -557,10 +559,10 @@
             
             <label class="field-label">Lead Status *</label>
             <select id="dropform-status">
-              <option value="Status1">Status1</option>
-              <option value="Status2">Status2</option>
-              <option value="Status3">Status3</option>
-              <option value="Status4">Status4</option>
+              <option value="New Lead">New Lead</option>
+              <option value="Technical Discussion">Technical Discussion</option>
+              <option value="Offer Submitted">Offer Submitted</option>
+              <option value="Won / Closed">Won / Closed</option>
             </select>
           </div>
         </div>
@@ -589,7 +591,15 @@
       
       <div class="fup-grid-inputs template-fup-form" style="display:none;">
         <input type="hidden" class="fup-is-edit-flag" value="false" />
-        <div><label class="field-label">Follow-Up Status</label><select class="fup-status-select"><option>FuS1</option><option>FuS2</option><option>FuS3</option><option>FuS4</option></select></div>
+        <div>
+          <label class="field-label">Follow-Up Status</label>
+          <select class="fup-status-select">
+            <option value="Call Scheduled">Call Scheduled</option>
+            <option value="Awaiting Client Feedback">Awaiting Client Feedback</option>
+            <option value="Revision Requested">Revision Requested</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
         <div><label class="field-label">Follow-Up Number</label><input type="number" class="fup-num-input" readonly style="background:#e2e8f0; cursor:not-allowed;" /></div>
         <div><label class="field-label">Lead ID</label><input type="text" class="fup-leadid-input" readonly style="background:#e2e8f0; cursor:not-allowed;" /></div>
         <div><label class="field-label">Engineer Name</label><select class="fup-eng-select"></select></div>
@@ -619,7 +629,15 @@
       <div class="task-grid-inputs template-task-form" style="display:none;">
         <input type="hidden" class="task-edit-id" />
         <div class="task-double-row">
-          <div><label class="field-label">Task Status</label><select class="task-status-select"><option>TS1</option><option>TS2</option><option>TS3</option><option>TS4</option></select></div>
+          <div>
+            <label class="field-label">Task Status</label>
+            <select class="task-status-select">
+              <option value="Assigned">Assigned</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Under Review">Under Review</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
           <div><label class="field-label">Task Type</label><select class="task-type-select"><option>Task A</option><option>Task B</option><option>Task C</option></select></div>
         </div>
         <div class="task-double-row">
@@ -637,7 +655,7 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyiT4_JH7LhrMUKBXf_42BdW0lmuHXHu6ImNUAUw9jGCU5MozEhfZAjYeVte-8ObfRThg/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzh7We6TlQl0vBg8ydhLW_PC3M0BhJy-vQYZhgFH0PTU-b-9CttjvcjiKTBHsLg2xm_Dg/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1593,7 +1611,7 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
 
       if (key === "Status") {
         let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
-        ["Status1", "Status2", "Status3", "Status4"].forEach(st => {
+        ["New Lead", "Technical Discussion", "Offer Submitted", "Won / Closed"].forEach(st => {
           let op = document.createElement("option"); op.textContent = st; if(leadMap[key] === st) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
@@ -2060,11 +2078,16 @@ function renderIsolatedTaskItemsList(leadRef, list, scopeNode) {
 
 function editIsolatedTaskItem(leadRef, scopeNode, t) {
   const taskForm = scopeNode.querySelector(".template-task-form");
-  taskForm.querySelector(".task-edit-id").value = t.id; taskForm.querySelector(".task-status-select").value = t.status;
-  taskForm.querySelector(".task-eng-select").value = t.eng; taskForm.querySelector(".task-assigner-select").value = t.assigner || "";
-  taskForm.querySelector(".task-type-select").value = t.type; taskForm.querySelector(".task-desc-input").value = t.desc;
-  taskForm.querySelector(".task-shift-select").value = t.shift; taskForm.querySelector(".task-targetdate-input").value = formatCleanDateOnly(t.targetDate);
-  taskForm.style.display = "grid"; scopeNode.querySelector(".trigger-task-open").style.display = "none"; scopeNode.querySelector(".trigger-task-close").style.display = "inline-flex";
+  taskForm.querySelector(".task-edit-id").value = t.id; 
+  taskForm.querySelector(".task-status-select").value = t.status || "Assigned";
+  taskForm.querySelector(".task-eng-select").value = t.eng; 
+  taskForm.querySelector(".task-assigner-select").value = t.assigner || "";
+  taskForm.querySelector(".task-type-select").value = t.type; 
+  taskForm.querySelector(".task-desc-input").value = t.desc;
+  taskForm.querySelector(".task-shift-select").value = t.shift; 
+  taskForm.querySelector(".task-targetdate-input").value = formatCleanDateOnly(t.targetDate);
+  taskForm.style.display = "grid"; scopeNode.querySelector(".trigger-task-open").style.display = "none"; 
+  scopeNode.querySelector(".trigger-task-close").style.display = "inline-flex";
 }
 
 async function commitIsolatedTaskItem(leadRef, scopeNode) {
