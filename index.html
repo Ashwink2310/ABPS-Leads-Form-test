@@ -341,7 +341,7 @@
     </div>
 
     <div id="missing-trigger-notice-block" style="display:none;">
-      <p>No record matched your target company parameters.</p>
+      <p>No record matched your target company inputs.</p>
       <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:4px 10px; font-size:0.75rem;">Create New Entry</button>
     </div>
 
@@ -670,7 +670,6 @@ window.onload = function() {
 };
 
 function initializeGoogleAuthPlatformEngine() {
-
   if (document.getElementById("auth-portal-processing-loader")) {
     document.getElementById("auth-portal-processing-loader").style.display = "none";
   }
@@ -686,6 +685,9 @@ function initializeGoogleAuthPlatformEngine() {
       console.error("Critical Render Error: google-auth-button-mount-point container not found in DOM.");
       return;
     }
+
+    // FIX FOR MOBILE PHONES: Hard wipe the inner container to force a fresh DOM layout paint
+    mountNode.innerHTML = "";
 
     google.accounts.id.initialize({
       client_id: "374058137880-64dt8h9eem9impq61bpb0n9iselso76e.apps.googleusercontent.com",
@@ -810,9 +812,8 @@ async function parseCard() {
       if (document.getElementById("f-city")) document.getElementById("f-city").value = resultData.city || "";
       if (document.getElementById("f-state")) document.getElementById("f-state").value = resultData.state || "";
       
-      alert("AI Parsing Complete! Review the fields below before searching or submitting.");
     } else {
-      alert("AI Parsing failed: Invalid response format from the language model engine.");
+      alert("AI Parsing failed");
     }
   } catch (e) {
     alert("Card parsing network execution crash: " + e.message);
@@ -824,9 +825,23 @@ async function parseCard() {
 }
 
 function executeLogout() { 
+  // 1. Force the Google Identity library script to kill any cached silent-sign-in listeners on phones
+  try {
+    if (google && google.accounts && google.accounts.id) {
+      google.accounts.id.cancel(); 
+    }
+  } catch(e) { 
+    console.warn("Google identity platform context cleanup skip:", e.message); 
+  }
+
+  // 2. Clear out local data maps entirely
   localStorage.clear(); 
   appActiveOperatorIdentityString = "";
+  
+  // 3. Reset the dashboard workspace visibilities
   document.getElementById("app-container").style.display = "none"; 
+  
+  // 4. Force a clean rendering re-initialization
   initializeGoogleAuthPlatformEngine();
 }
 
