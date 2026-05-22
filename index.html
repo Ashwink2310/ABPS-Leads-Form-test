@@ -686,19 +686,40 @@ function initializeGoogleAuthPlatformEngine() {
       return;
     }
 
-    // FIX FOR MOBILE PHONES: Hard wipe the inner container to force a fresh DOM layout paint
-    mountNode.innerHTML = "";
+    // 1. COMPLETELY RECONSTRUCT THE MOUNT NODE TO DESTROY MOBILE CACHED EVENT LISTENERS
+    const parentContainer = mountNode.parentNode;
+    mountNode.remove();
+    
+    const freshMountNode = document.createElement("div");
+    freshMountNode.id = "google-auth-button-mount-point";
+    freshMountNode.style.cssText = "display: flex; justify-content: center; margin-top: 15px; min-height: 40px;";
+    parentContainer.insertBefore(freshMountNode, document.getElementById("auth-portal-processing-loader"));
 
+    // 2. INITIALIZE GOOGLE WITH MOBILE CACHE OVERRIDES
     google.accounts.id.initialize({
       client_id: "374058137880-64dt8h9eem9impq61bpb0n9iselso76e.apps.googleusercontent.com",
-      callback: handleGooglePlatformCredentialResponse
+      callback: handleGooglePlatformCredentialResponse,
+      // Forces a prompt layout selection check on mobile browsers every time
+      prompt_parent_id: "google-auth-button-mount-point",
+      ux_mode: "popup" 
     });
     
+    // 3. FORCE RENDER THE FRESH IFRAME
     google.accounts.id.renderButton(
-      mountNode,
+      freshMountNode,
       { theme: "outline", size: "large", width: "320" }
     );
-  }, 200); 
+    
+    // 4. THE MOBILE BYPASS: Explicitly breaks any silent status lock trapped in mobile memory
+    google.accounts.id.prompt((notification) => {
+      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+         console.log("Mobile UI state bypassed: Force-rendering structural login button channel rules.");
+         // If skipped or blocked, kickstart a fresh layout rendering block immediately
+         google.accounts.id.renderButton(freshMountNode, { theme: "outline", size: "large", width: "320" });
+      }
+    });
+
+  }, 250); 
 }
 
 async function handleGooglePlatformCredentialResponse(response) {
