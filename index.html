@@ -240,7 +240,7 @@
           </div>
           
           <div id="custom-qualifications-sub-drawer" style="display: none; background: #f8fafc; border: 1px dashed var(--border); border-radius: var(--radius); padding: 10px; margin: 5px 0 15px; text-align: left;">
-             <span style="display: block; font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">Dynamic Custom Database Qualifications</span>
+             <span style="display: block; font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">Other Qualifications</span>
              <div class="pill-group" id="qual-filter-checkboxes" style="margin: 0; gap: 6px;"></div>
           </div>
           
@@ -2056,7 +2056,6 @@ async function loadQualFilter() {
     });
     const data = await res.json();
     if (data.success) {
-      // List of core credentials to strip from the 'Others' sub-drawer display array
       const baselineCoreQualifications = [
         "industry", "epc", "govt/psu", "consultant", 
         "developer", "electrical contractor", "dealer", "vendor"
@@ -2067,10 +2066,14 @@ async function loadQualFilter() {
         let cleanQual = q.toString().trim();
         if (!cleanQual) return;
         
-        // Only append to the sub-drawer if it doesn't match one of our 8 core items
-        if (baselineCoreQualifications.indexOf(cleanRowNameString = cleanQual.toLowerCase()) === -1) {
+        if (baselineCoreQualifications.indexOf(cleanQual.toLowerCase()) === -1) {
           const cleanId = "custom_q_" + cleanQual.replace(/\s+/g, '_');
-          container.innerHTML += `<input type="checkbox" name="searchQual" value="${cleanQual}" id="${cleanId}" onchange="updateSelectedDisplay()"><label for="${cleanId}">${cleanQual}</label>`;
+          
+          // UPGRADED: Wrapped the element directly in your standard pill structure to enforce matching font size, margins, and border radii
+          container.innerHTML += `
+            <input type="checkbox" name="searchQual" value="${cleanQual}" id="${cleanId}" onchange="updateSelectedDisplay()">
+            <label for="${cleanId}">${cleanQual}</label>
+          `;
           customOptionsCount++;
         }
       });
