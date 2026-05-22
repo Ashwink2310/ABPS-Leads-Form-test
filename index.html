@@ -667,7 +667,7 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxRa2tkyKYFgjCM72MU_jsGEXEvXa78sgJBBZ67Yt7CLU8tZ0Ikc1RV0jX4u5Ij8leP/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzzMtYn-qIFMKM0M0SQQkgWyOxmkG9yCAu-Nhp_fJGsoeVfiw9unB2V0-IIfHSxXrb4nQ/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -2767,9 +2767,12 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
   canvas.innerHTML = "";
   
   if (emailLeadsList.length === 0) {
-    canvas.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted); font-size:0.9rem; background:#fff; border:1px solid var(--border); border-radius:6px;">
-      <h3>Inbox Streams Clear</h3><p style="font-size:0.8rem; margin-top:4px;">No unsubmitted commercial leads matched current allowlist criteria rules.</p>
-    </div>`;
+    canvas.innerHTML = `
+      <div style="text-align:center; padding:30px; color:var(--muted); font-size:0.9rem; background:#fff; border:1px solid var(--border); border-radius:6px;">
+        <h3 style="color: var(--accent);">All Email Leads are dealt with</h3>
+        <p style="font-size:0.8rem; margin-top:4px;">No unread sales or commercial enquiries detected in the lookback window.</p>
+      </div>
+    `;
     return;
   }
   
