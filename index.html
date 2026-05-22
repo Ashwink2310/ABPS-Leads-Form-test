@@ -244,7 +244,7 @@
              <div class="pill-group" id="qual-filter-checkboxes" style="margin: 0; gap: 6px;"></div>
           </div>
           
-          <button class="btn btn-sub" id="qual-search-btn" onclick="triggerQualificationSearch()" style="margin-top: 5px;">Search Qualifications Matrix</button>
+          <button class="btn btn-sub" id="qual-search-btn" onclick="triggerQualificationSearch()" style="margin-top: 5px;">Search Qualifications</button>
         </div>
       </div>
     </div>
@@ -283,7 +283,7 @@
             <input type="checkbox" name="leadMatrixStatusFilter" value="Status4" id="lms_st4" onchange="executeLeadMatrixFilterSearch()"><label for="lms_st4">Status4</label>
           </div>
           
-          <button class="btn btn-sub" id="lead-matrix-search-submit-btn" onclick="executeLeadMatrixFilterSearch()">Run Leads Matrix Search</button>
+          <button class="btn btn-sub" id="lead-matrix-search-submit-btn" onclick="executeLeadMatrixFilterSearch()">Run Leads Search</button>
         </div>
       </div>
     </div>
@@ -315,7 +315,7 @@
             <input type="checkbox" name="taskMatrixStatus" value="TS3" id="tms_ts3" onchange="executeTaskMatrixSearch()"><label for="tms_ts3">TS3</label>
             <input type="checkbox" name="taskMatrixStatus" value="TS4" id="tms_ts4" onchange="executeTaskMatrixSearch()"><label for="tms_ts4">TS4</label>
           </div>
-          <button class="btn btn-sub" id="task-matrix-search-btn" onclick="executeTaskMatrixSearch()">Run Matrix Search Filter</button>
+          <button class="btn btn-sub" id="task-matrix-search-btn" onclick="executeTaskMatrixSearch()">Run Search Filter</button>
         </div>
       </div>
       <div id="task-matrix-results-output-node" style="margin-top:12px;"></div>
@@ -2413,7 +2413,7 @@ async function executeLeadMatrixFilterSearch() {
   } catch(e) {
     alert("Leads matrix execution request dropped: " + e.message);
   } finally {
-    btn.classList.remove("loading"); btn.textContent = "Run Leads Matrix Search";
+    btn.classList.remove("loading"); btn.textContent = "Run Leads Search";
   }
 }
 
