@@ -83,11 +83,9 @@
   .btn.loading::after { content: " ..."; animation: blink 1.2s infinite;}
   @keyframes blink { 50% { opacity: 0; } }
 
-  .qualification-status-bar {
-      display: flex; justify-content: center; align-items: center;
-      padding: 8px; background: #edf2f7; border-radius: 6px;
-      font-size: 0.85rem; font-weight: 700; color: var(--brand);
-  }
+
+
+  .qualification-status-bar {display: flex; justify-content: center; align-items: center;padding: 8px; background: #edf2f7; border-radius: 6px; font-size: 0.85rem; font-weight: 700; color: var(--brand);}
   
   .system-runtime-inline-alert-callout { padding: 6px 10px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; text-align: left; }
   @media(min-width: 600px) { .system-runtime-inline-alert-callout { flex-direction: row; justify-content: space-between; align-items: center; } }
@@ -109,6 +107,17 @@
   .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 8px; border-radius: 4px; text-align: left; margin-bottom: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
 
   .btn-warn.loading { opacity: 0.5; cursor: progress; transform: scale(0.95); }
+
+  .form-layout-card-block { grid-column: 1 / -1; background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin: 4px 0; text-align: left; }
+  .form-card-inner-title { font-size: 0.72rem; font-weight: 700; color: var(--brand); text-transform: uppercase; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  .checkbox-flex-line-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; align-items: center; }
+  .checkbox-inline-item { display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; font-weight: 600; color: var(--text); cursor: pointer; }
+  .checkbox-inline-item input[type="checkbox"] { width: auto; cursor: pointer; }
+  .compact-vertical-input-group { margin-bottom: 8px; }
+  .compact-vertical-input-group:last-child { margin-bottom: 0; }
+  .compact-vertical-input-group label { display: block; font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 3px; }
+  .inline-text-input-field { margin-top: 4px; max-width: 250px; }
+
   @keyframes spin { to { transform: rotate(360deg); }}
 </style>
 </head>
@@ -1504,8 +1513,12 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
 }
 
 function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
-  const canvas = document.getElementById('canvas-fields-' + leadRef); canvas.innerHTML = "";
-  const gridWrapper = document.createElement("div"); gridWrapper.className = "compact-fields-grid";
+  const canvas = document.getElementById('canvas-fields-' + leadRef); 
+  if (!canvas) return;
+  canvas.innerHTML = "";
+  
+  const gridWrapper = document.createElement("div"); 
+  gridWrapper.className = "compact-fields-grid";
   
   const customSectionLayout = [
     { type: "META", keys: ["Status", "Engineer Name"] },
@@ -1517,16 +1530,267 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
     { type: "SEC5", keys: ["Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Send Offer", "Follow-Up Required"] }
   ];
 
+  // Helper utility to safely parse and split comma-separated database fields
+  const parseCurrentValues = (key) => (leadMap[key] || "").toString().split(",").map(v => v.trim());
+
   customSectionLayout.forEach((sec, sIdx) => {
     if (sIdx > 0) {
       let line = document.createElement("div"); line.className = "section-divider-line"; gridWrapper.appendChild(line);
     }
+    
     sec.keys.forEach(key => {
       if (leadMap[key] === undefined) return;
+      
+      // ----------------------------------------------------
+      // INTERCEPTOR 1: COMPACT BLOCK STRUCTURAL GROUPINGS
+      // ----------------------------------------------------
+      if (key === "Contract Demand (MVA)") {
+        let block = document.createElement("div");
+        block.className = "form-layout-card-block";
+        block.innerHTML = `
+          <div class="form-card-inner-title">Power Parameters Metrics Block</div>
+          <div class="compact-vertical-input-group">
+            <label>Contract Demand (MVA)</label>
+            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Contract Demand (MVA)" value="${leadMap["Contract Demand (MVA)"] || ""}" />
+          </div>
+          <div class="compact-vertical-input-group">
+            <label>Running Demand (MVA)</label>
+            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Running Demand (MVA)" value="${leadMap["Running Demand (MVA)"] || ""}" />
+          </div>
+          <div class="compact-vertical-input-group">
+            <label>Monthly Average Power Factor</label>
+            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Monthly Average Power Factor" value="${leadMap["Monthly Average Power Factor"] || ""}" />
+          </div>
+        `;
+        gridWrapper.appendChild(block);
+        return;
+      }
+      // Skip child iterations as they are captured by the main block parent container above
+      if (key === "Running Demand (MVA)" || key === "Monthly Average Power Factor") return;
+
+      if (key === "Existing Project") {
+        let block = document.createElement("div");
+        block.className = "form-layout-card-block";
+        block.innerHTML = `
+          <div class="form-card-inner-title">Project Pipeline Tracking Matrix</div>
+          <div class="compact-vertical-input-group">
+            <label>Existing Project</label>
+            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Existing Project" value="${leadMap["Existing Project"] || ""}" />
+          </div>
+          <div class="compact-vertical-input-group">
+            <label>Upcoming Project</label>
+            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Upcoming Project" value="${leadMap["Upcoming Project"] || ""}" />
+          </div>
+        `;
+        gridWrapper.appendChild(block);
+        return;
+      }
+      if (key === "Upcoming Project") return;
+
+      if (key === "Expected Tender / RFQ Date") {
+        let block = document.createElement("div");
+        block.className = "form-layout-card-block";
+        block.innerHTML = `
+          <div class="form-card-inner-title">Tender Order Timeline Lifespan</div>
+          <div class="compact-vertical-input-group">
+            <label>Expected Tender / RFQ Date</label>
+            <input type="date" class="live-lead-field-input-${leadRef}" data-header-key="Expected Tender / RFQ Date" value="${formatCleanDateOnly(leadMap["Expected Tender / RFQ Date"])}" />
+          </div>
+          <div class="compact-vertical-input-group">
+            <label>Expected Order Timeline</label>
+            <input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Expected Order Timeline" value="${leadMap["Expected Order Timeline"] || ""}" />
+          </div>
+        `;
+        gridWrapper.appendChild(block);
+        return;
+      }
+      if (key === "Expected Order Timeline") return;
+
+      // ----------------------------------------------------
+      // INTERCEPTOR 2: DYNAMIC INTUITIVE CHECKBOXES
+      // ----------------------------------------------------
+      if (key === "Voltage Level") {
+        let block = document.createElement("div");
+        block.className = "form-layout-card-block";
+        block.innerHTML = `<div class="form-card-inner-title">Voltage Level (Multi-Select)</div>`;
+        
+        const levels = ["440V", "660V", "3.3KV", "6.6KV", "11KV", "22KV", "33KV", "66KV", "132KV", "220KV", "400KV"];
+        let currentValues = parseCurrentValues("Voltage Level");
+        
+        // Loop chunks items into rows of 4 options
+        for (let i = 0; i < levels.length; i += 4) {
+          let rowChunk = levels.slice(i, i + 4);
+          let rowHtml = document.createElement("div");
+          rowHtml.className = "checkbox-flex-line-row";
+          
+          rowChunk.forEach(v => {
+            let isChecked = currentValues.indexOf(v) !== -1 ? "checked" : "";
+            rowHtml.innerHTML += `
+              <label class="checkbox-inline-item">
+                <input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Voltage Level" ${isChecked}>
+                <span>${v}</span>
+              </label>
+            `;
+          });
+          block.appendChild(rowHtml);
+        }
+        gridWrapper.appendChild(block);
+        return;
+      }
+
+      if (key === "Qualification") {
+        let block = document.createElement("div");
+        block.className = "form-layout-card-block";
+        block.innerHTML = `<div class="form-card-inner-title">Core Qualifications Profile</div>`;
+        
+        let currentValues = parseCurrentValues("Qualification");
+        
+        // Line 1 Row Array
+        let r1 = document.createElement("div"); r1.className = "checkbox-flex-line-row";
+        ["Industry", "EPC", "Govt/PSU", "Consultant"].forEach(v => {
+          r1.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Qualification" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
+        });
+        block.appendChild(r1);
+        
+        // Line 2 Row Array
+        let r2 = document.createElement("div"); r2.className = "checkbox-flex-line-row";
+        ["Developer", "Electrical Contractor", "Dealer", "Vendor"].forEach(v => {
+          r2.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Qualification" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
+        });
+        block.appendChild(r2);
+        
+        // Line 3 Row Array with dynamic Input Field
+        let r3 = document.createElement("div"); r3.className = "checkbox-flex-line-row";
+        let hasCustomQual = currentValues.some(v => ["Industry", "EPC", "Govt/PSU", "Consultant", "Developer", "Electrical Contractor", "Dealer", "Vendor"].indexOf(v) === -1 && v !== "");
+        let customQualValue = hasCustomQual ? currentValues.filter(v => ["Industry", "EPC", "Govt/PSU", "Consultant", "Developer", "Electrical Contractor", "Dealer", "Vendor"].indexOf(v) === -1).join(", ") : "";
+        
+        r3.innerHTML += `
+          <label class="checkbox-inline-item">
+            <input type="checkbox" value="Others" id="edit_qual_others_trigger_${leadRef}" ${hasCustomQual ? "checked" : ""} onchange="document.getElementById('edit_qual_others_input_${leadRef}').style.display = this.checked ? 'block' : 'none'">
+            <span>Others</span>
+          </label>
+          <input type="text" id="edit_qual_others_input_${leadRef}" class="inline-text-input-field" placeholder="Specify custom qualification..." value="${customQualValue}" style="display: ${hasCustomQual ? 'block' : 'none'};" />
+        `;
+        block.appendChild(r3);
+        gridWrapper.appendChild(block);
+        return;
+      }
+
+      if (key === "Type of Vendor") {
+        let block = document.createElement("div");
+        block.className = "form-layout-card-block";
+        block.innerHTML = `<div class="form-card-inner-title">Vendor Classification Matrix</div>`;
+        
+        let currentValues = parseCurrentValues("Type of Vendor");
+        
+        let r1 = document.createElement("div"); r1.className = "checkbox-flex-line-row";
+        ["Raw Materials supplier", "MC Supplier"].forEach(v => {
+          r1.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Type of Vendor" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v === 'Raw Materials supplier' ? 'Raw Materials' : v}</span></label>`;
+        });
+        block.appendChild(r1);
+        
+        let r2 = document.createElement("div"); r2.className = "checkbox-flex-line-row";
+        ["Capital Goods Supplier"].forEach(v => {
+          r2.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Type of Vendor" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
+        });
+        block.appendChild(r2);
+        
+        let r3 = document.createElement("div"); r3.className = "checkbox-flex-line-row";
+        let hasCustomVendor = currentValues.some(v => ["Raw Materials supplier", "MC Supplier", "Capital Goods Supplier"].indexOf(v) === -1 && v !== "");
+        let customVendorValue = hasCustomVendor ? currentValues.filter(v => ["Raw Materials supplier", "MC Supplier", "Capital Goods Supplier"].indexOf(v) === -1).join(", ") : "";
+        
+        r3.innerHTML += `
+          <label class="checkbox-inline-item">
+            <input type="checkbox" value="Others" id="edit_vendor_others_trigger_${leadRef}" ${hasCustomVendor ? "checked" : ""} onchange="document.getElementById('edit_vendor_others_input_${leadRef}').style.display = this.checked ? 'block' : 'none'">
+            <span>Others</span>
+          </label>
+          <input type="text" id="edit_vendor_others_input_${leadRef}" class="inline-text-input-field" placeholder="Specify custom vendor parameter..." value="${customVendorValue}" style="display: ${hasCustomVendor ? 'block' : 'none'};" />
+        `;
+        block.appendChild(r3);
+        gridWrapper.appendChild(block);
+        return;
+      }
+
+      if (key === "Products Discussed") {
+        let block = document.createElement("div");
+        block.className = "form-layout-card-block";
+        block.innerHTML = `<div class="form-card-inner-title">Products Portfolio Matrix</div>`;
+        
+        let currentValues = parseCurrentValues("Products Discussed");
+        
+        let r1 = document.createElement("div"); r1.className = "checkbox-flex-line-row";
+        ["APFC", "RPTFC", "Harmonic Filter"].forEach(v => {
+          r1.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Products Discussed" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
+        });
+        block.appendChild(r1);
+        
+        let r2 = document.createElement("div"); r2.className = "checkbox-flex-line-row";
+        ["SVG", "MV Capacitor Bank", "Reactor"].forEach(v => {
+          r2.innerHTML += `<label class="checkbox-inline-item"><input type="checkbox" value="${v}" class="live-lead-check-subset-${leadRef}" data-master-key="Products Discussed" ${currentValues.indexOf(v) !== -1 ? "checked" : ""}><span>${v}</span></label>`;
+        });
+        block.appendChild(r2);
+        
+        let r3 = document.createElement("div"); r3.className = "checkbox-flex-line-row";
+        let hasCustomProd = currentValues.some(v => ["APFC", "RPTFC", "Harmonic Filter", "SVG", "MV Capacitor Bank", "Reactor"].indexOf(v) === -1 && v !== "");
+        let customProdValue = hasCustomProd ? currentValues.filter(v => ["APFC", "RPTFC", "Harmonic Filter", "SVG", "MV Capacitor Bank", "Reactor"].indexOf(v) === -1).join(", ") : "";
+        
+        r3.innerHTML += `
+          <label class="checkbox-inline-item">
+            <input type="checkbox" value="Others" id="edit_prod_others_trigger_${leadRef}" ${hasCustomProd ? "checked" : ""} onchange="document.getElementById('edit_prod_others_input_${leadRef}').style.display = this.checked ? 'block' : 'none'">
+            <span>Others</span>
+          </label>
+          <input type="text" id="edit_prod_others_input_${leadRef}" class="inline-text-input-field" placeholder="Specify other engineering item..." value="${customProdValue}" style="display: ${hasCustomProd ? 'block' : 'none'};" />
+        `;
+        block.appendChild(r3);
+        gridWrapper.appendChild(block);
+        return;
+      }
+
+      // ----------------------------------------------------
+      // INTERCEPTOR 3: ABPS BUSINESS VERTICAL SELECTION
+      // ----------------------------------------------------
+      if (key === "ABPS Business Vertical") {
+        let block = document.createElement("div");
+        block.className = "grid-cell-item";
+        
+        let label = document.createElement("label"); label.textContent = key; block.appendChild(label);
+        let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
+        
+        const coreVerticals = ["Industrial", "Power", "Renewable"];
+        let currentValue = (leadMap[key] || "").toString().trim();
+        let isCustomVertical = currentValue !== "" && coreVerticals.indexOf(currentValue) === -1;
+        
+        coreVerticals.forEach(v => {
+          let op = document.createElement("option"); op.textContent = v; if(currentValue === v) op.selected = true; sel.appendChild(op);
+        });
+        
+        let opOther = document.createElement("option"); opOther.textContent = "Other"; if(isCustomVertical) opOther.selected = true; sel.appendChild(opOther);
+        block.appendChild(sel);
+        
+        let inputText = document.createElement("input");
+        inputText.type = "text";
+        inputText.id = `edit_vertical_custom_input_${leadRef}`;
+        inputText.className = "inline-text-input-field";
+        inputText.placeholder = "Specify operational vertical...";
+        inputText.value = isCustomVertical ? currentValue : "";
+        inputText.style.display = isCustomVertical ? "block" : "none";
+        block.appendChild(inputText);
+        
+        sel.onchange = function() {
+          inputText.style.display = (this.value === "Other") ? "block" : "none";
+        };
+        
+        gridWrapper.appendChild(block);
+        return;
+      }
+
+      // ----------------------------------------------------
+      // BASELINE STANDARDIZED DROPDOWN & TEXTAREA GENERATORS
+      // ----------------------------------------------------
       let cell = document.createElement("div"); cell.className = "grid-cell-item";
       if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)") cell.className += " span-two-units";
       
-      let label = document.createElement("label"); label.textContent = key; cell.appendChild(label);
+      let labelNode = document.createElement("label"); labelNode.textContent = key; cell.appendChild(labelNode);
 
       if (key === "Status") {
         let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
@@ -1534,7 +1798,7 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           let op = document.createElement("option"); op.textContent = st; if(leadMap[key] === st) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
-      } else if (["Date of Meeting", "Expected Tender / RFQ Date"].indexOf(key) !== -1) {
+      } else if (["Date of Meeting"].indexOf(key) !== -1) {
         let inp = document.createElement("input"); inp.type = "date"; inp.className = 'live-lead-field-input-' + leadRef; inp.dataset.headerKey = key;
         let rawDate = leadMap[key];
         if (rawDate) { let match = rawDate.toString().match(/(\d{4}-\d{2}-\d{2})/); inp.value = match ? match[1] : ""; }
@@ -1556,45 +1820,14 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           let op = document.createElement("option"); op.textContent = opText; if(leadMap[key] === opText) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
-      } else if (["Meeting Venue", "ABPS Business Vertical", "Approx Business Potential", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
+      } else if (["Meeting Venue", "Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Follow-Up Required"].indexOf(key) !== -1) {
         let sel = document.createElement("select"); sel.className = 'live-lead-field-input-' + leadRef; sel.dataset.headerKey = key;
         let opts = ["No", "Yes"];
         if(key === "Meeting Venue") opts = ["Exhibition", "Customer Place"];
-        if(key === "ABPS Business Vertical") opts = ["Industrial", "Power", "Renewable", "Other"];
-        if(key === "Approx Business Potential") opts = ["<10L", "10-50L", "50L-2cr", ">2cr"];
         opts.forEach(o => {
           let op = document.createElement("option"); op.textContent = o; if(leadMap[key] === o) op.selected = true; sel.appendChild(op);
         });
         cell.appendChild(sel);
-      } else if (["Voltage Level", "Products Discussed", "Qualification", "Type of Vendor"].indexOf(key) !== -1) {
-        // IMPROVED LAYER: Pulls the full list matching your new database entry structure mapping fields
-        let wrapper = document.createElement("div"); wrapper.style.display = "flex"; wrapper.style.flexDirection = "column"; wrapper.style.gap = "2px";
-        
-        let opts = [];
-        if (key === "Voltage Level") {
-          opts = ["440V", "660V", "3.3KV", "6.6KV", "11KV", "22KV", "33KV", "66KV", "132KV", "220KV", "400KV"];
-        } else if (key === "Products Discussed") {
-          opts = ["APFC", "RPTFC", "Harmonic Filter", "SVG", "MV Capacitor Bank", "Reactor", "Others"];
-        } else if (key === "Qualification") {
-          opts = ["Industry", "EPC", "Govt/PSU", "Consultant", "Developer", "Electrical Contractor", "Dealer", "Vendor", "Others"];
-        } else if (key === "Type of Vendor") {
-          opts = ["Raw Materials supplier", "MC Supplier", "Capital Goods Supplier", "Others"];
-        }
-
-        // Split data fields cleanly by commas to mark existing checkboxes as active
-        let currentValues = (leadMap[key] || "").toString().split(",").map(v => v.trim());
-        
-        opts.forEach(o => {
-          let div = document.createElement("div"); div.style.display="flex"; div.style.gap="4px"; div.style.alignItems="center";
-          let chk = document.createElement("input"); chk.type="checkbox"; chk.value = o; chk.className = 'live-lead-check-subset-' + leadRef; chk.dataset.masterKey = key;
-          
-          // Cross-reference existing profile details data context to check matches
-          if(currentValues.indexOf(o) !== -1) chk.checked = true;
-          
-          let span = document.createElement("span"); span.textContent = o; span.style.fontSize="0.72rem";
-          div.appendChild(chk); div.appendChild(span); wrapper.appendChild(div);
-        });
-        cell.appendChild(wrapper);
       } else if (key === "Technical Discussion Summary" || key === "Additional Meeting Details (if any)" || key === "Company Address" || key === "Address" || key === "Existing System Details") {
         let tx = document.createElement("textarea"); tx.className = 'live-lead-field-input-' + leadRef; tx.dataset.headerKey = key;
         tx.value = leadMap[key] || ""; tx.style.minHeight = "45px"; cell.appendChild(tx);
@@ -1618,14 +1851,54 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
 async function commitTargetedLeadsMutationsRows(leadRef) {
   const btn = document.getElementById('save-leads-matrix-btn-' + leadRef);
   if(btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...'; }
+  
   let fieldsPayload = {};
-  document.querySelectorAll('.live-lead-field-input-' + leadRef).forEach(el => { fieldsPayload[el.dataset.headerKey] = el.value; });
+  
+  // 1. Gather text field values
+  document.querySelectorAll('.live-lead-field-input-' + leadRef).forEach(el => { 
+    fieldsPayload[el.dataset.headerKey] = el.value; 
+  });
+  
+  // OVERRIDE: Check if dynamic ABPS Business Vertical custom input parameter applies
+  const verticalSelector = document.querySelector(`select[data-header-key="ABPS Business Vertical"].live-lead-field-input-${leadRef}`);
+  if (verticalSelector && verticalSelector.value === "Other") {
+    fieldsPayload["ABPS Business Vertical"] = document.getElementById(`edit_vertical_custom_input_${leadRef}`).value.trim() || "Other";
+  }
+  
+  // 2. Gather checkbox collection metrics strings
   let checkGroups = {};
   document.querySelectorAll('.live-lead-check-subset-' + leadRef).forEach(el => {
-    let mk = el.dataset.masterKey; if(!checkGroups[mk]) checkGroups[mk] = [];
-    if(el.checked) checkGroups[mk].push(el.value);
+    let mk = el.dataset.masterKey; 
+    if(!checkGroups[mk]) checkGroups[mk] = [];
+    if(el.checked && el.value !== "Others") {
+      checkGroups[mk].push(el.value);
+    }
   });
-  Object.keys(checkGroups).forEach(key => { fieldsPayload[key] = checkGroups[key].join(", "); });
+  
+  // OVERRIDE: Process explicit dynamic text input values for checkboxes
+  const qualOthersCheck = document.getElementById(`edit_qual_others_trigger_${leadRef}`);
+  if (qualOthersCheck && qualOthersCheck.checked) {
+    let customText = document.getElementById(`edit_qual_others_input_${leadRef}`).value.trim();
+    if (customText) checkGroups["Qualification"].push(customText);
+  }
+  
+  const vendorOthersCheck = document.getElementById(`edit_vendor_others_trigger_${leadRef}`);
+  if (vendorOthersCheck && vendorOthersCheck.checked) {
+    let customText = document.getElementById(`edit_vendor_others_input_${leadRef}`).value.trim();
+    if (customText) checkGroups["Type of Vendor"].push(customText);
+  }
+  
+  const prodOthersCheck = document.getElementById(`edit_prod_others_trigger_${leadRef}`);
+  if (prodOthersCheck && prodOthersCheck.checked) {
+    let customText = document.getElementById(`edit_prod_others_input_${leadRef}`).value.trim();
+    if (customText) checkGroups["Products Discussed"].push(customText);
+  }
+  
+  // Flatten maps arrays cleanly using standard comma strings
+  Object.keys(checkGroups).forEach(key => { 
+    fieldsPayload[key] = checkGroups[key].join(", "); 
+  });
+  
   try {
     const res = await fetch(GAS_URL, { 
       method: "POST", 
