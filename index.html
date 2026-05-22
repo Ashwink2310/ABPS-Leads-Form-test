@@ -2921,12 +2921,6 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
   }
 }
 
-// Ensure the module router initializes a clean synchronization hit upon navigation
-// Add this trigger right inside your existing navigateToModule(key) function loop tracker:
-if (key === "emailWhatsapp") {
-  executeInboundEmailSyncPipelineFetch();
-}
-
 </script>
 </body>
 </html>
