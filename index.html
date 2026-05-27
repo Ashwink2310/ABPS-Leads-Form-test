@@ -201,7 +201,7 @@
   <div id="dashboard-view" style="padding: 16px 12px; display: flex; flex-direction: column; gap: 20px;">
     
     <div id="dashboard-marketing-department-header-block">
-      <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">📊 Marketing Department</h2>
+      <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Marketing Department</h2>
       
       <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
         <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')"><div class="menu-title">Enter Card Details</div></div>
@@ -234,12 +234,61 @@
       <div></div> <button class="nav-btn-styled" onclick="exitStoreWorkspacePanelBackToMenu()" style="background:#4a5568;">Return to Main Dashboard</button>
     </div>
 
-    <div id="canvas-module-store-invoice-intake" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+    <!-- STORE MODULE PANEL 1: INBOUND INVOICE INGEST WORKSPACE -->
+    <div id="canvas-module-store-invoice-intake" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <h2>Store Upload Invoice</h2>
       <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
         Upload a phone photo or digital scan of your signed vendor invoice. The system AI will extract line counts, scale quantities, and verify background duplication profiles.
       </p>
-      <div id="store-invoice-intake-viewport-mount"></div>
+      
+      <div class="section" style="background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius);">
+        
+        <!-- Upload Drop Zone Row -->
+        <div style="margin-bottom: 16px;">
+          <label class="field-label" style="font-weight: 700; color: var(--brand);">Capture / Upload Signed Invoice Image *</label>
+          <div class="card-row">
+            <div class="card-box" id="invoice-upload-box" onclick="document.getElementById('invoice-image-file').click()" style="padding: 20px; font-size: 0.9rem;">📷 Select Invoice Image</div>
+          </div>
+          <input type="file" id="invoice-image-file" accept="image/*" capture="environment" hidden />
+          <button class="btn btn-ai" id="invoice-parse-ai-btn" onclick="parseInboundInvoiceWithAI()" style="margin-top: 8px; font-weight: 700;">Parse Invoice with AI</button>
+        </div>
+
+        <!-- AI Results & Discrepancy Editing Sheet Workspace (Hidden Initially) -->
+        <div id="invoice-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
+          <span style="display: block; font-size: 0.78rem; font-weight: 800; color: var(--brand); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Dual-Sign-Off Verification Sheet</span>
+          
+          <!-- Extracted Metadata Fields Rows -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div><label class="field-label">Invoice Number</label><input type="text" id="inv-meta-number" readonly style="background:#f1f5f9;" /></div>
+            <div><label class="field-label">Vendor Name</label><input type="text" id="inv-meta-vendor" readonly style="background:#f1f5f9;" /></div>
+            <div><label class="field-label">Invoice Date</label><input type="text" id="inv-meta-date" readonly style="background:#f1f5f9;" /></div>
+          </div>
+
+          <!-- Line Items Adjustments Grid Canvas Viewport -->
+          <div style="margin-bottom: 16px; overflow-x: auto;">
+            <table class="store-basket-data-table" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>Invoice Line Details (As Read)</th>
+                  <th>Mapped Standard Name</th>
+                  <th style="width: 100px;">Invoice Qty</th>
+                  <th style="width: 130px; color: var(--brand);">Physically Received Qty *</th>
+                </tr>
+              </thead>
+              <tbody id="invoice-verification-table-body">
+                <!-- Dynamic Form Adjustment Field Rows Injected Here -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Final Submit Action Controls -->
+          <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border); padding-top: 14px;">
+            <button class="nav-btn-styled" onclick="resetInvoiceUploadIntakeState()" style="background: #718096;">Cancel</button>
+            <button class="nav-btn-styled" id="invoice-submit-ledger-btn" onclick="commitVerifiedInvoiceToInventoryLedger()" style="background: var(--accent); padding: 8px 25px; font-weight: 700;">Verify & Ingest Stock</button>
+          </div>
+
+        </div>
+      </div>
     </div>
 
     <div id="canvas-module-store-material-request" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
@@ -287,12 +336,12 @@
     </div>
 
     <div id="canvas-module-store-manager-approvals" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2>⚖️ Store Approve Tickets</h2>
+      <h2>Store Approve Tickets</h2>
       <div id="store-manager-approvals-viewport-mount"></div>
     </div>
 
     <div id="canvas-module-store-history-matrix" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2>🔍 Search Store Tickets</h2>
+      <h2>Search Store Tickets</h2>
       <div id="store-history-matrix-viewport-mount"></div>
     </div>
   </div>
@@ -555,7 +604,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxq4X95JBpQe_xilpwrcWemQzBH58lRG9zmX2dtJ7GDh4PHqHxJUavTXhUn8u8XGiis/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxz2SR7ZQC2b1iWvl4gni6mKp6Qqw2SZZYk0PPrbQWmc1UcvRTXWMu2F0OHCH4np3QoSQ/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -577,6 +626,8 @@ let activeEmailLeadContextIndex = null;
 // --- GLOBAL INVENTORY MODULE STATE STORAGE ---
 let cachedInventoryStockCollection = [];
 let dynamicTicketShoppingBasketArray = [];
+let targetInvoiceUploadFileObject = null;
+let activeParsedInvoicePayloadCache = null;
 let activeInventoryProjectIdsList = ["PRJ-MUM-01", "PRJ-BLR-02", "PRJ-DEL-03"]; // Default fallbacks; will pull live later
 
 window.onload = function() {
@@ -3266,6 +3317,167 @@ function exitStoreWorkspacePanelBackToMenu() {
 
   document.getElementById("dashboard-view").style.display = "flex"; 
   triggerCompanyDropdownArrayFetch(); 
+}
+
+// Handle visual file confirmation indicators
+document.getElementById('invoice-image-file').onchange = (e) => {
+  targetInvoiceUploadFileObject = e.target.files[0];
+  const uploadBox = document.getElementById('invoice-upload-box');
+  uploadBox.textContent = "Invoice Uploaded ✅ (" + targetInvoiceUploadFileObject.name + ")";
+  uploadBox.classList.add('done');
+};
+
+function resetInvoiceUploadIntakeState() {
+  targetInvoiceUploadFileObject = null;
+  activeParsedInvoicePayloadCache = null;
+  
+  const uploadBox = document.getElementById('invoice-upload-box');
+  uploadBox.textContent = "📷 Select Invoice Image";
+  uploadBox.classList.remove('done');
+  document.getElementById('invoice-image-file').value = "";
+  
+  document.getElementById('invoice-ai-verification-workspace').style.display = "none";
+  document.getElementById('invoice-verification-table-body').innerHTML = "";
+}
+
+/**
+ * 1. RUN GEMINI IMAGE EXTRACTION PIPELINE
+ */
+async function parseInboundInvoiceWithAI() {
+  const parseBtn = document.getElementById('invoice-parse-ai-btn');
+  if (!targetInvoiceUploadFileObject) return alert("Please select or snap a photo of the signed vendor invoice first.");
+
+  parseBtn.disabled = true;
+  parseBtn.innerHTML = '<div class="spinner"></div> AI Scanning Image...';
+
+  try {
+    // A. Pull live standard inventory item options map list to pass downstream for fuzzy name mapping
+    const lookupRes = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })
+    });
+    const catalogData = await lookupRes.json();
+    const existingMaterialNamesList = catalogData.success ? catalogData.inventory.map(i => i.materialName) : [];
+
+    // B. Convert file to Base64 data string wrapper parameters
+    const base64String = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(targetInvoiceUploadFileObject);
+    });
+
+    // C. Dispatch request payload pipeline call straight to Apps Script AI pipeline container
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "storeProcessAIInvoiceBlob",
+        sessionToken: localStorage.getItem("sessionToken"),
+        imageBlobBase64: base64String,
+        canonicalMaterialsCatalog: existingMaterialNamesList
+      })
+    });
+
+    const data = await res.json();
+    if (!data.success) {
+      alert("AI Processing Dropped: " + data.error);
+      return;
+    }
+
+    activeParsedInvoicePayloadCache = data.extractedData;
+    renderInvoiceDualSignOffVerificationWorkspace();
+
+  } catch (err) {
+    alert("Invoice Parse Exception Block: " + err.message);
+  } finally {
+    parseBtn.disabled = false;
+    parseBtn.innerHTML = "Parse Invoice with AI";
+  }
+}
+
+/**
+ * 2. RENDER DUAL-SIGN-OFF EDIT FORM INPUT ROWS
+ * Populates form sheet input text lines letting the store manager verify actual quantities
+ */
+function renderInvoiceDualSignOffVerificationWorkspace() {
+  document.getElementById('inv-meta-number').value = activeParsedInvoicePayloadCache.invoiceNumber || "";
+  document.getElementById('inv-meta-vendor').value  = activeParsedInvoicePayloadCache.vendorName || "";
+  document.getElementById('inv-meta-date').value    = activeParsedInvoicePayloadCache.invoiceDate || "";
+
+  const tbody = document.getElementById('invoice-verification-table-body');
+  tbody.innerHTML = "";
+
+  activeParsedInvoicePayloadCache.lineItems.forEach((item, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color: var(--muted); font-size: 0.8rem;">${item.rawDescriptionLine}</td>
+      <td style="font-weight: 600; color: var(--text);">${item.mappedMaterialName}</td>
+      <td style="font-family: monospace; font-weight: 700;">${item.extractedQuantity}</td>
+      <td>
+        <input type="number" min="0" class="invoice-verification-physical-override-qty" 
+          data-array-index="${index}" value="${item.extractedQuantity}" 
+          style="border-color: var(--brand); font-weight: 700; color: var(--brand); padding: 4px;" />
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('invoice-ai-verification-workspace').style.display = "block";
+}
+
+/**
+ * 3. COMMIT VERIFIED BALANCES TO LEDGER
+ */
+async function commitVerifiedInvoiceToInventoryLedger() {
+  const submitBtn = document.getElementById('invoice-submit-ledger-btn');
+  const overrideQtyInputs = document.querySelectorAll('.invoice-verification-physical-override-qty');
+  
+  let finalizedActualPhysicalQuantitiesArray = [];
+  
+  // Package adjusted physical counts parameters out of display list cells
+  overrideQtyInputs.forEach(inputNode => {
+    const idx = parseInt(inputNode.dataset.arrayIndex, 10);
+    const verifiedPhysicalCount = parseInt(inputNode.value, 10);
+    
+    let sourceLineData = activeParsedInvoicePayloadCache.lineItems[idx];
+    sourceLineData.verifiedPhysicalQuantity = isNaN(verifiedPhysicalCount) ? 0 : verifiedPhysicalCount;
+    
+    finalizedActualPhysicalQuantitiesArray.push(sourceLineData);
+  });
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = "Ingesting Stock Balances...";
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "logInboundInvoiceIngest",
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        invoiceMetadata: {
+          invoiceNumber: activeParsedInvoicePayloadCache.invoiceNumber,
+          vendorName: activeParsedInvoicePayloadCache.vendorName,
+          invoiceDate: activeParsedInvoicePayloadCache.invoiceDate
+        },
+        actualPhysicalQuantities: finalizedActualPhysicalQuantitiesArray,
+        driveFileUrl: "STUB_MOCK_DRIVE_LINK_PLACEHOLDER" // Will generate true file anchors in drive phase later
+      })
+    });
+
+    const output = await res.json();
+    if (output.success) {
+      alert(`Stock Ingestion Successful!\nInvoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} processed cleanly into database tracking profiles.`);
+      resetInvoiceUploadIntakeState();
+      exitStoreWorkspacePanelBackToMenu();
+    } else {
+      alert("Ingestion Rejected by Database Core: " + output.error);
+    }
+  } catch (error) {
+    alert("Network Ingest Exception: " + error.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = "Verify & Ingest Stock";
+  }
 }
 
 </script>
