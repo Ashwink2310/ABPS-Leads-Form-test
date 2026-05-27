@@ -3262,9 +3262,8 @@ function navigateToStoreWorkspacePanel(targetPanelModuleId) {
 
 function exitStoreWorkspacePanelBackToMenu() {
   document.getElementById("module-store-workspace-enclosure-panel").style.display = "none";
-  
   enforceDynamicModuleRoleGateways(userPermissions);
-  
+
   document.getElementById("dashboard-view").style.display = "flex"; 
   triggerCompanyDropdownArrayFetch(); 
 }
