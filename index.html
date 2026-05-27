@@ -219,7 +219,7 @@
     </div>
 
     <div id="dashboard-store-department-header-block" style="display: none;">
-      <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">🏬 Store Department</h2>
+      <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Store Department</h2>
       
       <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
         <div class="menu-card" id="mod-store-upload" onclick="navigateToStoreWorkspacePanel('store-invoice-intake')" style="display: none;"><div class="menu-title">Store Upload Invoice</div></div>
@@ -235,7 +235,7 @@
     </div>
 
     <div id="canvas-module-store-invoice-intake" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2>📥 Store Upload Invoice</h2>
+      <h2>Store Upload Invoice</h2>
       <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
         Upload a phone photo or digital scan of your signed vendor invoice. The system AI will extract line counts, scale quantities, and verify background duplication profiles.
       </p>
@@ -243,14 +243,11 @@
     </div>
 
     <div id="canvas-module-store-material-request" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2>📝 Store Create Ticket</h2>
-      <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
-        Compile components required for shop floor panel assembly. Reserving parts applies an instant ghost-stock lockdown protection map across other workshop active terminal stations.
-      </p>
+      <h2>Store Create Ticket</h2>
       
       <div class="section" style="background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius);">
         <div style="margin-bottom: 16px;">
-          <label class="field-label" style="font-weight: 700; color: var(--brand);">Select Destination Project ID *</label>
+          <label class="field-label" style="font-weight: 700; color: var(--brand);">Select Project ID *</label>
           <select id="ticket-project-id-dropdown" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius);"><option value="">— Loading Active Projects —</option></select>
         </div>
 
@@ -2942,21 +2939,47 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
 }
 
 function enforceDynamicModuleRoleGateways(userPermissionsObject) {
-  // 1. Gather secure access parameters toggles
-  const canUploadInvoice = userPermissionsObject.storeUploadInvoice === true;
-  const canCreateTicket  = userPermissionsObject.storeCreateTicket === true;
-  const canReleaseTicket = userPermissionsObject.storeApproveTickets === true;
-  const canSearchMatrix  = userPermissionsObject.storeAdminMatrix === true;
+  // 1. EXTRACT MARKETING ACCESS MATRIX FLAGS
+  const canEnterCard       = userPermissionsObject.cardDetails === true;
+  const canSearchCompany   = userPermissionsObject.searchCompany === true;
+  const canViewEmailLeads  = userPermissionsObject.emailLeads === true;
+  const canSearchTasks     = userPermissionsObject.searchTasks === true;
+  const canSearchStatus    = userPermissionsObject.searchStatus === true;
+  const canSearchCityState = userPermissionsObject.searchCityState === true;
+  const canSearchQual      = userPermissionsObject.searchQualification === true;
 
-  // 2. Set individual block section card visibilities
-  document.getElementById("mod-store-upload").style.display = canUploadInvoice ? "block" : "none";
-  document.getElementById("mod-store-ticket").style.display = canCreateTicket ? "block" : "none";
+  // 2. EXTRACT STORE ACCESS MATRIX FLAGS
+  const canUploadInvoice   = userPermissionsObject.storeUploadInvoice === true;
+  const canCreateTicket    = userPermissionsObject.storeCreateTicket === true;
+  const canReleaseTicket   = userPermissionsObject.storeApproveTickets === true;
+  const canSearchStoreMat  = userPermissionsObject.storeAdminMatrix === true;
+
+  // 3. SET INDIVIDUAL MARKETING SECTIONS CARDS VISIBILITY STATES
+  document.getElementById("mod-card").style.display           = canEnterCard ? "block" : "none";
+  document.getElementById("mod-company").style.display        = canSearchCompany ? "block" : "none";
+  document.getElementById("mod-email-whatsapp").style.display = canViewEmailLeads ? "block" : "none";
+  document.getElementById("mod-tasks").style.display          = canSearchTasks ? "block" : "none";
+  document.getElementById("mod-status").style.display         = canSearchStatus ? "block" : "none";
+  document.getElementById("mod-city-state").style.display     = canSearchCityState ? "block" : "none";
+  document.getElementById("mod-qual").style.display           = canSearchQual ? "block" : "none";
+
+  // 4. SET INDIVIDUAL STORE SECTIONS CARDS VISIBILITY STATES
+  document.getElementById("mod-store-upload").style.display    = canUploadInvoice ? "block" : "none";
+  document.getElementById("mod-store-ticket").style.display    = canCreateTicket ? "block" : "none";
   document.getElementById("mod-store-approvals").style.display = canReleaseTicket ? "block" : "none";
-  document.getElementById("mod-store-matrix").style.display = canSearchMatrix ? "block" : "none";
+  document.getElementById("mod-store-matrix").style.display    = canSearchStoreMat ? "block" : "none";
 
-  // 3. DEPARTMENT BLOCK GATEWAY: Hide header row completely if no internal sub-items are visible
+  // 5. EVALUATE COMPLETE INTERCEPT FOR MARKETING DEPARTMENT CONTAINER HEADER BLOCK
+  const marketingHeaderBlock = document.getElementById("dashboard-marketing-department-header-block");
+  if (canEnterCard || canSearchCompany || canViewEmailLeads || canSearchTasks || canSearchStatus || canSearchCityState || canSearchQual) {
+    marketingHeaderBlock.style.display = "block";
+  } else {
+    marketingHeaderBlock.style.display = "none";
+  }
+
+  // 6. EVALUATE COMPLETE INTERCEPT FOR STORE DEPARTMENT CONTAINER HEADER BLOCK
   const storeHeaderBlock = document.getElementById("dashboard-store-department-header-block");
-  if (canUploadInvoice || canCreateTicket || canReleaseTicket || canSearchMatrix) {
+  if (canUploadInvoice || canCreateTicket || canReleaseTicket || canSearchStoreMat) {
     storeHeaderBlock.style.display = "block";
   } else {
     storeHeaderBlock.style.display = "none";
@@ -3132,7 +3155,7 @@ async function submitMaterialRequestTicketToBackend() {
   const submitBtn = document.getElementById("submit-ticket-final-btn");
   
   if (!projectId) {
-    alert("Compulsory input dropped: Destination Project ID allocation configuration is required.");
+    alert("Project ID is Compulsory input");
     return;
   }
   
@@ -3234,12 +3257,16 @@ function navigateToStoreWorkspacePanel(targetPanelModuleId) {
   } else if (targetPanelModuleId === 'store-history-matrix') {
     document.getElementById("canvas-module-store-history-matrix").style.display = "block";
   }
+
 }
 
 function exitStoreWorkspacePanelBackToMenu() {
   document.getElementById("module-store-workspace-enclosure-panel").style.display = "none";
-  document.getElementById("dashboard-view").style.display = "flex"; // Brings back full stacked landing categories
-  triggerCompanyDropdownArrayFetch(); // Keeps marketing components synced in background
+  
+  enforceDynamicModuleRoleGateways(userPermissions);
+  
+  document.getElementById("dashboard-view").style.display = "flex"; 
+  triggerCompanyDropdownArrayFetch(); 
 }
 
 </script>
