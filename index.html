@@ -1,26 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
 <title>ABPS</title>
+
 <style>
+  /* --- BASE RESET & CORE VARIABLES --- */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --brand: #0056b3; --brand-dk: #003d82; --accent: #00a878; --warn: #e84545;
-    --bg: #f0f4f8; --card: #ffffff; --border: #d0d9e4; --text: #1a2332;
-    --muted: #6b7a8d; --radius: 6px;
-    --highlight-bg: #f0f7ff; --highlight-border: #0056b3;
+    --brand: #0056b3; 
+    --brand-dk: #003d82; 
+    --accent: #00a878; 
+    --warn: #e84545;
+    --bg: #f0f4f8; 
+    --card: #ffffff; 
+    --border: #d0d9e4; 
+    --text: #1a2332;
+    --muted: #6b7a8d; 
+    --radius: 6px;
+    --highlight-bg: #f0f7ff; 
+    --highlight-border: #0056b3;
   }
-  @keyframes pulseGlow {0% { opacity: 0.85; box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.05); }50% { opacity: 1; box-shadow: 0 4px 12px rgba(0, 86, 179, 0.12); }100% { opacity: 0.85; box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.05); }}
+  
+  /* --- KEYFRAME ANIMATIONS --- */
+  @keyframes pulseGlow {
+    0% { opacity: 0.85; box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.05); }
+    50% { opacity: 1; box-shadow: 0 4px 12px rgba(0, 86, 179, 0.12); }
+    100% { opacity: 0.85; box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.05); }
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* --- BODY & GLOBAL FORM INPUT ELEMENTS --- */
   body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 20px; }
+  input, select, textarea { width: 100%; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
+  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 8px 0 2px; }
+
+  /* --- SECURE AUTHENTICATION CONTAINER WINDOW --- */
   #auth-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, var(--brand-dk), var(--brand)); }
   .auth-card { background: var(--card); width: 100%; max-width: 400px; padding: 25px; border-radius: var(--radius); box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
   .auth-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 25px; }
-  label.field-label { display: block; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 8px 0 2px; }
-  input, select, textarea { width: 100%; padding: 6px 8px; border: 1.5px solid var(--border); border-radius: 4px; font-size: .85rem; background: #fff; color: var(--text); }
   
+  /* --- PORTAL STICKY APP HEADER --- */
   header { background: linear-gradient(135deg, var(--brand-dk), var(--brand)); color: #fff; padding: 10px 16px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
   header h1 { font-size: 1.05rem; font-weight: 700; }
   .header-actions-block { display: flex; flex-direction: column; align-items: flex-end; }
@@ -28,16 +53,26 @@
   .user-display-username { font-size: 0.68rem; color: #d0d9e4; font-family: monospace; }
   .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.4); color: white; padding: 2px 5px; border-radius: 4px; cursor: pointer; font-size: 0.65rem; margin-top: 1px; text-transform: uppercase; }
   
+  /* --- DASHBOARD WRAPPER RESPONSIVE GRID FRAMES --- */
   .dashboard-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 16px 12px; }
   @media(min-width: 600px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr) !important; } }
   .menu-card { background: var(--card); border: 1.5px solid var(--border); padding: 16px; border-radius: var(--radius); cursor: pointer; font-weight: 700; font-size: 0.95rem; text-align: center; }
   .menu-card.locked { opacity: 0.5; cursor: not-allowed; background: #e9ecef; }
   
+  /* --- WORKSPACE BLOCK WRAPPERS --- */
   .workspace-panel { padding: 4px 10px; }
   .section { background: var(--card); border-radius: var(--radius); margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
   .section-header { background: var(--brand); color: #fff; padding: 5px 12px; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
   .section-body { padding: 10px; }
+
+  /* --- DYNAMIC DIVISION LABELS & DEPARTMENT SIDEBAR NAVIGATION --- */
+  .nav-department-group-wrapper { padding: 6px 4px; }
+  .nav-group-title-label { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); letter-spacing: 0.8px; margin-bottom: 8px; padding-left: 4px; }
+  .nav-links-list-stack li { list-style: none; }
+  .nav-links-list-stack li a { display: block; padding: 8px 12px; color: var(--text); text-decoration: none; font-size: 0.88rem; border-radius: var(--radius); margin-bottom: 3px; transition: all 0.2s ease; }
+  .nav-links-list-stack li a:hover { background: var(--highlight-bg); color: var(--brand); font-weight: 600; }
   
+  /* --- CONTACT CARDS & DIRECTORY WORKSPACE LAYOUTS --- */
   .contact-summary-card-parent { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s ease; }
   .contact-summary-card-parent.search-highlighted-focus-node { background: var(--highlight-bg) !important; border: 2px solid var(--highlight-border) !important; box-shadow: 0 4px 10px rgba(0, 86, 179, 0.1) !important; }
   
@@ -52,6 +87,7 @@
   .directory-btn-actions-block { display: flex; gap: 6px; width: 100%; justify-content: flex-start; }
   @media(min-width: 800px) { .directory-btn-actions-block { width: auto; justify-content: flex-end; } }
 
+  /* --- COMPACT STRUCTURAL CONTROLS USER ENTRY MATRIX --- */
   .compact-fields-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; text-align: left; }
   @media(min-width: 600px) { .compact-fields-grid { grid-template-columns: repeat(4, 1fr); } }
   @media(min-width: 950px) { .compact-fields-grid { grid-template-columns: repeat(6, 1fr); } }
@@ -66,24 +102,23 @@
   .span-two-units { grid-column: span 2; }
   .section-divider-line { grid-column: 1 / -1; height: 1px; background: #cbd5e1; margin: 2px 0; }
   
+  /* --- INPUT PILL FILTER ASSEMBLIES --- */
   .pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; margin-bottom: 10px;}
   .pill-group input { display: none; }
-  .pill-group label { 
-    display: inline-block;
-    padding: 5px 10px; 
-    border: 1.5px solid var(--border); 
-    border-radius: 12px; 
-    font-size: 0.82rem; 
-    font-weight: 600;
-    cursor: pointer; 
-    background: #fff; 
-    white-space: nowrap; 
-    margin: 2px 0;
-    user-select: none;
-    transition: all 0.15s ease;
-  }
+  .pill-group label { display: inline-block; padding: 5px 10px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer; background: #fff; white-space: nowrap; margin: 2px 0; user-select: none; transition: all 0.15s ease; }
   .pill-group input:checked + label { background: var(--brand); border-color: var(--brand); color: #fff; }
 
+  /* --- MATERIAL SHOPPING BASKET DATA TABLES & PILLS --- */
+  .store-basket-data-table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left; }
+  .store-basket-data-table th { background: #f8fafc; color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .store-basket-data-table td { padding: 10px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+  
+  .live-counter-pill { display: inline-block; padding: 2px 6px; font-size: 0.72rem; font-weight: 700; border-radius: 4px; font-family: monospace; text-transform: uppercase; }
+  .pill-stock-healthy { background: #dcfce7; color: #15803d; }
+  .pill-stock-low { background: #fef3c7; color: #b45309; }
+  .pill-stock-empty { background: #fee2e2; color: #b91c1c; }
+
+  /* --- NAVIGATION CONTROLS & COMPACT INTERACTION BUTTONS --- */
   .navigation-action-header-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 10px; background: #ffffff; border-radius: 6px; margin-bottom: 6px; border: 1px solid var(--border); }
   .nav-btn-styled { background: var(--brand); color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.15s; outline: none; }
   .nav-btn-styled:hover { background: var(--brand-dk); }
@@ -92,19 +127,17 @@
   .btn-sub { background: var(--brand); color: #fff; }
   .btn-ai { background: var(--accent); color: #fff; margin-bottom: 4px; padding: 4px; }
   .btn-warn { background: #718096; color: #fff; }
-
   .btn.loading { opacity: 0.7; cursor: wait; pointer-events: none; }
   .btn.loading::after { content: " ..."; animation: blink 1.2s infinite;}
-  @keyframes blink { 50% { opacity: 0; } }
+  .btn-warn.loading { opacity: 0.5; cursor: progress; transform: scale(0.95); }
 
-
-
-  .qualification-status-bar {display: flex; justify-content: center; align-items: center;padding: 8px; background: #edf2f7; border-radius: 6px; font-size: 0.85rem; font-weight: 700; color: var(--brand);}
-  
+  /* --- METRIC STATUS CORES & CALLOUT BOXES --- */
+  .qualification-status-bar { display: flex; justify-content: center; align-items: center; padding: 8px; background: #edf2f7; border-radius: 6px; font-size: 0.85rem; font-weight: 700; color: var(--brand); }
   .system-runtime-inline-alert-callout { padding: 6px 10px; background: #fffaf0; border-left: 4px solid #dd6b20; border-radius: 4px; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; text-align: left; }
   @media(min-width: 600px) { .system-runtime-inline-alert-callout { flex-direction: row; justify-content: space-between; align-items: center; } }
   .alert-callout-text-msg { font-size: 0.8rem; font-weight: 700; color: #dd6b20; line-height: 1.3; }
 
+  /* --- DEPRECATED NOTICE & MISC BOX INTERACTIVE LAYOUTS --- */
   #missing-trigger-notice-block { padding: 6px; text-align: center; background: white; border-radius: var(--radius); border: 1px solid var(--warn); margin-bottom: 4px; }
   #missing-trigger-notice-block p { font-size: 0.78rem; font-weight: 700; color: #e53e3e; margin: 0 0 4px; }
 
@@ -119,12 +152,10 @@
   .task-double-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; grid-column: span 2; }
   .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #f1f5f9; padding: 10px; border-radius: 4px; margin: 6px 0; text-align: left; }
   .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 8px; border-radius: 4px; text-align: left; margin-bottom: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
-
-  .btn-warn.loading { opacity: 0.5; cursor: progress; transform: scale(0.95); }
-  
-  @keyframes spin { to { transform: rotate(360deg); }}
 </style>
+
 </head>
+
 <body>
 
 <div id="auth-container">
@@ -156,7 +187,7 @@
 
 <div id="app-container" style="display: none;">
   <header>
-    <h1>ABPS Marketing Department</h1>
+    <h1>ABPS Management Portal</h1>
     <div class="header-actions-block">
       <div class="user-profile-meta">
         <div class="user-full-name" id="display-full-name"></div>
@@ -165,6 +196,42 @@
       <button class="logout-btn" onclick="executeLogout()" style="margin-top: 10px;">Sign Out</button>
     </div>
   </header>
+
+  <!-- BEGIN SIDEBAR & VIEWPORT CONTAINER GRID -->
+  <div style="display: flex; gap: 20px; padding: 0 12px; margin-top: 15px;">
+
+    <!-- ========================================== -->
+    <!-- SIDE NAVIGATION BAR SPLIT-HEADER LAYOUT     -->
+    <!-- ========================================== -->
+    <div class="portal-sidebar-navigation-drawer" style="width: 260px; flex-shrink: 0; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; min-height: 75vh;">
+      
+      <!-- DEPARTMENT SECTION 1: MARKETING CONTENT CHANNELS -->
+      <div id="dashboard-marketing-department-header" class="nav-department-group-wrapper">
+        <div class="nav-group-title-label">📊 Marketing Department</div>
+        <ul class="nav-links-list-stack" style="list-style:none; padding:0; margin:0;">
+          <li><a href="#" onclick="switchActiveDashboardModule('marketing-leads')">Leads Directory</a></li>
+          <li><a href="#" onclick="switchActiveDashboardModule('marketing-email-leads')">AI Email Leads</a></li>
+          <li><a href="#" onclick="switchActiveDashboardModule('marketing-tasks')">Tasks Dashboard</a></li>
+        </ul>
+      </div>
+      
+      <hr style="border:0; border-top:1px solid var(--border); margin:12px 0;">
+
+      <!-- DEPARTMENT SECTION 2: STORE & INVENTORY CHANNELS -->
+      <div id="dashboard-store-department-header" class="nav-department-group-wrapper" style="display:none;">
+        <div class="nav-group-title-label">🏬 Store & Inventory</div>
+        <ul class="nav-links-list-stack" style="list-style:none; padding:0; margin:0;">
+          <li id="nav-item-store-upload"><a href="#" onclick="switchActiveDashboardModule('store-invoice-intake')">📥 Inbound Invoice Ingest</a></li>
+          <li id="nav-item-store-ticket-create"><a href="#" onclick="switchActiveDashboardModule('store-material-request')">📝 Create Material Ticket</a></li>
+          <li id="nav-item-store-approvals"><a href="#" onclick="switchActiveDashboardModule('store-manager-approvals')">⚖️ Pending Stock Releases</a></li>
+          <li id="nav-item-store-matrix"><a href="#" onclick="switchActiveDashboardModule('store-history-matrix')">🔍 Search Store Tickets</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- MAIN VIEWPORT STACK RENDER INNER FRAME -->
+    <div style="flex-grow: 1; min-width: 0;">
 
   <div id="dashboard-view">
     <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr; gap: 12px; padding: 16px 12px;">
@@ -175,17 +242,47 @@
       
       <!-- Row 2: Marketing Leads Core Block Span Across Full Screen Width -->
       <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailLeads')" style="grid-column: 1 / -1; border: 2px solid var(--border); background: var(--card); color: var(--text); padding: 20px;">
-        <div class="menu-title" style="font-size: 1.1rem; font-weight: 700;">Email Leads</div>
+        <div class="menu-title">Email Leads</div>
       </div>
       <!-- Row 3: Engineering Follow-ups Matrices (Side by Side) -->
       <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')"><div class="menu-title">Search Tasks by Engineer Name</div></div>
       <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Lead Status</div></div>
       
       <!-- Row 4: Secondary Filters Blocks (Side by Side) -->
-      <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')"><div class="menu-title">Search by Qualification</div></div>
       <div class="menu-card" id="mod-city-state" onclick="navigateToModule('searchCityState')"><div class="menu-title">Search by City and State</div></div>
       
     </div>
+  </div>
+
+  <!-- STORE MODULE PANEL 1: INBOUND INVOICE INGEST WORKSPACE   -->
+  <div id="canvas-module-store-invoice-intake" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+    <h2>📥 Inbound Invoice Ingest & Stock Ingest</h2>
+    <p class="section-subtitle-description" style="color:var(--muted); font-size:0.82rem; margin-top:-6px; margin-bottom:16px;">
+      Upload a phone photo or digital scan of your signed vendor invoice. The system AI will extract line counts, scale quantities, and verify background duplication profiles.
+    </p>
+    <div id="store-invoice-intake-viewport-mount"><!-- Module Content Injected Later --></div>
+  </div>
+
+  <!-- STORE MODULE PANEL 2: MATERIAL TICKET BASKET GENERATOR   -->
+  <div id="canvas-module-store-material-request" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+    <h2>📝 Create Outbound Material Request Ticket</h2>
+    <p class="section-subtitle-description" style="color:var(--muted); font-size:0.82rem; margin-top:-6px; margin-bottom:16px;">
+      Compile components required for shop floor panel assembly. Reserving parts applies an instant ghost-stock lockdown protection map across other workshop active terminal stations.
+    </p>
+    <div id="store-material-request-viewport-mount"><!-- Module Content Injected Later --></div>
+  </div>
+
+  <!-- STORE MODULE PANEL 3: MANAGER STOCK RELEASE QUEUE        -->
+  <div id="canvas-module-store-manager-approvals" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+    <h2>⚖️ Pending Stock Releases & Verification Ledger</h2>
+    <div id="store-manager-approvals-viewport-mount"><!-- Module Content Injected Later --></div>
+  </div>
+
+    
+  <!-- STORE MODULE PANEL 4: ADMIN HISTORICAL SEARCH MATRIX     -->
+  <div id="canvas-module-store-history-matrix" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+    <h2>🔍 Search Store Tickets & Operational Analytics</h2>
+    <div id="store-history-matrix-viewport-mount"><!-- Module Content Injected Later --></div>
   </div>
 
   <div id="module-workspace-container" style="display: none;">
@@ -591,6 +688,8 @@
       <div id="multi-contact-records-container"></div>
     </div>
   </div>
+</div> 
+</div>
 </div>
 
 <div id="reusable-child-modules-template" style="display: none;">
@@ -668,7 +767,8 @@
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzTckLPC-v1y9TQgFG_M1OI2y-zBGx-lU89oxxKdtaxl-3Iu2upCZk28E-4W1GkecJ5dA/exec"; 
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxq4X95JBpQe_xilpwrcWemQzBH58lRG9zmX2dtJ7GDh4PHqHxJUavTXhUn8u8XGiis/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -686,6 +786,11 @@ let globalTasksCacheMap = {};
 let globalLocationDatabaseCacheMap = {};
 let cachedInboundEmailLeadsArray = [];
 let activeEmailLeadContextIndex = null;
+
+// --- GLOBAL INVENTORY MODULE STATE STORAGE ---
+let cachedInventoryStockCollection = [];
+let dynamicTicketShoppingBasketArray = [];
+let activeInventoryProjectIdsList = ["PRJ-MUM-01", "PRJ-BLR-02", "PRJ-DEL-03"]; // Default fallbacks; will pull live later
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken"); 
@@ -3035,6 +3140,41 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
   } catch(e) {
     alert("Email database workflow assignment sync crash: " + e.message);
     actionBtn.disabled = false; actionBtn.textContent = "Create New Entry";
+  }
+}
+
+function enforceDynamicModuleRoleGateways(userPermissionsObject) {
+  // Check permission allocations from the Users sheet columns
+  const canUploadInvoice = userPermissionsObject.storeUploadInvoice === true;
+  const canCreateTicket  = userPermissionsObject.storeCreateTicket === true;
+  const canReleaseTicket = userPermissionsObject.storeApproveTickets === true;
+  const canSearchMatrix  = userPermissionsObject.storeAdminMatrix === true;
+  
+  // Outer Department Headers Visibility Toggles
+  const storeHeaderWrapper = document.getElementById("dashboard-store-department-header");
+  const marketingHeaderWrapper = document.getElementById("dashboard-marketing-department-header");
+  
+  // Show/Hide Entire Store Department Wrapper Container
+  if (storeHeaderWrapper) {
+    if (canUploadInvoice || canCreateTicket || canReleaseTicket || canSearchMatrix) {
+      storeHeaderWrapper.style.display = "block";
+    } else {
+      storeHeaderWrapper.style.display = "none";
+    }
+  }
+  
+  // Inline Section-Block Level Visibility Switches
+  if (document.getElementById("nav-item-store-upload")) {
+    document.getElementById("nav-item-store-upload").style.display = canUploadInvoice ? "block" : "none";
+  }
+  if (document.getElementById("nav-item-store-ticket-create")) {
+    document.getElementById("nav-item-store-ticket-create").style.display = canCreateTicket ? "block" : "none";
+  }
+  if (document.getElementById("nav-item-store-approvals")) {
+    document.getElementById("nav-item-store-approvals").style.display = canReleaseTicket ? "block" : "none";
+  }
+  if (document.getElementById("nav-item-store-matrix")) {
+    document.getElementById("nav-item-store-matrix").style.display = canSearchMatrix ? "block" : "none";
   }
 }
 
