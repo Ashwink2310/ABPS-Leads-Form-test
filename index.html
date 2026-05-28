@@ -346,9 +346,9 @@
     </div>
 
     <div id="canvas-module-store-history-matrix" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2>🔍 Search Store Tickets</h2>
+      <h2>Search Store Tickets</h2>
 
-      <div style="background: #7f8183; border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
+      <div style="background: #cfd2d5; border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
         <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--brand); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Search Filter Parameters</span>
         
         <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px;">Filter By Project ID</label>
@@ -1375,12 +1375,23 @@ function collapseNewEntryDropdownFormExplicitly() {
   }
 }
 
+/**
+ * CORE SEARCH DISPATCH PIPELINE
+ * Queries company metadata profiles robustly and secures smooth DOM container alignment
+ */
 async function triggerSequentialSearch(triggerSourceMode) {
-  let comp = ""; let targetName = "";
+  let comp = ""; 
+  let targetName = "";
   let btn = null;
 
-  document.getElementById('success-screen').style.display = 'none';
-  document.getElementById('remaining-sections-form').style.display = 'block';
+  // Safeguard DOM nodes isolation checks
+  const successScreen = document.getElementById('success-screen');
+  const remainingForm = document.getElementById('remaining-sections-form');
+  const missingNoticeBlock = document.getElementById("missing-trigger-notice-block");
+  const inlineCanvas = document.getElementById("step2-inline-interaction-canvas");
+
+  if (successScreen) successScreen.style.display = 'none';
+  if (remainingForm) remainingForm.style.display = 'block';
   
   if (triggerSourceMode === "CARD") {
     comp = document.getElementById("f-company").value;
@@ -1388,20 +1399,24 @@ async function triggerSequentialSearch(triggerSourceMode) {
     btn = document.getElementById("gate-search-btn");
   } else {
     const dropdown = document.getElementById("lookup-module-company-dropdown");
+    if (!dropdown) return;
     comp = dropdown.value;
     targetName = ""; 
     btn = document.getElementById("lookup-module-search-btn");
-    if(!comp) return alert("Select a company first.");
+    if (!comp) return alert("Select a company first.");
     
-    // FIXED: Strip bracketed labels to ensure accurate database row name lookups
+    // Standardize text lookup values by stripping out trailing bracketed metadata notes
     if (comp.indexOf(" (") !== -1) {
       comp = comp.split(" (")[0].trim();
     }
   }
   
   if (!comp) return alert("Specify Company parameters.");
-  
-  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Searching...';
+  if (btn) {
+    btn.disabled = true; 
+    btn.innerHTML = '<div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div> Searching...';
+  }
+
   try {
     const headerRowEnclosure = document.getElementById("canvas-back-btn-enclosure-row");
     if (headerRowEnclosure) {
@@ -1420,11 +1435,14 @@ async function triggerSequentialSearch(triggerSourceMode) {
     });
     const data = await res.json();
     
+    // FIXED: Uniform parent element resolution targeting rules
     const activePanelId = (triggerSourceMode === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
     const activePanel = document.getElementById(activePanelId);
     
-    activePanel.appendChild(document.getElementById("missing-trigger-notice-block"));
-    activePanel.appendChild(document.getElementById("step2-inline-interaction-canvas"));
+    if (activePanel) {
+      if (missingNoticeBlock) activePanel.appendChild(missingNoticeBlock);
+      if (inlineCanvas) activePanel.appendChild(inlineCanvas);
+    }
     
     if (data.success) {
       activeSearchCompany = comp.toString().trim();
@@ -1432,41 +1450,60 @@ async function triggerSequentialSearch(triggerSourceMode) {
       globalTasksCacheMap = data.tasks;
       
       const bannerHook = document.getElementById("split-missing-person-banner-hook");
-      if (!data.nameMatchFound) {
-        bannerHook.innerHTML = `
-          <div class="system-runtime-inline-alert-callout">
-            <span class="alert-callout-text-msg">We have information on the following people from this ${activeSearchCompany}, but not for this ${targetName ? targetName.toString().trim() : "specific person"}.</span>
-            <button class="nav-btn-styled" style="background:#dd6b20;" onclick="revealNewEntryFormDropdownFromBanner()">Create New Entry</button>
-          </div>
-        `;
-      } else {
-        bannerHook.innerHTML = "";
+      if (bannerHook) {
+        if (!data.nameMatchFound) {
+          bannerHook.innerHTML = `
+            <div class="system-runtime-inline-alert-callout">
+              <span class="alert-callout-text-msg">We have information on the following people from this ${activeSearchCompany}, but not for this ${targetName ? targetName.toString().trim() : "specific person"}.</span>
+              <button class="nav-btn-styled" style="background:#dd6b20;" onclick="revealNewEntryFormDropdownFromBanner()">Create New Entry</button>
+            </div>
+          `;
+        } else {
+          bannerHook.innerHTML = "";
+        }
       }
 
       buildMultiContactDirectoryInterface(data.leads, targetName);
       
-      document.getElementById("missing-trigger-notice-block").style.display = "none";
-      if(triggerSourceMode === "CARD") document.getElementById("step1-card-capture-block").style.display = "none";
-      if(triggerSourceMode === "DROPDOWN") document.getElementById("company-dropdown-selector-block").style.display = "none";
+      if (missingNoticeBlock) missingNoticeBlock.style.display = "none";
       
-      document.getElementById("main-global-nav-header-bar").insertBefore(
-        document.getElementById("inline-creation-header-controls-block"),
-        document.getElementById("main-global-nav-header-bar").firstChild
-      );
-      
-      if (currentActiveModuleContext === "CARD" || currentActiveModuleContext === "DROPDOWN") {
-        document.getElementById("global-direct-inline-create-entry-btn").style.display = "inline-flex";
+      if (triggerSourceMode === "CARD") {
+        const step1Block = document.getElementById("step1-card-capture-block");
+        if (step1Block) step1Block.style.display = "none";
       } else {
-        document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
+        const dropdownBlock = document.getElementById("company-dropdown-selector-block");
+        if (dropdownBlock) dropdownBlock.style.display = "none";
       }
-      document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
+      
+      const controlHeaderBtn = document.getElementById("global-direct-inline-create-entry-btn");
+      const controlCollapseBtn = document.getElementById("global-direct-inline-collapse-entry-btn");
+      const globalNavHeaderBar = document.getElementById("main-global-nav-header-bar");
+      const inlineControlsBlock = document.getElementById("inline-creation-header-controls-block");
 
-      document.getElementById("step2-inline-interaction-canvas").style.display = "block";
+      if (globalNavHeaderBar && inlineControlsBlock) {
+        globalNavHeaderBar.insertBefore(inlineControlsBlock, globalNavHeaderBar.firstChild);
+      }
+      
+      // Enforce clean layout context flags
+      const normalizedContext = (triggerSourceMode === "CARD") ? "CARD" : "DROPDOWN";
+      if (controlHeaderBtn) {
+        controlHeaderBtn.style.display = (normalizedContext === "CARD" || normalizedContext === "DROPDOWN") ? "inline-flex" : "none";
+      }
+      if (controlCollapseBtn) controlCollapseBtn.style.display = "none";
+      if (inlineCanvas) inlineCanvas.style.display = "block";
+
     } else {
-      document.getElementById("missing-trigger-notice-block").style.display = "block";
-      document.getElementById("step2-inline-interaction-canvas").style.display = "none";
+      if (missingNoticeBlock) missingNoticeBlock.style.display = "block";
+      if (inlineCanvas) inlineCanvas.style.display = "none";
     }
-  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = triggerSourceMode === "CARD" ? "Search Database" : "Search Company"; }
+  } catch(e) { 
+    alert("Lookup Failed: " + e.message); 
+  } finally { 
+    if (btn) {
+      btn.disabled = false; 
+      btn.innerHTML = triggerSourceMode === "CARD" ? "Search Database" : "Search Company"; 
+    }
+  }
 }
 
 function revealNewEntryFormDropdownFromBanner() {
@@ -3986,8 +4023,23 @@ function executeClientSideStoreTicketFilterSearch() {
     if (ticket.status === "Rejected" || ticket.status === "Expired") badgeColorStyle = "background:#fee2e2; color:#b91c1c;";
 
     // Clean timestamp formats out of visible strings layout parameters fields bounds
-    let cleanCreated = ticket.dateCreated.toString().split(" GMT")[0];
-    let cleanActioned = ticket.dateActioned ? ticket.dateActioned.toString().split(" GMT")[0] : "";
+    const formatTimestampToDropSeconds = (rawDateTimeStr) => {
+      if (!rawDateTimeStr) return "";
+      let baseStr = rawDateTimeStr.toString().split(" GMT")[0].trim();
+      
+      // If string contains time colon structures (e.g. YYYY-MM-DD HH:MM:SS)
+      if (baseStr.includes(":")) {
+        let timeParts = baseStr.split(":");
+        if (timeParts.length >= 3) {
+          // Join only the Hours and Minutes back to the Date line, dropping the seconds cell block
+          return timeParts[0] + ":" + timeParts[1];
+        }
+      }
+      return baseStr;
+    };
+
+    let cleanCreated = formatTimestampToDropSeconds(ticket.dateCreated);
+    let cleanActioned = ticket.dateActioned ? formatTimestampToDropSeconds(ticket.dateActioned) : "";
     let cleanOperatorNameSignature = ticket.actionedBy ? ticket.actionedBy.toString().trim() : "Unprocessed";
 
     // FIXED: Rendered exactly matching your supplied structural template parameters layout row
