@@ -635,7 +635,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxgkmsqpI1k6EMRwVmYK8n1fEXeKk7NaWQgoY1q_1HOwIjHKltQRj17c8I_EA0Ty1dWQQ/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxNApCuKD9cJd8_NP9MQMmBeMWnBSg0FEpdahJcivFTJWaqtWWOtkb7r_LdeaUM9EyRog/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -3083,7 +3083,6 @@ async function initializeMaterialRequestWorkspace() {
   itemDropdown.innerHTML = '<option value="">Synchronizing Material List...</option>';
 
   try {
-    // Run both network queries concurrently via parallel async promises paths
     const [inventoryResponse, projectsResponse] = await Promise.all([
       fetch(GAS_URL, {
         method: "POST",
@@ -3103,13 +3102,13 @@ async function initializeMaterialRequestWorkspace() {
       return;
     }
     
-    // Update global inventory stock memory cache array maps
     cachedInventoryStockCollection = inventoryData.inventory;
     
     // 1. POPULATE DYNAMIC MATERIAL CATALOG CODES
     itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
     cachedInventoryStockCollection.forEach(item => {
       const opt = document.createElement("option");
+      // FIXED: Property value reference mapped cleanly to match your array definitions
       opt.value = item.materialName;
       opt.textContent = item.materialName;
       itemDropdown.appendChild(opt);
@@ -3554,7 +3553,7 @@ async function commitVerifiedInvoiceToInventoryLedger() {
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
             <strong style="font-size:0.95rem;">Invoice Saved Successfully!</strong><br/>
-            <span>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} added to the inventory.</span>
+            <span>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} added to inventory.</span>
           </div>
           <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Upload Another Invoice</button>
         </div>
