@@ -249,7 +249,7 @@
           <div class="card-row">
             <div class="card-box" id="invoice-upload-box" onclick="document.getElementById('invoice-image-file').click()" style="padding: 20px; font-size: 0.9rem;">📷 Select Invoice Image</div>
           </div>
-          <input type="file" id="invoice-image-file" accept="image/*" capture="environment" hidden />
+          <input type="file" id="invoice-image-file" accept="image/*" hidden />
           <button class="btn btn-ai" id="invoice-parse-ai-btn" onclick="parseInboundInvoiceWithAI()" style="margin-top: 8px; font-weight: 700;">Parse Invoice with AI</button>
         </div>
 
@@ -361,11 +361,11 @@
             <div class="section-header">Business Card Information</div>
             <div class="section-body" style="padding: 5px;">
               <div class="card-row">
-                <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side</div>
-                <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Opt)</div>
+                <div class="card-box" id="front-box" onclick="document.getElementById('card-front').click()">📷 Front Side </div>
+                <div class="card-box" id="back-box" onclick="document.getElementById('card-back').click()">📷 Back Side (Optional)</div>
               </div>
-              <input type="file" id="card-front" accept="image/*" capture="environment" hidden />
-              <input type="file" id="card-back" accept="image/*" capture="environment" hidden />
+              <input type="file" id="card-front" accept="image/*" hidden />
+              <input type="file" id="card-back" accept="image/*" hidden />
               <button class="btn btn-ai" id="parse-btn" onclick="parseCard()">Parse Card with AI</button>
               
               <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter company..." />
@@ -742,7 +742,7 @@ async function handleGooglePlatformCredentialResponse(response) {
       if (processingLoader) processingLoader.style.display = "none";
     }
   } catch (e) {
-    alert("Connection verification failure payload dropped: " + e.message);
+    alert("Connection verification failure: " + e.message);
     // RESTORATION FALLBACK: Bring the button back if the network drops out completely
     if (googleBtnMount) googleBtnMount.style.display = "flex";
     if (processingLoader) processingLoader.style.display = "none";
