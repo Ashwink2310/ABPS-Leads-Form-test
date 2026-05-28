@@ -346,36 +346,39 @@
     </div>
 
     <div id="canvas-module-store-history-matrix" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2>Search Store Tickets</h2>
+      <h2>🔍 Search Store Tickets</h2>
+      <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
+        Query historical workshop log profiles using multi-choice parameter combinations. Filter site matrices concurrently.
+      </p>
 
-      <div style="background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
-        <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Search Filter Parameters</span>
+      <div style="background: #f8fafc; border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
+        <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--brand); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Matrix Search Filter Parameters</span>
         
-        <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
-          <div>
-            <label class="field-label" style="font-size: 0.75rem;">Filter By Project ID</label>
-            <select id="matrix-search-project-dropdown" onchange="executeClientSideStoreTicketFilterSearch()" style="padding: 8px;">
-              <option value="">Loading Projects...</option>
-            </select>
-          </div>
+        <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px;">Filter By Project ID Codes</label>
+        <div class="pill-group" id="matrix-search-projects-checkbox-mount" style="margin-bottom:14px;">
+          <p style="font-size:0.75rem; color:var(--muted);">Syncing project references...</p>
+        </div>
+        
+        <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px;">Filter By Verification Status Metrics</label>
+        <div class="pill-group" id="matrix-search-status-checkbox-mount" style="margin-bottom:6px;">
+          <input type="checkbox" name="matrixStatusFilter" value="Pending Approval" id="ms_st_pending" onchange="executeClientSideStoreTicketFilterSearch()">
+          <label for="ms_st_pending">Pending Approval</label>
           
-          <div>
-            <label class="field-label" style="font-size: 0.75rem;">Filter By Ticket Status</label>
-            <select id="matrix-search-status-dropdown" onchange="executeClientSideStoreTicketFilterSearch()" style="padding: 8px;">
-              <option value="">— All Statuses —</option>
-              <option value="Pending Approval">Pending Approval</option>
-              <option value="Approved & Released">Approved & Released</option>
-              <option value="Rejected">Rejected</option>
-              <option value="Expired">Expired</option>
-            </select>
-          </div>
+          <input type="checkbox" name="matrixStatusFilter" value="Approved & Released" id="ms_st_approved" onchange="executeClientSideStoreTicketFilterSearch()">
+          <label for="ms_st_approved">Approved & Released</label>
+          
+          <input type="checkbox" name="matrixStatusFilter" value="Rejected" id="ms_st_rejected" onchange="executeClientSideStoreTicketFilterSearch()">
+          <label for="ms_st_rejected">Rejected</label>
+          
+          <input type="checkbox" name="matrixStatusFilter" value="Expired" id="ms_st_expired" onchange="executeClientSideStoreTicketFilterSearch()">
+          <label for="ms_st_expired">Expired</label>
         </div>
       </div>
 
-      <div id="store-historical-matrix-results-feed" style="display: flex; flex-direction: column; gap: 12px;">
-        </div>
+      <div id="store-historical-matrix-results-feed" style="display: flex; flex-direction: column; gap: 12px;"></div>
     </div>
-    
+
+    </div>
   </div>
 
       <!-- WORKSPACE CONTAINER HUB (MARKETING ACTIONS SLIDERS) -->
@@ -3799,18 +3802,18 @@ async function executeStoreManagerTicketActionDecision(ticketId, decisionString)
   }
 }
 
+
 /**
- * 1. INITIALIZE MATRIX DATABASE LOOKUP
- * Synchronizes the entire StoreTickets historical row stream directly from the spreadsheet log
+ * INITIALIZE MATRIX DATABASE SEARCH LOOKUP
+ * Dynamic array synchronization pulling codes and building option pill rows inside view templates
  */
 async function initializeStoreHistoryMatrixWorkspace() {
   const resultsFeedZone = document.getElementById("store-historical-matrix-results-feed");
-  const projectFilterDropdown = document.getElementById("matrix-search-project-dropdown");
+  const projectsMount = document.getElementById("matrix-search-projects-checkbox-mount");
   
-  document.getElementById("matrix-search-status-dropdown").value = "";
+  if (resultsFeedZone) resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted);">⏳ Synchronizing warehouse ledger blocks...</div>`;
 
   try {
-    // A. Fire off concurrent network hits to pull tickets log row streams and projects dropdown listings
     const [ticketsResponse, projectsResponse] = await Promise.all([
       fetch(GAS_URL, {
         method: "POST",
@@ -3826,44 +3829,51 @@ async function initializeStoreHistoryMatrixWorkspace() {
     const projectsData = await projectsResponse.json();
 
     if (!ticketsData.success || !projectsData.success) {
-      resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--warn);">Verification Failure: ${ticketsData.error || projectsData.error}</div>`;
+      if (resultsFeedZone) resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--warn);">Verification Failure: Sync dropped from database workbook targets.</div>`;
       return;
     }
 
-    // Save items payload map directly inside memory state cache array
     masterStoreTicketsHistoryCacheCollection = ticketsData.tickets;
 
-    // B. Populate Project ID Dropdown Search filters values
-    projectFilterDropdown.innerHTML = '<option value="">— All Project IDs —</option>';
-    projectsData.projects.forEach(code => {
-      const opt = document.createElement("option");
-      opt.value = code; opt.textContent = code;
-      projectFilterDropdown.appendChild(opt);
-    });
+    // Build Project ID Matrix Checkboxes dynamically
+    if (projectsMount) {
+      projectsMount.innerHTML = "";
+      projectsData.projects.forEach(code => {
+        const cleanCode = code.toString().trim();
+        const elementIdString = `chk_matrix_prj_${cleanCode.replace(/\s+/g, '_')}`;
+        projectsMount.innerHTML += `
+          <input type="checkbox" name="matrixProjectFilter" value="${cleanCode}" id="${elementIdString}" onchange="executeClientSideStoreTicketFilterSearch()">
+          <label for="${elementIdString}">${cleanCode}</label>
+        `;
+      });
+    }
 
-    // C. Initial render of complete unfiltered historic log list lines
+    // Render baseline unfiltered log output lines
     executeClientSideStoreTicketFilterSearch();
 
   } catch (error) {
-    resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--warn);">Network Error: ${error.message}</div>`;
+    if (resultsFeedZone) resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--warn);">Network Exception: ${error.message}</div>`;
   }
 }
 
 /**
- * 2. RUN CLIENT-SIDE MATRIX SEARCH FILTER ENGINE
- * Parses memory arrays properties directly on the phone to execute instant results filtering
+ * CLIENT-SIDE INTERACTIVE MATRIX SEARCH FILTER ENGINE
+ * Performs instant cross-filtering using array structures directly inside the browser viewport frame
  */
 function executeClientSideStoreTicketFilterSearch() {
-  const targetProjectFilter = document.getElementById("matrix-search-project-dropdown").value.trim().toLowerCase();
-  const targetStatusFilter  = document.getElementById("matrix-search-status-dropdown").value.trim().toLowerCase();
-  const resultsFeedZone      = document.getElementById("store-historical-matrix-results-feed");
+  const resultsFeedZone = document.getElementById("store-historical-matrix-results-feed");
+  if (!resultsFeedZone) return;
+
+  // Gather arrays of checked item choices values patterns
+  const checkedProjects = Array.from(document.querySelectorAll('input[name="matrixProjectFilter"]:checked')).map(cb => cb.value.toLowerCase().trim());
+  const checkedStatuses = Array.from(document.querySelectorAll('input[name="matrixStatusFilter"]:checked')).map(cb => cb.value.toLowerCase().trim());
 
   resultsFeedZone.innerHTML = "";
 
-  // Filter cache lists matching user parameters dropdown states anchors
+  // Evaluate matches. If an array filter block is completely clear, treat it as "Select All"
   const filteredOutputList = masterStoreTicketsHistoryCacheCollection.filter(ticket => {
-    const matchProject = !targetProjectFilter || ticket.projectId.trim().toLowerCase() === targetProjectFilter;
-    const matchStatus  = !targetStatusFilter  || ticket.status.trim().toLowerCase() === targetStatusFilter;
+    const matchProject = (checkedProjects.length === 0 || checkedProjects.indexOf(ticket.projectId.trim().toLowerCase()) !== -1);
+    const matchStatus  = (checkedStatuses.length === 0 || checkedStatuses.indexOf(ticket.status.trim().toLowerCase()) !== -1);
     return matchProject && matchStatus;
   });
 
@@ -3872,22 +3882,21 @@ function executeClientSideStoreTicketFilterSearch() {
     return;
   }
 
-  // Loop and print tailored summary layout cards block data rows matching definitions
+  // Render out the filtered cards feed
   filteredOutputList.forEach(ticket => {
     const card = document.createElement("div");
     card.className = "contact-summary-card-parent";
-    card.style.cssText = "background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:12px; text-align:left; box-shadow:0 1px 3px rgba(0,0,0,0.01);";
+    card.style.cssText = "background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:12px; text-align:left; box-shadow:0 1px 3px rgba(0,0,0,0.01); margin-bottom:10px;";
 
     let itemsArray = [];
     try { itemsArray = JSON.parse(ticket.itemsJson); } catch(e) { itemsArray = []; }
 
     let itemsTableRowsHtml = "";
     itemsArray.forEach(i => {
-      itemsTableRowsHtml += `<tr><td style="padding:4px; color:var(--text); font-weight:600;">${i.materialName}</td><td style="padding:4px; font-family:monospace; font-weight:700;">${i.quantity} ${i.unitType}</td></tr>`;
+      itemsTableRowsHtml += `<tr><td style="padding:4px; color:var(--text); font-weight:600;">${i.materialName}</td><td style="padding:4px; font-family:monospace; font-weight:700; text-align:right;">${i.quantity} ${i.unitType}</td></tr>`;
     });
 
-    // Color code status badges context tags for rapid visibility scans
-    let badgeColorStyle = "background:#fef3c7; color:#b45309;"; // Yellow default pending
+    let badgeColorStyle = "background:#fef3c7; color:#b45309;"; 
     if (ticket.status === "Approved & Released") badgeColorStyle = "background:#dcfce7; color:#15803d;";
     if (ticket.status === "Rejected" || ticket.status === "Expired") badgeColorStyle = "background:#fee2e2; color:#b91c1c;";
 
