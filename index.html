@@ -235,7 +235,7 @@
       
       <div class="navigation-action-header-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; margin-bottom: 16px; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius);">
         <div style="display: flex; align-items: center; gap: 16px;">
-          <button class="nav-btn-styled" style="background: var(--brand); padding: 6px 18px;" onclick="triggerLiveWarehouseStockMetricsSync()">Sync</button>
+          <button class="nav-btn-styled" id="live-stock-sync-btn" style="background: var(--brand); padding: 6px 18px; display: inline-flex; align-items: center; gap: 6px;" onclick="triggerLiveWarehouseStockMetricsSync()">Sync</button>
           <span style="font-size: 1.1rem; font-weight: 700; color: var(--text); letter-spacing: 0.2px;">Live Store Stock</span>
         </div>
         <button class="nav-btn-styled" onclick="exitStoreWorkspacePanelBackToMenu()" style="background: var(--brand); padding: 6px 16px;">Return to Main Dashboard</button>
@@ -4117,11 +4117,31 @@ function executeClientSideStoreTicketFilterSearch() {
 
 /**
  * REFRESH REAL-TIME LIVE INVENTORY STRIP METRICS
- * Queries balances from master workbook catalog and populates dashboard inline cards grids lookups
+ * Queries balances from master workbook catalog with interactive button state loader animations.
  */
 async function triggerLiveWarehouseStockMetricsSync() {
   const mountZone = document.getElementById("dashboard-live-inventory-metrics-mount-zone");
+  const syncBtn = document.getElementById("live-stock-sync-btn");
   if (!mountZone) return;
+
+  // --- START LOADING ANIMATION ---
+  if (syncBtn) {
+    syncBtn.disabled = true;
+    syncBtn.style.opacity = "0.7";
+    syncBtn.innerHTML = `
+      <div class="spinner" style="
+        display: inline-block; 
+        width: 12px; 
+        height: 12px; 
+        border: 2px solid rgba(255,255,255,0.3); 
+        border-top-color: #ffffff; 
+        border-radius: 50%; 
+        animation: spin 0.6s linear infinite;
+        vertical-align: middle;
+      "></div>
+      <span>Syncing...</span>
+    `;
+  }
 
   try {
     const res = await fetch(GAS_URL, {
@@ -4138,15 +4158,13 @@ async function triggerLiveWarehouseStockMetricsSync() {
         const metricCard = document.createElement("div");
         metricCard.style.cssText = "background: #f8fafc; border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; min-width: 0;";
 
-        // Enforce rapid visual triage color assignments based on stock availability limits
-        let colorProfileStyle = "color: #15803d; background: #dcfce7;"; // Healthy green background setup
+        let colorProfileStyle = "color: #15803d; background: #dcfce7;"; 
         if (item.availableStock === 0) {
-          colorProfileStyle = "color: #b91c1c; background: #fee2e2;"; // Empty red background setup
+          colorProfileStyle = "color: #b91c1c; background: #fee2e2;"; 
         } else if (item.availableStock <= item.reorderLevel) {
-          colorProfileStyle = "color: #b45309; background: #fef3c7;"; // Low yellow background setup
+          colorProfileStyle = "color: #b45309; background: #fef3c7;"; 
         }
 
-        // Clean up formatting display strings by dropping noisy newline tokens
         let cleanLabelText = item.materialName.toString().replace(/\n/g, " ").trim();
 
         metricCard.innerHTML = `
@@ -4163,7 +4181,14 @@ async function triggerLiveWarehouseStockMetricsSync() {
     }
   } catch (error) {
     console.error("Live inventory polling thread dropped:", error);
-    mountZone.innerHTML = `<p style="font-size: 0.75rem; color: var(--warn); grid-column: 1 / -1; text-align: center;">Sync Exception: Couldn't refresh active inventory balances.</p>`;
+    mountZone.innerHTML = `<p style="font-size: 0.75rem; color: var(--warn); grid-column: 1 / -1; text-align: center;">⚠️ Sync Exception: Couldn't refresh active inventory balances.</p>`;
+  } finally {
+    // --- RESET BUTTON STATE ---
+    if (syncBtn) {
+      syncBtn.disabled = false;
+      syncBtn.style.opacity = "1";
+      syncBtn.innerHTML = "Sync";
+    }
   }
 }
 
