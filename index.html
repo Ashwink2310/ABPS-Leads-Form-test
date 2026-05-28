@@ -604,7 +604,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyToHn1Oa5-Nr298WuQ94Qw3kqXPmya4avLLjOpGkQO_EZcpmV2YK7GvJ7QNIdFFCyG0w/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxXJezRcroXjJt7bzqC3DH1jigDrtsKPv_9K93_IPceFbrfOl3AfuRJCH77BMlcIEsZeA/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -628,7 +628,6 @@ let cachedInventoryStockCollection = [];
 let dynamicTicketShoppingBasketArray = [];
 let targetInvoiceUploadFileObject = null;
 let activeParsedInvoicePayloadCache = null;
-let activeInventoryProjectIdsList = ["PRJ-MUM-01", "PRJ-BLR-02", "PRJ-DEL-03"]; // Default fallbacks; will pull live later
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken"); 
@@ -3038,8 +3037,8 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
 }
 
 /**
- * 1. INITIALIZE OUTBOUND WORKSPACE
- * Pulls master catalogs and project drop lists from the backend spreadsheet logs
+ * INITIALIZE OUTBOUND WORKSPACE (DYNAMIC WORKBOOK SYNC ENGINE)
+ * Synchronizes both master component balances and live Project IDs out of Google Sheets simultaneously
  */
 async function initializeMaterialRequestWorkspace() {
   const projectDropdown = document.getElementById("ticket-project-id-dropdown");
@@ -3048,26 +3047,34 @@ async function initializeMaterialRequestWorkspace() {
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
   clearFullBasketDraftState();
 
+  projectDropdown.innerHTML = '<option value="">⏳ Syncing active projects...</option>';
+  itemDropdown.innerHTML = '<option value="">⏳ Synchronizing catalog matrix...</option>';
+
   try {
-    // Dispatch query to pull updated live quantities
-    const response = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "pullLiveInventoryCounts",
-        sessionToken: localStorage.getItem("sessionToken")
+    // Run both network queries concurrently via parallel async promises paths
+    const [inventoryResponse, projectsResponse] = await Promise.all([
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })
+      }),
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") })
       })
-    });
+    ]);
     
-    const data = await response.json();
-    if (!data.success) {
-      alert("Inventory sync failed: " + data.error);
+    const inventoryData = await inventoryResponse.json();
+    const projectsData = await projectsResponse.json();
+    
+    if (!inventoryData.success || !projectsData.success) {
+      alert("Inventory Core Sync Drop: " + (inventoryData.error || projectsData.error));
       return;
     }
     
-    // Store data inside cache structure matrix
-    cachedInventoryStockCollection = data.inventory;
+    // Update global inventory stock memory cache array maps
+    cachedInventoryStockCollection = inventoryData.inventory;
     
-    // Populate Material Catalog Drops
+    // 1. POPULATE DYNAMIC MATERIAL CATALOG CODES
     itemDropdown.innerHTML = '<option value="">— Select Component —</option>';
     cachedInventoryStockCollection.forEach(item => {
       const opt = document.createElement("option");
@@ -3076,18 +3083,17 @@ async function initializeMaterialRequestWorkspace() {
       itemDropdown.appendChild(opt);
     });
 
-    // Populate Project Context Drop list options 
-    // (Note: In a later phase, we can alter this to pull live from your project worksheet tab)
-    projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
-    activeInventoryProjectIdsList.forEach(id => {
+    // 2. POPULATE REAL-TIME LIVE PROJECTS DROPDOWN OPTIONS
+    projectDropdown.innerHTML = '<option value="">— Select Target Site Project ID —</option>';
+    projectsData.projects.forEach(projectIdString => {
       const opt = document.createElement("option");
-      opt.value = id;
-      opt.textContent = id;
+      opt.value = projectIdString;
+      opt.textContent = projectIdString;
       projectDropdown.appendChild(opt);
     });
 
   } catch (error) {
-    alert("Network sync drop: " + error.message);
+    alert("Network transmission sync exception: " + error.message);
   }
 }
 
