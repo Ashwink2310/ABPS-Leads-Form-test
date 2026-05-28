@@ -348,7 +348,7 @@
     <div id="canvas-module-store-history-matrix" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <h2>Search Store Tickets</h2>
 
-      <div style="background: #cfd2d5; border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
+      <div style="background: #f8fafc; border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
         <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--brand); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Search Filter Parameters</span>
         
         <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px;">Filter By Project ID</label>
@@ -943,7 +943,12 @@ function formatCleanDateOnly(rawStr) {
 
 async function loadCityStateFilterOptions() {
   const btn = document.getElementById("city-state-search-submit-btn");
-  if(btn) btn.disabled = true;
+  const stateMount = document.getElementById("location-state-checkboxes-mount");
+  
+  if (stateMount) {
+    stateMount.innerHTML = `<p style="font-size:0.75rem; color:var(--muted); padding:4px 0;">⏳ Loading authorized regional states mapping...</p>`;
+  }
+  if (btn) btn.disabled = true;
   
   try {
     const res = await fetch(GAS_URL, {
@@ -956,33 +961,46 @@ async function loadCityStateFilterOptions() {
     });
     const data = await res.json();
     if (data.success) {
+      // FIXED: Safely assign the downloaded database dictionary tree directly to your global map variable
       globalLocationDatabaseCacheMap = data.tree;
       renderStateCheckboxPillElements();
+    } else {
+      if (stateMount) stateMount.innerHTML = `<p style="font-size:0.75rem; color:var(--warn);">Failed to sync locations ledger: ${data.error}</p>`;
     }
   } catch (e) {
-    alert("Location dictionary configuration indexing failure dropped: " + e.message);
+    console.error("Geographic dictionary fetch exception:", e);
+    if (stateMount) stateMount.innerHTML = `<p style="font-size:0.75rem; color:var(--warn);">Network Error loading location lookups</p>';`;
   } finally {
-    if(btn) btn.disabled = false;
+    if (btn) btn.disabled = false;
   }
 }
 
 function renderStateCheckboxPillElements() {
   const mountPoint = document.getElementById("location-state-checkboxes-mount");
   const cityMountPoint = document.getElementById("location-city-checkboxes-mount");
-  mountPoint.innerHTML = "";
-  cityMountPoint.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600;">Select at least one active state location region profile block above to generate city filters...</p>';
   
-  const statesList = Object.keys(globalLocationDatabaseCacheMap).sort();
-  if(statesList.length === 0) {
-    mountPoint.innerHTML = '<p style="font-size:0.75rem; color:var(--muted);">No geographic metrics compiled inside spreadsheet profiles database references rows.</p>';
+  if (!mountPoint) return;
+  mountPoint.innerHTML = "";
+  
+  if (cityMountPoint) {
+    cityMountPoint.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600;">Select at least one active state parameter above to unpack city filters...</p>';
+  }
+  
+  // FIXED: Robust lookups extraction checking if data exists inside global tracking cache maps
+  if (!globalLocationDatabaseCacheMap || Object.keys(globalLocationDatabaseCacheMap).length === 0) {
+    mountPoint.innerHTML = '<p style="font-size:0.75rem; color:var(--muted);">No active geographic profiles mapped inside your database workbook tab yet.</p>';
     return;
   }
   
+  const statesList = Object.keys(globalLocationDatabaseCacheMap).sort();
   statesList.forEach(state => {
-     const cleanId = "state_chk_" + state.replace(/\s+/g, '_');
+     const cleanStateName = state.toString().trim();
+     const cleanId = "state_chk_" + cleanStateName.replace(/\s+/g, '_');
+     
+     // FIXED: Generates checkboxes explicitly pointing to your updated whitespace-insensitive methods names
      mountPoint.innerHTML += `
-       <input type="checkbox" name="searchStateFilter" value="${state}" id="${cleanId}" onchange="handleStatePillSelectionChangeContext()">
-       <label for="${cleanId}">${state}</label>
+       <input type="checkbox" name="searchStateFilter" value="${cleanStateName}" id="${cleanId}" onchange="handleStatePillSelectionChangeContext()">
+       <label for="${cleanId}">${cleanStateName}</label>
      `;
   });
 }
@@ -4001,7 +4019,7 @@ function executeClientSideStoreTicketFilterSearch() {
   });
 
   if (filteredOutputList.length === 0) {
-    resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; background:#fff; border:1px solid var(--border); border-radius:4px; color:var(--muted); font-size:0.85rem;">No historical tickets matched your current search parameters combination.</div>`;
+    resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; background:#fff; border:1px solid var(--border); border-radius:4px; color:var(--muted); font-size:0.85rem;">No tickets matched your current search combination.</div>`;
     return;
   }
 
