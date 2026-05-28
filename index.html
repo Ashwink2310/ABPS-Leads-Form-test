@@ -192,36 +192,36 @@
 
   <div id="dashboard-view" style="padding: 16px 12px; display: flex; flex-direction: column; gap: 20px;">
     
+    <!-- MARKETING DEPARTMENT BUTTONS INTERFACE GRID MAP -->
     <div id="dashboard-marketing-department-header-block">
       <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Marketing Department</h2>
       
-      <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr; gap: 12px;">
-        <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')"><div class="menu-title">Enter Card Details</div></div>
-        <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')"><div class="menu-title">Search by Company Name</div></div>
+      <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
+        <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')">Enter Card Details</div>
+        <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')">Search by Company Name</div>
         
-        <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailLeads')" style="grid-column: 1 / -1; border: 2px solid var(--border); background: var(--card); color: var(--text); padding: 20px;">
-          <div class="menu-title">Email Leads</div>
-        </div>
+        <!-- STANDARDIZED: Spans full width but mirrors identical internal padding, sizing, and typography parameters -->
+        <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailLeads')" style="grid-column: span 2;">Email Leads</div>
         
-        <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')"><div class="menu-title">Search Tasks by Engineer Name</div></div>
-        <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')"><div class="menu-title">Search by Lead Status</div></div>
-        <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')"><div class="menu-title">Search by Qualification</div></div>
-        <div class="menu-card" id="mod-city-state" onclick="navigateToModule('searchCityState')"><div class="menu-title">Search by City and State</div></div>
+        <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')">Search Tasks by Engineer Name</div>
+        <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')">Search by Lead Status</div>
+        <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')">Search by Qualification</div>
+        <div class="menu-card" id="mod-city-state" onclick="navigateToModule('searchCityState')">Search by City and State</div>
       </div>
     </div>
 
+    <!-- STORE DEPARTMENT BUTTONS INTERFACE GRID MAP -->
     <div id="dashboard-store-department-header-block" style="display: none;">
       <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Store Department</h2>
       
-      <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr; gap: 12px; padding: 0 0 16px;">
-        <div class="menu-card" id="mod-live-store-stock" onclick="navigateToStoreWorkspacePanel('store-live-stock')" style="display: none; grid-column: 1 / -1; background: var(--card); border: 2px solid var(--border); padding: 20px;">
-          <div class="menu-title" style="font-size: 1.05rem; color: var(--brand);">Live Store Stock</div>
-        </div>
+      <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
+        <!-- STANDARDIZED: Spans full width but mirrors identical internal padding, sizing, and typography parameters -->
+        <div class="menu-card" id="mod-live-store-stock" onclick="navigateToStoreWorkspacePanel('store-live-stock')" style="grid-column: span 2; color: var(--brand);">Live Store Stock</div>
 
-        <div class="menu-card" id="mod-store-upload" onclick="navigateToStoreWorkspacePanel('store-invoice-intake')" style="display: none;"><div class="menu-title">Store Upload Invoice</div></div>
-        <div class="menu-card" id="mod-store-ticket" onclick="navigateToStoreWorkspacePanel('store-material-request')" style="display: none;"><div class="menu-title">Store Create Ticket</div></div>
-        <div class="menu-card" id="mod-store-approvals" onclick="navigateToStoreWorkspacePanel('store-manager-approvals')" style="display: none;"><div class="menu-title">Store Approve Tickets</div></div>
-        <div class="menu-card" id="mod-store-matrix" onclick="navigateToStoreWorkspacePanel('store-history-matrix')" style="display: none;"><div class="menu-title">Search Store Tickets</div></div>
+        <div class="menu-card" id="mod-store-upload" onclick="navigateToStoreWorkspacePanel('store-invoice-intake')">Store Upload Invoice</div>
+        <div class="menu-card" id="mod-store-ticket" onclick="navigateToStoreWorkspacePanel('store-material-request')">Store Create Ticket</div>
+        <div class="menu-card" id="mod-store-approvals" onclick="navigateToStoreWorkspacePanel('store-manager-approvals')">Store Approve Tickets</div>
+        <div class="menu-card" id="mod-store-matrix" onclick="navigateToStoreWorkspacePanel('store-history-matrix')">Search Store Tickets</div>
       </div>
     </div>
   </div> 
@@ -231,13 +231,18 @@
       <div></div> <button class="nav-btn-styled" onclick="exitStoreWorkspacePanelBackToMenu()">Return to Main Dashboard</button>
     </div>
 
-    <div id="canvas-module-store-live-stock" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+    <div id="canvas-module-store-live-stock" class="workspace-panel" style="display:none;">
       
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
-        <button class="nav-btn-styled" style="background: var(--brand); padding: 6px 16px;" onclick="triggerLiveWarehouseStockMetricsSync()">Sync</button>
-        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text); margin: 0;">Live Store Stock</h2>
+      <!-- Top Dynamic Action Control Header Row Box -->
+      <div class="navigation-action-header-row" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; margin-bottom: 12px; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <button class="nav-btn-styled" style="background: var(--brand); padding: 5px 14px;" onclick="triggerLiveWarehouseStockMetricsSync()">Sync</button>
+          <span style="font-size: 1.05rem; font-weight: 700; color: var(--text); letter-spacing: 0.2px;">Live Store Stock</span>
+        </div>
+        <!-- <button class="nav-btn-styled" onclick="exitStoreWorkspacePanelBackToMenu()" style="background: #4a5568;">Return to Main Dashboard</button> -->
       </div>
 
+      <!-- Optimized Main Materials Data Canvas Grid Container Box -->
       <div style="background: var(--highlight-bg); border: 1.5px solid var(--border); border-left: 4px solid var(--brand); padding: 16px; border-radius: var(--radius); text-align: left;">
         <div id="dashboard-live-inventory-metrics-mount-zone" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
           <p style="font-size: 0.85rem; color: var(--muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Syncing active material logs...</p>
