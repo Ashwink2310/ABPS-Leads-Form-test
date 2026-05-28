@@ -234,13 +234,13 @@
       <div></div> <button class="nav-btn-styled" onclick="exitStoreWorkspacePanelBackToMenu()" style="background:#4a5568;">Return to Main Dashboard</button>
     </div>
 
-    <!-- STORE MODULE PANEL 1: INBOUND INVOICE INGEST WORKSPACE -->
+    <!-- STORE MODULE PANEL 1: INBOUND INVOICE ADD WORKSPACE -->
     <div id="canvas-module-store-invoice-intake" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <h2>Store Upload Invoice</h2>
       <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
         Upload a phone photo or digital scan of your signed vendor invoice.
       </p>
-      
+      <div id="store-invoice-runtime-inline-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
       <div class="section" style="background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius);">
         
         <!-- Upload Drop Zone Row -->
@@ -270,7 +270,7 @@
               <thead>
                 <tr>
                   <th>Invoice Line Details (As Read)</th>
-                  <th>Mapped Standard Name</th>
+                  <th>Standard Name</th>
                   <th style="width: 100px;">Invoice Qty</th>
                   <th style="width: 130px; color: var(--brand);">Physically Received Qty *</th>
                 </tr>
@@ -284,7 +284,7 @@
           <!-- Final Submit Action Controls -->
           <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border); padding-top: 14px;">
             <button class="nav-btn-styled" onclick="resetInvoiceUploadIntakeState()" style="background: #718096;">Cancel</button>
-            <button class="nav-btn-styled" id="invoice-submit-ledger-btn" onclick="commitVerifiedInvoiceToInventoryLedger()" style="background: var(--accent); padding: 8px 25px; font-weight: 700;">Verify & Ingest Stock</button>
+            <button class="nav-btn-styled" id="invoice-submit-ledger-btn" onclick="commitVerifiedInvoiceToInventoryLedger()" style="background: var(--accent); padding: 8px 25px; font-weight: 700;">Verify & Add Stock</button>
           </div>
 
         </div>
@@ -301,7 +301,7 @@
         </div>
 
         <div style="background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: var(--radius); margin-bottom: 16px;">
-          <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Add Component Line Item</span>
+          <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Add Item</span>
           <div style="display: flex; gap: 10px; align-items: flex-end;">
             <div style="flex-grow: 1;">
               <label class="field-label" style="font-size: 0.75rem;">Material Description</label>
@@ -317,7 +317,7 @@
         </div>
 
         <div style="margin-bottom: 20px; overflow-x: auto;">
-          <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--brand); text-transform: uppercase; margin-bottom: 6px;">Draft Material Specification Basket</span>
+          <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--brand); text-transform: uppercase; margin-bottom: 6px;">Material Basket</span>
           <table class="store-basket-data-table" id="shopping-basket-preview-table">
             <thead>
               <tr><th>Material Name</th><th>Required Quantity</th><th>Unit</th><th style="width: 60px; text-align: center;">Action</th></tr>
@@ -3078,7 +3078,7 @@ async function initializeMaterialRequestWorkspace() {
 
     // Populate Project Context Drop list options 
     // (Note: In a later phase, we can alter this to pull live from your project worksheet tab)
-    projectDropdown.innerHTML = '<option value="">— Select Target Site Project ID —</option>';
+    projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
     activeInventoryProjectIdsList.forEach(id => {
       const opt = document.createElement("option");
       opt.value = id;
@@ -3110,7 +3110,18 @@ function updateSelectedLiveStockPillCounter() {
     if (match.availableStock === 0) styleClass = "pill-stock-empty";
     else if (match.availableStock <= match.reorderLevel) styleClass = "pill-stock-low";
     
-    counterZone.innerHTML = `Real-time Stock Count: <span class="live-counter-pill ${styleClass}">${match.availableStock} ${match.unitType} Available</span> (Reserved: ${match.reservedStock})`;
+    // UPDATED: Font sizing boosted to 1.1rem, margins balanced, and text styled bold
+    counterZone.innerHTML = `
+      <div style="margin: 12px 0 4px; font-size: 0.9rem; font-weight: 700; color: var(--text);">
+        Real-time Stock Count: 
+        <span class="live-counter-pill ${styleClass}" style="font-size: 1.1rem; padding: 4px 10px; margin-left: 4px; letter-spacing: 0.5px;">
+          ${match.availableStock} ${match.unitType} Available
+        </span> 
+        <span style="font-size: 0.8rem; color: var(--muted); margin-left: 8px; font-weight: normal;">
+          (Reserved: ${match.reservedStock} ${match.unitType})
+        </span>
+      </div>
+    `;
   }
 }
 
@@ -3121,30 +3132,35 @@ function updateSelectedLiveStockPillCounter() {
 function addItemToShoppingBasketRow() {
   const itemSelect = document.getElementById("ticket-item-selection-dropdown");
   const qtyInput = document.getElementById("ticket-item-quantity-input");
+  const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
   
   const materialName = itemSelect.value;
   const quantity = parseInt(qtyInput.value, 10);
   
+  feedbackBanner.style.display = "none"; // Hide any existing notifications
+  
   if (!materialName || isNaN(quantity) || quantity <= 0) {
-    alert("Validation Error: Please pick a valid item component and assign a positive numeric count.");
+    feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px;";
+    feedbackBanner.innerHTML = `<strong>Validation Warning:</strong> Please select an item and input a positive numeric quantity.`;
     return;
   }
   
   const itemData = cachedInventoryStockCollection.find(i => i.materialName === materialName);
   if (!itemData) return;
   
-  // Ghost-Stock Check: Make sure request threshold doesn't exceed true immediate shelf count
+  // GHOST-STOCK INLINE REPLACEMENT WARNING BANNER
   if (quantity > itemData.availableStock) {
-    alert(`Ghost-Stock Alert: You are attempting to reserve ${quantity} units, but only ${itemData.availableStock} are currently remaining on the shelves.`);
+    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
+    feedbackBanner.innerHTML = `You are attempting to reserve ${quantity} units, but only ${itemData.availableStock} are currently available.`;
     return;
   }
   
-  // Handle duplicate row configurations by merging entries together inside the basket array
   const existingLineItem = dynamicTicketShoppingBasketArray.find(i => i.materialName === materialName);
   if (existingLineItem) {
     const projectedNewQty = existingLineItem.quantity + quantity;
     if (projectedNewQty > itemData.availableStock) {
-      alert(`Ghost-Stock Alert: Aggregate row total (${projectedNewQty}) exceeds remaining raw shelf space stock limit of ${itemData.availableStock}.`);
+      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
+      feedbackBanner.innerHTML = `Basket total (${projectedNewQty}) exceeds remaining shelf limit of ${itemData.availableStock}.`;
       return;
     }
     existingLineItem.quantity = projectedNewQty;
@@ -3156,7 +3172,6 @@ function addItemToShoppingBasketRow() {
     });
   }
   
-  // Clear layout input controls and rebuild preview card rows
   qtyInput.value = "";
   renderDraftBasketTableViewportRows();
 }
@@ -3168,7 +3183,7 @@ function renderDraftBasketTableViewportRows() {
   const tbody = document.getElementById("shopping-basket-table-body");
   
   if (dynamicTicketShoppingBasketArray.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">Your request ticket basket is currently empty.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">Your request basket is currently empty.</td></tr>`;
     return;
   }
   
@@ -3204,48 +3219,62 @@ function clearFullBasketDraftState() {
 async function submitMaterialRequestTicketToBackend() {
   const projectId = document.getElementById("ticket-project-id-dropdown").value;
   const submitBtn = document.getElementById("submit-ticket-final-btn");
+  const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
+  
+  feedbackBanner.style.display = "none";
   
   if (!projectId) {
-    alert("Project ID is Compulsory input");
+    feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px;";
+    feedbackBanner.innerHTML = `<strong>Compulsory Input Missing:</strong> Project ID is required.`;
     return;
   }
   
   if (dynamicTicketShoppingBasketArray.length === 0) {
-    alert("Validation failure: Cannot process submission frames on an empty draft allocation stream.");
+    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 10px; margin-bottom: 12px;";
+    feedbackBanner.innerHTML = `<strong>Error:</strong> Cannot process submissions on an Empty Basket`;
     return;
   }
   
   submitBtn.disabled = true;
-  submitBtn.innerHTML = "Generating Reservation Ticket...";
+  submitBtn.innerHTML = "Generating Ticket...";
   
   try {
     const payload = {
       action: "submitEngineerMaterialTicket",
       sessionToken: localStorage.getItem("sessionToken"),
-      activeEngineer: appActiveOperatorIdentityString, // Automatically pulled from current user identity
+      activeEngineer: appActiveOperatorIdentityString,
       projectId: projectId,
       itemsClusterArray: dynamicTicketShoppingBasketArray
     };
     
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-    
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
     const result = await res.json();
+    
     if (result.success) {
-      alert(`Success! Ticket created successfully.\nAssigned System Reference ID: ${result.ticketId}`);
+      // SUCCESS TICKETS INLINE RENDER OVERRIDE
+      feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 14px; margin-bottom: 16px;";
+      feedbackBanner.innerHTML = `<strong>Success! Ticket Created Successfully.</strong><br/>Assigned System Reference ID: <span style="font-family:monospace; font-weight:800;">${result.ticketId}</span>`;
+      
       clearFullBasketDraftState();
       document.getElementById("ticket-project-id-dropdown").value = "";
       document.getElementById("ticket-item-selection-dropdown").value = "";
       document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
+      
+      // Delay screen exit so they can jot down or see the generated Ticket code reference safely
+      setTimeout(() => {
+        feedbackBanner.style.display = "none";
+        exitStoreWorkspacePanelBackToMenu();
+      }, 3500);
+      
     } else {
-      alert("Submission Rejected: " + result.error);
+      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
+      feedbackBanner.innerHTML = `<strong>Submission Rejected:</strong> ${result.error}`;
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = "Generate Material Ticket";
     }
-    
   } catch (err) {
-    alert("Network transmission block: " + err.message);
-  } finally {
+    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
+    feedbackBanner.innerHTML = `<strong>Network Exception Dropped:</strong> ${err.message}`;
     submitBtn.disabled = false;
     submitBtn.innerHTML = "Generate Material Ticket";
   }
@@ -3430,22 +3459,22 @@ function renderInvoiceDualSignOffVerificationWorkspace() {
 async function commitVerifiedInvoiceToInventoryLedger() {
   const submitBtn = document.getElementById('invoice-submit-ledger-btn');
   const overrideQtyInputs = document.querySelectorAll('.invoice-verification-physical-override-qty');
+  const feedbackBanner = document.getElementById('store-invoice-runtime-inline-feedback-banner');
   
   let finalizedActualPhysicalQuantitiesArray = [];
-  
-  // Package adjusted physical counts parameters out of display list cells
   overrideQtyInputs.forEach(inputNode => {
     const idx = parseInt(inputNode.dataset.arrayIndex, 10);
     const verifiedPhysicalCount = parseInt(inputNode.value, 10);
-    
     let sourceLineData = activeParsedInvoicePayloadCache.lineItems[idx];
     sourceLineData.verifiedPhysicalQuantity = isNaN(verifiedPhysicalCount) ? 0 : verifiedPhysicalCount;
-    
     finalizedActualPhysicalQuantitiesArray.push(sourceLineData);
   });
 
   submitBtn.disabled = true;
   submitBtn.innerHTML = "Ingesting Stock Balances...";
+  
+  // Clear any old alert styles cleanly
+  feedbackBanner.style.display = "none";
 
   try {
     const res = await fetch(GAS_URL, {
@@ -3460,21 +3489,33 @@ async function commitVerifiedInvoiceToInventoryLedger() {
           invoiceDate: activeParsedInvoicePayloadCache.invoiceDate
         },
         actualPhysicalQuantities: finalizedActualPhysicalQuantitiesArray,
-        driveFileUrl: "STUB_MOCK_DRIVE_LINK_PLACEHOLDER" // Will generate true file anchors in drive phase later
+        driveFileUrl: "STUB_MOCK_DRIVE_LINK_PLACEHOLDER"
       })
     });
 
     const output = await res.json();
     if (output.success) {
-      alert(`Stock Ingestion Successful!\nInvoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} processed cleanly into database tracking profiles.`);
+      // INLINE SUCCESS DISPLAY REPLACE: Show on-screen banner message block
+      feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 14px; margin-bottom: 16px;";
+      feedbackBanner.innerHTML = `<strong>Stock Addition Successful!</strong><br/>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} processed cleanly into database tracking profiles.`;
+      
       resetInvoiceUploadIntakeState();
-      exitStoreWorkspacePanelBackToMenu();
+      
+      // Delays returning to main dashboard menu grid for 3 seconds so you can actually read the message line
+      setTimeout(() => {
+        feedbackBanner.style.display = "none";
+        exitStoreWorkspacePanelBackToMenu();
+      }, 3000);
+      
     } else {
-      alert("Ingestion Rejected by Database Core: " + output.error);
+      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 14px; margin-bottom: 16px;";
+      feedbackBanner.innerHTML = `<strong>Addition Rejected:</strong> ${output.error}`;
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = "Verify & Ingest Stock";
     }
   } catch (error) {
-    alert("Network Ingest Exception: " + error.message);
-  } finally {
+    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 14px; margin-bottom: 16px;";
+    feedbackBanner.innerHTML = `<strong>Network Transmit Failure:</strong> ${error.message}`;
     submitBtn.disabled = false;
     submitBtn.innerHTML = "Verify & Ingest Stock";
   }
