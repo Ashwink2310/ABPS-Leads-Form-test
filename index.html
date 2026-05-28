@@ -348,9 +348,8 @@
     <div id="canvas-module-store-history-matrix" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <h2>Search Store Tickets</h2>
 
-      <div style="background: #f8fafc; border: 1px solid var(--border); padding: 14px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
-        <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--brand); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Search Filter Parameters</span>
-        
+      <div style="background: var(--highlight-bg); border: 1.5px solid var(--border); border-left: 4px solid var(--brand); padding: 14px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
+        <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--brand); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Search Filter Parameters</span>  
         <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px;">Filter By Project ID</label>
         <div class="pill-group" id="matrix-search-projects-checkbox-mount" style="margin-bottom:14px;">
           <p style="font-size:0.75rem; color:var(--muted);">Syncing project references...</p>
@@ -1177,6 +1176,7 @@ async function showAppView() {
   } catch(e) { console.error("Engineer load error:", e.message); }
 
   triggerCompanyDropdownArrayFetch();
+  loadCityStateFilterOptions();
 }
 
 function populateEngineerDropdowns() {
