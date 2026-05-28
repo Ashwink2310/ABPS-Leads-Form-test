@@ -161,18 +161,10 @@
 <div id="auth-container">
   <div class="auth-card" style="max-width: 440px; padding: 30px;">
     <div class="auth-title" style="margin-bottom: 10px;">ABPS Portal</div>
-    
+
     <div style="text-align: left; background: #f8fafc; padding: 15px; border: 1px dashed var(--border); border-radius: 8px; margin-bottom: 20px;">
       <select id="app-auth-active-engineer-identity" style="padding: 10px; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px;">
         <option value="">— Select Your Name —</option>
-        <option>Ashwin Kumar</option>
-        <option>Anjali Shrivastava</option>
-        <option>Alok Kumar</option>
-        <option>Debarshi Mukharjee</option>
-        <option>H.K. Pawar</option>
-        <option>Aritra Roy</option>
-        <option>Mohammad Asraf</option>
-        <option>Pavan</option>
       </select>
     </div>
 
@@ -290,9 +282,17 @@
 
     <div id="canvas-module-store-material-request" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <h2>Store Create Ticket</h2>
+      <div id="store-ticket-runtime-inline-feedback-banner" style="display:none; padding:12px; margin-bottom:12px; border-left:4px solid;"></div>    
       
-      <div id="store-ticket-runtime-inline-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>    
       <div class="section" style="background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius);">
+        
+        <div style="margin-bottom: 16px;">
+          <label class="field-label" style="font-weight: 700; color: var(--brand);">Requested By (Store Operator Signature) *</label>
+          <select id="ticket-requested-by-operator-dropdown" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius);">
+            <option value="">— Loading Authorized Store Staff —</option>
+          </select>
+        </div>
+
         <div style="margin-bottom: 16px;">
           <label class="field-label" style="font-weight: 700; color: var(--brand);">Select Project ID *</label>
           <select id="ticket-project-id-dropdown" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius);"><option value="">— Loading Active Projects —</option></select>
@@ -639,7 +639,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyjCALn9h2SkLcz4ndx21zsr-jW2cQiM0E4RUCQswgSIvaaSglzM7f7KG9UnnjtIfgHWQ/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycby3-tpSBOxh28Q-ByXZH4Dfy5KrEnxkFn7HepaTn8Sh9zzdwORfzNgZSStQIW9SaoWyWw/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -676,9 +676,42 @@ window.onload = function() {
     appActiveOperatorIdentityString = cachedOperator;
     showAppView(); 
   } else {
+    syncPlatformPersonnelDropdownOptionsList();
     initializeGoogleAuthPlatformEngine();
   }
 };
+
+/**
+ * FETCH UN-AUTHENTICATED DIRECTORY STRINGS
+ * Builds the initial authorization choice list directly from the Users tab rows matrix
+ */
+async function syncPlatformPersonnelDropdownOptionsList() {
+  const loginSelect = document.getElementById("app-auth-active-engineer-identity");
+  if (!loginSelect) return;
+  
+  try {
+    // Note: Fired intentionally without a sessionToken because it builds the gate choice arrays
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "pullGlobalPersonnelDirectory" })
+    });
+    const data = await res.json();
+    if (data.success && data.names) {
+      loginSelect.innerHTML = '<option value="">— Select Your Name —</option>';
+      data.names.forEach(fullName => {
+        const opt = document.createElement("option");
+        opt.value = fullName.trim();
+        opt.textContent = fullName.trim();
+        loginSelect.appendChild(opt);
+      });
+    } else {
+      loginSelect.innerHTML = '<option value="">Error syncing personnel array</option>';
+    }
+  } catch (error) {
+    console.error("Directory synchronization exception dropped:", error);
+    loginSelect.innerHTML = '<option value="">Network connection drop</option>';
+  }
+}
 
 function initializeGoogleAuthPlatformEngine() {
   if (document.getElementById("auth-portal-processing-loader")) {
@@ -3087,23 +3120,26 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
 }
 
 /**
- * INITIALIZE OUTBOUND WORKSPACE (DYNAMIC WORKBOOK SYNC ENGINE)
- * Synchronizes both master component balances and live Project IDs out of Google Sheets simultaneously
+ * 1. INITIALIZE OUTBOUND WORKSPACE (UPDATED: STAFF LOOKUP LOADED)
+ * Synchronizes inventory counts, project codes, and authorized store operators simultaneously
  */
 async function initializeMaterialRequestWorkspace() {
   const projectDropdown = document.getElementById("ticket-project-id-dropdown");
   const itemDropdown = document.getElementById("ticket-item-selection-dropdown");
+  const storeStaffDropdown = document.getElementById("ticket-requested-by-operator-dropdown");
   
-  if (!projectDropdown || !itemDropdown) return;
+  if (!projectDropdown || !itemDropdown || !storeStaffDropdown) return;
   
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
   clearFullBasketDraftState();
 
-  projectDropdown.innerHTML = '<option value="">Syncing Active Projects...</option>';
-  itemDropdown.innerHTML = '<option value="">Syncing Material List...</option>';
+  projectDropdown.innerHTML = '<option value="">⏳ Syncing Active Projects...</option>';
+  itemDropdown.innerHTML = '<option value="">⏳ Synchronizing Material List...</option>';
+  storeStaffDropdown.innerHTML = '<option value="">⏳ Loading Authorized Store Staff...</option>';
 
   try {
-    const [inventoryResponse, projectsResponse] = await Promise.all([
+    // Fire off three concurrent network hits simultaneously via parallel promises tracks
+    const [inventoryResponse, projectsResponse, staffResponse] = await Promise.all([
       fetch(GAS_URL, {
         method: "POST",
         body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })
@@ -3111,44 +3147,120 @@ async function initializeMaterialRequestWorkspace() {
       fetch(GAS_URL, {
         method: "POST",
         body: JSON.stringify({ action: "pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") })
+      }),
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken") }) // New endpoint
       })
     ]);
     
     const inventoryData = await inventoryResponse.json();
     const projectsData = await projectsResponse.json();
+    const staffData = await staffResponse.json();
     
-    if (!inventoryData.success || !projectsData.success) {
-      alert("Inventory Core Sync Drop: " + (inventoryData.error || projectsData.error));
-      return;
-    }
-    
-    cachedInventoryStockCollection = inventoryData.inventory;
-    
-    // 1. POPULATE COMPONENT DROPDOWN OPTIONS
-    itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
-    cachedInventoryStockCollection.forEach(item => {
-      const opt = document.createElement("option");
-      opt.value = item.materialName.trim();
-      opt.textContent = item.materialName.trim();
-      itemDropdown.appendChild(opt);
-    });
+    if (inventoryData.success && projectsData.success && staffData.success) {
+      cachedInventoryStockCollection = inventoryData.inventory;
+      
+      // A. Populate Material Catalog choices
+      itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
+      cachedInventoryStockCollection.forEach(item => {
+        let opt = document.createElement("option");
+        opt.value = item.materialName; opt.textContent = item.materialName;
+        itemDropdown.appendChild(opt);
+      });
 
-    // 2. POPULATE PROJECT DROPDOWN OPTIONS
-    projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
-    if (projectsData.projects && projectsData.projects.length > 0) {
+      // B. Populate Live Projects list choices
+      projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
       projectsData.projects.forEach(code => {
-        const opt = document.createElement("option");
-        opt.value = code.toString().trim();
-        opt.textContent = code.toString().trim();
+        let opt = document.createElement("option");
+        opt.value = code; opt.textContent = code;
         projectDropdown.appendChild(opt);
       });
-    } else {
-      projectDropdown.innerHTML = '<option value="">No Active Projects Stored</option>';
-    }
 
-  } catch (error) {
-    console.error("Project lookup sync crash exception:", error);
-    projectDropdown.innerHTML = '<option value="">Error Loading Projects Catalog</option>';
+      // C. Populate Store/Admin Staff choices
+      storeStaffDropdown.innerHTML = '<option value="">— Select Your Name —</option>';
+      staffData.operators.forEach(name => {
+        let opt = document.createElement("option");
+        opt.value = name.trim(); opt.textContent = name.trim();
+        storeStaffDropdown.appendChild(opt);
+      });
+    }
+  } catch (error) { 
+    alert("Sync Exception Error: Dropdown selection matrices failed to parse correctly."); 
+  }
+}
+
+/**
+ * SUBMIT TICKET (UPDATED: WITH DYNAMIC OPERATOR SIGNATURE PAYLOAD)
+ * Validates selection flags and ships verified field parameters to your backend script
+ */
+async function submitMaterialRequestTicketToBackend() {
+  const projectId = document.getElementById("ticket-project-id-dropdown").value;
+  const operatorSignatureName = document.getElementById("ticket-requested-by-operator-dropdown").value;
+  const submitBtn = document.getElementById("submit-ticket-final-btn");
+  const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
+  
+  if (feedbackBanner) feedbackBanner.style.display = "none";
+  
+  if (!operatorSignatureName) {
+    feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b45309;";
+    feedbackBanner.innerHTML = `<strong>Compulsory Input Missing:</strong> You must select your operator name signature profile field.`;
+    return;
+  }
+
+  if (!projectId) {
+    feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b45309;";
+    feedbackBanner.innerHTML = `<strong>Compulsory Input Missing:</strong> Project ID is required.`;
+    return;
+  }
+  
+  if (dynamicTicketShoppingBasketArray.length === 0) {
+    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b91c1c;";
+    feedbackBanner.innerHTML = `<strong>Error:</strong> Cannot process material request tickets on an Empty Basket list.`;
+    return;
+  }
+  
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = "Generating Ticket...";
+  
+  try {
+    const payload = {
+      action: "submitEngineerMaterialTicket",
+      sessionToken: localStorage.getItem("sessionToken"),
+      activeEngineer: operatorSignatureName, // FIXED: Sets Requested By column directly to selected name
+      projectId: projectId,
+      itemsClusterArray: dynamicTicketShoppingBasketArray
+    };
+    
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
+    const result = await res.json();
+    
+    if (result.success) {
+      feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 14px; margin-bottom: 16px; border-left: 4px solid #15803d;";
+      feedbackBanner.innerHTML = `<strong>Success! Ticket Created Successfully.</strong><br/>Assigned System Reference ID: <span style="font-family:monospace; font-weight:800;">${result.ticketId}</span>`;
+      
+      clearFullBasketDraftState();
+      document.getElementById("ticket-project-id-dropdown").value = "";
+      document.getElementById("ticket-item-selection-dropdown").value = "";
+      document.getElementById("ticket-requested-by-operator-dropdown").value = "";
+      document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
+      
+      setTimeout(() => {
+        feedbackBanner.style.display = "none";
+        exitStoreWorkspacePanelBackToMenu();
+      }, 3500);
+      
+    } else {
+      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px; border-left: 4px solid #b91c1c;";
+      feedbackBanner.innerHTML = `<strong>Submission Rejected:</strong> ${result.error}`;
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = "Generate Material Ticket";
+    }
+  } catch (err) {
+    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px; border-left: 4px solid #b91c1c;";
+    feedbackBanner.innerHTML = `<strong>Network Exception Dropped:</strong> ${err.message}`;
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = "Generate Material Ticket";
   }
 }
 
@@ -3285,74 +3397,6 @@ function removeSingleBasketItemLineAtIndex(index) {
 function clearFullBasketDraftState() {
   dynamicTicketShoppingBasketArray = [];
   renderDraftBasketTableViewportRows();
-}
-
-/**
- * 5. SUBMIT MATERIAL REQUEST TICKET TO BACKEND
- * Ships data block to handleInventoryModulePostRequests pipeline router gateway
- */
-async function submitMaterialRequestTicketToBackend() {
-  const projectId = document.getElementById("ticket-project-id-dropdown").value;
-  const submitBtn = document.getElementById("submit-ticket-final-btn");
-  const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
-  
-  feedbackBanner.style.display = "none";
-  
-  if (!projectId) {
-    feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px;";
-    feedbackBanner.innerHTML = `<strong>Compulsory Input Missing:</strong> Project ID is required.`;
-    return;
-  }
-  
-  if (dynamicTicketShoppingBasketArray.length === 0) {
-    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 10px; margin-bottom: 12px;";
-    feedbackBanner.innerHTML = `<strong>Error:</strong> Cannot process submissions on an Empty Basket`;
-    return;
-  }
-  
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = "Generating Ticket...";
-  
-  try {
-    const payload = {
-      action: "submitEngineerMaterialTicket",
-      sessionToken: localStorage.getItem("sessionToken"),
-      activeEngineer: appActiveOperatorIdentityString,
-      projectId: projectId,
-      itemsClusterArray: dynamicTicketShoppingBasketArray
-    };
-    
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
-    const result = await res.json();
-    
-    if (result.success) {
-      // SUCCESS TICKETS INLINE RENDER OVERRIDE
-      feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 14px; margin-bottom: 16px;";
-      feedbackBanner.innerHTML = `<strong>Success! Ticket Created Successfully.</strong><br/>Assigned System Reference ID: <span style="font-family:monospace; font-weight:800;">${result.ticketId}</span>`;
-      
-      clearFullBasketDraftState();
-      document.getElementById("ticket-project-id-dropdown").value = "";
-      document.getElementById("ticket-item-selection-dropdown").value = "";
-      document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
-      
-      // Delay screen exit so they can jot down or see the generated Ticket code reference safely
-      setTimeout(() => {
-        feedbackBanner.style.display = "none";
-        exitStoreWorkspacePanelBackToMenu();
-      }, 3500);
-      
-    } else {
-      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
-      feedbackBanner.innerHTML = `<strong>Submission Rejected:</strong> ${result.error}`;
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = "Generate Material Ticket";
-    }
-  } catch (err) {
-    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
-    feedbackBanner.innerHTML = `<strong>Network Exception Dropped:</strong> ${err.message}`;
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = "Generate Material Ticket";
-  }
 }
 
 function switchActiveDashboardModule(targetCanvasModuleId) {
