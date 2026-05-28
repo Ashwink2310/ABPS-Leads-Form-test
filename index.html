@@ -3708,8 +3708,8 @@ function renderStoreManagerApprovalsCardsFeed(pendingTicketsList) {
   if (pendingTicketsList.length === 0) {
     cardsFeedZone.innerHTML = `
       <div style="text-align:center; padding:30px; color:var(--muted); font-size:0.9rem; background:#fff; border:1px solid var(--border); border-radius:6px;">
-        <h3 style="color: var(--accent); margin-bottom:4px;">🎉 Approvals Queue Clear</h3>
-        <p style="font-size:0.8rem; margin:0;">All engineering material request releases have been reviewed and processed.</p>
+        <h3 style="color: var(--accent); margin-bottom:4px;">Approvals Queue Clear</h3>
+        <p style="font-size:0.8rem; margin:0;">All material request releases have been reviewed and processed.</p>
       </div>
     `;
     return;
@@ -3774,13 +3774,13 @@ function renderStoreManagerApprovalsCardsFeed(pendingTicketsList) {
       </div>
 
       <div style="display:flex; justify-content:flex-end; gap:8px;">
-        <button class="nav-btn-styled" style="background:#e53e3e; padding:4px 10px; font-size:0.75rem;" 
+        <button class="nav-btn-styled" id="btn-reject-${ticket.ticketId}" style="background:#e53e3e; padding:6px 12px; font-size:0.75rem; display:flex; align-items:center; gap:6px;" 
           onclick="executeStoreManagerTicketActionDecision('${ticket.ticketId}', 'REJECT')">
-          Reject & Free Stock
+          <span>Reject & Free Stock</span>
         </button>
-        <button class="nav-btn-styled" style="background:var(--accent); padding:5px 14px; font-size:0.78rem; font-weight:700;" 
+        <button class="nav-btn-styled" id="btn-approve-${ticket.ticketId}" style="background:var(--accent); padding:6px 14px; font-size:0.78rem; font-weight:700; display:flex; align-items:center; gap:6px;" 
           onclick="executeStoreManagerTicketActionDecision('${ticket.ticketId}', 'APPROVE')">
-          Approve & Release Items
+          <span>Approve & Release Items</span>
         </button>
       </div>
     `;
@@ -3789,16 +3789,46 @@ function renderStoreManagerApprovalsCardsFeed(pendingTicketsList) {
 }
 
 /**
- * 3. EXECUTE RELEASE DISPATCH ACTION CONTROL LOOP (UPDATED: CONFIRMATION PROMPTS REMOVED)
- * Directly dispatches actions to the backend workbook without browser confirmation blocks.
+ * 3. EXECUTE RELEASE DISPATCH ACTION CONTROL LOOP (UPDATED: CLICK ANIMATIONS ADDED)
+ * Directly handles instant button transforms, text state loaders, and interface locking keys.
  */
 async function executeStoreManagerTicketActionDecision(ticketId, decisionString) {
-  // FIXED: Removed the 'if (!confirm(...)) return;' guard line block to enable immediate execution
-
   const feedbackBanner = document.getElementById("store-approvals-runtime-inline-feedback-banner");
   const cardNode = document.getElementById(`store-pending-ticket-card-node-${ticketId}`);
   
+  // Isolate button targets inside the selected card viewport parameters bounds
+  const approveBtn = document.getElementById(`btn-approve-${ticketId}`);
+  const rejectBtn = document.getElementById(`btn-reject-${ticketId}`);
+  const activeTargetBtn = decisionString === 'APPROVE' ? approveBtn : rejectBtn;
+
   if (feedbackBanner) feedbackBanner.style.display = "none";
+
+  // --- TRIGGER CLICK ANIMATIONS ENGINE MATRIX ---
+  if (approveBtn && rejectBtn && activeTargetBtn) {
+    // 1. Lock both fields buttons elements instantly to block hardware multi-tap ghost requests submission pools
+    approveBtn.disabled = true;
+    rejectBtn.disabled = true;
+    approveBtn.style.opacity = "0.4";
+    rejectBtn.style.opacity = "0.4";
+    
+    // 2. Maximize opacity focus on target choice block element tracker
+    activeTargetBtn.style.opacity = "1";
+    
+    // 3. Inject the clean hardware-accelerated CSS spinner vector circle block inline inside text wrappers nodes
+    activeTargetBtn.innerHTML = `
+      <div class="spinner" style="
+        display: inline-block; 
+        width: 14px; 
+        height: 14px; 
+        border: 2px solid rgba(255,255,255,0.3); 
+        border-top-color: #ffffff; 
+        border-radius: 50%; 
+        animation: spin 0.6s linear infinite;
+        vertical-align: middle;
+      "></div>
+      <span>${decisionString === 'APPROVE' ? 'Releasing Items...' : 'Freeing Stock...'}</span>
+    `;
+  }
 
   try {
     const res = await fetch(GAS_URL, {
@@ -3808,25 +3838,24 @@ async function executeStoreManagerTicketActionDecision(ticketId, decisionString)
         sessionToken: localStorage.getItem("sessionToken"),
         activeEngineer: appActiveOperatorIdentityString,
         ticketId: ticketId,
-        managerDecisionCommand: decisionString // Passes 'APPROVE' or 'REJECT' straight through
+        managerDecisionCommand: decisionString 
       })
     });
 
     const result = await res.json();
     if (result.success) {
       if (feedbackBanner) {
-        feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 12px; margin-bottom: 14px; border-left: 4px solid #15803d;";
-        feedbackBanner.innerHTML = `<strong>Ticket Action Logged:</strong> Reference ${ticketId} has been successfully ${decisionString.slice(0, 6).toLowerCase()}ed`;
+        feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 12px; margin-bottom: 14px; border-left: 4px solid #15803d; font-weight:700;";
+        feedbackBanner.innerHTML = `Ticket Reference ${ticketId} successfully ${decisionString.toLowerCase()}d and committed cleanly to ledger worksheet records arrays.`;
       }
       
-      // Instantly remove the card from the mobile viewport list canvas
+      // Remove visual panel node block smoothly out of sight matching flow constraints
       if (cardNode) cardNode.remove();
 
-      // Clear the message banner dynamically if the approval feed is fully clear
       setTimeout(() => {
         if (feedbackBanner) feedbackBanner.style.display = "none";
-        const feedNode = document.getElementById("store-manager-approvals-queue-cards-feed");
-        if (feedNode && feedNode.children.length === 0) {
+        const remainingQueueItems = document.getElementById("store-manager-approvals-queue-cards-feed").children.length;
+        if (remainingQueueItems === 0) {
           initializeStoreManagerApprovalsWorkspace();
         }
       }, 3000);
@@ -3836,16 +3865,29 @@ async function executeStoreManagerTicketActionDecision(ticketId, decisionString)
         feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px; border-left: 4px solid #b91c1c;";
         feedbackBanner.innerHTML = `<strong>Action Rejected:</strong> ${result.error}`;
       }
+      // Restoration loop rollbacks button state styles elements layout flags if backend reports error checks failures
+      if (approveBtn && rejectBtn) {
+        approveBtn.disabled = false; rejectBtn.disabled = false;
+        approveBtn.style.opacity = "1"; rejectBtn.style.opacity = "1";
+        approveBtn.innerHTML = `<span>Approve & Release Items</span>`;
+        rejectBtn.innerHTML = `<span>Reject & Free Stock</span>`;
+      }
     }
 
   } catch (error) {
     if (feedbackBanner) {
       feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px; border-left: 4px solid #b91c1c;";
-      feedbackBanner.innerHTML = `<strong>Network Dispatch Drop Exception:</strong> ${error.message}`;
+      feedbackBanner.innerHTML = `<strong>Network Dispatch Exception Failure:</strong> ${error.message}`;
+    }
+    // Restoration loop rollbacks button state styles elements layout flags if network connection completely collapses
+    if (approveBtn && rejectBtn) {
+      approveBtn.disabled = false; rejectBtn.disabled = false;
+      approveBtn.style.opacity = "1"; rejectBtn.style.opacity = "1";
+      approveBtn.innerHTML = `<span>Approve & Release Items</span>`;
+      rejectBtn.innerHTML = `<span>Reject & Free Stock</span>`;
     }
   }
 }
-
 
 /**
  * INITIALIZE MATRIX DATABASE SEARCH LOOKUP
