@@ -3742,14 +3742,16 @@ function renderStoreManagerApprovalsCardsFeed(pendingTicketsList) {
 }
 
 /**
- * 3. EXECUTE RELEASE DISPATCH ACTION CONTROL LOOP
+ * 3. EXECUTE RELEASE DISPATCH ACTION CONTROL LOOP (UPDATED: CONFIRMATION PROMPTS REMOVED)
+ * Directly dispatches actions to the backend workbook without browser confirmation blocks.
  */
 async function executeStoreManagerTicketActionDecision(ticketId, decisionString) {
-  if (!confirm(`Are you sure you want to ${decisionString.toLowerCase()} Ticket reference ${ticketId}?`)) return;
+  // FIXED: Removed the 'if (!confirm(...)) return;' guard line block to enable immediate execution
 
   const feedbackBanner = document.getElementById("store-approvals-runtime-inline-feedback-banner");
   const cardNode = document.getElementById(`store-pending-ticket-card-node-${ticketId}`);
-  feedbackBanner.style.display = "none";
+  
+  if (feedbackBanner) feedbackBanner.style.display = "none";
 
   try {
     const res = await fetch(GAS_URL, {
@@ -3759,34 +3761,41 @@ async function executeStoreManagerTicketActionDecision(ticketId, decisionString)
         sessionToken: localStorage.getItem("sessionToken"),
         activeEngineer: appActiveOperatorIdentityString,
         ticketId: ticketId,
-        managerDecisionCommand: decisionString // 'APPROVE' or 'REJECT'
+        managerDecisionCommand: decisionString // Passes 'APPROVE' or 'REJECT' straight through
       })
     });
 
     const result = await res.json();
     if (result.success) {
-      feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 12px; margin-bottom: 14px;";
-      feedbackBanner.innerHTML = `<strong>Ticket Action Logged:</strong> Reference ${ticketId} has been successfully ${decisionString.toLowerCase()}d and saved to the ledger workbook charts.`;
+      if (feedbackBanner) {
+        feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 12px; margin-bottom: 14px; border-left: 4px solid #15803d;";
+        feedbackBanner.innerHTML = `<strong>Ticket Action Logged:</strong> Reference ${ticketId} has been successfully ${decisionString.slice(0, 6).toLowerCase()}ed`;
+      }
       
+      // Instantly remove the card from the mobile viewport list canvas
       if (cardNode) cardNode.remove();
 
-      // Refresh data counts list or verify if feed list is entirely clean
+      // Clear the message banner dynamically if the approval feed is fully clear
       setTimeout(() => {
-        feedbackBanner.style.display = "none";
-        const remainingQueueItems = document.getElementById("store-manager-approvals-queue-cards-feed").children.length;
-        if (remainingQueueItems === 0) {
+        if (feedbackBanner) feedbackBanner.style.display = "none";
+        const feedNode = document.getElementById("store-manager-approvals-queue-cards-feed");
+        if (feedNode && feedNode.children.length === 0) {
           initializeStoreManagerApprovalsWorkspace();
         }
       }, 3000);
 
     } else {
-      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px;";
-      feedbackBanner.innerHTML = `<strong>Action Rejected:</strong> ${result.error}`;
+      if (feedbackBanner) {
+        feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px; border-left: 4px solid #b91c1c;";
+        feedbackBanner.innerHTML = `<strong>Action Rejected:</strong> ${result.error}`;
+      }
     }
 
   } catch (error) {
-    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px;";
-    feedbackBanner.innerHTML = `<strong>Network Dispatch Drop Exception:</strong> ${error.message}`;
+    if (feedbackBanner) {
+      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px; border-left: 4px solid #b91c1c;";
+      feedbackBanner.innerHTML = `<strong>Network Dispatch Drop Exception:</strong> ${error.message}`;
+    }
   }
 }
 
