@@ -636,7 +636,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwKIu3LWB4gzSk2tWGHpfbZo9pHWBUcL0nsuo-ZKI81F9iv-JUojZvlHe8sPUvp4JeaIQ/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyjCALn9h2SkLcz4ndx21zsr-jW2cQiM0E4RUCQswgSIvaaSglzM7f7KG9UnnjtIfgHWQ/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -3096,8 +3096,8 @@ async function initializeMaterialRequestWorkspace() {
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
   clearFullBasketDraftState();
 
-  projectDropdown.innerHTML = '<option value="">⏳ Syncing Active Projects...</option>';
-  itemDropdown.innerHTML = '<option value="">⏳ Synchronizing Material List...</option>';
+  projectDropdown.innerHTML = '<option value="">Syncing Active Projects...</option>';
+  itemDropdown.innerHTML = '<option value="">Syncing Material List...</option>';
 
   try {
     const [inventoryResponse, projectsResponse] = await Promise.all([
