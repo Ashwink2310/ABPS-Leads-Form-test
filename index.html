@@ -245,7 +245,6 @@
         
         <!-- Upload Drop Zone Row -->
         <div style="margin-bottom: 16px;">
-          <label class="field-label" style="font-weight: 700; color: var(--brand);">Capture / Upload Signed Invoice Image *</label>
           <div class="card-row">
             <div class="card-box" id="invoice-upload-box" onclick="document.getElementById('invoice-image-file').click()" style="padding: 20px; font-size: 0.9rem;">📷 Select Invoice Image</div>
           </div>
@@ -255,7 +254,6 @@
 
         <!-- AI Results & Discrepancy Editing Sheet Workspace (Hidden Initially) -->
         <div id="invoice-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
-          <span style="display: block; font-size: 0.78rem; font-weight: 800; color: var(--brand); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Dual-Sign-Off Verification Sheet</span>
           
           <!-- Extracted Metadata Fields Rows -->
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
@@ -269,8 +267,8 @@
             <table class="store-basket-data-table" style="width: 100%;">
               <thead>
                 <tr>
-                  <th>Invoice Line Details (As Read)</th>
-                  <th>Mapped Standard Name</th>
+                  <th>Invoice Materials</th>
+                  <th>Standard Material Name</th>
                   <th style="width: 100px;">Invoice Qty</th>
                   <th style="width: 140px; color: var(--brand);">Physically Received Qty *</th>
                 </tr>
@@ -637,7 +635,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx6ZkPZhEF4-IEwEKyqP2z6AajDofjeQUVKMmS1GaFCfTsKTDLKWE89ojXVsxFHWXw3ww/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxgkmsqpI1k6EMRwVmYK8n1fEXeKk7NaWQgoY1q_1HOwIjHKltQRj17c8I_EA0Ty1dWQQ/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -3109,7 +3107,7 @@ async function initializeMaterialRequestWorkspace() {
     cachedInventoryStockCollection = inventoryData.inventory;
     
     // 1. POPULATE DYNAMIC MATERIAL CATALOG CODES
-    itemDropdown.innerHTML = '<option value="">— Select Component —</option>';
+    itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
     cachedInventoryStockCollection.forEach(item => {
       const opt = document.createElement("option");
       opt.value = item.materialName;
@@ -3118,7 +3116,7 @@ async function initializeMaterialRequestWorkspace() {
     });
 
     // 2. POPULATE REAL-TIME LIVE PROJECTS DROPDOWN OPTIONS
-    projectDropdown.innerHTML = '<option value="">— Select Target Site Project ID —</option>';
+    projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
     projectsData.projects.forEach(projectIdString => {
       const opt = document.createElement("option");
       opt.value = projectIdString;
@@ -3185,8 +3183,17 @@ function addItemToShoppingBasketRow() {
     return;
   }
   
-  const itemData = cachedInventoryStockCollection.find(i => i.materialName === materialName);
-  if (!itemData) return;
+  // FIXED: Standardize string comparison by removing all internal whitespaces, line-breaks, and hidden tabs
+  const cleanSearchKey = materialName.replace(/\s+/g, '').toLowerCase();
+  const itemData = cachedInventoryStockCollection.find(i => {
+    return i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey;
+  });
+  
+  if (!itemData) {
+    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
+    feedbackBanner.innerHTML = `<strong>System Error:</strong> Selected material target lookup dropped inside client memory arrays.`;
+    return;
+  }
   
   // GHOST-STOCK INLINE REPLACEMENT WARNING BANNER
   if (quantity > itemData.availableStock) {
@@ -3195,7 +3202,11 @@ function addItemToShoppingBasketRow() {
     return;
   }
   
-  const existingLineItem = dynamicTicketShoppingBasketArray.find(i => i.materialName === materialName);
+  // FIXED: Standardize duplicate checking using whitespace-insensitive rules
+  const existingLineItem = dynamicTicketShoppingBasketArray.find(i => {
+    return i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey;
+  });
+  
   if (existingLineItem) {
     const projectedNewQty = existingLineItem.quantity + quantity;
     if (projectedNewQty > itemData.availableStock) {
@@ -3205,8 +3216,9 @@ function addItemToShoppingBasketRow() {
     }
     existingLineItem.quantity = projectedNewQty;
   } else {
+    // Keep the original canonical item name from your master catalog for database uniformity
     dynamicTicketShoppingBasketArray.push({
-      materialName: materialName,
+      materialName: itemData.materialName,
       quantity: quantity,
       unitType: itemData.unitType
     });
@@ -3514,7 +3526,7 @@ async function commitVerifiedInvoiceToInventoryLedger() {
   });
 
   submitBtn.disabled = true;
-  submitBtn.innerHTML = "Ingesting Stock Balances...";
+  submitBtn.innerHTML = "Adding Stock Balances...";
   feedbackBanner.style.display = "none";
 
   try {
@@ -3542,7 +3554,7 @@ async function commitVerifiedInvoiceToInventoryLedger() {
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
             <strong style="font-size:0.95rem;">Invoice Saved Successfully!</strong><br/>
-            <span>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} logged cleanly to master inventory ledger.</span>
+            <span>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} added to the inventory.</span>
           </div>
           <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Upload Another Invoice</button>
         </div>
@@ -3555,15 +3567,15 @@ async function commitVerifiedInvoiceToInventoryLedger() {
       
     } else {
       feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 14px; margin-bottom: 16px;";
-      feedbackBanner.innerHTML = `<strong>Ingestion Rejected:</strong> ${output.error}`;
+      feedbackBanner.innerHTML = `<strong>Stock Addition Rejected:</strong> ${output.error}`;
       submitBtn.disabled = false;
-      submitBtn.innerHTML = "Verify & Ingest Stock";
+      submitBtn.innerHTML = "Verify & Add Stock";
     }
   } catch (error) {
     feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 14px; margin-bottom: 16px;";
     feedbackBanner.innerHTML = `<strong>Network Transmit Failure:</strong> ${error.message}`;
     submitBtn.disabled = false;
-    submitBtn.innerHTML = "Verify & Ingest Stock";
+    submitBtn.innerHTML = "Verify & Add Stock";
   }
 }
 
