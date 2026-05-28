@@ -346,10 +346,37 @@
       </div>
     </div>
 
-    <div id="canvas-module-store-history-matrix" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+    <div id="canvas-module-store-history-matrix" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <h2>Search Store Tickets</h2>
-      <div id="store-history-matrix-viewport-mount"></div>
+
+      <div style="background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
+        <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Search Filter Parameters</span>
+        
+        <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+          <div>
+            <label class="field-label" style="font-size: 0.75rem;">Filter By Project ID</label>
+            <select id="matrix-search-project-dropdown" onchange="executeClientSideStoreTicketFilterSearch()" style="padding: 8px;">
+              <option value="">Loading Projects...</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="field-label" style="font-size: 0.75rem;">Filter By Ticket Status</label>
+            <select id="matrix-search-status-dropdown" onchange="executeClientSideStoreTicketFilterSearch()" style="padding: 8px;">
+              <option value="">— All Statuses —</option>
+              <option value="Pending Approval">Pending Approval</option>
+              <option value="Approved & Released">Approved & Released</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Expired">Expired</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="store-historical-matrix-results-feed" style="display: flex; flex-direction: column; gap: 12px;">
+        </div>
     </div>
+    
   </div>
 
       <!-- WORKSPACE CONTAINER HUB (MARKETING ACTIONS SLIDERS) -->
@@ -610,7 +637,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyNRLvDaf2ICoFUDfb5V-dnP0hyUHYe53IW7-B3Yua_HmscgiQ6-GaAud6VCiZqh2BYCw/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx6ZkPZhEF4-IEwEKyqP2z6AajDofjeQUVKMmS1GaFCfTsKTDLKWE89ojXVsxFHWXw3ww/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -634,6 +661,7 @@ let cachedInventoryStockCollection = [];
 let dynamicTicketShoppingBasketArray = [];
 let targetInvoiceUploadFileObject = null;
 let activeParsedInvoicePayloadCache = null;
+let masterStoreTicketsHistoryCacheCollection = [];
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken"); 
@@ -3349,8 +3377,8 @@ function navigateToStoreWorkspacePanel(targetPanelModuleId) {
     document.getElementById("canvas-module-store-invoice-intake").style.display = "block";
   } else if (targetPanelModuleId === 'store-history-matrix') {
     document.getElementById("canvas-module-store-history-matrix").style.display = "block";
+    initializeStoreHistoryMatrixWorkspace(); // FIXED: CALL HISTORICAL ENGINE SYNC INITIALIZER HERE
   }
-
 }
 
 function exitStoreWorkspacePanelBackToMenu() {
@@ -3549,8 +3577,12 @@ function resetAndPrepareForNewInvoiceIntakeLoop() {
   document.getElementById('invoice-parse-ai-btn').style.display = "block";
   
   resetInvoiceUploadIntakeState();
-  submitBtn.disabled = false;
-  submitBtn.innerHTML = "Verify & Ingest Stock";
+  
+  const submitBtn = document.getElementById('invoice-submit-ledger-btn');
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = "Verify & Add Stock"; 
+  }
 }
 
 /**
@@ -3723,6 +3755,121 @@ async function executeStoreManagerTicketActionDecision(ticketId, decisionString)
     feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px;";
     feedbackBanner.innerHTML = `<strong>Network Dispatch Drop Exception:</strong> ${error.message}`;
   }
+}
+
+/**
+ * 1. INITIALIZE MATRIX DATABASE LOOKUP
+ * Synchronizes the entire StoreTickets historical row stream directly from the spreadsheet log
+ */
+async function initializeStoreHistoryMatrixWorkspace() {
+  const resultsFeedZone = document.getElementById("store-historical-matrix-results-feed");
+  const projectFilterDropdown = document.getElementById("matrix-search-project-dropdown");
+  
+  document.getElementById("matrix-search-status-dropdown").value = "";
+  resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted);">⏳ Synchronizing historical warehouse ledgers...</div>`;
+
+  try {
+    // A. Fire off concurrent network hits to pull tickets log row streams and projects dropdown listings
+    const [ticketsResponse, projectsResponse] = await Promise.all([
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "fetchAllHistoricalStoreTicketsStream", sessionToken: localStorage.getItem("sessionToken") })
+      }),
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") })
+      })
+    ]);
+
+    const ticketsData = await ticketsResponse.json();
+    const projectsData = await projectsResponse.json();
+
+    if (!ticketsData.success || !projectsData.success) {
+      resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--warn);">Verification Failure: ${ticketsData.error || projectsData.error}</div>`;
+      return;
+    }
+
+    // Save items payload map directly inside memory state cache array
+    masterStoreTicketsHistoryCacheCollection = ticketsData.tickets;
+
+    // B. Populate Project ID Dropdown Search filters values
+    projectFilterDropdown.innerHTML = '<option value="">— All Project IDs —</option>';
+    projectsData.projects.forEach(code => {
+      const opt = document.createElement("option");
+      opt.value = code; opt.textContent = code;
+      projectFilterDropdown.appendChild(opt);
+    });
+
+    // C. Initial render of complete unfiltered historic log list lines
+    executeClientSideStoreTicketFilterSearch();
+
+  } catch (error) {
+    resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--warn);">Network Error: ${error.message}</div>`;
+  }
+}
+
+/**
+ * 2. RUN CLIENT-SIDE MATRIX SEARCH FILTER ENGINE
+ * Parses memory arrays properties directly on the phone to execute instant results filtering
+ */
+function executeClientSideStoreTicketFilterSearch() {
+  const targetProjectFilter = document.getElementById("matrix-search-project-dropdown").value.trim().toLowerCase();
+  const targetStatusFilter  = document.getElementById("matrix-search-status-dropdown").value.trim().toLowerCase();
+  const resultsFeedZone      = document.getElementById("store-historical-matrix-results-feed");
+
+  resultsFeedZone.innerHTML = "";
+
+  // Filter cache lists matching user parameters dropdown states anchors
+  const filteredOutputList = masterStoreTicketsHistoryCacheCollection.filter(ticket => {
+    const matchProject = !targetProjectFilter || ticket.projectId.trim().toLowerCase() === targetProjectFilter;
+    const matchStatus  = !targetStatusFilter  || ticket.status.trim().toLowerCase() === targetStatusFilter;
+    return matchProject && matchStatus;
+  });
+
+  if (filteredOutputList.length === 0) {
+    resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; background:#fff; border:1px solid var(--border); border-radius:4px; color:var(--muted); font-size:0.85rem;">No historical tickets matched your current search parameters combination.</div>`;
+    return;
+  }
+
+  // Loop and print tailored summary layout cards block data rows matching definitions
+  filteredOutputList.forEach(ticket => {
+    const card = document.createElement("div");
+    card.className = "contact-summary-card-parent";
+    card.style.cssText = "background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:12px; text-align:left; box-shadow:0 1px 3px rgba(0,0,0,0.01);";
+
+    let itemsArray = [];
+    try { itemsArray = JSON.parse(ticket.itemsJson); } catch(e) { itemsArray = []; }
+
+    let itemsTableRowsHtml = "";
+    itemsArray.forEach(i => {
+      itemsTableRowsHtml += `<tr><td style="padding:4px; color:var(--text); font-weight:600;">${i.materialName}</td><td style="padding:4px; font-family:monospace; font-weight:700;">${i.quantity} ${i.unitType}</td></tr>`;
+    });
+
+    // Color code status badges context tags for rapid visibility scans
+    let badgeColorStyle = "background:#fef3c7; color:#b45309;"; // Yellow default pending
+    if (ticket.status === "Approved & Released") badgeColorStyle = "background:#dcfce7; color:#15803d;";
+    if (ticket.status === "Rejected" || ticket.status === "Expired") badgeColorStyle = "background:#fee2e2; color:#b91c1c;";
+
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--border); padding-bottom:6px; margin-bottom:8px;">
+        <div>
+          <span style="font-family:monospace; font-weight:800; background:var(--highlight-bg); color:var(--brand); padding:2px 6px; border-radius:4px; font-size:0.8rem;">${ticket.ticketId}</span>
+          <strong style="margin-left:8px; font-size:0.85rem; color:var(--brand);">${ticket.projectId}</strong>
+        </div>
+        <span style="font-size:0.68rem; font-weight:700; border-radius:4px; padding:2px 6px; ${badgeColorStyle}">${ticket.status.toUpperCase()}</span>
+      </div>
+      <div style="font-size:0.8rem; line-height:1.4; margin-bottom:8px; color:#4a5568;">
+        <strong>Requested By:</strong> ${ticket.requestedBy} | <strong>Created:</strong> ${ticket.dateCreated}<br/>
+        ${ticket.dateActioned ? `<strong>Processed On:</strong> ${ticket.dateActioned}` : `<strong>Status:</strong> Waiting Handover`}
+      </div>
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:6px;">
+        <table style="width:100%; font-size:0.78rem; border-collapse:collapse;">
+          <tbody>${itemsTableRowsHtml}</tbody>
+        </table>
+      </div>
+    `;
+    resultsFeedZone.appendChild(card);
+  });
 }
 
 </script>
