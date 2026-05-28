@@ -636,7 +636,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyEyXgs79Pt6sv8r8lqm7HmO_NpsriC6fcYlHiAuHvt2UtfC4w4rV9q-jnWh3BX1EIU/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwKIu3LWB4gzSk2tWGHpfbZo9pHWBUcL0nsuo-ZKI81F9iv-JUojZvlHe8sPUvp4JeaIQ/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1013,8 +1013,8 @@ async function triggerCityStateQuerySearchExecution() {
   const selectedStates = Array.from(document.querySelectorAll('input[name="searchStateFilter"]:checked')).map(cb => cb.value);
   let selectedCities = Array.from(document.querySelectorAll('input[name="searchCityFilter"]:checked')).map(cb => cb.value);
   
-  if (selectedStates.length === 0) return alert("Select at least one geographic State area block parameter constraint.");
-  if (selectedCities.length === 0) return alert("Select individual tracking City references maps or check 'All Cities' explicit toggle indicator block option.");
+  if (selectedStates.length === 0) return alert("Select at least one State.");
+  if (selectedCities.length === 0) return alert("Select at least one City or 'All Cities'.");
   
   btn.classList.add("loading"); btn.textContent = "Searching...";
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
@@ -3121,31 +3121,31 @@ async function initializeMaterialRequestWorkspace() {
     
     cachedInventoryStockCollection = inventoryData.inventory;
     
-    // 1. POPULATE MATERIAL CATALOG CODES
+    // 1. POPULATE COMPONENT DROPDOWN OPTIONS
     itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
     cachedInventoryStockCollection.forEach(item => {
       const opt = document.createElement("option");
-      opt.value = item.materialName;
-      opt.textContent = item.materialName;
+      opt.value = item.materialName.trim();
+      opt.textContent = item.materialName.trim();
       itemDropdown.appendChild(opt);
     });
 
-    // 2. POPULATE PROJECTS DROPDOWN OPTIONS
+    // 2. POPULATE PROJECT DROPDOWN OPTIONS
     projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
     if (projectsData.projects && projectsData.projects.length > 0) {
-      projectsData.projects.forEach(projectIdString => {
+      projectsData.projects.forEach(code => {
         const opt = document.createElement("option");
-        opt.value = projectIdString.trim();
-        opt.textContent = projectIdString.trim();
+        opt.value = code.toString().trim();
+        opt.textContent = code.toString().trim();
         projectDropdown.appendChild(opt);
       });
     } else {
-      projectDropdown.innerHTML = '<option value="">No Active Projects Found</option>';
+      projectDropdown.innerHTML = '<option value="">No Active Projects Stored</option>';
     }
 
   } catch (error) {
-    console.error("Project lookup exception:", error);
-    projectDropdown.innerHTML = '<option value="">Error Loading Projects</option>';
+    console.error("Project lookup sync crash exception:", error);
+    projectDropdown.innerHTML = '<option value="">Error Loading Projects Catalog</option>';
   }
 }
 
@@ -3799,7 +3799,6 @@ async function initializeStoreHistoryMatrixWorkspace() {
   const projectFilterDropdown = document.getElementById("matrix-search-project-dropdown");
   
   document.getElementById("matrix-search-status-dropdown").value = "";
-  resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted);">⏳ Synchronizing historical warehouse ledgers...</div>`;
 
   try {
     // A. Fire off concurrent network hits to pull tickets log row streams and projects dropdown listings
