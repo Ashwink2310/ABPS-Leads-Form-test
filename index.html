@@ -1033,18 +1033,24 @@ async function triggerCityStateQuerySearchExecution() {
      const data = await res.json();
      if (data.success) {
         const canvas = document.getElementById("step2-inline-interaction-canvas");
+        
+        // FIXED: Explicitly append to active viewport anchor before altering style fields
+        document.getElementById("workspace-searchCityState").appendChild(canvas);
+        
         document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
+          <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568; margin-bottom: 10px;">Back to Search</button>
           <div class="qualification-status-bar" style="width:100%; text-align:center; font-size:0.75rem;">
              Location: [States: ${selectedStates.join(", ")}] | [Cities: ${selectedCities.length > 5 ? 'Multi Selected (' + selectedCities.length + ')' : selectedCities.join(", ")}]
           </div>
         `;
+        
         globalFollowUpsCacheMap = data.followups; 
         globalTasksCacheMap = data.tasks;
         buildMultiContactDirectoryInterface(data.leads, "");
+        
         canvas.style.display = "block"; 
-        document.getElementById("workspace-searchCityState").appendChild(canvas);
      } else {
-        alert("Geographic search tracking error: " + (data.error || "No active asset row elements captured inside system context profiles trees."));
+        alert("Geographic search tracking error: " + (data.error || "No records match."));
      }
   } catch (e) {
      alert("Geographic layout tracking request connection crash: " + e.message);
@@ -1353,6 +1359,11 @@ async function triggerSequentialSearch(triggerSourceMode) {
     targetName = ""; 
     btn = document.getElementById("lookup-module-search-btn");
     if(!comp) return alert("Select a company first.");
+    
+    // FIXED: Strip bracketed labels to ensure accurate database row name lookups
+    if (comp.indexOf(" (") !== -1) {
+      comp = comp.split(" (")[0].trim();
+    }
   }
   
   if (!comp) return alert("Specify Company parameters.");
@@ -3080,11 +3091,13 @@ async function initializeMaterialRequestWorkspace() {
   const projectDropdown = document.getElementById("ticket-project-id-dropdown");
   const itemDropdown = document.getElementById("ticket-item-selection-dropdown");
   
+  if (!projectDropdown || !itemDropdown) return;
+  
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
   clearFullBasketDraftState();
 
-  projectDropdown.innerHTML = '<option value="">Syncing Active Projects...</option>';
-  itemDropdown.innerHTML = '<option value="">Synchronizing Material List...</option>';
+  projectDropdown.innerHTML = '<option value="">⏳ Syncing Active Projects...</option>';
+  itemDropdown.innerHTML = '<option value="">⏳ Synchronizing Material List...</option>';
 
   try {
     const [inventoryResponse, projectsResponse] = await Promise.all([
@@ -3108,27 +3121,31 @@ async function initializeMaterialRequestWorkspace() {
     
     cachedInventoryStockCollection = inventoryData.inventory;
     
-    // 1. POPULATE DYNAMIC MATERIAL CATALOG CODES
+    // 1. POPULATE MATERIAL CATALOG CODES
     itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
     cachedInventoryStockCollection.forEach(item => {
       const opt = document.createElement("option");
-      // FIXED: Property value reference mapped cleanly to match your array definitions
       opt.value = item.materialName;
       opt.textContent = item.materialName;
       itemDropdown.appendChild(opt);
     });
 
-    // 2. POPULATE REAL-TIME LIVE PROJECTS DROPDOWN OPTIONS
+    // 2. POPULATE PROJECTS DROPDOWN OPTIONS
     projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
-    projectsData.projects.forEach(projectIdString => {
-      const opt = document.createElement("option");
-      opt.value = projectIdString;
-      opt.textContent = projectIdString;
-      projectDropdown.appendChild(opt);
-    });
+    if (projectsData.projects && projectsData.projects.length > 0) {
+      projectsData.projects.forEach(projectIdString => {
+        const opt = document.createElement("option");
+        opt.value = projectIdString.trim();
+        opt.textContent = projectIdString.trim();
+        projectDropdown.appendChild(opt);
+      });
+    } else {
+      projectDropdown.innerHTML = '<option value="">No Active Projects Found</option>';
+    }
 
   } catch (error) {
-    alert("Network transmission sync exception: " + error.message);
+    console.error("Project lookup exception:", error);
+    projectDropdown.innerHTML = '<option value="">Error Loading Projects</option>';
   }
 }
 
