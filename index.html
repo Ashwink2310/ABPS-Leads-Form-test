@@ -269,15 +269,14 @@
             <table class="store-basket-data-table" style="width: 100%;">
               <thead>
                 <tr>
-                  <th>Invoice Productsf</th>
-                  <th>Standard Name</th>
+                  <th>Invoice Line Details (As Read)</th>
+                  <th>Mapped Standard Name</th>
                   <th style="width: 100px;">Invoice Qty</th>
-                  <th style="width: 130px; color: var(--brand);">Physically Received Qty *</th>
+                  <th style="width: 140px; color: var(--brand);">Physically Received Qty *</th>
                 </tr>
               </thead>
               <tbody id="invoice-verification-table-body">
-                <!-- Dynamic Form Adjustment Field Rows Injected Here -->
-              </tbody>
+                </tbody>
             </table>
           </div>
 
@@ -3451,15 +3450,16 @@ function renderInvoiceDualSignOffVerificationWorkspace() {
 
   activeParsedInvoicePayloadCache.lineItems.forEach((item, index) => {
     const tr = document.createElement('tr');
+    
+    // FIXED: Removed the pricing cell completely. Now generating exactly 4 aligned cells.
     tr.innerHTML = `
-      <td style="color: var(--muted); font-size: 0.8rem;">${item.rawDescriptionLine}</td>
-      <td style="font-weight: 600; color: var(--text);">${item.mappedMaterialName}</td>
-      <td style="font-family: monospace; font-weight: 700;">${item.extractedQuantity}</td>
-      <td style="font-family: monospace; font-weight: 600; color: #475569;">₹${Number(item.unitPrice).toLocaleString('en-IN')}</td>
-      <td>
+      <td style="color: var(--muted); font-size: 0.8rem; padding: 10px 8px;">${item.rawDescriptionLine}</td>
+      <td style="font-weight: 600; color: var(--text); padding: 10px 8px;">${item.mappedMaterialName}</td>
+      <td style="font-family: monospace; font-weight: 700; padding: 10px 8px;">${item.extractedQuantity}</td>
+      <td style="padding: 6px 8px;">
         <input type="number" min="0" class="invoice-verification-physical-override-qty" 
           data-array-index="${index}" value="${item.extractedQuantity}" 
-          style="border-color: var(--brand); font-weight: 700; color: var(--brand); padding: 4px;" />
+          style="border-color: var(--brand); font-weight: 700; color: var(--brand); padding: 6px; width: 100%; max-width: 120px;" />
       </td>
     `;
     tbody.appendChild(tr);
