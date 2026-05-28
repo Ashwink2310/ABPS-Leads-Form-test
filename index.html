@@ -216,7 +216,7 @@
       
       <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
         <!-- STANDARDIZED: Spans full width but mirrors identical internal padding, sizing, and typography parameters -->
-        <div class="menu-card" id="mod-live-store-stock" onclick="navigateToStoreWorkspacePanel('store-live-stock')" style="grid-column: span 2; color: var(--brand);">Live Store Stock</div>
+        <div class="menu-card" id="mod-live-store-stock" onclick="navigateToStoreWorkspacePanel('store-live-stock')" style="grid-column: span 2;">Live Store Stock</div>
 
         <div class="menu-card" id="mod-store-upload" onclick="navigateToStoreWorkspacePanel('store-invoice-intake')">Store Upload Invoice</div>
         <div class="menu-card" id="mod-store-ticket" onclick="navigateToStoreWorkspacePanel('store-material-request')">Store Create Ticket</div>
@@ -239,13 +239,13 @@
           <button class="nav-btn-styled" style="background: var(--brand); padding: 5px 14px;" onclick="triggerLiveWarehouseStockMetricsSync()">Sync</button>
           <span style="font-size: 1.05rem; font-weight: 700; color: var(--text); letter-spacing: 0.2px;">Live Store Stock</span>
         </div>
-        <!-- <button class="nav-btn-styled" onclick="exitStoreWorkspacePanelBackToMenu()" style="background: #4a5568;">Return to Main Dashboard</button> -->
+        <button class="nav-btn-styled" onclick="exitStoreWorkspacePanelBackToMenu()" style="background: #4a5568;">Return to Main Dashboard</button>
       </div>
 
       <!-- Optimized Main Materials Data Canvas Grid Container Box -->
       <div style="background: var(--highlight-bg); border: 1.5px solid var(--border); border-left: 4px solid var(--brand); padding: 16px; border-radius: var(--radius); text-align: left;">
         <div id="dashboard-live-inventory-metrics-mount-zone" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
-          <p style="font-size: 0.85rem; color: var(--muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Syncing active material logs...</p>
+          <p style="font-size: 0.85rem; color: var(--muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Syncing Current Material Quantity...</p>
         </div>
       </div>
     </div>
