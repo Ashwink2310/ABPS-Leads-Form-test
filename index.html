@@ -335,9 +335,19 @@
       </div>
     </div>
 
-    <div id="canvas-module-store-manager-approvals" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+    <div id="canvas-module-store-manager-approvals" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <h2>Store Approve Tickets</h2>
-      <div id="store-manager-approvals-viewport-mount"></div>
+      <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
+        Review pending outbound material requests submitted by field engineers. Verifying a release permanently commits the transaction, deducts items from Total Stock, and clears the temporary reservation block.
+      </p>
+      
+      <div id="store-approvals-runtime-inline-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
+
+      <div id="store-manager-approvals-queue-cards-feed" style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="text-align: center; padding: 30px; color: var(--muted); background: #f8fafc; border: 1px dashed var(--border); border-radius: 6px;">
+          Synchronizing pending releases queue...
+        </div>
+      </div>
     </div>
 
     <div id="canvas-module-store-history-matrix" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
@@ -604,7 +614,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxXJezRcroXjJt7bzqC3DH1jigDrtsKPv_9K93_IPceFbrfOl3AfuRJCH77BMlcIEsZeA/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxv5vo-Cx6YFFcFBtJNYJdDlnv2CXLo1gXBN5BXSaF6QbXqeHiUYCNVvdWLAvUx2NYnQw/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -3335,11 +3345,12 @@ function navigateToStoreWorkspacePanel(targetPanelModuleId) {
 
   if (targetPanelModuleId === 'store-material-request') {
     document.getElementById("canvas-module-store-material-request").style.display = "block";
-    initializeMaterialRequestWorkspace(); // Synchronize inventory values live
-  } else if (targetPanelModuleId === 'store-invoice-intake') {
-    document.getElementById("canvas-module-store-invoice-intake").style.display = "block";
+    initializeMaterialRequestWorkspace();
   } else if (targetPanelModuleId === 'store-manager-approvals') {
     document.getElementById("canvas-module-store-manager-approvals").style.display = "block";
+    initializeStoreManagerApprovalsWorkspace(); // FIXED: ADD THIS QUEUE TRIGGER PULL INITIALIZER HERE
+  } else if (targetPanelModuleId === 'store-invoice-intake') {
+    document.getElementById("canvas-module-store-invoice-intake").style.display = "block";
   } else if (targetPanelModuleId === 'store-history-matrix') {
     document.getElementById("canvas-module-store-history-matrix").style.display = "block";
   }
@@ -3524,6 +3535,178 @@ async function commitVerifiedInvoiceToInventoryLedger() {
     feedbackBanner.innerHTML = `<strong>Network Transmit Failure:</strong> ${error.message}`;
     submitBtn.disabled = false;
     submitBtn.innerHTML = "Verify & Ingest Stock";
+  }
+}
+
+/**
+ * 1. INITIALIZE APPROVALS WORKSPACE LOCK
+ * Fetches all un-actioned pending tickets directly from the warehouse ledger
+ */
+async function initializeStoreManagerApprovalsWorkspace() {
+  const cardsFeedZone = document.getElementById("store-manager-approvals-queue-cards-feed");
+  const feedbackBanner = document.getElementById("store-approvals-runtime-inline-feedback-banner");
+  
+  feedbackBanner.style.display = "none";
+  cardsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted);"><div class="spinner" style="display:inline-block; width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin 0.8s linear infinite; margin-right:8px; vertical-align:middle;"></div>Loading un-actioned request tickets...</div>`;
+
+  try {
+    const response = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "fetchPendingTicketsQueueStream",
+        sessionToken: localStorage.getItem("sessionToken")
+      })
+    });
+    
+    const data = await response.json();
+    if (!data.success) {
+      cardsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--warn); font-weight:700;">Sync Error: ${data.error}</div>`;
+      return;
+    }
+
+    renderStoreManagerApprovalsCardsFeed(data.queue);
+
+  } catch (error) {
+    cardsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; color:var(--warn); font-weight:700;">Network Exception: ${error.message}</div>`;
+  }
+}
+
+/**
+ * 2. RENDER PENDING TICKETS FEED DRAWER PANELS
+ */
+function renderStoreManagerApprovalsCardsFeed(pendingTicketsList) {
+  const cardsFeedZone = document.getElementById("store-manager-approvals-queue-cards-feed");
+  cardsFeedZone.innerHTML = "";
+
+  if (pendingTicketsList.length === 0) {
+    cardsFeedZone.innerHTML = `
+      <div style="text-align:center; padding:30px; color:var(--muted); font-size:0.9rem; background:#fff; border:1px solid var(--border); border-radius:6px;">
+        <h3 style="color: var(--accent); margin-bottom:4px;">🎉 Approvals Queue Clear</h3>
+        <p style="font-size:0.8rem; margin:0;">All engineering material request releases have been reviewed and processed.</p>
+      </div>
+    `;
+    return;
+  }
+
+  pendingTicketsList.forEach((ticket) => {
+    let cardWrapper = document.createElement("div");
+    cardWrapper.className = "contact-summary-card-parent";
+    cardWrapper.id = `store-pending-ticket-card-node-${ticket.ticketId}`;
+    cardWrapper.style.cssText = "background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px; position:relative; box-shadow: 0 2px 5px rgba(0,0,0,0.02);";
+
+    // Parse the inner item arrays string back out safely
+    let itemsArray = [];
+    try {
+      itemsArray = JSON.parse(ticket.itemsJson);
+    } catch(e) {
+      itemsArray = [];
+    }
+
+    // Build the sub-table rows for this specific ticket's items
+    let itemRowsHtml = "";
+    itemsArray.forEach(item => {
+      itemRowsHtml += `
+        <tr>
+          <td style="padding:6px; border-bottom:1px solid #edf2f7; font-weight:600;">${item.materialName}</td>
+          <td style="padding:6px; border-bottom:1px solid #edf2f7; font-family:monospace; font-weight:700; color:var(--brand);">${item.quantity}</td>
+          <td style="padding:6px; border-bottom:1px solid #edf2f7; color:var(--muted); font-size:0.78rem;">${item.unitType}</td>
+        </tr>
+      `;
+    });
+
+    cardWrapper.innerHTML = `
+      <div class="contact-summary-header-row" style="margin-bottom:10px; padding-bottom:6px; border-bottom:1px dashed var(--border);">
+        <div class="contact-summary-title-info">
+          <div class="meta-row-line-block">
+            <span style="background:var(--brand); color:#fff; font-family:monospace; font-size:0.75rem; padding:3px 6px;">${ticket.ticketId}</span>
+            <span style="background:#fef3c7; color:#b45309; font-weight:700;">PENDING RELEASE</span>
+          </div>
+          <div class="meta-row-line-block" style="margin-top:6px; font-size:0.85rem;">
+            <span>Engineer:</span><strong style="margin-right:15px; color:#111827;">${ticket.requestedBy}</strong>
+            <span>Project ID:</span><strong style="color:var(--brand);">${ticket.projectId}</strong>
+          </div>
+          <div style="font-size:0.72rem; color:var(--muted); margin-top:2px;">
+            Submitted on: <strong>${ticket.dateCreated}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:6px; margin-bottom:12px;">
+        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.82rem;">
+          <thead>
+            <tr style="color:#64748b; font-size:0.7rem; text-transform:uppercase; font-weight:800;">
+              <th style="padding:4px 6px; border-bottom:1px solid var(--border);">Component Name</th>
+              <th style="padding:4px 6px; border-bottom:1px solid var(--border);">Qty</th>
+              <th style="padding:4px 6px; border-bottom:1px solid var(--border);">Unit</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemRowsHtml}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button class="nav-btn-styled" style="background:#e53e3e; padding:4px 10px; font-size:0.75rem;" 
+          onclick="executeStoreManagerTicketActionDecision('${ticket.ticketId}', 'REJECT')">
+          Reject & Free Stock
+        </button>
+        <button class="nav-btn-styled" style="background:var(--accent); padding:5px 14px; font-size:0.78rem; font-weight:700;" 
+          onclick="executeStoreManagerTicketActionDecision('${ticket.ticketId}', 'APPROVE')">
+          Approve & Release Items
+        </button>
+      </div>
+    `;
+    cardsFeedZone.appendChild(cardWrapper);
+  });
+}
+
+/**
+ * 3. EXECUTE RELEASE DISPATCH ACTION CONTROL LOOP
+ */
+async function executeStoreManagerTicketActionDecision(ticketId, decisionString) {
+  if (!confirm(`Are you sure you want to ${decisionString.toLowerCase()} Ticket reference ${ticketId}?`)) return;
+
+  const feedbackBanner = document.getElementById("store-approvals-runtime-inline-feedback-banner");
+  const cardNode = document.getElementById(`store-pending-ticket-card-node-${ticketId}`);
+  feedbackBanner.style.display = "none";
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "actionTicketReleaseApproval",
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        ticketId: ticketId,
+        managerDecisionCommand: decisionString // 'APPROVE' or 'REJECT'
+      })
+    });
+
+    const result = await res.json();
+    if (result.success) {
+      feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 12px; margin-bottom: 14px;";
+      feedbackBanner.innerHTML = `<strong>Ticket Action Logged:</strong> Reference ${ticketId} has been successfully ${decisionString.toLowerCase()}d and saved to the ledger workbook charts.`;
+      
+      if (cardNode) cardNode.remove();
+
+      // Refresh data counts list or verify if feed list is entirely clean
+      setTimeout(() => {
+        feedbackBanner.style.display = "none";
+        const remainingQueueItems = document.getElementById("store-manager-approvals-queue-cards-feed").children.length;
+        if (remainingQueueItems === 0) {
+          initializeStoreManagerApprovalsWorkspace();
+        }
+      }, 3000);
+
+    } else {
+      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px;";
+      feedbackBanner.innerHTML = `<strong>Action Rejected:</strong> ${result.error}`;
+    }
+
+  } catch (error) {
+    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px;";
+    feedbackBanner.innerHTML = `<strong>Network Dispatch Drop Exception:</strong> ${error.message}`;
   }
 }
 
