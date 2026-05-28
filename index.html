@@ -269,7 +269,7 @@
             <table class="store-basket-data-table" style="width: 100%;">
               <thead>
                 <tr>
-                  <th>Invoice Line Details (As Read)</th>
+                  <th>Invoice Productsf</th>
                   <th>Standard Name</th>
                   <th style="width: 100px;">Invoice Qty</th>
                   <th style="width: 130px; color: var(--brand);">Physically Received Qty *</th>
@@ -337,9 +337,6 @@
 
     <div id="canvas-module-store-manager-approvals" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <h2>Store Approve Tickets</h2>
-      <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
-        Review pending outbound material requests submitted by field engineers. Verifying a release permanently commits the transaction, deducts items from Total Stock, and clears the temporary reservation block.
-      </p>
       
       <div id="store-approvals-runtime-inline-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
 
@@ -614,7 +611,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxv5vo-Cx6YFFcFBtJNYJdDlnv2CXLo1gXBN5BXSaF6QbXqeHiUYCNVvdWLAvUx2NYnQw/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyNRLvDaf2ICoFUDfb5V-dnP0hyUHYe53IW7-B3Yua_HmscgiQ6-GaAud6VCiZqh2BYCw/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -3057,8 +3054,8 @@ async function initializeMaterialRequestWorkspace() {
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
   clearFullBasketDraftState();
 
-  projectDropdown.innerHTML = '<option value="">⏳ Syncing active projects...</option>';
-  itemDropdown.innerHTML = '<option value="">⏳ Synchronizing catalog matrix...</option>';
+  projectDropdown.innerHTML = '<option value="">Syncing Active Projects...</option>';
+  itemDropdown.innerHTML = '<option value="">Synchronizing Material List...</option>';
 
   try {
     // Run both network queries concurrently via parallel async promises paths
@@ -3458,6 +3455,7 @@ function renderInvoiceDualSignOffVerificationWorkspace() {
       <td style="color: var(--muted); font-size: 0.8rem;">${item.rawDescriptionLine}</td>
       <td style="font-weight: 600; color: var(--text);">${item.mappedMaterialName}</td>
       <td style="font-family: monospace; font-weight: 700;">${item.extractedQuantity}</td>
+      <td style="font-family: monospace; font-weight: 600; color: #475569;">₹${Number(item.unitPrice).toLocaleString('en-IN')}</td>
       <td>
         <input type="number" min="0" class="invoice-verification-physical-override-qty" 
           data-array-index="${index}" value="${item.extractedQuantity}" 
@@ -3489,8 +3487,6 @@ async function commitVerifiedInvoiceToInventoryLedger() {
 
   submitBtn.disabled = true;
   submitBtn.innerHTML = "Ingesting Stock Balances...";
-  
-  // Clear any old alert styles cleanly
   feedbackBanner.style.display = "none";
 
   try {
@@ -3512,21 +3508,26 @@ async function commitVerifiedInvoiceToInventoryLedger() {
 
     const output = await res.json();
     if (output.success) {
-      // INLINE SUCCESS DISPLAY REPLACE: Show on-screen banner message block
-      feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 14px; margin-bottom: 16px;";
-      feedbackBanner.innerHTML = `<strong>Stock Addition Successful!</strong><br/>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} processed cleanly into database tracking profiles.`;
+      // INLINE RECURRENT WORKFLOW GENERATOR: Do not navigate away, print quick action controller buttons reset paths
+      feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 16px; margin-bottom: 16px; border-left: 4px solid #15803d;";
+      feedbackBanner.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="font-size:0.95rem;">Invoice Saved Successfully!</strong><br/>
+            <span>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} logged cleanly to master inventory ledger.</span>
+          </div>
+          <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Upload Another Invoice</button>
+        </div>
+      `;
       
-      resetInvoiceUploadIntakeState();
-      
-      // Delays returning to main dashboard menu grid for 3 seconds so you can actually read the message line
-      setTimeout(() => {
-        feedbackBanner.style.display = "none";
-        exitStoreWorkspacePanelBackToMenu();
-      }, 3000);
+      // Hide the editing workspace panel out of sight below the message banner
+      document.getElementById('invoice-ai-verification-workspace').style.display = "none";
+      document.getElementById('invoice-upload-box').style.display = "none";
+      document.getElementById('invoice-parse-ai-btn').style.display = "none";
       
     } else {
       feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 14px; margin-bottom: 16px;";
-      feedbackBanner.innerHTML = `<strong>Addition Rejected:</strong> ${output.error}`;
+      feedbackBanner.innerHTML = `<strong>Ingestion Rejected:</strong> ${output.error}`;
       submitBtn.disabled = false;
       submitBtn.innerHTML = "Verify & Ingest Stock";
     }
@@ -3536,6 +3537,20 @@ async function commitVerifiedInvoiceToInventoryLedger() {
     submitBtn.disabled = false;
     submitBtn.innerHTML = "Verify & Ingest Stock";
   }
+}
+
+/**
+ * RECURRENT LOOP CLEANER
+ * Fully resets the screen canvas loop state layout back to fresh base form drop-zones parameters
+ */
+function resetAndPrepareForNewInvoiceIntakeLoop() {
+  document.getElementById('store-invoice-runtime-inline-feedback-banner').style.display = "none";
+  document.getElementById('invoice-upload-box').style.display = "block";
+  document.getElementById('invoice-parse-ai-btn').style.display = "block";
+  
+  resetInvoiceUploadIntakeState();
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = "Verify & Ingest Stock";
 }
 
 /**
