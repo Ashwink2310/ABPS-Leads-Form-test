@@ -249,20 +249,23 @@
       <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
         Upload phone photos or digital scans of your signed Invoice, Delivery Challan, or Both.
       </p>
+      
       <div id="store-invoice-runtime-inline-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
+      
       <div class="section" style="background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius);">
         
-        <div style="margin-bottom: 16px;">
-          <div class="card-row" style="display: flex; gap: 10px;">
-            <div class="card-box" id="invoice-upload-box" onclick="document.getElementById('invoice-image-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Invoice Image</div>
-            <div class="card-box" id="challan-upload-box" onclick="document.getElementById('challan-image-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Challan Image</div>
+        <div id="invoice-and-chalan-upload-fields-wrapper-group" style="display: block;">
+          <div style="margin-bottom: 16px;">
+            <div class="card-row" style="display: flex; gap: 10px;">
+              <div class="card-box" id="invoice-upload-box" onclick="document.getElementById('invoice-image-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Invoice Image</div>
+              <div class="card-box" id="challan-upload-box" onclick="document.getElementById('challan-image-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Challan Image</div>
+            </div>
+            <input type="file" id="invoice-image-file" accept="image/*,application/pdf" hidden />
+            <input type="file" id="challan-image-file" accept="image/*,application/pdf" hidden />
+            <button class="btn btn-ai" id="invoice-parse-ai-btn" onclick="parseInboundInvoiceWithAI()" style="margin-top: 12px; font-weight: 700;">Parse Invoice & Challan with AI</button>
           </div>
-          <input type="file" id="invoice-image-file" accept="image/*" hidden />
-          <input type="file" id="challan-image-file" accept="image/*" hidden />
-          <button class="btn btn-ai" id="invoice-parse-ai-btn" onclick="parseInboundInvoiceWithAI()" style="margin-top: 12px; font-weight: 700;">Parse Invoice & Challan with AI</button>
         </div>
 
-        <!-- AI Results & Discrepancy Editing Sheet Workspace (Hidden Initially) -->
         <div id="invoice-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
           
           <!-- Extracted Metadata Fields Rows -->
@@ -653,7 +656,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxewv_yD3UJHNzqKa1JTF2lMrFtzaPFmlMATTRoyvegK104QRDIi4qEr0LLsv6ywJNuFA/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzlkirGOs87l27RaNulaP_hOl7XIsAMMQXo0XVn1b9jOBZzgKcY15HmwHN0s2t6FxJSYw/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -3754,14 +3757,15 @@ async function commitVerifiedInvoiceToInventoryLedger() {
         feedbackBanner.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <strong style="font-size:0.95rem;">Invoice & Challan Saved to Google Drive!</strong><br/>
+              <strong style="font-size:0.95rem;">Invoice & Chalan Saved to Google Drive!</strong><br/>
               <span>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} processed successfully.</span>
             </div>
-            <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Process Another Invoice</button>
+            <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Process Another Inbound</button>
           </div>
         `;
       }
       
+      document.getElementById('invoice-and-chalan-upload-fields-wrapper-group').style.display = "none";
       document.getElementById('invoice-ai-verification-workspace').style.display = "none";
       
     } else {
@@ -3792,12 +3796,12 @@ async function commitVerifiedInvoiceToInventoryLedger() {
  */
 function resetAndPrepareForNewInvoiceIntakeLoop() {
   document.getElementById('store-invoice-runtime-inline-feedback-banner').style.display = "none";
-  document.getElementById('invoice-upload-box').style.display = "block";
-  document.getElementById('invoice-parse-ai-btn').style.display = "block";
+  
+  // FIXED: Restore the full parent upload card block framework layout visibility immediately
+  document.getElementById('invoice-and-chalan-upload-fields-wrapper-group').style.display = "block";
   
   resetInvoiceUploadIntakeState();
   
-  // FIXED: Variable instantiation safe tracking clamp
   const submitBtn = document.getElementById('invoice-submit-ledger-btn');
   if (submitBtn) {
     submitBtn.disabled = false;
