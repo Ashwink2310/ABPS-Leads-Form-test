@@ -401,13 +401,11 @@
 
       <!-- WORKSPACE CONTAINER HUB (MARKETING ACTIONS SLIDERS) -->
       <div id="module-workspace-container" style="display: none;">
-        <div class="navigation-action-header-row" id="main-global-nav-header-bar" style="position: relative;">
+        <div class="navigation-action-header-row" id="main-global-nav-header-bar">
           <div style="display:flex; gap:8px;" id="inline-creation-header-controls-block">
             <button class="nav-btn-styled" id="global-direct-inline-create-entry-btn" style="display:none; background:var(--accent);" onclick="revealNewEntryFormDropdown()">Create New Entry</button>
             <button class="nav-btn-styled" id="global-direct-inline-collapse-entry-btn" style="display:none; background:var(--warn);" onclick="collapseNewEntryDropdownFormExplicitly()">Collapse Form</button>
-            <button class="nav-btn-styled" id="global-email-sync-btn" style="display:none; background:var(--accent); font-size:0.8rem; padding:5px 12px; font-weight:600;" onclick="executeInboundEmailSyncPipelineFetch()">Sync Inbox Streams</button>
           </div>
-          <span id="global-module-center-title" style="display:none; position:absolute; left:50%; transform:translateX(-50%); font-size:1.05rem; font-weight:700; color:var(--text); pointer-events:none;">Email Leads</span>
           <button class="nav-btn-styled" onclick="returnToDashboard()">Return to Main Dashboard</button>
         </div>
         
@@ -581,8 +579,16 @@
         </div>
 
         <div id="workspace-emailWhatsapp" class="workspace-panel" style="display: none;">
-          <div id="email-leads-runtime-status-feedback" style="display:none; margin-bottom:10px; padding:8px; border-radius:4px; font-size:0.8rem; font-weight:700; text-align:center;"></div>
-          <div id="email-leads-inbound-feed-canvas" style="display:flex; flex-direction:column; gap:12px;"></div>
+          <div class="section">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border);">
+              <span style="font-size: 1.15rem; font-weight: 700; color: var(--brand); letter-spacing: 0.3px;">AI Email Leads</span>
+              <button class="nav-btn-styled" id="email-sync-trigger-btn" style="background: var(--accent); font-size: 0.8rem; padding: 5px 12px; font-weight: 600;" onclick="executeInboundEmailSyncPipelineFetch()">Sync Inbox Streams</button>
+            </div>
+            <div class="section-body" style="padding: 10px;">
+              <div id="email-leads-runtime-status-feedback" style="display:none; margin-bottom:10px; padding:8px; border-radius:4px; font-size:0.8rem; font-weight:700; text-align:center;"></div>
+              <div id="email-leads-inbound-feed-canvas" style="display:flex; flex-direction:column; gap:12px;"></div>
+            </div>
+          </div>
         </div>
 
         <div id="missing-trigger-notice-block" style="display:none;">
@@ -1352,8 +1358,6 @@ async function navigateToModule(key) {
     } else if (key === "searchCityState") {
       loadCityStateFilterOptions();
     } else if (key === "emailLeads") { 
-      document.getElementById("global-email-sync-btn").style.display = "inline-flex";
-      document.getElementById("global-module-center-title").style.display = "block";
       executeInboundEmailSyncPipelineFetch();
     } else if (key === "dispatchCommissioning") {
       document.getElementById("marketing-ops-inputs-wrapper-container").style.display = "block";
@@ -1389,8 +1393,6 @@ function returnToDashboard() {
   document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
   
   document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none");
-  document.getElementById("global-email-sync-btn").style.display = "none";
-  document.getElementById("global-module-center-title").style.display = "none";
 }
 
 function resetSequentialFormState() {
@@ -2941,7 +2943,7 @@ async function executeLeadMatrixFilterSearch() {
 }
 
 async function executeInboundEmailSyncPipelineFetch() {
-  const syncBtn = document.getElementById("global-email-sync-btn");
+  const syncBtn = document.getElementById("email-sync-trigger-btn");
   const feedbackNode = document.getElementById("email-leads-runtime-status-feedback");
   const feedCanvas = document.getElementById("email-leads-inbound-feed-canvas");
   
