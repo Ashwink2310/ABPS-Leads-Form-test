@@ -218,7 +218,7 @@
         <!-- STANDARDIZED: Spans full width but mirrors identical internal padding, sizing, and typography parameters -->
         <div class="menu-card" id="mod-live-store-stock" onclick="navigateToStoreWorkspacePanel('store-live-stock')" style="grid-column: span 2;">Live Store Stock</div>
 
-        <div class="menu-card" id="mod-store-upload" onclick="navigateToStoreWorkspacePanel('store-invoice-intake')">Store Upload Invoice</div>
+        <div class="menu-card" id="mod-store-upload" onclick="navigateToStoreWorkspacePanel('store-invoice-intake')">Store Upload Invoice and Challan</div>
         <div class="menu-card" id="mod-store-ticket" onclick="navigateToStoreWorkspacePanel('store-material-request')">Store Create Ticket</div>
         <div class="menu-card" id="mod-store-approvals" onclick="navigateToStoreWorkspacePanel('store-manager-approvals')">Store Approve Tickets</div>
         <div class="menu-card" id="mod-store-matrix" onclick="navigateToStoreWorkspacePanel('store-history-matrix')">Search Store Tickets</div>
@@ -245,21 +245,24 @@
     </div>
 
     <div id="canvas-module-store-invoice-intake" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2 style="margin-bottom: 16px;">Store Upload Invoice</h2>
+      <h2 style="margin-bottom: 16px;">Store Upload Invoice and Challan</h2>
       <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
-        Upload a phone photo or digital scan of your signed vendor invoice.
+        Upload phone photos or digital scans of your signed Invoice, Delivery Challan, or Both.
       </p>
       <div id="store-invoice-runtime-inline-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
       <div class="section" style="background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius);">
         
-        <!-- Upload Drop Zone Row -->
         <div style="margin-bottom: 16px;">
-          <div class="card-row">
-            <div class="card-box" id="invoice-upload-box" onclick="document.getElementById('invoice-image-file').click()" style="padding: 20px; font-size: 0.9rem;">📷 Select Invoice Image</div>
+          <div class="card-row" style="display: flex; gap: 10px;">
+            <div class="card-box" id="invoice-upload-box" onclick="document.getElementById('invoice-image-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Invoice Image</div>
+            <div class="card-box" id="challan-upload-box" onclick="document.getElementById('challan-image-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Challan Image</div>
           </div>
           <input type="file" id="invoice-image-file" accept="image/*" hidden />
-          <button class="btn btn-ai" id="invoice-parse-ai-btn" onclick="parseInboundInvoiceWithAI()" style="margin-top: 8px; font-weight: 700;">Parse Invoice with AI</button>
+          <input type="file" id="challan-image-file" accept="image/*" hidden />
+          <button class="btn btn-ai" id="invoice-parse-ai-btn" onclick="parseInboundInvoiceWithAI()" style="margin-top: 12px; font-weight: 700;">Parse Invoice & Challan with AI</button>
         </div>
+
+        <div id="invoice-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
 
         <!-- AI Results & Discrepancy Editing Sheet Workspace (Hidden Initially) -->
         <div id="invoice-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
@@ -652,7 +655,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwvfOaT9VQx72TDxsgDkDecSHs3Qst4KZS0eslPkZJfSZ9I-s_5gfU6VZfAeUXoNFxJ/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxN91ffzVtfUwDHPRaILBe8PA744zDizS6I_jiyFwkcEmU_iHPBIJErM3qsfFMqMM9w9w/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -3555,19 +3558,35 @@ function exitStoreWorkspacePanelBackToMenu() {
 document.getElementById('invoice-image-file').onchange = (e) => {
   targetInvoiceUploadFileObject = e.target.files[0];
   const uploadBox = document.getElementById('invoice-upload-box');
-  uploadBox.textContent = "Invoice Uploaded ✅ (" + targetInvoiceUploadFileObject.name + ")";
-  uploadBox.classList.add('done');
+  if (uploadBox && targetInvoiceUploadFileObject) {
+    uploadBox.textContent = "Invoice Staged ✅";
+    uploadBox.classList.add('done');
+  }
 };
 
+// Capture dynamic input streams for Challan
+document.getElementById('challan-image-file').onchange = (e) => {
+  targetChallanUploadFileObject = e.target.files[0];
+  const uploadBox = document.getElementById('challan-upload-box');
+  if (uploadBox && targetChallanUploadFileObject) {
+    uploadBox.textContent = "Challan Staged ✅";
+    uploadBox.classList.add('done');
+  }
+};
+
+// Update structural cleaner loop rules reset routines
 function resetInvoiceUploadIntakeState() {
   targetInvoiceUploadFileObject = null;
+  targetChallanUploadFileObject = null;
   activeParsedInvoicePayloadCache = null;
   
-  const uploadBox = document.getElementById('invoice-upload-box');
-  uploadBox.textContent = "📷 Select Invoice Image";
-  uploadBox.classList.remove('done');
-  document.getElementById('invoice-image-file').value = "";
+  const invBox = document.getElementById('invoice-upload-box');
+  const chkBox = document.getElementById('challan-upload-box');
+  if (invBox) { invBox.textContent = "📷 Select Invoice Image"; invBox.classList.remove('done'); }
+  if (chkBox) { chkBox.textContent = "📷 Select Challan Image"; chkBox.classList.remove('done'); }
   
+  document.getElementById('invoice-image-file').value = "";
+  document.getElementById('challan-image-file').value = "";
   document.getElementById('invoice-ai-verification-workspace').style.display = "none";
   document.getElementById('invoice-verification-table-body').innerHTML = "";
 }
@@ -3577,13 +3596,16 @@ function resetInvoiceUploadIntakeState() {
  */
 async function parseInboundInvoiceWithAI() {
   const parseBtn = document.getElementById('invoice-parse-ai-btn');
-  if (!targetInvoiceUploadFileObject) return alert("Please select or snap a photo of the signed vendor invoice first.");
+  if (!targetInvoiceUploadFileObject && !targetChallanUploadFileObject) {
+    return alert("Please select or capture at least one document image first.");
+  }
 
-  parseBtn.disabled = true;
-  parseBtn.innerHTML = '<div class="spinner"></div> AI Scanning Image...';
+  if (parseBtn) {
+    parseBtn.disabled = true;
+    parseBtn.innerHTML = '<div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div> AI Extracting Document Details...';
+  }
 
   try {
-    // A. Pull live standard inventory item options map list to pass downstream for fuzzy name mapping
     const lookupRes = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })
@@ -3591,27 +3613,33 @@ async function parseInboundInvoiceWithAI() {
     const catalogData = await lookupRes.json();
     const existingMaterialNamesList = catalogData.success ? catalogData.inventory.map(i => i.materialName) : [];
 
-    // B. Convert file to Base64 data string wrapper parameters
-    const base64String = await new Promise((resolve) => {
+    const convertToBase64 = file => new Promise((resolve) => {
+      if (!file) { resolve(null); return; }
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(targetInvoiceUploadFileObject);
+      reader.readAsDataURL(file);
     });
 
-    // C. Dispatch request payload pipeline call straight to Apps Script AI pipeline container
+    // Run conversions concurrently to eliminate execution delays
+    const [invoiceBase64, challanBase64] = await Promise.all([
+      convertToBase64(targetInvoiceUploadFileObject),
+      convertToBase64(targetChallanUploadFileObject)
+    ]);
+
     const res = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({
         action: "storeProcessAIInvoiceBlob",
         sessionToken: localStorage.getItem("sessionToken"),
-        imageBlobBase64: base64String,
+        imageBlobBase64: invoiceBase64,
+        challanBlobBase64: challanBase64, // Appends second base64 data stream to payload
         canonicalMaterialsCatalog: existingMaterialNamesList
       })
     });
 
     const data = await res.json();
     if (!data.success) {
-      alert("AI Processing Dropped: " + data.error);
+      alert("AI Processing Failed: " + data.error);
       return;
     }
 
@@ -3619,10 +3647,12 @@ async function parseInboundInvoiceWithAI() {
     renderInvoiceDualSignOffVerificationWorkspace();
 
   } catch (err) {
-    alert("Invoice Parse Exception Block: " + err.message);
+    alert("Invoice Parse Exception: " + err.message);
   } finally {
-    parseBtn.disabled = false;
-    parseBtn.innerHTML = "Parse Invoice with AI";
+    if (parseBtn) {
+      parseBtn.disabled = false;
+      parseBtn.innerHTML = "Parse Invoice & Challan with AI";
+    }
   }
 }
 
