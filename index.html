@@ -193,6 +193,7 @@
   <div id="dashboard-view" style="padding: 16px 12px; display: flex; flex-direction: column; gap: 20px;">
     
     <!-- MARKETING DEPARTMENT BUTTONS INTERFACE GRID MAP -->
+
     <div id="dashboard-marketing-department-header-block">
       <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Marketing Department</h2>
       
@@ -200,8 +201,9 @@
         <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')">Enter Card Details</div>
         <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')">Search by Company Name</div>
         
-        <!-- STANDARDIZED: Spans full width but mirrors identical internal padding, sizing, and typography parameters -->
-        <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailLeads')" style="grid-column: span 2;">Email Leads</div>
+        <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailLeads')">Email Leads</div>
+        
+        <div class="menu-card" id="mod-dispatch-commissioning" onclick="navigateToModule('dispatchCommissioning')">Dispatched Bill & Commissioning Report</div>
         
         <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')">Search Tasks by Engineer Name</div>
         <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')">Search by Lead Status</div>
@@ -436,6 +438,39 @@
           </div>
         </div>
 
+        <div id="workspace-dispatchCommissioning" class="workspace-panel" style="display: none;">
+          <div class="section">
+            <div class="section-header">Logistics & Site Operations Sign-Off</div>
+            <div class="section-body" style="text-align: left; padding: 16px;">
+              <p style="color: var(--muted); font-size: 0.82rem; margin-bottom: 16px;">
+                Select your target prospect record from the dropdown directory tracker below, upload the corresponding documentation file sheet, and execute validation to update database values instantly.
+              </p>
+              
+              <div id="marketing-ops-runtime-inline-feedback-banner" style="display: none; padding: 12px; font-size: 0.88rem; font-weight: 700; border-radius: var(--radius); margin-bottom: 16px; border-left: 4px solid;"></div>
+
+              <div id="marketing-ops-inputs-wrapper-container">
+                <div style="margin-bottom: 14px;">
+                  <label class="field-label" style="font-weight: 700; color: var(--brand);">Target Account Company Name *</label>
+                  <select id="ops-module-company-dropdown" style="padding: 8px; font-size: 0.9rem;"><option value="">— Loading Active Corporate Entities —</option></select>
+                </div>
+
+                <div class="card-row" style="display: flex; gap: 12px; margin-top: 16px; margin-bottom: 16px;">
+                  <div class="card-box" id="dispatch-bill-upload-box" onclick="document.getElementById('dispatch-bill-raw-file').click()" style="padding: 24px; font-size: 0.9rem; flex: 1; min-height: 90px; display: flex; align-items: center; justify-content: center; flex-direction: column;">📋 Select Dispatched Bill</div>
+                  <div class="card-box" id="commissioning-report-upload-box" onclick="document.getElementById('commissioning-report-raw-file').click()" style="padding: 24px; font-size: 0.9rem; flex: 1; min-height: 90px; display: flex; align-items: center; justify-content: center; flex-direction: column;">🛠️ Select Commissioning Report</div>
+                </div>
+                
+                <input type="file" id="dispatch-bill-raw-file" accept="image/*,application/pdf" hidden />
+                <input type="file" id="commissioning-report-raw-file" accept="image/*,application/pdf" hidden />
+
+                <div style="display: flex; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
+                  <button class="nav-btn-styled" id="btn-ops-dispatch-submit" onclick="executeMarketingOperationsDocumentCommit('DISPATCH')" style="background: var(--brand); flex: 1; padding: 10px; font-size: 0.85rem;">Process Dispatch Bill</button>
+                  <button class="nav-btn-styled" id="btn-ops-commission-submit" onclick="executeMarketingOperationsDocumentCommit('COMMISSION')" style="background: var(--accent); flex: 1; padding: 10px; font-size: 0.85rem;">Process Commissioning Report</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div id="workspace-searchCompany" class="workspace-panel" style="display: none;">
           <div id="company-dropdown-selector-block" class="section">
             <div class="section-header">Choose Target Company Profile</div>
@@ -656,18 +691,20 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwad96dOOYN_jX-m8lmP0gGSBumpP9VLLvUuz0BkMWE59g3y4mn6F682DT02pDoaWZO6Q/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzVjV-o9-cuyUFWZSjYHoesX54ouH--xdH_hhA9GQvoMof_DRWdmHRjaK5EHdji3J1fzQ/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
 let appActiveOperatorIdentityString = "";
 let fileFront = null, fileBack = null;
-let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false, searchTasks: false, emailWhatsapp: false };
+let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false, searchTasks: false, emailWhatsapp: false, dispatchCommissioning: true }; 
 let cachedEngineers = [];
 let activeSearchRef = ""; 
 let activeSearchCompany = "";
 let currentFollowUpCount = 0;
 let currentActiveModuleContext = "CARD"; 
+let targetDispatchBillFileObj = null;
+let targetCommissioningReportFileObj = null;
 
 let globalFollowUpsCacheMap = {};
 let globalTasksCacheMap = {};
@@ -1241,7 +1278,7 @@ async function triggerCompanyDropdownArrayFetch() {
   } catch(e) { console.error("Dropdown refresh layout fail:", e.message); }
 }
 
-function navigateToModule(key) { 
+async function navigateToModule(key) { 
     // 1. Core verification gateway check routing against userPermissions payload mapping
     if (!userPermissions[key]) return alert("Access Denied: Missing permission"); 
     
@@ -1250,7 +1287,7 @@ function navigateToModule(key) {
         canvas.style.display = "none";
         document.body.appendChild(canvas);
     }
-    
+
     document.getElementById("dashboard-view").style.display = "none"; 
     document.getElementById("module-workspace-container").style.display = "block"; 
     document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none"); 
@@ -1307,6 +1344,34 @@ function navigateToModule(key) {
     } else if (key === "emailLeads") { 
       // Synchronizes and fires off asynchronous thread pipeline fetches automatically
       executeInboundEmailSyncPipelineFetch();
+    } else if (key === "dispatchCommissioning") {
+      // FIXED: Placed cleanly at the end of the routing matrix chain
+      const opsDropdown = document.getElementById("ops-module-company-dropdown");
+      if (opsDropdown) opsDropdown.innerHTML = '<option value="">⏳ Syncing directory records...</option>';
+      
+      // Reuse your hyper-optimized backend method to populate corporate entities instantly
+      try {
+        const res = await fetch(GAS_URL, { 
+          method: "POST", 
+          body: JSON.stringify({ 
+            action: "getUniqueCompaniesList", 
+            sessionToken: localStorage.getItem("sessionToken"), 
+            activeEngineer: appActiveOperatorIdentityString 
+          }) 
+        });
+        const d = await res.json();
+        if (d.success && opsDropdown) {
+          opsDropdown.innerHTML = '<option value="">— Select Target Account —</option>';
+          d.companies.forEach(item => {
+            let opt = document.createElement("option");
+            opt.value = item.companyValue; 
+            opt.textContent = item.displayLabel;
+            opsDropdown.appendChild(opt);
+          });
+        }
+      } catch(ex) { 
+        console.error("Ops dropdown data sync crash: ", ex); 
+      }
     }
 }
 
@@ -3147,20 +3212,24 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
 
 function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   // 1. EXTRACT MARKETING ACCESS MATRIX FLAGS
-  const canEnterCard       = userPermissionsObject.cardDetails === true;
-  const canSearchCompany   = userPermissionsObject.searchCompany === true;
-  const canViewEmailLeads  = userPermissionsObject.emailLeads === true;
-  const canSearchTasks     = userPermissionsObject.searchTasks === true;
-  const canSearchStatus    = userPermissionsObject.searchStatus === true;
-  const canSearchCityState = userPermissionsObject.searchCityState === true;
-  const canSearchQual      = userPermissionsObject.searchQualification === true;
+  const canEnterCard               = userPermissionsObject.cardDetails === true;
+  const canSearchCompany           = userPermissionsObject.searchCompany === true;
+  const canViewEmailLeads          = userPermissionsObject.emailLeads === true;
+  
+  // FIXED: Extract the newly added permission index parameter
+  const canViewDispatchCommission  = userPermissionsObject.dispatchCommissioning === true;
+  
+  const canSearchTasks             = userPermissionsObject.searchTasks === true;
+  const canSearchStatus            = userPermissionsObject.searchStatus === true;
+  const canSearchCityState         = userPermissionsObject.searchCityState === true;
+  const canSearchQual              = userPermissionsObject.searchQualification === true;
 
   // 2. EXTRACT STORE ACCESS MATRIX FLAGS
-  const canViewLiveStock = userPermissionsObject.liveStoreStock === true;
-  const canUploadInvoice   = userPermissionsObject.liveStoreStock === true || userPermissionsObject.storeUploadInvoice === true;
-  const canCreateTicket    = userPermissionsObject.storeCreateTicket === true;
-  const canReleaseTicket   = userPermissionsObject.storeApproveTickets === true;
-  const canSearchStoreMat  = userPermissionsObject.storeAdminMatrix === true;
+  const canViewLiveStock           = userPermissionsObject.liveStoreStock === true;
+  const canUploadInvoice           = userPermissionsObject.storeUploadInvoice === true;
+  const canCreateTicket            = userPermissionsObject.storeCreateTicket === true;
+  const canReleaseTicket           = userPermissionsObject.storeApproveTickets === true;
+  const canSearchStoreMat          = userPermissionsObject.storeAdminMatrix === true;
 
   const liveStockMenuCard = document.getElementById("mod-live-store-stock");
   if (liveStockMenuCard) {
@@ -3168,13 +3237,20 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   }
 
   // 3. SET INDIVIDUAL MARKETING SECTIONS CARDS VISIBILITY STATES
-  document.getElementById("mod-card").style.display           = canEnterCard ? "block" : "none";
-  document.getElementById("mod-company").style.display        = canSearchCompany ? "block" : "none";
-  document.getElementById("mod-email-whatsapp").style.display = canViewEmailLeads ? "block" : "none";
-  document.getElementById("mod-tasks").style.display          = canSearchTasks ? "block" : "none";
-  document.getElementById("mod-status").style.display         = canSearchStatus ? "block" : "none";
-  document.getElementById("mod-city-state").style.display     = canSearchCityState ? "block" : "none";
-  document.getElementById("mod-qual").style.display           = canSearchQual ? "block" : "none";
+  document.getElementById("mod-card").style.display                     = canEnterCard ? "block" : "none";
+  document.getElementById("mod-company").style.display                  = canSearchCompany ? "block" : "none";
+  document.getElementById("mod-email-whatsapp").style.display           = canViewEmailLeads ? "block" : "none";
+  
+  // FIXED: Controls menu visibility profile dynamically for your new module card
+  const dispatchCard = document.getElementById("mod-dispatch-commissioning");
+  if (dispatchCard) {
+    dispatchCard.style.display = canViewDispatchCommission ? "block" : "none";
+  }
+  
+  document.getElementById("mod-tasks").style.display                    = canSearchTasks ? "block" : "none";
+  document.getElementById("mod-status").style.display                   = canSearchStatus ? "block" : "none";
+  document.getElementById("mod-city-state").style.display               = canSearchCityState ? "block" : "none";
+  document.getElementById("mod-qual").style.display                     = canSearchQual ? "block" : "none";
 
   // 4. SET INDIVIDUAL STORE SECTIONS CARDS VISIBILITY STATES
   document.getElementById("mod-store-upload").style.display    = canUploadInvoice ? "block" : "none";
@@ -3184,7 +3260,7 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
 
   // 5. EVALUATE COMPLETE INTERCEPT FOR MARKETING DEPARTMENT CONTAINER HEADER BLOCK
   const marketingHeaderBlock = document.getElementById("dashboard-marketing-department-header-block");
-  if (canEnterCard || canSearchCompany || canViewEmailLeads || canSearchTasks || canSearchStatus || canSearchCityState || canSearchQual) {
+  if (canEnterCard || canSearchCompany || canViewEmailLeads || canViewDispatchCommission || canSearchTasks || canSearchStatus || canSearchCityState || canSearchQual) {
     marketingHeaderBlock.style.display = "block";
   } else {
     marketingHeaderBlock.style.display = "none";
@@ -3760,7 +3836,7 @@ async function commitVerifiedInvoiceToInventoryLedger() {
               <strong style="font-size:0.95rem;">Invoice & Chalan Saved to Google Drive!</strong><br/>
               <span>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} processed successfully.</span>
             </div>
-            <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Process Another Inbound</button>
+            <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Process Another Invoice</button>
           </div>
         `;
       }
@@ -4269,6 +4345,77 @@ showAppView = async function() {
     }, 30000); // Polls every 30 seconds to lock real-time stock balances parity
   }
 };
+
+document.getElementById('dispatch-bill-raw-file').onchange = (e) => {
+  targetDispatchBillFileObj = e.target.files[0];
+  const box = document.getElementById('dispatch-bill-upload-box');
+  if (box && targetDispatchBillFileObj) { box.textContent = "Bill Document Staged ✅"; box.classList.add('done'); }
+};
+
+document.getElementById('commissioning-report-raw-file').onchange = (e) => {
+  targetCommissioningReportFileObj = e.target.files[0];
+  const box = document.getElementById('commissioning-report-upload-box');
+  if (box && targetCommissioningReportFileObj) { box.textContent = "Report Document Staged ✅"; box.classList.add('done'); }
+};
+
+async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
+  const chosenCompanyRaw = document.getElementById("ops-module-company-dropdown").value;
+  const feedbackBanner = document.getElementById("marketing-ops-runtime-inline-feedback-banner");
+  const targetBtn = document.getElementById(opsFlagTypeString === "DISPATCH" ? "btn-ops-dispatch-submit" : "btn-ops-commission-submit");
+  
+  if (!chosenCompanyRaw) return alert("Please select a target company account first.");
+  
+  const cleanCompanyName = chosenCompanyRaw.split(" (")[0].trim();
+  const activeWorkingFile = opsFlagTypeString === "DISPATCH" ? targetDispatchBillFileObj : targetCommissioningReportFileObj;
+  
+  if (!activeWorkingFile) return alert(`Please capture or select the corresponding file before processing.`);
+  
+  if (targetBtn) {
+    targetBtn.disabled = true;
+    targetBtn.innerHTML = '<div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div> Uploading to Drive...';
+  }
+
+  try {
+    const fileBase64Raw = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(activeWorkingFile);
+    });
+
+    const isPdfFormat = activeWorkingFile.type === "application/pdf";
+
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "commitMarketingOperationsDocument",
+        sessionToken: localStorage.getItem("sessionToken"),
+        activeEngineer: appActiveOperatorIdentityString,
+        companyName: cleanCompanyName,
+        operationType: opsFlagTypeString,
+        fileData64: fileBase64Raw,
+        isPdf: isPdfFormat
+      })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      if (feedbackBanner) {
+        feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 12px; margin-bottom: 16px; border-left: 4px solid #15803d;";
+        feedbackBanner.innerHTML = `<strong>Success!</strong> ${cleanCompanyName} record has been securely updated to "${opsFlagTypeString === "DISPATCH" ? "Offer Dispatched" : "Offer Commissioned"}" and file link saved to Drive.`;
+      }
+      document.getElementById("marketing-ops-inputs-wrapper-container").style.display = "none";
+    } else {
+      alert("Processing error: " + data.error);
+    }
+  } catch(err) {
+    alert("Connection error: " + err.message);
+  } finally {
+    if (targetBtn) {
+      targetBtn.disabled = false;
+      targetBtn.innerHTML = opsFlagTypeString === "DISPATCH" ? "Process Dispatch Bill" : "Process Commissioning Report";
+    }
+  }
+}
  
 </script>
 </body>
