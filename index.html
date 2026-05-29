@@ -653,7 +653,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwAexYaR34aaUDWn3uzGDZ-SLf7MZflJwnYxlS-XH-8f1l-MZGQST-nmlR1OBWFa6f3wQ/exec"; 
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxewv_yD3UJHNzqKa1JTF2lMrFtzaPFmlMATTRoyvegK104QRDIi4qEr0LLsv6ywJNuFA/exec"; 
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -3558,7 +3558,7 @@ document.getElementById('invoice-image-file').onchange = (e) => {
   targetInvoiceUploadFileObject = e.target.files[0];
   const uploadBox = document.getElementById('invoice-upload-box');
   if (uploadBox && targetInvoiceUploadFileObject) {
-    uploadBox.textContent = "Invoice Staged ✅";
+    uploadBox.textContent = "Invoice Added ✅";
     uploadBox.classList.add('done');
   }
 };
@@ -3568,7 +3568,7 @@ document.getElementById('challan-image-file').onchange = (e) => {
   targetChallanUploadFileObject = e.target.files[0];
   const uploadBox = document.getElementById('challan-upload-box');
   if (uploadBox && targetChallanUploadFileObject) {
-    uploadBox.textContent = "Challan Staged ✅";
+    uploadBox.textContent = "Challan Added ✅";
     uploadBox.classList.add('done');
   }
 };
@@ -3754,10 +3754,10 @@ async function commitVerifiedInvoiceToInventoryLedger() {
         feedbackBanner.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <strong style="font-size:0.95rem;">Invoice & Chalan Saved to Google Drive!</strong><br/>
+              <strong style="font-size:0.95rem;">Invoice & Challan Saved to Google Drive!</strong><br/>
               <span>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} processed successfully.</span>
             </div>
-            <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Process Another Inbound</button>
+            <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Process Another Invoice</button>
           </div>
         `;
       }
