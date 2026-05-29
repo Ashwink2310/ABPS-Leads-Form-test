@@ -579,11 +579,18 @@
         </div>
 
         <div id="workspace-emailWhatsapp" class="workspace-panel" style="display: none;">
-          <div class="section">
-            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border);">
-              <span style="font-size: 1.15rem; font-weight: 700; color: var(--brand); letter-spacing: 0.3px;">AI Email Leads</span>
-              <button class="nav-btn-styled" id="email-sync-trigger-btn" style="background: var(--accent); font-size: 0.8rem; padding: 5px 12px; font-weight: 600;" onclick="executeInboundEmailSyncPipelineFetch()">Sync Inbox Streams</button>
+          <div class="navigation-action-header-row" style="margin-bottom: 15px; position: relative; display: flex; align-items: center; justify-content: space-between; min-height: 48px; background: #ffffff; border-radius: 6px; border: 1px solid var(--border); padding: 4px 10px;">
+            
+            <div id="email-panel-left-controls" style="display: inline-flex; align-items: center;">
+              <button class="nav-btn-styled" id="email-sync-trigger-btn" style="background: var(--accent); padding: 6px 18px; font-weight: 600; font-size: 0.8rem;" onclick="executeInboundEmailSyncPipelineFetch()">Sync Inbox Streams</button>
             </div>
+            
+            <span id="email-panel-center-title" style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 1.1rem; font-weight: 700; color: var(--text); letter-spacing: 0.2px; white-space: nowrap;">Email Leads</span>
+            
+            <button class="nav-btn-styled" onclick="returnToDashboard()">Return to Main Dashboard</button>
+          </div>
+
+          <div class="section" style="border-top: none; box-shadow: none;">
             <div class="section-body" style="padding: 10px;">
               <div id="email-leads-runtime-status-feedback" style="display:none; margin-bottom:10px; padding:8px; border-radius:4px; font-size:0.8rem; font-weight:700; text-align:center;"></div>
               <div id="email-leads-inbound-feed-canvas" style="display:flex; flex-direction:column; gap:12px;"></div>
@@ -2942,13 +2949,26 @@ async function executeLeadMatrixFilterSearch() {
   }
 }
 
+/**
+ * EXECUTE INBOUND EMAIL SYNC PIPELINE FETCH
+ * Connects to the backend server to pull unread emails, runs the AI classifier,
+ * and updates the interface layout with instruction-centered headers.
+ */
 async function executeInboundEmailSyncPipelineFetch() {
   const syncBtn = document.getElementById("email-sync-trigger-btn");
   const feedbackNode = document.getElementById("email-leads-runtime-status-feedback");
   const feedCanvas = document.getElementById("email-leads-inbound-feed-canvas");
   
-  syncBtn.disabled = true; syncBtn.textContent = "Syncing...";
+  if (!syncBtn || !feedbackNode || !feedCanvas) {
+    console.error("UI Render Error: One or more compulsory target elements are missing from the DOM.");
+    return;
+  }
   
+  // 1. Lock the interface button to block multiple overlapping server requests
+  syncBtn.disabled = true; 
+  syncBtn.textContent = "Syncing...";
+  
+  // 2. Set up the high-visibility animated loading banner look
   feedbackNode.style.cssText = `
     display: flex; 
     align-items: center; 
@@ -2959,9 +2979,11 @@ async function executeInboundEmailSyncPipelineFetch() {
     border: 1.5px solid var(--brand); 
     border-radius: var(--radius); 
     color: var(--brand);
+    margin-bottom: 16px;
     animation: pulseGlow 1.8s infinite ease-in-out;
   `;
   
+  // Inject the clean spinning hardware-accelerated loader graphics vector circle inline
   feedbackNode.innerHTML = `
     <div class="spinner" style="
       width: 16px; 
@@ -2975,11 +2997,10 @@ async function executeInboundEmailSyncPipelineFetch() {
       Connecting to mail server... Running AI filters
     </span>
   `;
-
-  feedbackNode.textContent = "Connecting to mail server ...";
   
   try {
-    const res = await fetch(GAS_URL, {
+    // 3. Fire the secure fetch request payload down to your backend doPost router
+    const response = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({
         action: "fetchAndProcessInboundEmailLeads",
@@ -2987,21 +3008,26 @@ async function executeInboundEmailSyncPipelineFetch() {
         activeEngineer: appActiveOperatorIdentityString
       })
     });
-    const data = await res.json();
     
+    const data = await response.json();
+    
+    // 4. Handle response success states and mount elements to your interface canvas
     if (data.success) {
-      cachedInboundEmailLeadsArray = data.emailLeads;
+      cachedInboundEmailLeadsArray = data.emailLeads || [];
       renderEmailLeadsFeedInterface(cachedInboundEmailLeadsArray);
-      feedbackNode.style.display = "none";
+      feedbackNode.style.display = "none"; // Hide the loader cleanly on successful finish
     } else {
-      feedbackNode.style.cssText = "display:block; background:#fff5f5; border:1px solid var(--warn); color:var(--warn);";
-      feedbackNode.textContent = "Sync failed: " + data.error;
+      feedbackNode.style.cssText = "display: block; padding: 12px; border-radius: var(--radius); background: #fff5f5; border: 1px solid var(--warn); color: var(--warn); font-weight: 700; text-align: center; margin-bottom: 16px;";
+      feedbackNode.textContent = "Sync failed: " + (data.error || "Unknown backend error context.");
     }
-  } catch (e) {
-    feedbackNode.style.cssText = "display:block; background:#fff5f5; border:1px solid var(--warn); color:var(--warn);";
-    feedbackNode.textContent = "Network runtime failure: " + e.message;
+  } catch (error) {
+    feedbackNode.style.cssText = "display: block; padding: 12px; border-radius: var(--radius); background: #fff5f5; border: 1px solid var(--warn); color: var(--warn); font-weight: 700; text-align: center; margin-bottom: 16px;";
+    feedbackNode.textContent = "Network runtime connection failure: " + error.message;
+    console.error("Inbound email pipeline operational sync crash: ", error);
   } finally {
-    syncBtn.disabled = false; syncBtn.textContent = "Sync Inbox Streams";
+    // 5. Restore full structural button states parameters regardless of success or failure paths
+    syncBtn.disabled = false; 
+    syncBtn.textContent = "Sync Inbox Streams";
   }
 }
 
