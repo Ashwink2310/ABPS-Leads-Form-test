@@ -580,8 +580,9 @@
           <div id="task-matrix-results-output-node" style="margin-top:12px;"></div>
         </div>
 
-        <div class="section-header" style="padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px solid var(--border);">
-          <span style="font-size: 1.15rem; font-weight: 700; color: var(--brand); letter-spacing: 0.3px;">AI Email Leads</span>
+        <div id="workspace-emailWhatsapp" class="workspace-panel" style="display: none;">
+          <div id="email-leads-runtime-status-feedback" style="display:none; margin-bottom:10px; padding:8px; border-radius:4px; font-size:0.8rem; font-weight:700; text-align:center;"></div>
+          <div id="email-leads-inbound-feed-canvas" style="display:flex; flex-direction:column; gap:12px;"></div>
         </div>
 
         <div id="missing-trigger-notice-block" style="display:none;">
@@ -1353,7 +1354,7 @@ async function navigateToModule(key) {
     } else if (key === "emailLeads") { 
       document.getElementById("global-email-sync-btn").style.display = "inline-flex";
       document.getElementById("global-module-center-title").style.display = "block";
-      executeInboundEmailSyncPipelineFetch();f
+      executeInboundEmailSyncPipelineFetch();
     } else if (key === "dispatchCommissioning") {
       document.getElementById("marketing-ops-inputs-wrapper-container").style.display = "block";
       const banner = document.getElementById("marketing-ops-runtime-inline-feedback-banner");
