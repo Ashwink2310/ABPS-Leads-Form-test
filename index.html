@@ -387,34 +387,45 @@
     </div>
 
     <div id="canvas-module-store-history-matrix" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2>Search Store Tickets</h2>
+      
+      <h2 style="margin-bottom: 16px;">Search Store Tickets</h2>
 
-      <div style="background: var(--highlight-bg); border: 1.5px solid var(--border); border-left: 4px solid var(--brand); padding: 14px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
-        <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--brand); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Search Filter Parameters</span>  
+      <div style="background: var(--highlight-bg); border: 1.5px solid var(--border); border-left: 4px solid var(--brand); padding: 16px; border-radius: var(--radius); margin-bottom: 16px; text-align: left;">
+        <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--brand); text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.5px;">Search Filter Parameters</span>  
         
-        <!-- NEW PIPELINE MODIFIER: INJECTED TYPE SELECTION CONTROLS -->
-        <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px;">Filter By Ticket Operation Type</label>
-        <div class="pill-group" style="margin-bottom:14px;">
-          <input type="checkbox" name="matrixTypeFilter" value="Request Material" id="mt_ty_req" onchange="executeClientSideStoreTicketFilterSearch()">
-          <label for="mt_ty_req">Request Material</label>
-          <input type="checkbox" name="matrixTypeFilter" value="Return Material" id="mt_ty_ret" onchange="executeClientSideStoreTicketFilterSearch()">
-          <label for="mt_ty_ret">Return Material</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 14px; width: 100%;">
+          
+          <div style="flex: 1; min-width: 280px;">
+            <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px; margin-top:0;">Filter By Ticket Operation Type</label>
+            <div class="pill-group" style="margin-bottom:0;">
+              <input type="checkbox" name="matrixTypeFilter" value="Request Material" id="mt_ty_req" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="mt_ty_req">Request Material</label>
+              <input type="checkbox" name="matrixTypeFilter" value="Return Material" id="mt_ty_ret" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="mt_ty_ret">Return Material</label>
+            </div>
+          </div>
+
+          <div style="flex: 1; min-width: 280px;">
+            <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px; margin-top:0;">Filter By Verification Status</label>
+            <div class="pill-group" style="margin-bottom:0;">
+              <input type="checkbox" name="matrixStatusFilter" value="Pending Approval" id="ms_st_pending" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="ms_st_pending">Pending Approval</label>
+              <input type="checkbox" name="matrixStatusFilter" value="Approved & Released" id="ms_st_approved" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="ms_st_approved">Approved & Released</label>
+              <input type="checkbox" name="matrixStatusFilter" value="Rejected" id="ms_st_rejected" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="ms_st_rejected">Rejected</label>
+            </div>
+          </div>
+
         </div>
 
-        <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px;">Filter By Project ID</label>
-        <div class="pill-group" id="matrix-search-projects-checkbox-mount" style="margin-bottom:14px;">
-          <p style="font-size:0.75rem; color:var(--muted);">Syncing Projects...</p>
+        <div style="width: 100%; border-top: 1px dashed rgba(0, 86, 179, 0.15); padding-top: 12px; margin-top: 4px;">
+          <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px; margin-top:0;">Filter By Project ID</label>
+          <div class="pill-group" id="matrix-search-projects-checkbox-mount" style="margin-bottom:6px;">
+            <p style="font-size:0.75rem; color:var(--muted); margin:0;">Syncing Projects...</p>
+          </div>
         </div>
-        
-        <label class="field-label" style="font-size:0.8rem; color:var(--brand); margin-bottom:6px;">Filter By Verification Status</label>
-        <div class="pill-group" id="matrix-search-status-checkbox-mount" style="margin-bottom:6px;">
-          <input type="checkbox" name="matrixStatusFilter" value="Pending Approval" id="ms_st_pending" onchange="executeClientSideStoreTicketFilterSearch()">
-          <label for="ms_st_pending">Pending Approval</label>
-          <input type="checkbox" name="matrixStatusFilter" value="Approved & Released" id="ms_st_approved" onchange="executeClientSideStoreTicketFilterSearch()">
-          <label for="ms_st_approved">Approved & Released</label>
-          <input type="checkbox" name="matrixStatusFilter" value="Rejected" id="ms_st_rejected" onchange="executeClientSideStoreTicketFilterSearch()">
-          <label for="ms_st_rejected">Rejected</label>
-        </div>
+
       </div>
 
       <div id="store-historical-matrix-results-feed" style="display: flex; flex-direction: column; gap: 12px;"></div>
@@ -3825,7 +3836,7 @@ async function initializeMaterialRequestWorkspace() {
 /**
  * SUBMIT TICKET SYSTEM GATEWAY
  * Validates inputs based on whether the active system state is set to Request or Return,
- * and securely passes the payload down to your Google Apps Script backend router.
+ * transmits the data, and displays a clean, full-panel success message for 5 seconds.
  */
 async function submitMaterialRequestTicketToBackend() {
   const projectIdField = document.getElementById("ticket-project-id-dropdown");
@@ -3834,19 +3845,21 @@ async function submitMaterialRequestTicketToBackend() {
   const submitBtn = document.getElementById("submit-ticket-final-btn");
   const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
   
-  if (!projectIdField || !operatorDropdownField || !submitBtn) {
+  // Isolate the parent container zone so we can swap out its contents on success
+  const materialRequestPanelContainer = document.getElementById("canvas-module-store-material-request");
+  
+  if (!projectIdField || !operatorDropdownField || !submitBtn || !materialRequestPanelContainer) {
     console.error("UI Reference Error: Compulsory form inputs missing from the DOM layout.");
     return;
   }
 
   const projectId = projectIdField.value;
   const operatorSignatureName = operatorDropdownField.value;
-  // Fallback to "Request Material" if the toggle dropdown is missing from the layout
   const ticketTypeVal = typeDropdownField ? typeDropdownField.value : "Request Material";
 
   if (feedbackBanner) feedbackBanner.style.display = "none";
   
-  // 1. STAGE 1: CORE VALIDATION CHECKS
+  // 1. INPUT VALIDATION CHECKS
   if (!operatorSignatureName) {
     if (feedbackBanner) {
       feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b45309; text-align: left;";
@@ -3871,7 +3884,7 @@ async function submitMaterialRequestTicketToBackend() {
     return;
   }
   
-  // 2. STAGE 2: SET LOADER BUTTON STATE ANIMATIONS
+  // 2. LOADER BUTTON ANIMATION ACTIVATION
   submitBtn.disabled = true;
   submitBtn.innerHTML = `
     <div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div>
@@ -3879,7 +3892,6 @@ async function submitMaterialRequestTicketToBackend() {
   `;
   
   try {
-    // 3. STAGE 3: CONSTRUCT PAYLOAD WRAPPER ENVELOPE
     const payload = {
       action: "submitEngineerMaterialTicket",
       sessionToken: localStorage.getItem("sessionToken"),
@@ -3889,7 +3901,6 @@ async function submitMaterialRequestTicketToBackend() {
       itemsClusterArray: dynamicTicketShoppingBasketArray
     };
     
-    // 4. STAGE 4: TRANSMIT PAYLOAD HIT TO BACKEND ROUTER
     const res = await fetch(GAS_URL, { 
       method: "POST", 
       body: JSON.stringify(payload) 
@@ -3897,27 +3908,37 @@ async function submitMaterialRequestTicketToBackend() {
     const result = await res.json();
     
     if (result.success) {
-      if (feedbackBanner) {
-        feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 14px; margin-bottom: 16px; border-left: 4px solid #15803d; text-align: left;";
-        feedbackBanner.innerHTML = `
-          <strong>Success! Transaction Ticket Created Perfectly.</strong><br/>
-          Assigned Reference Tracking ID: <span style="font-family:monospace; font-weight:800; background:#fff; padding:2px 6px; border-radius:4px; border:1px solid #15803d; margin-left:4px;">${result.ticketId}</span>
-        `;
-      }
+      // 3. FULL-PANEL REPLACEMENT SUCCESS ENGINE: Wipes out the form inputs instantly
+      materialRequestPanelContainer.style.padding = "20px";
+      materialRequestPanelContainer.innerHTML = `
+        <div style="background: #dcfce7; border: 1px solid #15803d; border-left: 4px solid #15803d; color: #15803d; padding: 20px; border-radius: var(--radius); text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin: 10px 0;">
+          <h3 style="font-size: 1.1rem; margin-top: 0; margin-bottom: 6px; font-weight: 700;">Success! Transaction Ticket Created Perfectly.</h3>
+          <div style="font-size: 0.92rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+            Assigned Reference Tracking ID: 
+            <span style="font-family: monospace; font-weight: 800; background: #fff; padding: 3px 8px; border-radius: 4px; border: 1px solid #15803d; color: #111827; margin-left: 4px; font-size: 1rem;">
+              ${result.ticketId}
+            </span>
+          </div>
+          <p style="font-size: 0.78rem; margin: 12px 0 0; color: #166534; opacity: 0.85; font-style: italic;">
+            Returning to main dashboard automatically in 5 seconds...
+          </p>
+        </div>
+      `;
       
-      // Clear out temporary workflow draft elements memory metrics
-      clearFullBasketDraftState();
-      projectIdField.value = "";
-      operatorDropdownField.value = "";
-      document.getElementById("ticket-item-selection-dropdown").value = "";
-      document.getElementById("ticket-item-quantity-input").value = "";
-      document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
+      // Clear current selection memory contexts arrays
+      dynamicTicketShoppingBasketArray = [];
       
-      // Auto-collapse and exit view after confirmation delay completes
+      // 4. TIMEOUT EXTENSION: Hold the pristine success card layout for exactly 5 seconds
       setTimeout(() => {
-        if (feedbackBanner) feedbackBanner.style.display = "none";
+        // Full clean rebuild optimization: Reloads form framework dynamically on exit to avoid layout traps
+        materialRequestPanelContainer.style.display = "none";
+        
+        // Restore standard static view back to workspace defaults
         exitStoreWorkspacePanelBackToMenu();
-      }, 3000);
+        
+        // Force fully fresh panel initialization to reset inputs structures
+        location.reload(); 
+      }, 5000);
       
     } else {
       if (feedbackBanner) {
