@@ -3237,13 +3237,19 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
           }
         });
 
-        if (document.getElementById("dropform-city")) document.getElementById("dropform-city").value = "";
-        if (document.getElementById("dropform-state")) document.getElementById("dropform-state").value = "";
+        const dropCity = document.getElementById("dropform-city");
+        const dropState = document.getElementById("dropform-state");
+        if (dropCity) dropCity.value = "";
+        if (dropState) dropState.value = "";
+        
         document.querySelectorAll('.other-input, #vendor-fields').forEach(el => el.style.display = 'none');
         
-        // 4. Populate pre-extracted AI values into the active fields
-        document.getElementById("dropform-company-locked").value = mailObject.extractedCompany;
-        document.getElementById("dropform-name").value = mailObject.extractedContactName;
+        // 4. Populate pre-extracted AI values safely with explicit checks
+        const dropCompanyLocked = document.getElementById("dropform-company-locked");
+        const dropName = document.getElementById("dropform-name");
+        
+        if (dropCompanyLocked) dropCompanyLocked.value = mailObject.extractedCompany;
+        if (dropName) dropName.value = mailObject.extractedContactName;
         
         // Hide standard external standalone workspace submission buttons
         document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
