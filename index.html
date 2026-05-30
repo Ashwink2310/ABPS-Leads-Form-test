@@ -313,7 +313,7 @@
     <div id="canvas-module-store-material-request" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <!-- TOP NAVIGATION ACTION GRID WITH ACTION SELECTION DROPDOWN -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:2px solid var(--bg); padding-bottom:10px;">
-        <h2 style="margin:0;">Store Log Ticket</h2>
+        <h2 style="margin:0;">Store Create Ticket</h2>
         <div style="width:180px;">
           <select id="ticket-action-type-toggle-dropdown" onchange="handleStoreTicketTypeInterfaceLayoutChange(this.value)" style="border-color:var(--brand); font-weight:700; color:var(--brand); padding:6px;">
             <option value="Request Material">Request Material</option>
@@ -3823,76 +3823,117 @@ async function initializeMaterialRequestWorkspace() {
 }
 
 /**
- * SUBMIT TICKET (UPDATED: WITH DYNAMIC OPERATOR SIGNATURE PAYLOAD)
- * Validates selection flags and ships verified field parameters to your backend script
+ * SUBMIT TICKET SYSTEM GATEWAY
+ * Validates inputs based on whether the active system state is set to Request or Return,
+ * and securely passes the payload down to your Google Apps Script backend router.
  */
 async function submitMaterialRequestTicketToBackend() {
-  const projectId = document.getElementById("ticket-project-id-dropdown").value;
-  const operatorSignatureName = document.getElementById("ticket-requested-by-operator-dropdown").value;
+  const projectIdField = document.getElementById("ticket-project-id-dropdown");
+  const operatorDropdownField = document.getElementById("ticket-requested-by-operator-dropdown");
+  const typeDropdownField = document.getElementById("ticket-action-type-toggle-dropdown");
   const submitBtn = document.getElementById("submit-ticket-final-btn");
   const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
   
+  if (!projectIdField || !operatorDropdownField || !submitBtn) {
+    console.error("UI Reference Error: Compulsory form inputs missing from the DOM layout.");
+    return;
+  }
+
+  const projectId = projectIdField.value;
+  const operatorSignatureName = operatorDropdownField.value;
+  // Fallback to "Request Material" if the toggle dropdown is missing from the layout
+  const ticketTypeVal = typeDropdownField ? typeDropdownField.value : "Request Material";
+
   if (feedbackBanner) feedbackBanner.style.display = "none";
   
+  // 1. STAGE 1: CORE VALIDATION CHECKS
   if (!operatorSignatureName) {
-    feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b45309;";
-    feedbackBanner.innerHTML = `<strong>Compulsory Input Missing:</strong> You must select your operator name signature profile field.`;
+    if (feedbackBanner) {
+      feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b45309; text-align: left;";
+      feedbackBanner.innerHTML = `<strong>Compulsory Input Missing:</strong> Please select your name signature profile configuration.`;
+    }
     return;
   }
 
   if (!projectId) {
-    feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b45309;";
-    feedbackBanner.innerHTML = `<strong>Compulsory Input Missing:</strong> Project ID is required.`;
+    if (feedbackBanner) {
+      feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b45309; text-align: left;";
+      feedbackBanner.innerHTML = `<strong>Compulsory Input Missing:</strong> Please select an active Project ID code to map this transaction.`;
+    }
     return;
   }
   
   if (dynamicTicketShoppingBasketArray.length === 0) {
-    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b91c1c;";
-    feedbackBanner.innerHTML = `<strong>Error:</strong> Cannot process material request tickets on an Empty Basket list.`;
+    if (feedbackBanner) {
+      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b91c1c; text-align: left;";
+      feedbackBanner.innerHTML = `<strong>Empty Basket Warning:</strong> Cannot compile a store transaction ticket with no items in your material basket.`;
+    }
     return;
   }
   
+  // 2. STAGE 2: SET LOADER BUTTON STATE ANIMATIONS
   submitBtn.disabled = true;
-  submitBtn.innerHTML = "Generating Ticket...";
+  submitBtn.innerHTML = `
+    <div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div>
+    <span>${ticketTypeVal === "Return Material" ? 'Generating Return Ticket...' : 'Generating Request Ticket...'}</span>
+  `;
   
   try {
+    // 3. STAGE 3: CONSTRUCT PAYLOAD WRAPPER ENVELOPE
     const payload = {
       action: "submitEngineerMaterialTicket",
       sessionToken: localStorage.getItem("sessionToken"),
-      activeEngineer: operatorSignatureName, // FIXED: Sets Requested By column directly to selected name
+      activeEngineer: operatorSignatureName, 
       projectId: projectId,
+      ticketTypeCommandString: ticketTypeVal, 
       itemsClusterArray: dynamicTicketShoppingBasketArray
     };
     
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
+    // 4. STAGE 4: TRANSMIT PAYLOAD HIT TO BACKEND ROUTER
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify(payload) 
+    });
     const result = await res.json();
     
     if (result.success) {
-      feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 14px; margin-bottom: 16px; border-left: 4px solid #15803d;";
-      feedbackBanner.innerHTML = `<strong>Success! Ticket Created Successfully.</strong><br/>Assigned System Reference ID: <span style="font-family:monospace; font-weight:800;">${result.ticketId}</span>`;
+      if (feedbackBanner) {
+        feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 14px; margin-bottom: 16px; border-left: 4px solid #15803d; text-align: left;";
+        feedbackBanner.innerHTML = `
+          <strong>Success! Transaction Ticket Created Perfectly.</strong><br/>
+          Assigned Reference Tracking ID: <span style="font-family:monospace; font-weight:800; background:#fff; padding:2px 6px; border-radius:4px; border:1px solid #15803d; margin-left:4px;">${result.ticketId}</span>
+        `;
+      }
       
+      // Clear out temporary workflow draft elements memory metrics
       clearFullBasketDraftState();
-      document.getElementById("ticket-project-id-dropdown").value = "";
+      projectIdField.value = "";
+      operatorDropdownField.value = "";
       document.getElementById("ticket-item-selection-dropdown").value = "";
-      document.getElementById("ticket-requested-by-operator-dropdown").value = "";
+      document.getElementById("ticket-item-quantity-input").value = "";
       document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
       
+      // Auto-collapse and exit view after confirmation delay completes
       setTimeout(() => {
-        feedbackBanner.style.display = "none";
+        if (feedbackBanner) feedbackBanner.style.display = "none";
         exitStoreWorkspacePanelBackToMenu();
-      }, 3500);
+      }, 3000);
       
     } else {
-      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px; border-left: 4px solid #b91c1c;";
-      feedbackBanner.innerHTML = `<strong>Submission Rejected:</strong> ${result.error}`;
+      if (feedbackBanner) {
+        feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px; border-left: 4px solid #b91c1c; text-align: left;";
+        feedbackBanner.innerHTML = `<strong>Submission Rejected by Server:</strong> ${result.error}`;
+      }
       submitBtn.disabled = false;
-      submitBtn.innerHTML = "Generate Material Ticket";
+      submitBtn.textContent = ticketTypeVal === "Return Material" ? "Generate Return Ticket" : "Generate Material Ticket";
     }
   } catch (err) {
-    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px; border-left: 4px solid #b91c1c;";
-    feedbackBanner.innerHTML = `<strong>Network Exception Dropped:</strong> ${err.message}`;
+    if (feedbackBanner) {
+      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px; border-left: 4px solid #b91c1c; text-align: left;";
+      feedbackBanner.innerHTML = `<strong>Network Request Connection Error:</strong> ${err.message}`;
+    }
     submitBtn.disabled = false;
-    submitBtn.innerHTML = "Generate Material Ticket";
+    submitBtn.textContent = ticketTypeVal === "Return Material" ? "Generate Return Ticket" : "Generate Material Ticket";
   }
 }
 
@@ -4735,7 +4776,8 @@ async function triggerLiveWarehouseStockMetricsSync() {
 
       cachedInventoryStockCollection.forEach(item => {
         const metricCard = document.createElement("div");
-        metricCard.style.cssText = "background: #f8fafc; border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; min-width: 0;";
+        // FIXED: Adjusted padding and layout behavior to comfortably house dual-line text wrapping blocks smoothly
+        metricCard.style.cssText = "background: #f8fafc; border: 1px solid var(--border); padding: 10px; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-width: 0;";
 
         let colorProfileStyle = "color: #15803d; background: #dcfce7;"; 
         if (item.availableStock === 0) {
@@ -4746,12 +4788,13 @@ async function triggerLiveWarehouseStockMetricsSync() {
 
         let cleanLabelText = item.materialName.toString().replace(/\n/g, " ").trim();
 
+        // FIXED: Removed nowrap rules to let materials strings unroll completely onto a second line naturally
         metricCard.innerHTML = `
-          <div style="font-size: 0.72rem; font-weight: 700; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;" title="${cleanLabelText}">
+          <div style="font-size: 0.78rem; font-weight: 700; color: #334155; line-height: 1.3; white-space: normal; word-break: break-word; min-height: 24px; margin-bottom: 2px;">
             ${cleanLabelText}
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-            <span style="font-family: monospace; font-size: 1.05rem; font-weight: 800; color: var(--text);">${item.availableStock}</span>
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
+            <span style="font-family: monospace; font-size: 1.1rem; font-weight: 800; color: var(--text);">${item.availableStock}</span>
             <span style="font-size: 0.62rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; ${colorProfileStyle}">${item.unitType.toUpperCase()}</span>
           </div>
         `;
