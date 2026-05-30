@@ -745,7 +745,13 @@ window.onload = function() {
   const expires = localStorage.getItem("sessionExpiry"); 
   const savedPerms = localStorage.getItem("userPermissions");
   const cachedOperator = localStorage.getItem("activeOperatorSignature");
-  
+
+  if (localStorage.getItem("abps_active_email_leads_cache")) {
+    try {
+      cachedInboundEmailLeadsArray = JSON.parse(localStorage.getItem("abps_active_email_leads_cache"));
+    } catch(e) { cachedInboundEmailLeadsArray = []; }
+  }
+    
   if (token && expires && new Date() < new Date(expires) && savedPerms && cachedOperator) { 
     userPermissions = JSON.parse(savedPerms); 
     appActiveOperatorIdentityString = cachedOperator;
@@ -2381,13 +2387,16 @@ async function submitLead() {
   if (!engineerField || !engineerField.value) { alert("Creator Name is a compulsory question."); return; }
 
   btn.disabled = true; 
-  btn.innerHTML = '<div class="spinner"></div> Saving...';
+  btn.innerHTML = '<div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div> Saving Lead...';
   
   const meetingDate = document.getElementById('meetingDate').value;
   const meetingTime = document.getElementById('meetingTime').value;
 
-  const getChecks = n => Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
-  const getRadio  = n => (document.querySelector(`input[name="${n}"]:checked`) || {}).value || "";
+  // FIXED: Scope query selections tightly to active panel containers to safeguard layout transitions
+  const activeFormContainerScopeNode = document.getElementById("step2-new-entry-dropdown");
+  
+  const getChecks = n => Array.from(activeFormContainerScopeNode.querySelectorAll(`input[name="${n}"]:checked`)).map(c => c.value);
+  const getRadio  = n => (activeFormContainerScopeNode.querySelector(`input[name="${n}"]:checked`) || {}).value || "No";
   
   try {
     const [url1, url2] = await Promise.all([
@@ -2396,40 +2405,50 @@ async function submitLead() {
     ]);
     const imageUrl = [url1, url2].filter(u => u).join(", ");
     
-    const dynamicOverriddenLpiValue = document.getElementById("sel-lpi").value === "Yes" ? document.getElementById("lpi").value : "No";
-    const dynamicOverriddenHbiValue = document.getElementById("sel-hbi").value === "Yes" ? document.getElementById("hbi").value : "No";
-    const dynamicOverriddenHiValue = document.getElementById("sel-hi").value === "Yes" ? document.getElementById("hi").value : "No";
-    const dynamicOverriddenThiValue = document.getElementById("sel-thi").value === "Yes" ? document.getElementById("thi").value : "No";
-    const dynamicOverriddenGsiValue = document.getElementById("sel-gsi").value === "Yes" ? document.getElementById("gsi").value : "No";
+    // Safety check fallback references to guarantee input values are preserved
+    const lpiNode  = document.getElementById("lpi");  const selLpiNode  = document.getElementById("sel-lpi");
+    const hbiNode  = document.getElementById("hbi");  const selHbiNode  = document.getElementById("sel-hbi");
+    const hiNode   = document.getElementById("hi");   const selHiNode   = document.getElementById("sel-hi");
+    const thiNode  = document.getElementById("thi");  const selThiNode  = document.getElementById("sel-thi");
+    const gsiNode  = document.getElementById("gsi");  const selGsiNode  = document.getElementById("sel-gsi");
+    const vtoNode  = document.getElementById("vtoText");
+    const pdoNode  = document.getElementById("pdoText");
+    const qOtherNode = document.getElementById("qualificationOther");
+
+    const dynamicOverriddenLpiValue = selLpiNode && selLpiNode.value === "Yes" ? (lpiNode ? lpiNode.value : "Yes") : "No";
+    const dynamicOverriddenHbiValue = selHbiNode && selHbiNode.value === "Yes" ? (hbiNode ? hbiNode.value : "Yes") : "No";
+    const dynamicOverriddenHiValue  = selHiNode  && selHiNode.value  === "Yes" ? (hiNode  ? hiNode.value  : "Yes") : "No";
+    const dynamicOverriddenThiValue = selThiNode && selThiNode.value === "Yes" ? (thiNode ? thiNode.value : "Yes") : "No";
+    const dynamicOverriddenGsiValue = selGsiNode && selGsiNode.value === "Yes" ? (gsiNode ? gsiNode.value : "Yes") : "No";
 
     const qualChecked = getChecks('qualification');
-    const qualFinal = qualChecked.map(v => v === 'Others' ? (document.getElementById('qualificationOther').value || 'Others') : v);
+    const qualFinal = qualChecked.map(v => v === 'Others' ? ((qOtherNode && qOtherNode.value) ? qOtherNode.value : 'Others') : v);
 
     const vtChecked = getChecks('vendorType');
-    const vtFinal = vtChecked.map(v => v === 'Others' ? (document.getElementById('vtoText').value || 'Others') : v);
+    const vtFinal = vtChecked.map(v => v === 'Others' ? ((vtoNode && vtoNode.value) ? vtoNode.value : 'Others') : v);
 
     const prodChecked = getChecks('prod');
-    const prodFinal = prodChecked.map(v => v === 'Others' ? (document.getElementById('pdoText').value || 'Others') : v);
+    const prodFinal = prodChecked.map(v => v === 'Others' ? ((pdoNode && pdoNode.value) ? pdoNode.value : 'Others') : v);
 
     const fields = {
       status: statusField.value,
       engineerName: engineerField.value, 
-      name: document.getElementById('dropform-name').value.trim() || document.getElementById('f-name').value.trim(), 
+      name: document.getElementById('dropform-name').value.trim() || (document.getElementById('f-name') ? document.getElementById('f-name').value.trim() : ""), 
       company: document.getElementById('dropform-company-locked').value.trim(),
-      position: document.getElementById('dropform-position').value.trim() || document.getElementById('f-position').value.trim(), 
-      phone: document.getElementById('dropform-phone').value.trim() || document.getElementById('f-phone').value.trim(), 
-      altPhone: document.getElementById('dropform-altphone').value.trim() || document.getElementById('f-altphone').value.trim(),
-      email: document.getElementById('dropform-email').value.trim() || document.getElementById('f-email').value.trim(), 
-      website: document.getElementById('dropform-website').value.trim() || document.getElementById('f-website').value.trim(), 
-      city: document.getElementById('dropform-city').value.trim() || document.getElementById('f-city').value.trim(),
-      state: document.getElementById('dropform-state').value.trim() || document.getElementById('f-state').value.trim(),
-      address: document.getElementById('dropform-address').value.trim() || document.getElementById('f-address').value.trim(),
+      position: document.getElementById('dropform-position').value.trim() || (document.getElementById('f-position') ? document.getElementById('f-position').value.trim() : ""), 
+      phone: document.getElementById('dropform-phone').value.trim() || (document.getElementById('f-phone') ? document.getElementById('f-phone').value.trim() : ""), 
+      altPhone: document.getElementById('dropform-altphone').value.trim() || (document.getElementById('f-altphone') ? document.getElementById('f-altphone').value.trim() : ""),
+      email: document.getElementById('dropform-email').value.trim() || (document.getElementById('f-email') ? document.getElementById('f-email').value.trim() : ""), 
+      website: document.getElementById('dropform-website').value.trim() || (document.getElementById('f-website') ? document.getElementById('f-website').value.trim() : ""), 
+      city: document.getElementById('dropform-city').value.trim() || (document.getElementById('f-city') ? document.getElementById('f-city').value.trim() : ""),
+      state: document.getElementById('dropform-state').value.trim() || (document.getElementById('f-state') ? document.getElementById('f-state').value.trim() : ""),
+      address: document.getElementById('dropform-address').value.trim() || (document.getElementById('f-address') ? document.getElementById('f-address').value.trim() : ""),
       meetingDate: meetingDate, 
       meetingTime: meetingTime,
-      meetingVenue: getRadio('meetingVenue') === 'Other' ? document.getElementById('meetingVenueOther').value : getRadio('meetingVenue'), 
+      meetingVenue: getRadio('meetingVenue') === 'Other' ? (document.getElementById('meetingVenueOther') ? document.getElementById('meetingVenueOther').value : 'Other') : getRadio('meetingVenue'), 
       venueName: document.getElementById('venueName').value, 
       additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
-      businessVertical: getRadio('businessVertical') === 'Other' ? document.getElementById('businessVerticalOther').value : getRadio('businessVertical'), 
+      businessVertical: getRadio('businessVertical') === 'Other' ? (document.getElementById('businessVerticalOther') ? document.getElementById('businessVerticalOther').value : 'Other') : getRadio('businessVertical'), 
       industry: document.getElementById('industry').value, 
       qualification: qualFinal, 
       vendorType: vtFinal,
@@ -2475,56 +2494,37 @@ async function submitLead() {
     const d = await res.json();
     
     if (d.success) { 
-      // -------------------------------------------------------------
-      // ENHANCED AUTO-DELETE & PERMANENT BLOCK ENTRY MATRIX
       if (activeEmailLeadContextIndex !== null) {
-        // 1. Get the target email object parameters out of your cache stream array
         const mailObject = cachedInboundEmailLeadsArray[activeEmailLeadContextIndex];
+        const targetMsgId = mailObject.messageIdReference;
         const cardWrapperNode = document.getElementById(`email-lead-wrapper-node-${activeEmailLeadContextIndex}`);
         
-        // 2. BACKEND BLOCK: Fire a background hit to register this ID in ProcessedEmails immediately
-        if (mailObject && mailObject.messageIdReference) {
-          fetch(GAS_URL, {
-            method: "POST",
-            body: JSON.stringify({
-              action: "saveFollowUp",
-              sessionToken: localStorage.getItem("sessionToken"),
-              activeEngineer: appActiveOperatorIdentityString,
-              archiveTargetEmailIdString: mailObject.messageIdReference // Logs to ProcessedEmails sheet
-            })
-          }).catch(err => console.log("Silent background archive processing catch:", err));
-        }
+        cachedInboundEmailLeadsArray = cachedInboundEmailLeadsArray.filter(item => item.messageIdReference !== targetMsgId);
+        localStorage.setItem("abps_active_email_leads_cache", JSON.stringify(cachedInboundEmailLeadsArray));
 
-        // 3. Push the form safely back into the body pool so it isn't destroyed
         const formTemplateSource = document.getElementById("step2-new-entry-dropdown");
         if (formTemplateSource) {
           formTemplateSource.style.display = "none";
           document.body.appendChild(formTemplateSource);
         }
         
-        // 4. Remove the visual card seamlessly from your current screen view layout
-        if (cardWrapperNode) {
-          cardWrapperNode.remove();
-        }
+        if (cardWrapperNode) cardWrapperNode.remove();
         
-        // 5. Evaluate remaining items. If empty, print the default "All dealt with" alert block
         const remainingCards = document.getElementById("email-leads-inbound-feed-canvas").children.length;
         if (remainingCards === 0) {
           renderEmailLeadsFeedInterface([]);
         }
         
-        // Reset tracking variable reference
         activeEmailLeadContextIndex = null;
       }
-      // -------------------------------------------------------------
 
       document.getElementById('remaining-sections-form').style.display = 'none'; 
       const successScreen = document.getElementById('success-screen'); 
-      successScreen.style.display = 'block'; 
+      if (successScreen) successScreen.style.display = 'block'; 
       document.getElementById('success-ref').textContent = "Lead ID: " + (d.leadRef || "Error generating ID");
       
       const canvasNode = document.getElementById("step2-inline-interaction-canvas");
-      if (canvasNode) {
+      if (canvasNode && successScreen) {
         canvasNode.appendChild(successScreen);
       }
       
@@ -3011,9 +3011,29 @@ async function executeInboundEmailSyncPipelineFetch() {
     
     // 4. Handle response success states and mount elements to your interface canvas
     if (data.success) {
-      cachedInboundEmailLeadsArray = data.emailLeads || [];
+      // Pull old local storage cache if it exists, otherwise initialize an empty list
+      let localSavedLeads = [];
+      try {
+        const rawCache = localStorage.getItem("abps_active_email_leads_cache");
+        if (rawCache) localSavedLeads = JSON.parse(rawCache);
+      } catch(cacheErr) { localSavedLeads = []; }
+      
+      const newIncomingLeads = data.emailLeads || [];
+      
+      // Merge unique emails based on Message ID reference parameters
+      newIncomingLeads.forEach(newMail => {
+        const isDuplicate = localSavedLeads.some(oldMail => oldMail.messageIdReference === newMail.messageIdReference);
+        if (!isDuplicate) {
+          localSavedLeads.push(newMail);
+        }
+      });
+      
+      // Update global application session scope data array
+      cachedInboundEmailLeadsArray = localSavedLeads;
+      localStorage.setItem("abps_active_email_leads_cache", JSON.stringify(cachedInboundEmailLeadsArray));
+      
       renderEmailLeadsFeedInterface(cachedInboundEmailLeadsArray);
-      feedbackNode.style.display = "none"; // Hide the loader cleanly on successful finish
+      feedbackNode.style.display = "none";
     } else {
       feedbackNode.style.cssText = "display: block; padding: 12px; border-radius: var(--radius); background: #fff5f5; border: 1px solid var(--warn); color: var(--warn); font-weight: 700; text-align: center; margin-bottom: 16px;";
       feedbackNode.textContent = "Sync failed: " + (data.error || "Unknown backend error context.");
@@ -3084,7 +3104,7 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
       
       <!-- Actions Row Trigger Button -->
       <div style="margin-top:10px;" id="email-action-response-mount-zone-${mIdx}">
-        <button class="btn btn-sub" style="width:auto; font-size:0.78rem; padding:5px 12px;" onclick="triggerEmailLeadDatabaseActionPipeline(${mIdx})">Create New Entry</button>
+        <button class="btn btn-sub" style="width:auto; font-size:0.78rem; padding:5px 12px;" onclick="triggerEmailLeadDatabaseActionPipeline(${mIdx})" id="email-form-toggle-btn-text-${mIdx}">Create New Entry</button>
       </div>
       
       <!-- Dynamic Nested Placement Mount Panel Box Anchor Point -->
@@ -3116,11 +3136,14 @@ async function archiveEmailLeadFromSystemDatabaseCache(messageId, elementIndex) 
     });
     
     if (cardNode) cardNode.remove();
-    // Re-check layout status tracking counters smoothly
+    
+    // Clear the deleted card out of localStorage arrays
+    cachedInboundEmailLeadsArray = cachedInboundEmailLeadsArray.filter(item => item.messageIdReference !== messageId);
+    localStorage.setItem("abps_active_email_leads_cache", JSON.stringify(cachedInboundEmailLeadsArray));
+
     const remainingCards = document.getElementById("email-leads-inbound-feed-canvas").children.length;
-    if (remainingCards === 0) {
-      renderEmailLeadsFeedInterface([]);
-    }
+    if (remainingCards === 0) { renderEmailLeadsFeedInterface([]); }
+    
   } catch(e) {
     alert("Connection Error: Deletion parameter could not be safely tracked: " + e.message);
     deleteBtn.disabled = false; deleteBtn.textContent = "Delete";
@@ -3134,13 +3157,24 @@ function purgeEmailLeadCardViewFromScreen(index) {
   }
 }
 
+
 async function triggerEmailLeadDatabaseActionPipeline(index) {
   const mailObject = cachedInboundEmailLeadsArray[index];
   const responseMountZone = document.getElementById(`email-action-response-mount-zone-${index}`);
   const nestedWorkspace = document.getElementById(`email-nested-inline-database-workspace-anchor-${index}`);
+  const actionBtn = document.getElementById(`email-form-toggle-btn-text-${index}`);
   
-  const actionBtn = responseMountZone.querySelector("button");
-  actionBtn.disabled = true; actionBtn.textContent = "Verifying Spreadsheet Database...";
+  if (!nestedWorkspace || !actionBtn) return;
+  
+  // TOGGLE CHECK: If it's already open, collapse it and toggle the text back
+  if (nestedWorkspace.style.display === "block") {
+    nestedWorkspace.style.display = "none";
+    actionBtn.textContent = "Create New Entry";
+    return;
+  }
+
+  actionBtn.disabled = true; 
+  actionBtn.textContent = "Verifying Spreadsheet Database...";
   
   try {
     const res = await fetch(GAS_URL, {
@@ -3157,7 +3191,8 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
     
     // --- SCENARIO A: COMPANY EXISTS IN DATABASE MATRIX ---
     if (data.success) {
-      actionBtn.textContent = "Linked to Existing Company";
+      actionBtn.disabled = false;
+      actionBtn.textContent = "Collapse Form";
       nestedWorkspace.innerHTML = `
         <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--brand); margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid var(--border);">
           🏢 Existing Database Records found for ${mailObject.extractedCompany}:
@@ -3177,32 +3212,21 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
       if (targetSubMount && oldDirectoryContainer) {
         targetSubMount.appendChild(oldDirectoryContainer);
       }
-      
       buildMultiContactDirectoryInterface(data.leads, mailObject.extractedContactName);
     } 
-    // --- SCENARIO B: BRAND NEW COMPANY — OPEN CREATION FORM ---
+    // --- SCENARIO B: BRAND NEW COMPANY — OPEN FULL FILE CREATION FORM ---
     else {
-      // TOGGLE CHECK: If the nested workspace is already open and visible, collapse it!
-      if (nestedWorkspace.style.display === "block") {
-        nestedWorkspace.style.display = "none";
-        actionBtn.textContent = "Create New Entry";
-        return;
-      }
-
       activeEmailLeadContextIndex = index;
+      actionBtn.disabled = false;
       actionBtn.textContent = "Collapse Form";
       
       nestedWorkspace.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--border);">
           <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--accent);">
-            ➕ Open Account Entry Form:
+            ➕ OPEN ACCOUNT ENTRY FORM:
           </span>
-          <button class="nav-btn-styled" style="background:#718096; font-size:0.7rem; padding:2px 6px;" 
-            onclick="document.getElementById('email-action-response-mount-zone-${index}').querySelector('button').click()">
-            Minimize
-          </button>
         </div>
-        <div id="nested-email-creation-form-mount-${index}"></div>
+        <div id="nested-email-creation-form-mount-${index}" style="width: 100%;"></div>
       `;
       nestedWorkspace.style.display = "block";
       
@@ -3210,18 +3234,17 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
       const targetFormMountNode = nestedWorkspace.querySelector(`#nested-email-creation-form-mount-${index}`);
       
       if (formTemplateSource && targetFormMountNode) {
-        // 1. Reveal the template container wrapper box first so its child input nodes are fully initialized in the DOM
+        // FULL FILE REVEAL FIX: Force the complete display block window open wide
         formTemplateSource.style.display = "block";
         targetFormMountNode.appendChild(formTemplateSource);
         
-        // 2. SAFETY FIX: Explicitly ensure the inner form sections exist before triggering the reset state
         const remainingFormNode = document.getElementById('remaining-sections-form');
         const successScreenNode = document.getElementById('success-screen');
         
         if (remainingFormNode) remainingFormNode.style.display = 'block';
         if (successScreenNode) successScreenNode.style.display = 'none';
         
-        // 3. Now run the inner field reset rules safely without triggering a null style exception
+        // Clear old inputs to present a clean workspace sheet
         const inputs = document.querySelectorAll('#remaining-sections-form input, #remaining-sections-form textarea, #remaining-sections-form select');
         inputs.forEach(input => {
           if (input.type === 'checkbox' || input.type === 'radio') {
@@ -3244,26 +3267,21 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
         
         document.querySelectorAll('.other-input, #vendor-fields').forEach(el => el.style.display = 'none');
         
-        // 4. Populate pre-extracted AI values safely with explicit checks
+        // Insert parsed parameters
         const dropCompanyLocked = document.getElementById("dropform-company-locked");
         const dropName = document.getElementById("dropform-name");
         
         if (dropCompanyLocked) dropCompanyLocked.value = mailObject.extractedCompany;
         if (dropName) dropName.value = mailObject.extractedContactName;
         
-        // Hide standard external standalone workspace submission buttons
         document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
         document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
-        if (document.getElementById("staged-back-button-row")) {
-          document.getElementById("staged-back-button-row").style.display = "none";
-        }
-      } else {
-        alert("UI Render Error: Entry form template element context targeting dropped.");
       }
     }
   } catch(e) {
-    alert("Email database workflow assignment sync crash: " + e.message);
-    actionBtn.disabled = false; actionBtn.textContent = "Create New Entry";
+    alert("Email database assignment sync error: " + e.message);
+    actionBtn.disabled = false; 
+    actionBtn.textContent = "Create New Entry";
   }
 }
 
