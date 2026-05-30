@@ -240,7 +240,7 @@
     <div id="canvas-module-store-live-stock" class="workspace-panel" style="display:none;">
       <div style="background: var(--highlight-bg); border: 1.5px solid var(--border); border-left: 4px solid var(--brand); padding: 16px; border-radius: var(--radius); text-align: left;">
         <div id="dashboard-live-inventory-metrics-mount-zone" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
-          <p style="font-size: 0.85rem; color: var(--muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Syncing Current Material Quantity...</p>
+          <p style="font-size: 0.85rem; color: var(--muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Syncing Current Stock Quantity...</p>
         </div>
       </div>
     </div>
@@ -3190,8 +3190,8 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
       }
 
       activeEmailLeadContextIndex = index;
-
       actionBtn.textContent = "Collapse Form";
+      
       nestedWorkspace.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--border);">
           <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--accent);">
@@ -3210,18 +3210,47 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
       const targetFormMountNode = nestedWorkspace.querySelector(`#nested-email-creation-form-mount-${index}`);
       
       if (formTemplateSource && targetFormMountNode) {
+        // 1. Reveal the template container wrapper box first so its child input nodes are fully initialized in the DOM
         formTemplateSource.style.display = "block";
         targetFormMountNode.appendChild(formTemplateSource);
         
-        resetSequentialFormState();
+        // 2. SAFETY FIX: Explicitly ensure the inner form sections exist before triggering the reset state
+        const remainingFormNode = document.getElementById('remaining-sections-form');
+        const successScreenNode = document.getElementById('success-screen');
         
+        if (remainingFormNode) remainingFormNode.style.display = 'block';
+        if (successScreenNode) successScreenNode.style.display = 'none';
+        
+        // 3. Now run the inner field reset rules safely without triggering a null style exception
+        const inputs = document.querySelectorAll('#remaining-sections-form input, #remaining-sections-form textarea, #remaining-sections-form select');
+        inputs.forEach(input => {
+          if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = false;
+          } else if (input.tagName === 'SELECT') {
+            if (['act1', 'act2', 'act3', 'act4', 'actOffer', 'act7'].includes(input.id)) {
+              input.value = 'No';
+            } else if (input.id !== 'dropform-status') {
+              input.value = ''; 
+            }
+          } else if (input.id !== 'dropform-company-locked') {
+            input.value = '';
+          }
+        });
+
+        if (document.getElementById("dropform-city")) document.getElementById("dropform-city").value = "";
+        if (document.getElementById("dropform-state")) document.getElementById("dropform-state").value = "";
+        document.querySelectorAll('.other-input, #vendor-fields').forEach(el => el.style.display = 'none');
+        
+        // 4. Populate pre-extracted AI values into the active fields
         document.getElementById("dropform-company-locked").value = mailObject.extractedCompany;
         document.getElementById("dropform-name").value = mailObject.extractedContactName;
         
         // Hide standard external standalone workspace submission buttons
         document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
         document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
-        document.getElementById("staged-back-button-row").style.display = "none";
+        if (document.getElementById("staged-back-button-row")) {
+          document.getElementById("staged-back-button-row").style.display = "none";
+        }
       } else {
         alert("UI Render Error: Entry form template element context targeting dropped.");
       }
