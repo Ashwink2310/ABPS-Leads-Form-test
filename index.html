@@ -163,8 +163,16 @@
     <div class="auth-title" style="margin-bottom: 10px;">ABPS Portal</div>
 
     <div style="text-align: left; background: #f8fafc; padding: 15px; border: 1px dashed var(--border); border-radius: 8px; margin-bottom: 20px;">
-      <select id="app-auth-active-engineer-identity" style="padding: 10px; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px;">
-        <option value="">— Select Your Name —</option>
+      <!-- STEP 1: DEPARTMENT SELECTION SELECTOR -->
+      <label class="field-label" style="margin-top: 0; margin-bottom: 4px; color: var(--brand);">1. Select Your Department *</label>
+      <select id="app-auth-active-department-identity" onchange="handleLoginDepartmentSelectionChangeChange(this.value)" style="padding: 10px; font-weight: 600; font-size: 0.9rem; margin-bottom: 12px;">
+        <option value="">— Select Department —</option>
+      </select>
+
+      <!-- STEP 2: DYNAMIC INDIVIDUAL NAME SELECTOR -->
+      <label class="field-label" style="margin-top: 0; margin-bottom: 4px; color: var(--brand);">2. Select Your Name *</label>
+      <select id="app-auth-active-engineer-identity" style="padding: 10px; font-weight: 600; font-size: 0.9rem; margin-bottom: 5px;" disabled>
+        <option value="">— Choose Department First —</option>
       </select>
     </div>
 
@@ -983,10 +991,11 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwezFMSejaIjo9WwpIHGfc6rjBzy6qzoDSY8ON6qiuuFHmFQ9gxoinkm_AUaEFGoaKluw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwi48mJAWPyrEpKLdTfWflOhGffgGeSgh6j7_ietCOjtzg22mXqUdj8z1TLkwzq6bvZZQ/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
+let globalPersonnelAuthDirectoryTreePayloadCache = {};
 let appActiveOperatorIdentityString = "";
 let fileFront = null, fileBack = null;
 let userPermissions = { cardDetails: false, searchCompany: false, searchStatus: false, searchEngineer: false, searchTasks: false, emailWhatsapp: false, dispatchCommissioning: true }; 
@@ -1035,35 +1044,71 @@ window.onload = function() {
 };
 
 /**
- * FETCH UN-AUTHENTICATED DIRECTORY STRINGS
- * Builds the initial authorization choice list directly from the Users tab rows matrix
+ * FETCH UN-AUTHENTICATED DEPARTMENTS & PERSONNEL MAP
+ * Builds the initial dynamic department and dependent person lookups
  */
 async function syncPlatformPersonnelDropdownOptionsList() {
-  const loginSelect = document.getElementById("app-auth-active-engineer-identity");
-  if (!loginSelect) return;
+  const deptSelect = document.getElementById("app-auth-active-department-identity");
+  const nameSelect = document.getElementById("app-auth-active-engineer-identity");
+  if (!deptSelect || !nameSelect) return;
   
   try {
-    // Note: Fired intentionally without a sessionToken because it builds the gate choice arrays
     const res = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({ action: "pullGlobalPersonnelDirectory" })
     });
     const data = await res.json();
-    if (data.success && data.names) {
-      loginSelect.innerHTML = '<option value="">— Select Your Name —</option>';
-      data.names.forEach(fullName => {
+    
+    if (data.success && data.departmentsList && data.personnelTree) {
+      // Cache the full interactive dictionary response locally
+      globalPersonnelAuthDirectoryTreePayloadCache = data.personnelTree;
+      
+      // Populate Department choices option array lines
+      deptSelect.innerHTML = '<option value="">— Select Department —</option>';
+      data.departmentsList.forEach(deptName => {
         const opt = document.createElement("option");
-        opt.value = fullName.trim();
-        opt.textContent = fullName.trim();
-        loginSelect.appendChild(opt);
+        opt.value = deptName;
+        opt.textContent = deptName;
+        deptSelect.appendChild(opt);
       });
+      
+      nameSelect.innerHTML = '<option value="">— Choose Department First —</option>';
+      nameSelect.disabled = true;
     } else {
-      loginSelect.innerHTML = '<option value="">Error syncing personnel array</option>';
+      deptSelect.innerHTML = '<option value="">Error syncing department parameters</option>';
     }
   } catch (error) {
     console.error("Directory synchronization exception dropped:", error);
-    loginSelect.innerHTML = '<option value="">Network connection drop</option>';
+    deptSelect.innerHTML = '<option value="">Network connection drop</option>';
   }
+}
+
+/**
+ * INTERACTIVE DROPDOWN CHANGE LISTENER
+ * Filters names instantly based on selected department string variables key
+ */
+function handleLoginDepartmentSelectionChangeChange(selectedDepartmentNameString) {
+  const nameSelect = document.getElementById("app-auth-active-engineer-identity");
+  if (!nameSelect) return;
+  
+  if (!selectedDepartmentNameString || !globalPersonnelAuthDirectoryTreePayloadCache[selectedDepartmentNameString]) {
+    nameSelect.innerHTML = '<option value="">— Choose Department First —</option>';
+    nameSelect.disabled = true;
+    return;
+  }
+  
+  // Isolate user name matches array list from cached memory tree block
+  const filteredStaffList = globalPersonnelAuthDirectoryTreePayloadCache[selectedDepartmentNameString];
+  
+  nameSelect.innerHTML = '<option value="">— Select Your Name —</option>';
+  filteredStaffList.forEach(fullName => {
+    const opt = document.createElement("option");
+    opt.value = fullName.trim();
+    opt.textContent = fullName.trim();
+    nameSelect.appendChild(opt);
+  });
+  
+  nameSelect.disabled = false;
 }
 
 function initializeGoogleAuthPlatformEngine() {
