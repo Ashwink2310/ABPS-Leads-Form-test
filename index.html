@@ -603,7 +603,7 @@
 
         <div id="step2-new-entry-dropdown" style="display: none; padding: 0 4px; text-align: left;">
           <div class="section" style="background: var(--card); padding: 15px; border-radius: var(--radius); border: 1px solid var(--border);">
-            <div class="section-header" style="margin-bottom:10px;">Create New Lead Record Details</div>
+            <div class="section-header" style="margin-bottom:10px;">Create New Lead Details</div>
             
             <div id="remaining-sections-form">
               <div style="margin-bottom: 12px;">
@@ -681,7 +681,6 @@
 
               <div style="margin-bottom: 12px;">
                 <label class="field-label">Venue Name / City</label>
-                <input type="text" id="venueName" placeholder="e.g. Pragati Maidan, Delhi" />
               </div>
 
               <div style="margin-bottom: 12px;">
@@ -736,7 +735,7 @@
               </div>
 
               <div style="margin-bottom: 12px;">
-                <label class="field-label">Name of Materials Supplied / Required</label>
+                <label class="field-label">Name of Materials Supplied</label>
                 <input type="text" id="materialsName" placeholder="Enter items description..." />
               </div>
 
@@ -773,8 +772,7 @@
               </div>
 
               <div style="margin-bottom: 12px;">
-                <label class="field-label">Existing System Compensation Details</label>
-                <textarea id="esd" placeholder="Provide legacy load parameters setups if any..." style="min-height: 40px;"></textarea>
+                <label class="field-label">Existing System Details</label>
               </div>
 
               <div style="margin-bottom: 12px;">
@@ -797,7 +795,7 @@
               <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
                 <div><label class="field-label">Contract Demand (MVA)</label><input type="text" id="cdMva" /></div>
                 <div><label class="field-label">Running Demand (MVA)</label><input type="text" id="rdMva" /></div>
-                <div><label class="field-label">Avg Power Factor</label><input type="text" id="avgPf" placeholder="e.g. 0.85" /></div>
+                <div><label class="field-label">Avg Power Factor</label><input type="text" id="avgPf" /></div>
               </div>
 
               <div style="margin-bottom: 12px;">
@@ -809,7 +807,7 @@
 
               <h3 style="font-size: 0.85rem; font-weight: 700; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Section 4: Technical Commercial Opportunities</h3>
               <div style="margin-bottom: 12px;">
-                <label class="field-label">Technical Discussion Summary / Diagnostics Notes</label>
+                <label class="field-label">Technical Discussion Summary</label>
                 <textarea id="techSummary" style="min-height: 40px;"></textarea>
               </div>
 
@@ -819,7 +817,7 @@
               </div>
 
               <div style="margin-bottom: 12px;">
-                <label class="field-label">Products Discussed Mapping</label>
+                <label class="field-label">Products Discussed</label>
                 <div class="pill-group">
                   <input type="checkbox" name="prod" value="APFC" id="p_apfc"><label for="p_apfc">APFC</label>
                   <input type="checkbox" name="prod" value="RPTFC" id="p_rptfc"><label for="p_rptfc">RPTFC</label>
@@ -854,7 +852,7 @@
 
               <div class="section-divider-line" style="margin: 15px 0; background: var(--border); height: 1px;"></div>
 
-              <h3 style="font-size: 0.85rem; font-weight: 700; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Section 5: Actions Matrix Pipeline Tasks</h3>
+              <h3 style="font-size: 0.85rem; font-weight: 700; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Section 5: Actions Plan</h3>
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 15px;">
                 <div>
                   <label class="field-label">Send Company Profile</label>
@@ -985,7 +983,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxBDgaggoOIX6el-CHcIRcL4lvaGUl3x-jBrm96UF6tloNaW8sa_J2zAjRpvWWWj7QujQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwezFMSejaIjo9WwpIHGfc6rjBzy6qzoDSY8ON6qiuuFHmFQ9gxoinkm_AUaEFGoaKluw/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
