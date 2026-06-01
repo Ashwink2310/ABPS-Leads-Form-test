@@ -1841,31 +1841,62 @@ function toggleDropdownNo(selectNode, inputId) {
   }
 }
 
-function revealNewEntryFormDropdownFromBanner() {
-  document.getElementById("step2-inline-interaction-canvas").style.display = "none";
-  const parentId = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
-  document.getElementById(parentId).appendChild(document.getElementById("step2-new-entry-dropdown"));
+function revealNewEntryFormDropdown() { 
+  const container = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
+  const dropdownEl = document.getElementById("step2-new-entry-dropdown");
   
-  document.getElementById("dropform-company-locked").value = activeSearchCompany;
-  document.getElementById("dropform-name").value = document.getElementById("f-name").value || "";
-  document.getElementById("dropform-position").value = document.getElementById("f-position").value || "";
-  document.getElementById("dropform-phone").value = document.getElementById("f-phone").value || "";
-  document.getElementById("dropform-altphone").value = document.getElementById("f-altphone").value || "";
-  document.getElementById("dropform-email").value = document.getElementById("f-email").value || "";
-  document.getElementById("dropform-website").value = document.getElementById("f-website").value || "";
-  document.getElementById("dropform-city").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-city").value : "";
-  document.getElementById("dropform-state").value = (currentActiveModuleContext === "CARD") ? document.getElementById("f-state").value : "";
-  document.getElementById("dropform-address").value = document.getElementById("f-address").value || "";
+  if (!dropdownEl) return;
+  document.getElementById(container).appendChild(dropdownEl);
 
-  document.getElementById("global-direct-inline-create-entry-btn").style.display = "none"; 
-  document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none"; 
+  let companyName = "";
+  let contactName = "";
   
-  // FIXED SAFETY CHECK
+  // FIXED: Explicitly retain parameters under both CARD and DROPDOWN contexts safely
+  if (currentActiveModuleContext === "CARD") {
+      companyName = document.getElementById("f-company") ? document.getElementById("f-company").value.trim() : "";
+      contactName = document.getElementById("f-name") ? document.getElementById("f-name").value.trim() : "";
+  } else if (currentActiveModuleContext === "DROPDOWN") {
+      companyName = activeSearchCompany || "";
+      // Capture any name typed in the search bar or form prior to dropdown reveal execution
+      contactName = document.getElementById("dropform-name") && document.getElementById("dropform-name").value.trim() !== "" 
+                    ? document.getElementById("dropform-name").value.trim() 
+                    : (document.getElementById("f-name") ? document.getElementById("f-name").value.trim() : "");
+  } else {
+      const dropdown = document.getElementById("lookup-module-company-dropdown");
+      if (dropdown && dropdown.selectedIndex >= 0) {
+        companyName = dropdown.options[dropdown.selectedIndex].text.split(" (")[0].trim();
+      }
+  }
+  
+  const companyLockInp = document.getElementById("dropform-company-locked");
+  if (companyLockInp) {
+    companyLockInp.value = companyName || "No Company Specified";
+  }
+  
+  // FIXED: Strictly guard against wiping out pre-filled or typed contact person data
+  if (document.getElementById("dropform-name")) {
+    document.getElementById("dropform-name").value = contactName;
+  }
+  
+  // Maintain the other layout data field states cleanly
+  if (document.getElementById("dropform-position")) document.getElementById("dropform-position").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-position")) ? document.getElementById("f-position").value : "";
+  if (document.getElementById("dropform-phone")) document.getElementById("dropform-phone").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-phone")) ? document.getElementById("f-phone").value : "";
+  if (document.getElementById("dropform-altphone")) document.getElementById("dropform-altphone").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-altphone")) ? document.getElementById("f-altphone").value : "";
+  if (document.getElementById("dropform-email")) document.getElementById("dropform-email").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-email")) ? document.getElementById("f-email").value : "";
+  if (document.getElementById("dropform-website")) document.getElementById("dropform-website").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-website")) ? document.getElementById("f-website").value : "";
+  if (document.getElementById("dropform-city")) document.getElementById("dropform-city").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-city")) ? document.getElementById("f-city").value : "";
+  if (document.getElementById("dropform-state")) document.getElementById("dropform-state").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-state")) ? document.getElementById("f-state").value : "";
+  if (document.getElementById("dropform-country")) document.getElementById("dropform-country").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-country")) ? document.getElementById("f-country").value : "";
+  if (document.getElementById("dropform-address")) document.getElementById("dropform-address").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-address")) ? document.getElementById("f-address").value : "";
+
+  if (document.getElementById("global-direct-inline-create-entry-btn")) document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
+  if (document.getElementById("global-direct-inline-collapse-entry-btn")) document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "inline-flex";
+  
   const rowNode = document.getElementById("staged-back-button-row");
-  if (rowNode) rowNode.style.display = "flex"; 
+  if (rowNode) rowNode.style.display = "flex";
 
-  document.getElementById("step2-new-entry-dropdown").style.display = "block";
-  window.scrollTo(0,0);
+  dropdownEl.style.display = "block"; 
+  window.scrollTo(0,0); 
 }
 
 function collapseNewEntryDropdownFormExplicitly() {
@@ -2068,12 +2099,15 @@ function revealNewEntryFormDropdownFromBanner() {
   const parentId = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
   document.getElementById(parentId).appendChild(dropdownEl);
   
-  if (document.getElementById("dropform-company-locked")) document.getElementById("dropform-company-locked").value = activeSearchCompany || "";
-  
-  // FIXED: Maintain contact names values securely across banner switches overrides
-  if (document.getElementById("dropform-name")) {
-    document.getElementById("dropform-name").value = document.getElementById("dropform-name").value || (document.getElementById("f-name") ? document.getElementById("f-name").value : "");
+  if (document.getElementById("dropform-company-locked")) {
+    document.getElementById("dropform-company-locked").value = activeSearchCompany || "";
   }
+  
+  // FIXED: Read from the form value first, then fallback to search input fields properties
+  if (document.getElementById("dropform-name")) {
+    document.getElementById("dropform-name").value = document.getElementById("dropform-name").value.trim() || (document.getElementById("f-name") ? document.getElementById("f-name").value.trim() : "");
+  }
+  
   if (document.getElementById("dropform-position")) document.getElementById("dropform-position").value = document.getElementById("f-position") ? document.getElementById("f-position").value : "";
   if (document.getElementById("dropform-phone")) document.getElementById("dropform-phone").value = document.getElementById("f-phone") ? document.getElementById("f-phone").value : "";
   if (document.getElementById("dropform-altphone")) document.getElementById("dropform-altphone").value = document.getElementById("f-altphone") ? document.getElementById("f-altphone").value : "";
