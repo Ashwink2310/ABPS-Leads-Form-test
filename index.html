@@ -229,9 +229,9 @@
         <div class="nav-group-title-label" style="font-size: 0.8rem; color: var(--brand); font-weight: 800; margin-bottom: 8px;">Search</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')">Search by Company Name</div>
+          <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')">Search by Type of Customer</div>
           <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')">Search Tasks by ABPS Engineer Name and Status</div>
           <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')">Search Leads by ABPS Engineer Name and Status</div>
-          <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')">Search by Type of Customer</div>
           <div class="menu-card" id="mod-city-state" onclick="navigateToModule('searchCityState')">Search by City, State and Country</div>
         </div>
       </div>
@@ -2796,7 +2796,10 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
 
 async function removeLeadRowEntirely(leadRef) {
     if (!confirm("Confirm record removal?")) return;
-    const btn = event.target; btn.classList.add("loading"); btn.textContent = "Deleting...";
+    const btn = event.target; 
+    btn.disabled = true;
+    btn.innerHTML = 'Deleting...';
+    
     try {
         const res = await fetch(GAS_URL, { 
           method: "POST", 
@@ -2808,8 +2811,23 @@ async function removeLeadRowEntirely(leadRef) {
           }) 
         });
         const r = await res.json();
-        if (r.success) triggerSequentialSearch(currentActiveModuleContext);
-    } catch(e) { alert(e.message); btn.classList.remove("loading"); btn.textContent = "Delete Record"; }
+        
+        // FIXED: Catch backend authorization block
+        if (!r.success) {
+            alert(r.error || "An unexpected error occurred.");
+            btn.disabled = false;
+            btn.innerHTML = "Delete Record";
+            return;
+        }
+        
+        // If successful, re-query active screen context map
+        triggerSequentialSearch(currentActiveModuleContext);
+        
+    } catch(e) { 
+        alert("Deletion failed: " + e.message); 
+        btn.disabled = false;
+        btn.innerHTML = "Delete Record";
+    }
 }
 
 function exitCanvasToCardView() {
@@ -2916,7 +2934,7 @@ async function removeIsolatedFollowUpItem(leadRef, fNum, event) {
   if(!confirm("Confirm deletion?")) return;
   
   const btn = event.target;
-  btn.classList.add("loading");
+  btn.disabled = true;
   btn.textContent = "Deleting...";
   
   const fupId = leadRef + "||" + fNum;
@@ -2931,13 +2949,21 @@ async function removeIsolatedFollowUpItem(leadRef, fNum, event) {
       }) 
     });
     const r = await res.json();
-    if (r.success) { 
-      const activeScopeNode = document.getElementById('active-modules-clone-' + leadRef); 
-      await globalExecutionScopeReloader(leadRef, activeScopeNode); 
+    
+    // FIXED: Catch backend authorization block
+    if (!r.success) {
+        alert(r.error || "An unexpected error occurred.");
+        btn.disabled = false;
+        btn.textContent = "Delete Follow-Up";
+        return;
     }
+    
+    const activeScopeNode = document.getElementById('active-modules-clone-' + leadRef); 
+    await globalExecutionScopeReloader(leadRef, activeScopeNode); 
+    
   } catch(e) { 
-    alert(e.message); 
-    btn.classList.remove("loading");
+    alert("Deletion failed: " + e.message); 
+    btn.disabled = false;
     btn.textContent = "Delete Follow-Up";
   }
 }
@@ -3007,7 +3033,7 @@ async function removeIsolatedTaskItem(leadRef, taskId, event) {
   if (!confirm("Confirm cancellation?")) return;
   
   const btn = event.target;
-  btn.classList.add("loading");
+  btn.disabled = true;
   btn.textContent = "Deleting...";
   
   try {
@@ -3021,13 +3047,21 @@ async function removeIsolatedTaskItem(leadRef, taskId, event) {
       }) 
     });
     const r = await res.json();
-    if (r.success) { 
-      const activeScopeNode = document.getElementById('active-modules-clone-' + leadRef); 
-      await globalExecutionScopeReloader(leadRef, activeScopeNode); 
+    
+    // FIXED: Catch backend authorization block
+    if (!r.success) {
+        alert(r.error || "An unexpected error occurred.");
+        btn.disabled = false;
+        btn.textContent = "Delete";
+        return;
     }
+    
+    const activeScopeNode = document.getElementById('active-modules-clone-' + leadRef); 
+    await globalExecutionScopeReloader(leadRef, activeScopeNode); 
+    
   } catch(e) { 
-    alert(e.message); 
-    btn.classList.remove("loading");
+    alert("Deletion failed: " + e.message); 
+    btn.disabled = false;
     btn.textContent = "Delete";
   }
 }
@@ -3829,23 +3863,31 @@ async function archiveEmailLeadFromSystemDatabaseCache(messageId, elementIndex) 
   const cardNode = document.getElementById(`email-lead-wrapper-node-${elementIndex}`);
   const deleteBtn = event.target;
   
-  deleteBtn.disabled = true; deleteBtn.textContent = "Processing...";
+  deleteBtn.disabled = true; 
+  deleteBtn.textContent = "Processing...";
   
   try {
     const res = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({
-        action: "saveFollowUp", // Redirected to a secure protected execution action block handler
+        action: "saveFollowUp", 
         sessionToken: localStorage.getItem("sessionToken"),
         activeEngineer: appActiveOperatorIdentityString,
-        // Custom payload intercept signature
         archiveTargetEmailIdString: messageId 
       })
     });
+    const r = await res.json();
+    
+    // FIXED: Catch backend authorization block
+    if (!r.success) {
+        alert(r.error || "An unexpected error occurred.");
+        deleteBtn.disabled = false;
+        deleteBtn.textContent = "Delete";
+        return;
+    }
     
     if (cardNode) cardNode.remove();
     
-    // Clear the deleted card out of localStorage arrays
     cachedInboundEmailLeadsArray = cachedInboundEmailLeadsArray.filter(item => item.messageIdReference !== messageId);
     localStorage.setItem("abps_active_email_leads_cache", JSON.stringify(cachedInboundEmailLeadsArray));
 
@@ -3853,8 +3895,9 @@ async function archiveEmailLeadFromSystemDatabaseCache(messageId, elementIndex) 
     if (remainingCards === 0) { renderEmailLeadsFeedInterface([]); }
     
   } catch(e) {
-    alert("Connection Error: Deletion parameter could not be safely tracked: " + e.message);
-    deleteBtn.disabled = false; deleteBtn.textContent = "Delete";
+    alert("Connection Error: Deletion parameter could not be tracked: " + e.message);
+    deleteBtn.disabled = false; 
+    deleteBtn.textContent = "Delete";
   }
 }
 
@@ -5259,7 +5302,7 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
         feedbackBanner.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
-              <strong>AI Matching Successful!</strong><br/>
+              <strong>Upload Successful!</strong><br/>
               <span><strong>${data.matchedCompany}</strong> status updated to <strong>${isDispatch ? 'Offer Dispatched' : 'Offer Commissioned'}</strong>.</span>
             </div>
             <button class="nav-btn-styled" onclick="
@@ -5288,7 +5331,7 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
       }
       if (targetBtn) {
         targetBtn.disabled = false;
-        targetBtn.innerHTML = isDispatch ? "Process Dispatch Bill with AI" : "Process Commissioning Report with AI";
+        targetBtn.innerHTML = isDispatch ? "Process Dispatched Bill with AI" : "Process Commissioning Report with AI";
       }
     }
   } catch(err) {
@@ -5298,7 +5341,7 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
     }
     if (targetBtn) {
       targetBtn.disabled = false;
-      targetBtn.innerHTML = isDispatch ? "Process Dispatch Bill with AI" : "Process Commissioning Report with AI";
+      targetBtn.innerHTML = isDispatch ? "Process Dispatched Bill with AI" : "Process Commissioning Report with AI";
     }
   }
 }
