@@ -207,7 +207,7 @@
       
       <!-- SUB-SECTION 1: LEAD SOURCE -->
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
-        <div class="nav-group-title-label" style="font-size: 0.8rem; color: var(--brand); font-weight: 800; margin-bottom: 8px;">1) Lead Source</div>
+        <div class="nav-group-title-label" style="font-size: 0.8rem; color: var(--brand); font-weight: 800; margin-bottom: 8px;">Lead Source</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-card" onclick="navigateToModule('cardDetails')">Enter Visiting Card Details</div>
           <div class="menu-card" id="mod-email-whatsapp" onclick="navigateToModule('emailLeads')">Leads Received through Email</div>
@@ -216,7 +216,7 @@
 
       <!-- SUB-SECTION 2: UPLOAD DOCUMENTS -->
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
-        <div class="nav-group-title-label" style="font-size: 0.8rem; color: var(--brand); font-weight: 800; margin-bottom: 8px;">2) Upload Documents</div>
+        <div class="nav-group-title-label" style="font-size: 0.8rem; color: var(--brand); font-weight: 800; margin-bottom: 8px;">Upload Documents</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-dispatch-bill" onclick="navigateToModule('dispatchBill')">Upload Dispatched Bill</div>
           <div class="menu-card" id="mod-commissioning-report" onclick="navigateToModule('commissioningReport')">Upload Commissioning Report</div>
@@ -226,7 +226,7 @@
 
       <!-- SUB-SECTION 3: SEARCH -->
       <div class="nav-department-group-wrapper" style="margin-bottom: 8px;">
-        <div class="nav-group-title-label" style="font-size: 0.8rem; color: var(--brand); font-weight: 800; margin-bottom: 8px;">3) Search</div>
+        <div class="nav-group-title-label" style="font-size: 0.8rem; color: var(--brand); font-weight: 800; margin-bottom: 8px;">Search</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')">Search by Company Name</div>
           <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')">Search Tasks by ABPS Engineer Name and Status</div>
@@ -586,7 +586,7 @@
 
         <div id="workspace-searchStatus" class="workspace-panel" style="display: none;">
           <div class="section">
-            <div class="section-header">Leads Filter</div>
+            <div class="section-header">Search Leads</div>
             <div class="section-body" style="text-align: left;">
               <label class="field-label" style="font-size:0.8rem; color: var(--brand);">Filter By Engineers</label>
               <div class="pill-group" id="lead-matrix-engineer-checkboxes-mount" style="margin:8px 0 16px;"></div>
@@ -1055,7 +1055,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxnuhxNfKltVo3a6uUAyA6aw3ecSkljF_kPpszDp-sAML6YGU8SMqnz7UA3lFaAveZ80w/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwvOtE5yMEOzrt_Wd93F5t6rfkLaJcjGWKttk3H8UZmgJ_rE8AqR7wfW3T3N35sGn20GQ/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1935,16 +1935,14 @@ function revealNewEntryFormDropdown() {
   let companyName = "";
   let contactName = "";
   
-  // FIXED: Explicitly retain parameters under both CARD and DROPDOWN contexts safely
+  // FIXED: Ensure we target correct element references based on active context
   if (currentActiveModuleContext === "CARD") {
       companyName = document.getElementById("f-company") ? document.getElementById("f-company").value.trim() : "";
       contactName = document.getElementById("f-name") ? document.getElementById("f-name").value.trim() : "";
   } else if (currentActiveModuleContext === "DROPDOWN") {
       companyName = activeSearchCompany || "";
-      // Capture any name typed in the search bar or form prior to dropdown reveal execution
-      contactName = document.getElementById("dropform-name") && document.getElementById("dropform-name").value.trim() !== "" 
-                    ? document.getElementById("dropform-name").value.trim() 
-                    : (document.getElementById("f-name") ? document.getElementById("f-name").value.trim() : "");
+      // FIXED: Correctly capture what was typed in the primary search block name field before generating form
+      contactName = document.getElementById("f-name") ? document.getElementById("f-name").value.trim() : "";
   } else {
       const dropdown = document.getElementById("lookup-module-company-dropdown");
       if (dropdown && dropdown.selectedIndex >= 0) {
@@ -1957,13 +1955,12 @@ function revealNewEntryFormDropdown() {
     companyLockInp.value = companyName || "No Company Specified";
   }
   
-  // FIXED: Strictly guard against wiping out pre-filled or typed contact person data
+  // FIXED: Lock variables into target dropform elements cleanly
   if (document.getElementById("dropform-name")) {
     document.getElementById("dropform-name").value = contactName;
   }
   
-  // Maintain the other layout data field states cleanly
-  if (document.getElementById("dropform-position")) document.getElementById("dropform-position").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-position")) ? document.getElementById("f-position").value : "";
+  if (document.getElementById("dropform-position")) document.getElementById("dropform-position").value = "";
   if (document.getElementById("dropform-phone")) document.getElementById("dropform-phone").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-phone")) ? document.getElementById("f-phone").value : "";
   if (document.getElementById("dropform-altphone")) document.getElementById("dropform-altphone").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-altphone")) ? document.getElementById("f-altphone").value : "";
   if (document.getElementById("dropform-email")) document.getElementById("dropform-email").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-email")) ? document.getElementById("f-email").value : "";
@@ -3152,19 +3149,19 @@ async function submitLead() {
     const d = await res.json();
     
     if (d.success) { 
-      // 1. Clear out form input boxes footprint to completely hide form fields on success
+      // A. Instantly hide the input form fields below the banner
       const remainingFormBox = document.getElementById('remaining-sections-form');
       if (remainingFormBox) {
         remainingFormBox.style.display = "none";
       }
 
-      // 2. INLINE SUCCESS MATRIX REPLACEMENT: Renders a message and action button side-by-side
+      // B. Inject full success element view with inline "+ Create New Entry" button action loop
       if (feedbackBanner) {
-        feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 16px; margin-bottom: 16px; border-left: 4px solid #15803d; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.02);";
+        feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 16px; margin-bottom: 16px; border-left: 4px solid #15803d; text-align: left;";
         feedbackBanner.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
-              <strong style="font-size: 1rem; color: #166534;">Success! Record Created Perfectly.</strong><br/>
+              <strong style="font-size: 1rem;">Success! Record Created Perfectly.</strong><br/>
               <span style="font-size: 0.88rem; font-weight: 600;">Assigned Reference Tracking ID: 
                 <span style="font-family: monospace; font-weight: 800; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #15803d; color: #111827; margin-left: 4px;">${d.leadRef}</span>
               </span>
@@ -3174,14 +3171,13 @@ async function submitLead() {
               document.getElementById('remaining-sections-form').style.display = 'block';
               resetSequentialFormState();
               revealNewEntryFormDropdown();
-            " style="background: #166534; color: white; padding: 8px 16px; font-weight: 700; border-radius: 4px; font-size: 0.8rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-              + Create Another Entry
+            " style="background: #166534; color: white; padding: 8px 16px; font-weight: 700;">
+              + Create New Entry
             </button>
           </div>
         `;
       }
 
-      // 3. Process unread Inbox email allocations adjustments if present
       if (activeEmailLeadContextIndex !== null) {
         const mailObject = cachedInboundEmailLeadsArray[activeEmailLeadContextIndex];
         const targetMsgId = mailObject.messageIdReference;
@@ -3204,7 +3200,7 @@ async function submitLead() {
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      // 4. BACKGROUND PARITY RE-INDEX REFRESH TIMEOUT
+      // Run card rendering and updates asynchronously behind the active success view panel card
       setTimeout(async () => {
         if (currentActiveModuleContext === "CARD" || currentActiveModuleContext === "DROPDOWN") {
           const compParamValue = fields["Company Name"]; 
@@ -3229,7 +3225,6 @@ async function submitLead() {
             if (canvasNode) {
               canvasNode.style.display = "block";
               buildMultiContactDirectoryInterface(refreshData.leads, targetPersonNameParam);
-              
               const topFreshCardNode = document.getElementById(`contact-parent-wrapper-${d.leadRef}`);
               if (topFreshCardNode) {
                 topFreshCardNode.style.cssText = "border: 2.5px solid var(--accent) !important; box-shadow: 0 4px 12px rgba(0, 168, 120, 0.15) !important;";
@@ -3238,9 +3233,8 @@ async function submitLead() {
           }
           await triggerCompanyDropdownArrayFetch();
         }
-      }, 1000); // Back-end updates take place smoothly in the background while keeping the success container active
-
-    } 
+      }, 500);
+    }
     else {
       alert("Submission failed: " + (d.error || "Unknown server error."));
     }
