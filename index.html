@@ -496,9 +496,14 @@
           <div class="section">
             <div class="section-header">Upload Dispatched Bill</div>
             <div class="section-body" style="text-align: left; padding: 16px;">
-              <div class="card-box" id="dispatch-bill-upload-box" onclick="document.getElementById('dispatch-bill-raw-file').click()" style="padding: 24px; font-size: 0.9rem; min-height: 90px; display: flex; align-items: center; justify-content: center;">📋 Select Dispatched Bill</div>
-              <input type="file" id="dispatch-bill-raw-file" accept="image/*,application/pdf" hidden onchange="handleOpsFileChange(this, 'dispatch-bill-upload-box', 'Bill Document Added ✅')" />
-              <button class="btn btn-sub" style="margin-top: 14px;" onclick="executeMarketingOperationsDocumentCommit('DISPATCH')">Process Dispatch Bill with AI</button>
+              
+              <div id="dispatch-bill-feedback-banner" style="display: none; padding: 12px; font-size: 0.88rem; font-weight: 700; border-radius: var(--radius); margin-bottom: 16px; border-left: 4px solid;"></div>
+
+              <div id="dispatch-bill-inputs-container" style="display: block;">
+                <div class="card-box" id="dispatch-bill-upload-box" onclick="document.getElementById('dispatch-bill-raw-file').click()" style="padding: 24px; font-size: 0.9rem; min-height: 90px; display: flex; align-items: center; justify-content: center;">📋 Select Dispatched Bill</div>
+                <input type="file" id="dispatch-bill-raw-file" accept="image/*,application/pdf" hidden onchange="handleOpsFileChange(this, 'dispatch-bill-upload-box', 'Dispatched Bill Document Added ✅')" />
+                <button class="nav-btn-styled" id="btn-ops-dispatch-submit" style="margin-top: 14px; width: 100%; padding: 10px;" onclick="executeMarketingOperationsDocumentCommit('DISPATCH')">Process Dispatched Bill with AI</button>
+              </div>
             </div>
           </div>
         </div>
@@ -507,9 +512,14 @@
           <div class="section">
             <div class="section-header">Upload Commissioning Report</div>
             <div class="section-body" style="text-align: left; padding: 16px;">
-              <div class="card-box" id="commissioning-report-upload-box" onclick="document.getElementById('commissioning-report-raw-file').click()" style="padding: 24px; font-size: 0.9rem; min-height: 90px; display: flex; align-items: center; justify-content: center;">🛠️ Select Commissioning Report</div>
-              <input type="file" id="commissioning-report-raw-file" accept="image/*,application/pdf" hidden onchange="handleOpsFileChange(this, 'commissioning-report-upload-box', 'Report Document Added ✅')" />
-              <button class="btn btn-ai" style="margin-top: 14px;" onclick="executeMarketingOperationsDocumentCommit('COMMISSION')">Process Commissioning Report with AI</button>
+              
+              <div id="commissioning-report-feedback-banner" style="display: none; padding: 12px; font-size: 0.88rem; font-weight: 700; border-radius: var(--radius); margin-bottom: 16px; border-left: 4px solid;"></div>
+
+              <div id="commissioning-report-inputs-container" style="display: block;">
+                <div class="card-box" id="commissioning-report-upload-box" onclick="document.getElementById('commissioning-report-raw-file').click()" style="padding: 24px; font-size: 0.9rem; min-height: 90px; display: flex; align-items: center; justify-content: center;">🛠️ Select Commissioning Report</div>
+                <input type="file" id="commissioning-report-raw-file" accept="image/*,application/pdf" hidden onchange="handleOpsFileChange(this, 'commissioning-report-upload-box', 'Commissioning Report Document Added ✅')" />
+                <button class="nav-btn-styled" id="btn-ops-commission-submit" style="margin-top: 14px; width: 100%; padding: 10px;" onclick="executeMarketingOperationsDocumentCommit('COMMISSION')">Process Commissioning Report with AI</button>
+              </div>
             </div>
           </div>
         </div>
@@ -1417,7 +1427,7 @@ async function loadCityStateFilterOptions() {
   const cityMount = document.getElementById("location-city-checkboxes-mount");
   
   if (countryMount) {
-    countryMount.innerHTML = `<p style="font-size:0.75rem; color:var(--muted); padding:4px 0;">⏳ Loading location criteria channels...</p>`;
+    countryMount.innerHTML = `<p style="font-size:0.75rem; color:var(--muted); padding:4px 0;">Loading...</p>`;
   }
   if (stateMount) stateMount.innerHTML = "";
   if (cityMount) cityMount.innerHTML = "";
@@ -1457,10 +1467,10 @@ function renderCountryCheckboxPillElements() {
   countryMount.innerHTML = "";
   
   if (stateMount) {
-    stateMount.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600; margin:0;">Select a country above to generate state filters...</p>';
+    stateMount.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600; margin:0;">Select a Country above to see States...</p>';
   }
   if (cityMount) {
-    cityMount.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600; margin:0;">Select a state above to generate city filters...</p>';
+    cityMount.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600; margin:0;">Select a State above to see Cities...</p>';
   }
   
   if (!globalLocationDatabaseCacheMap || Object.keys(globalLocationDatabaseCacheMap).length === 0) {
@@ -1526,9 +1536,14 @@ function handleStatePillSelectionChangeContext() {
   const cityMountPoint = document.getElementById("location-city-checkboxes-mount");
   
   cityMountPoint.innerHTML = "";
+
+  if (selectedCountries.length === 0) {
+    cityMountPoint.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600; margin:0;">Select a Country above to generate State filters...</p>';
+    return;
+  }
   
   if (selectedStates.length === 0) {
-    cityMountPoint.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600; margin:0;">Select a state above to generate city filters...</p>';
+    cityMountPoint.innerHTML = '<p style="font-size:0.75rem; color:var(--muted); font-weight:600; margin:0;">Select a State above to generate City filters...</p>';
     return;
   }
   
@@ -1583,9 +1598,11 @@ function handleIndividualCityPillToggleSelectionContext() {
 
 async function triggerCityStateQuerySearchExecution() {
   const btn = document.getElementById("city-state-search-submit-btn");
+  const selectedCountries = Array.from(document.querySelectorAll('input[name="searchCountryFilter"]:checked')).map(cb => cb.value);
   const selectedStates = Array.from(document.querySelectorAll('input[name="searchStateFilter"]:checked')).map(cb => cb.value);
   let selectedCities = Array.from(document.querySelectorAll('input[name="searchCityFilter"]:checked')).map(cb => cb.value);
   
+  if (selectedCountries.length === 0) return alert("Select at least one Country.");
   if (selectedStates.length === 0) return alert("Select at least one State.");
   if (selectedCities.length === 0) return alert("Select at least one City or 'All Cities'.");
   
@@ -1599,6 +1616,7 @@ async function triggerCityStateQuerySearchExecution() {
          action: "searchLeadsByCityStateMatrix",
          sessionToken: localStorage.getItem("sessionToken"),
          activeEngineer: appActiveOperatorIdentityString,
+         countries: selectedCountries,
          states: selectedStates,
          cities: selectedCities
        })
@@ -1613,7 +1631,7 @@ async function triggerCityStateQuerySearchExecution() {
         document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
           <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568; margin-bottom: 10px;">Back to Search</button>
           <div class="qualification-status-bar" style="width:100%; text-align:center; font-size:0.75rem;">
-             Location: [States: ${selectedStates.join(", ")}] | [Cities: ${selectedCities.length > 5 ? 'Multi Selected (' + selectedCities.length + ')' : selectedCities.join(", ")}]
+             Location: [Countries: ${selectedCountries.join(", ")}] [States: ${selectedStates.join(", ")}] | [Cities: ${selectedCities.length > 5 ? 'Multi Selected (' + selectedCities.length + ')' : selectedCities.join(", ")}]
           </div>
         `;
         
@@ -1623,10 +1641,10 @@ async function triggerCityStateQuerySearchExecution() {
         
         canvas.style.display = "block"; 
      } else {
-        alert("Geographic search tracking error: " + (data.error || "No records match."));
+        alert("Geographic search error: " + (data.error || "No records match."));
      }
   } catch (e) {
-     alert("Geographic layout tracking request connection crash: " + e.message);
+     alert("Geographic layout request connection crash: " + e.message);
   } finally {
      btn.classList.remove("loading"); btn.textContent = "Search Location";
   }
@@ -5016,7 +5034,7 @@ async function executeStoreManagerTicketActionDecision(ticketId, decisionString)
   } catch (error) {
     if (feedbackBanner) {
       feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px; border-left: 4px solid #b91c1c;";
-      feedbackBanner.innerHTML = `<strong>Network Dispatch Exception Failure:</strong> ${error.message}`;
+      feedbackBanner.innerHTML = `<strong>Network Dispatched Exception Failure:</strong> ${error.message}`;
     }
     // Restoration loop rollbacks button state styles elements layout flags if network connection completely collapses
     if (approveBtn && rejectBtn) {
@@ -5179,22 +5197,31 @@ showAppView = async function() {
 document.getElementById('dispatch-bill-raw-file').onchange = (e) => {
   targetDispatchBillFileObj = e.target.files[0];
   const box = document.getElementById('dispatch-bill-upload-box');
-  if (box && targetDispatchBillFileObj) { box.textContent = "Bill Document Added ✅"; box.classList.add('done'); }
+  if (box && targetDispatchBillFileObj) { box.textContent = "Dispatched Bill Document Added ✅"; box.classList.add('done'); }
 };
 
 document.getElementById('commissioning-report-raw-file').onchange = (e) => {
   targetCommissioningReportFileObj = e.target.files[0];
   const box = document.getElementById('commissioning-report-upload-box');
-  if (box && targetCommissioningReportFileObj) { box.textContent = "Report Document Added ✅"; box.classList.add('done'); }
+  if (box && targetCommissioningReportFileObj) { box.textContent = "Commissioning Report Document Added ✅"; box.classList.add('done'); }
 };
 
 async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
-  const feedbackBanner = document.getElementById("marketing-ops-runtime-inline-feedback-banner");
-  const targetBtn = document.getElementById(opsFlagTypeString === "DISPATCH" ? "btn-ops-dispatch-submit" : "btn-ops-commission-submit");
+  // FIXED: Dynamically target the correct local banner, button, and input containers depending on document context module
+  const isDispatch = opsFlagTypeString === "DISPATCH";
   
-  const activeWorkingFile = opsFlagTypeString === "DISPATCH" ? targetDispatchBillFileObj : targetCommissioningReportFileObj;
+  const feedbackBanner = document.getElementById(isDispatch ? "dispatch-bill-feedback-banner" : "commissioning-report-feedback-banner");
+  const targetBtn = document.getElementById(isDispatch ? "btn-ops-dispatch-submit" : "btn-ops-commission-submit");
+  const inputsContainer = document.getElementById(isDispatch ? "dispatch-bill-inputs-container" : "commissioning-report-inputs-container");
   
-  if (!activeWorkingFile) return alert(`Please capture or select the corresponding document before running the AI engine.`);
+  const activeWorkingFile = isDispatch ? targetDispatchBillFileObj : targetCommissioningReportFileObj;
+  
+  if (!activeWorkingFile) {
+    alert(`Please capture or select the corresponding document before running the AI engine.`);
+    return;
+  }
+  
+  if (feedbackBanner) feedbackBanner.style.display = "none";
   
   if (targetBtn) {
     targetBtn.disabled = true;
@@ -5224,47 +5251,54 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
 
     const data = await res.json();
     if (data.success) {
+      // Hide the file picker input controls on success
+      if (inputsContainer) inputsContainer.style.display = "none";
+
       if (feedbackBanner) {
         feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 14px; margin-bottom: 16px; border-left: 4px solid #15803d;";
         feedbackBanner.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
               <strong>AI Matching Successful!</strong><br/>
-              <span><strong>${data.matchedCompany}</strong> Status updated to <strong>${opsFlagTypeString === "DISPATCH" ? "Offer Dispatched" : "Offer Commissioned"}</strong>.</span>
+              <span><strong>${data.matchedCompany}</strong> status updated to <strong>${isDispatch ? 'Offer Dispatched' : 'Offer Commissioned'}</strong>.</span>
             </div>
             <button class="nav-btn-styled" onclick="
-              // 1. Reset file object references to clean memory states
               targetDispatchBillFileObj = null;
               targetCommissioningReportFileObj = null;
               document.getElementById('dispatch-bill-raw-file').value = '';
               document.getElementById('commissioning-report-raw-file').value = '';
-
-              // 2. Isolate drop boxes elements blocks handles
+              
               const b1 = document.getElementById('dispatch-bill-upload-box');
               const b2 = document.getElementById('commissioning-report-upload-box');
-
-              // 3. Clear text strings and strip out active CSS class styling highlights
               if (b1) { b1.textContent = '📋 Select Dispatched Bill'; b1.classList.remove('done'); }
               if (b2) { b2.textContent = '🛠️ Select Commissioning Report'; b2.classList.remove('done'); }
-
-              // 4. Restore home dashboard view panels visibility constraints
-              document.getElementById('marketing-ops-inputs-wrapper-container').style.display = 'block'; 
-              document.getElementById('marketing-ops-runtime-inline-feedback-banner').style.display = 'none';
-            " style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Process Another Document
-            </button>
+              
+              document.getElementById('dispatch-bill-feedback-banner').style.display = 'none';
+              document.getElementById('commissioning-report-feedback-banner').style.display = 'none';
+              document.getElementById('dispatch-bill-inputs-container').style.display = 'block';
+              document.getElementById('commissioning-report-inputs-container').style.display = 'block';
+            " style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Process Another Document</button>
           </div>
         `;
       }
-      document.getElementById("marketing-ops-inputs-wrapper-container").style.display = "none";
     } else {
-      alert("AI Processing Encountered Error: " + data.error);
+      if (feedbackBanner) {
+        feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px; border-left: 4px solid #b91c1c;";
+        feedbackBanner.innerHTML = `<strong>AI Error Encountered:</strong> ${data.error}`;
+      }
+      if (targetBtn) {
+        targetBtn.disabled = false;
+        targetBtn.innerHTML = isDispatch ? "Process Dispatch Bill with AI" : "Process Commissioning Report with AI";
+      }
     }
   } catch(err) {
-    alert("Network Connection Exception: " + err.message);
-  } finally {
+    if (feedbackBanner) {
+      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px; border-left: 4px solid #b91c1c;";
+      feedbackBanner.innerHTML = `<strong>Network Exception:</strong> ${err.message}`;
+    }
     if (targetBtn) {
       targetBtn.disabled = false;
-      targetBtn.innerHTML = opsFlagTypeString === "DISPATCH" ? "Process Dispatch Bill with AI" : "Process Commissioning Report with AI";
+      targetBtn.innerHTML = isDispatch ? "Process Dispatch Bill with AI" : "Process Commissioning Report with AI";
     }
   }
 }
