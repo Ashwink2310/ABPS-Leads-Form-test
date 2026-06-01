@@ -1274,11 +1274,14 @@ async function handleGooglePlatformCredentialResponse(response) {
       localStorage.setItem("userFirstName", data.firstName);
       localStorage.setItem("userLastName", data.lastName);
       localStorage.setItem("userPermissions", JSON.stringify(data.permissions));
-      
       localStorage.setItem("activeOperatorSignature", selectedEngineer);
       appActiveOperatorIdentityString = selectedEngineer;
-      
       userPermissions = data.permissions;
+
+      const activeDeptRaw = document.getElementById("app-auth-active-department-identity").value || "";
+      const isUserAdminGlobal = activeDeptRaw.toLowerCase().includes("admin");
+      localStorage.setItem("isUserAdminGlobal", isUserAdminGlobal ? "true" : "false");
+
       showAppView();
     } else {
       alert("Authentication Error: " + data.error);
@@ -2277,6 +2280,11 @@ function buildMultiContactDirectoryInterface(leadsList, targetSearchName) {
       wrapperCard.className += " search-highlighted-focus-node";
     }
 
+    const isAdminUser = localStorage.getItem("isUserAdminGlobal") === "true";
+    const deleteButtonHtml = isAdminUser 
+      ? `<button class="nav-btn-styled" style="font-size:0.92rem; padding:6px 14px; background:var(--warn);" onclick="removeLeadRowEntirely('${tRef}')">Delete Record</button>` 
+      : ""; // Non-admins get absolutely nothing rendered
+
     wrapperCard.innerHTML = `
       <div class="contact-summary-header-row">
         <div class="contact-summary-title-info">
@@ -2291,7 +2299,7 @@ function buildMultiContactDirectoryInterface(leadsList, targetSearchName) {
         </div>
         <div class="directory-btn-actions-block">
           <button class="nav-btn-styled" style="font-size:0.92rem; padding:6px 14px;" onclick="toggleContactExpansionView('${tRef}', \`${encodeURIComponent(JSON.stringify(lead))}\`)" id="expand-trigger-${tRef}">View Details</button>
-          <button class="nav-btn-styled" style="font-size:0.92rem; padding:6px 14px; background:var(--warn);" onclick="removeLeadRowEntirely('${tRef}')">Delete Record</button>
+          ${deleteButtonHtml}
         </div>
       </div>
       <div class="contact-expanded-workspace-payload-drawer" id="drawer-panel-${tRef}" style="display:none; padding-top:4px;">
@@ -2858,6 +2866,11 @@ function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
   
   list.forEach(f => {
     let card = document.createElement("div"); card.className = "fup-item-card";
+    const isAdminUser = localStorage.getItem("isUserAdminGlobal") === "true";
+    const deleteActionHtml = isAdminUser 
+      ? `<button class="nav-btn-styled" id="trigger-inner-delete-fup-${leadRef}-${f.num}" style="font-size:0.7rem; background:var(--warn); padding:4px 8px;">Delete Follow-Up</button>` 
+      : "";
+
     card.innerHTML = `
       <div class="fup-item-header" onclick="toggleFollowUpAccordion(this)">
         <span>Follow-Up ${f.num} (${formatCleanDateOnly(f.date)} ${cleanISTTimestamp(f.time)})</span>
@@ -2873,10 +2886,15 @@ function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
         <div style="font-size:0.85rem; color:#2d3748; padding:6px 0; border-top:1px solid #edf2f7; word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;"><strong>Notes:</strong> ${f.notes}</div>
         <div style="margin-top:8px; display:flex; gap:8px;">
           <button class="nav-btn-styled" id="trigger-inner-edit-fup-${leadRef}-${f.num}" style="font-size:0.7rem; padding:4px 8px;">Edit</button>
-          <button class="nav-btn-styled" id="trigger-inner-delete-fup-${leadRef}-${f.num}" style="font-size:0.7rem; background:var(--warn); padding:4px 8px;">Delete Follow-Up</button>
+          ${deleteActionHtml}
         </div>
       </div>`;
     box.appendChild(card);
+    
+    // Guard event attachments to prevent null runtime reference crashes
+    if (isAdminUser && document.getElementById(`trigger-inner-delete-fup-${leadRef}-${f.num}`)) {
+      document.getElementById(`trigger-inner-delete-fup-${leadRef}-${f.num}`).onclick = function(e) { removeIsolatedFollowUpItem(leadRef, f.num, e); };
+    }
     document.getElementById('trigger-inner-edit-fup-' + leadRef + '-' + f.num).onclick = function() { editIsolatedFollowUpItem(leadRef, scopeNode, f); };
     document.getElementById('trigger-inner-delete-fup-' + leadRef + '-' + f.num).onclick = function(e) { removeIsolatedFollowUpItem(leadRef, f.num, e); };
   });
@@ -2973,14 +2991,23 @@ function renderIsolatedTaskItemsList(leadRef, list, scopeNode) {
   box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No active entries.</p>' : '';
   list.forEach(t => {
     let div = document.createElement("div"); div.className = "task-item-card";
+    const isAdminUser = localStorage.getItem("isUserAdminGlobal") === "true";
+    const deleteActionHtml = isAdminUser 
+      ? `<button class="nav-btn-styled" id="trigger-inner-delete-task-${leadRef}-${t.id}" style="font-size:0.75rem; background:var(--warn); padding:2px 6px;">Delete</button>` 
+      : "";
+
     div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Time: ${t.shift} | Target Date: ${formatCleanDateOnly(t.targetDate)}</small>
                      <p style="font-size:0.82rem; margin-top:4px; color:var(--text); word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;"><strong>Desc:</strong> ${t.desc || 'None'}</p>
                      <div style="font-size:0.75rem; font-weight:bold; color:var(--brand); margin-top:4px;">Status: ${t.status} | Assigner: ${t.assigner || "System"}</div>
                      <div style="margin-top:8px; display:flex; gap:6px;">
                        <button class="nav-btn-styled" id="trigger-inner-edit-task-${leadRef}-${t.id}" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
-                       <button class="nav-btn-styled" id="trigger-inner-delete-task-${leadRef}-${t.id}" style="font-size:0.75rem; background:var(--warn); padding:2px 6px;">Delete</button>
+                       ${deleteActionHtml}
                      </div>`;
     box.appendChild(div);
+    
+    if (isAdminUser && document.getElementById(`trigger-inner-delete-task-${leadRef}-${t.id}`)) {
+      document.getElementById(`trigger-inner-delete-task-${leadRef}-${t.id}`).onclick = function(e) { removeIsolatedTaskItem(leadRef, t.id, e); };
+    }
     document.getElementById('trigger-inner-edit-task-' + leadRef + '-' + t.id).onclick = function() { editIsolatedTaskItem(leadRef, scopeNode, t); };
     document.getElementById('trigger-inner-delete-task-' + leadRef + '-' + t.id).onclick = function(e) { removeIsolatedTaskItem(leadRef, t.id, e); };
   });
@@ -3498,7 +3525,10 @@ async function executeTaskMatrixSearch() {
       data.tasks.forEach(t => {
         let card = document.createElement("div");
         card.className = "task-item-card"; card.style.padding = "12px"; card.style.borderLeft = "4px solid var(--brand)"; card.style.background = "#fff"; card.style.marginBottom = "6px"; card.style.boxShadow = "0 1px 3px rgba(0,0,0,0.02)";
-        
+        const isAdminUser = localStorage.getItem("isUserAdminGlobal") === "true";
+        const deleteActionHtml = isAdminUser 
+          ? `<button class="nav-btn-styled" id="matrix-delete-task-btn-${t.id}" style="font-size:0.72rem; padding:3px 8px; background:var(--warn);">Delete</button>` 
+          : "";
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #edf2f7; padding-bottom:4px; margin-bottom:6px;">
             <strong style="color:var(--brand); font-size:0.9rem;">${t.type}</strong>
@@ -3513,11 +3543,18 @@ async function executeTaskMatrixSearch() {
           
           <div style="margin-top:10px; display:flex; gap:8px;">
             <button class="nav-btn-styled" id="matrix-edit-task-btn-${t.id}" style="font-size:0.72rem; padding:3px 8px; background:var(--accent);">Edit Task Details</button>
-            <button class="nav-btn-styled" id="matrix-delete-task-btn-${t.id}" style="font-size:0.72rem; padding:3px 8px; background:var(--warn);">Delete</button>
+            ${deleteActionHtml}
           </div>
           
           <div id="matrix-task-form-mount-${t.id}" style="margin-top:10px; display:none;"></div>
         `;
+        outputNode.appendChild(card);
+
+        if (isAdminUser && document.getElementById(`matrix-delete-task-btn-${t.id}`)) {
+          document.getElementById(`matrix-delete-task-btn-${t.id}`).onclick = function(e) {
+            removeMatrixTaskFromEngine(t.id, e);
+          };
+        }
         outputNode.appendChild(card);
 
         document.getElementById(`matrix-edit-task-btn-${t.id}`).onclick = function() {
@@ -3814,7 +3851,11 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
     card.style.borderLeft = "4px solid var(--accent)";
     
     const attsLabel = mail.attachments && mail.attachments.length > 0 ? mail.attachments.join(", ") : "None";
-    
+    const isAdminUser = localStorage.getItem("isUserAdminGlobal") === "true";
+    const deleteActionHtml = isAdminUser 
+      ? `<button class="nav-btn-styled" style="background:var(--warn); font-size:0.75rem; padding:4px 8px;" onclick="archiveEmailLeadFromSystemDatabaseCache('${mail.messageIdReference}', ${mIdx})">Delete</button>` 
+      : "";
+
     card.innerHTML = `
       <div class="contact-summary-header-row" style="margin-bottom:6px;">
         <div class="contact-summary-title-info">
@@ -3830,9 +3871,10 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
         </div>
         <div class="directory-btn-actions-block" style="margin-top:4px;">
           <a href="${mail.originalDeepLinkThreadUrl}" target="_blank" class="nav-btn-styled" style="background:#4a5568; text-decoration:none; font-size:0.75rem; padding:4px 8px; display:inline-flex; align-items:center;">Open Email ↗</a>
-          <button class="nav-btn-styled" style="background:var(--warn); font-size:0.75rem; padding:4px 8px;" onclick="archiveEmailLeadFromSystemDatabaseCache('${mail.messageIdReference}', ${mIdx})">Delete</button>
+          ${deleteActionHtml}
         </div>
       </div>
+      ...
       
       <!-- 50-Word AI Summary Block Row -->
       <div style="font-size:0.85rem; background:#f8fafc; border:1px solid #e2e8f0; padding:8px; border-radius:4px; margin:6px 0; line-height:1.4; color:var(--text);">
