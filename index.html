@@ -804,16 +804,16 @@
                 </div>
               </div>
 
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
-                <div><label class="field-label">Purchase Inquire</label><input type="text" id="purchaseInquire" placeholder="Enter Name of End User" /></div>
-                <div><label class="field-label">Tender Inquire</label><input type="text" id="tenderInquire" placeholder="Enter Name of End User" /></div>
-              </div>
-
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
                 <div class="aoc-split-row-box" style="grid-column: span 2;">
                   <select id="sel-gsi" onchange="toggleDropdownNo(this, 'gsi')"><option value="">— Select —</option><option value="No">No</option><option value="Yes">Yes</option></select>
                   <div><label class="field-label" style="margin:0;">Grid Stability Issue</label><input type="text" id="gsi" value="" /></div>
                 </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+                <div><label class="field-label">Purchase Inquire</label><input type="text" id="purchaseInquire" placeholder="Enter Name of End User" /></div>
+                <div><label class="field-label">Tender Inquire</label><input type="text" id="tenderInquire" placeholder="Enter Name of End User" /></div>
               </div>
 
               <div style="margin-bottom: 12px;">
@@ -3007,6 +3007,7 @@ async function submitLead() {
     const d = await res.json();
     
     if (d.success) { 
+      // 1. Safe cleaning check for Inbound Email Leads pipeline tracking
       if (activeEmailLeadContextIndex !== null) {
         const mailObject = cachedInboundEmailLeadsArray[activeEmailLeadContextIndex];
         const targetMsgId = mailObject.messageIdReference;
@@ -3020,30 +3021,24 @@ async function submitLead() {
           formTemplateSource.style.display = "none";
           document.body.appendChild(formTemplateSource);
         }
-        
         if (cardWrapperNode) cardWrapperNode.remove();
-        
-        const remainingCards = document.getElementById("email-leads-inbound-feed-canvas").children.length;
-        if (remainingCards === 0) {
+        if (document.getElementById("email-leads-inbound-feed-canvas").children.length === 0) {
           renderEmailLeadsFeedInterface([]);
         }
-        
         activeEmailLeadContextIndex = null;
       }
 
-      document.getElementById('remaining-sections-form').style.display = 'none'; 
-      const successScreen = document.getElementById('success-screen'); 
-      if (successScreen) successScreen.style.display = 'block'; 
-      document.getElementById('success-ref').textContent = "Lead ID: " + (d.leadRef || "Error generating ID");
-      
-      const canvasNode = document.getElementById("step2-inline-interaction-canvas");
-      if (canvasNode && successScreen) {
-        canvasNode.appendChild(successScreen);
-      }
-      
+      // 2. SUCCESS NOTIFICATION ALERT: Replaces missing structural screen logic safely
+      alert(`Success! Lead Created Perfectly.\nAssigned System Reference: ${d.leadRef || "LEAD-ASSIGNED"}`);
+
+      // 3. Clear and Collapse entry form drawer workspace elements
+      collapseNewEntryDropdownFormExplicitly();
+      resetSequentialFormState();
+
+      // 4. Smooth background refresh layout synchronization lookups
       if (currentActiveModuleContext === "CARD" || currentActiveModuleContext === "DROPDOWN") {
-         const compParamValue = fields.company; 
-         const targetPersonNameParam = fields.name;
+         const compParamValue = fields["Company Name"]; 
+         const targetPersonNameParam = fields["Contact Person Name"];
          const refreshRes = await fetch(GAS_URL, { 
            method: "POST", 
            body: JSON.stringify({ 
@@ -3059,10 +3054,12 @@ async function submitLead() {
             globalFollowUpsCacheMap = refreshData.followups; 
             globalTasksCacheMap = refreshData.tasks;
             buildMultiContactDirectoryInterface(refreshData.leads, targetPersonNameParam);
+            const canvasNode = document.getElementById("step2-inline-interaction-canvas");
             if (canvasNode) canvasNode.style.display = "block";
          }
       }
-    } else {
+    }
+    else {
       alert("Submission failed: " + (d.error || "Unknown server error."));
     }
   } catch (e) { 
