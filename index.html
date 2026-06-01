@@ -456,7 +456,7 @@
               <input type="file" id="card-back" accept="image/*" hidden />
               <button class="btn btn-ai" id="parse-btn" onclick="parseCard()">Parse Card with AI</button>
               
-              <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter company..." />
+              <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter Company Name..." />
               <label class="field-label">Contact Name</label><input type="text" id="f-name" />
               <label class="field-label">Position</label><input type="text" id="f-position" />
               <label class="field-label">Phone</label><input type="tel" id="f-phone" />
@@ -516,7 +516,7 @@
           <div class="section">
             <div class="section-header">Filter Leads by Type of Customer</div>
             <div class="section-body">
-              <label class="field-label" style="font-size: 0.8rem; color: var(--brand);">Select Qualifications</label>
+              <label class="field-label" style="font-size: 0.8rem; color: var(--brand);">Select Types of Customer</label>
               <div id="selected-quals-display" style="font-size: 0.8rem; font-weight: bold; color: var(--brand); margin-bottom: 8px;"></div>
               
               <div class="pill-group" id="core-qualification-static-pills" style="margin: 10px 0 5px;">
@@ -537,7 +537,7 @@
                  <div class="pill-group" id="qual-filter-checkboxes" style="margin: 0; gap: 6px;"></div>
               </div>
               
-              <button class="btn btn-sub" id="qual-search-btn" onclick="triggerQualificationSearch()" style="margin-top: 5px;">Search Qualifications</button>
+              <button class="btn btn-sub" id="qual-search-btn" onclick="triggerQualificationSearch()" style="margin-top: 5px;">Search Types of Customer</button>
             </div>
           </div>
         </div>
@@ -1029,7 +1029,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz6O_xe8aNvpAe70LOuy7Sl7nWWP54oFsvomgJ8Lpj104GhgYCx4h3Dn_uMazbPhwuXkQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw7dKkZdVcqZm6ONd2HgsNpKm6BJbfmQfqTwa-J2Okq8Ls29qXKC21YzLThmCcqy1K9Yg/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -2078,14 +2078,20 @@ function returnToDirectoryCardsFromFormView() {
   document.getElementById("step2-inline-interaction-canvas").style.display = "block";
 }
 
+/**
+ * CONTACT CARDS LIST LAYOUT BUILDER
+ * Generates interactive summary listings for all employee rows matched under target entities search routes,
+ * explicitly pointing to updated column headers schemas.
+ */
 function buildMultiContactDirectoryInterface(leadsList, targetSearchName) {
   const container = document.getElementById("multi-contact-records-container");
   container.innerHTML = "";
   const sanitizedTargetName = targetSearchName ? targetSearchName.toString().replace(/\s+/g, '').toLowerCase() : "";
 
   leadsList.sort((a, b) => {
-    let aNameClean = (a["Name"] || "").toString().replace(/\s+/g, '').toLowerCase();
-    let bNameClean = (b["Name"] || "").toString().replace(/\s+/g, '').toLowerCase();
+    // FIXED: Shifted lookups to read "Contact Person Name" instead of old "Name" key
+    let aNameClean = (a["Contact Person Name"] || "").toString().replace(/\s+/g, '').toLowerCase();
+    let bNameClean = (b["Contact Person Name"] || "").toString().replace(/\s+/g, '').toLowerCase();
     let aMatches = (sanitizedTargetName !== "" && aNameClean === sanitizedTargetName);
     let bMatches = (sanitizedTargetName !== "" && bNameClean === sanitizedTargetName);
     if (aMatches && !bMatches) return -1;
@@ -2098,7 +2104,11 @@ function buildMultiContactDirectoryInterface(leadsList, targetSearchName) {
     let wrapperCard = document.createElement("div");
     wrapperCard.className = "contact-summary-card-parent";
     wrapperCard.id = `contact-parent-wrapper-${tRef}`;
-    let cardDisplayName = (lead["Name"] && lead["Name"].toString().trim() !== "") ? lead["Name"] : "Unspecified";
+    
+    // FIXED: Use correct column header fields references strings keys
+    let cardDisplayName = (lead["Contact Person Name"] && lead["Contact Person Name"].toString().trim() !== "") ? lead["Contact Person Name"] : "Unspecified Name";
+    let companyLabelName = lead["Company Name"] || "Unspecified Company";
+    
     if (sanitizedTargetName !== "" && cardDisplayName.toString().replace(/\s+/g, '').toLowerCase() === sanitizedTargetName) {
       wrapperCard.className += " search-highlighted-focus-node";
     }
@@ -2107,7 +2117,7 @@ function buildMultiContactDirectoryInterface(leadsList, targetSearchName) {
       <div class="contact-summary-header-row">
         <div class="contact-summary-title-info">
           <div class="meta-row-line-block" style="margin-bottom: 6px;">
-            <span style="background: #e2e8f0;">Company:</span><strong style="margin-right: 20px;">${lead["Company"]}</strong>
+            <span style="background: #e2e8f0;">Company:</span><strong style="margin-right: 20px;">${companyLabelName}</strong>
             <span style="background: #edf2f7;">Status:</span><strong id="card-lbl-status-${tRef}">${lead["Status"] || "N/A"}</strong>
           </div>
           <div class="meta-row-line-block">
@@ -2933,8 +2943,8 @@ async function submitLead() {
     const fields = {
       status: statusField.value,
       engineerName: engineerField.value, 
-      name: document.getElementById('dropform-name').value.trim() || (document.getElementById('f-name') ? document.getElementById('f-name').value.trim() : ""), 
-      company: document.getElementById('dropform-company-locked').value.trim(),
+      "Contact Person Name": document.getElementById('dropform-name').value.trim() || (document.getElementById('f-name') ? document.getElementById('f-name').value.trim() : ""), 
+      "Company Name": document.getElementById('dropform-company-locked').value.trim(),
       position: document.getElementById('dropform-position').value.trim() || (document.getElementById('f-position') ? document.getElementById('f-position').value.trim() : ""), 
       phone: document.getElementById('dropform-phone').value.trim() || (document.getElementById('f-phone') ? document.getElementById('f-phone').value.trim() : ""), 
       altPhone: document.getElementById('dropform-altphone').value.trim() || (document.getElementById('f-altphone') ? document.getElementById('f-altphone').value.trim() : ""),
@@ -2942,9 +2952,7 @@ async function submitLead() {
       website: document.getElementById('dropform-website').value.trim() || (document.getElementById('f-website') ? document.getElementById('f-website').value.trim() : ""), 
       city: document.getElementById('dropform-city').value.trim() || (document.getElementById('f-city') ? document.getElementById('f-city').value.trim() : ""),
       state: document.getElementById('dropform-state').value.trim() || (document.getElementById('f-state') ? document.getElementById('f-state').value.trim() : ""),
-      
-      country: document.getElementById('dropform-country').value.trim() || (document.getElementById('f-country') ? document.getElementById('f-country').value.trim() : ""), // NEW KEY
-      
+      country: document.getElementById('dropform-country').value.trim() || (document.getElementById('f-country') ? document.getElementById('f-country').value.trim() : ""), 
       address: document.getElementById('dropform-address').value.trim() || (document.getElementById('f-address') ? document.getElementById('f-address').value.trim() : ""),
       meetingDate: meetingDate, 
       meetingTime: meetingTime,
@@ -2953,20 +2961,18 @@ async function submitLead() {
       additionalMeetingDetails: document.getElementById('additionalMeetingDetails').value,
       businessVertical: getRadio('businessVertical') === 'Other' ? (document.getElementById('businessVerticalOther') ? document.getElementById('businessVerticalOther').value : 'Other') : getRadio('businessVertical'), 
       industry: document.getElementById('industry').value, 
-      qualification: qualFinal, // Maps directly over onto 'Type of Customer'
+      "Type of Customer": qualFinal, // FIXED COLUMN KEY MATCH
       vendorType: vtFinal,
-      materialsName: document.getElementById('materialsName').value, 
+      "Name of Materials Supplied": document.getElementById('materialsName').value, // FIXED COLUMN KEY MATCH
       lpi: document.getElementById("sel-lpi").value === "Yes" ? document.getElementById("lpi").value : "", 
       hbi: document.getElementById("sel-hbi").value === "Yes" ? document.getElementById("hbi").value : "", 
       hi: document.getElementById("sel-hi").value === "Yes" ? document.getElementById("hi").value : "", 
       thi: document.getElementById("sel-thi").value === "Yes" ? document.getElementById("thi").value : "", 
       gsi: document.getElementById("sel-gsi").value === "Yes" ? document.getElementById("gsi").value : "",
-      
-      purchaseInquire: document.getElementById('purchaseInquire').value.trim(), // NEW KEY
-      tenderInquire: document.getElementById('tenderInquire').value.trim(),     // NEW KEY
-      
+      purchaseInquire: document.getElementById('purchaseInquire').value.trim(),
+      tenderInquire: document.getElementById('tenderInquire').value.trim(),
       esd: document.getElementById('esd').value.trim(),
-      voltage: getChecks('voltage'), 
+      "Voltage Level Requirements": getChecks('voltage'), // FIXED COLUMN KEY MATCH
       cdMva: document.getElementById('cdMva').value, 
       rdMva: document.getElementById('rdMva').value, 
       avgPf: document.getElementById('avgPf').value,
@@ -2987,7 +2993,6 @@ async function submitLead() {
       sendOffer: document.getElementById('actOffer').value, 
       followUpRequired: document.getElementById('act7').value
     };
-    
 
     const res = await fetch(GAS_URL, {
       method: 'POST',
