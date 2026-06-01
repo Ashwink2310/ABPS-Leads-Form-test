@@ -1783,19 +1783,26 @@ function returnToDashboard() {
   document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none");
 }
 
+/**
+ * RESET MASTER ENTRY FORM STATE
+ * Clears standard form input trees, resets default dropdown values,
+ * wipes newly added custom diagnostic inputs, and collapses visibility panels.
+ */
 function resetSequentialFormState() {
   document.getElementById('remaining-sections-form').style.display = 'block';
   document.getElementById('success-screen').style.display = 'none';
   
-  // Clear all standard input elements
+  // 1. Loop and clear all baseline input tags, textareas, and select elements
   const inputs = document.querySelectorAll('#remaining-sections-form input, #remaining-sections-form textarea, #remaining-sections-form select');
   inputs.forEach(input => {
       if(input.type === 'checkbox' || input.type === 'radio') {
           input.checked = false;
       } else if (input.tagName === 'SELECT') {
+          // Reset actions checkboxes and dropdown toggles back to standard "No"
           if (['act1', 'act2', 'act3', 'act4', 'actOffer', 'act7'].includes(input.id)) {
               input.value = 'No';
           } else if (input.id !== 'dropform-status') {
+              // Section 3 engineering diagnostic select dropdowns are set empty by default
               input.value = ''; 
           }
       } else if (input.id !== 'dropform-company-locked') {
@@ -1803,12 +1810,15 @@ function resetSequentialFormState() {
       }
   });
 
+  // 2. Explicitly target and reset newly integrated custom layout form elements
   if (document.getElementById("dropform-city")) document.getElementById("dropform-city").value = "";
   if (document.getElementById("dropform-state")) document.getElementById("dropform-state").value = "";
   if (document.getElementById("dropform-country")) document.getElementById("dropform-country").value = "";
   if (document.getElementById("purchaseInquire")) document.getElementById("purchaseInquire").value = "";
   if (document.getElementById("tenderInquire")) document.getElementById("tenderInquire").value = "";
+  if (document.getElementById("esd")) document.getElementById("esd").value = "";
 
+  // 3. Reset visibility layouts back to hidden defaults
   document.querySelectorAll('.other-input, #vendor-fields').forEach(el => el.style.display = 'none');
 }
 
@@ -2005,8 +2015,15 @@ function revealNewEntryFormDropdown() {
   document.getElementById(container).appendChild(dropdownEl);
 
   let companyName = "";
+  let contactName = "";
+  
+  // FIXED: Ensure we target correct element references based on active context
   if (currentActiveModuleContext === "CARD") {
       companyName = document.getElementById("f-company") ? document.getElementById("f-company").value : "";
+      contactName = document.getElementById("f-name") ? document.getElementById("f-name").value : "";
+  } else if (currentActiveModuleContext === "DROPDOWN") {
+      companyName = activeSearchCompany || "";
+      contactName = document.getElementById("f-name") ? document.getElementById("f-name").value : "";
   } else {
       const dropdown = document.getElementById("lookup-module-company-dropdown");
       if (dropdown && dropdown.selectedIndex >= 0) {
@@ -2019,7 +2036,10 @@ function revealNewEntryFormDropdown() {
     companyLockInp.value = companyName || "No Company Specified";
   }
   
-  if (document.getElementById("dropform-name")) document.getElementById("dropform-name").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-name")) ? document.getElementById("f-name").value : "";
+  // FIXED: Safeguard inputs assignment logic to avoid wiping out user data
+  if (document.getElementById("dropform-name")) {
+    document.getElementById("dropform-name").value = contactName || (document.getElementById("f-name") ? document.getElementById("f-name").value : "");
+  }
   if (document.getElementById("dropform-position")) document.getElementById("dropform-position").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-position")) ? document.getElementById("f-position").value : "";
   if (document.getElementById("dropform-phone")) document.getElementById("dropform-phone").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-phone")) ? document.getElementById("f-phone").value : "";
   if (document.getElementById("dropform-altphone")) document.getElementById("dropform-altphone").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-altphone")) ? document.getElementById("f-altphone").value : "";
@@ -2027,13 +2047,12 @@ function revealNewEntryFormDropdown() {
   if (document.getElementById("dropform-website")) document.getElementById("dropform-website").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-website")) ? document.getElementById("f-website").value : "";
   if (document.getElementById("dropform-city")) document.getElementById("dropform-city").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-city")) ? document.getElementById("f-city").value : "";
   if (document.getElementById("dropform-state")) document.getElementById("dropform-state").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-state")) ? document.getElementById("f-state").value : "";
-  if (document.getElementById("dropform-country")) {document.getElementById("dropform-country").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-country")) ? document.getElementById("f-country").value : "";}
+  if (document.getElementById("dropform-country")) document.getElementById("dropform-country").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-country")) ? document.getElementById("f-country").value : "";
   if (document.getElementById("dropform-address")) document.getElementById("dropform-address").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-address")) ? document.getElementById("f-address").value : "";
 
   if (document.getElementById("global-direct-inline-create-entry-btn")) document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
   if (document.getElementById("global-direct-inline-collapse-entry-btn")) document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "inline-flex";
   
-  // SAFETY FIX: Added strict null guard around the back button row element
   const rowNode = document.getElementById("staged-back-button-row");
   if (rowNode) rowNode.style.display = "flex";
 
@@ -2049,8 +2068,12 @@ function revealNewEntryFormDropdownFromBanner() {
   const parentId = (currentActiveModuleContext === "CARD") ? "workspace-cardDetails" : "workspace-searchCompany";
   document.getElementById(parentId).appendChild(dropdownEl);
   
-  if (document.getElementById("dropform-company-locked")) document.getElementById("dropform-company-locked").value = activeSearchCompany;
-  if (document.getElementById("dropform-name")) document.getElementById("dropform-name").value = document.getElementById("f-name") ? document.getElementById("f-name").value : "";
+  if (document.getElementById("dropform-company-locked")) document.getElementById("dropform-company-locked").value = activeSearchCompany || "";
+  
+  // FIXED: Maintain contact names values securely across banner switches overrides
+  if (document.getElementById("dropform-name")) {
+    document.getElementById("dropform-name").value = document.getElementById("dropform-name").value || (document.getElementById("f-name") ? document.getElementById("f-name").value : "");
+  }
   if (document.getElementById("dropform-position")) document.getElementById("dropform-position").value = document.getElementById("f-position") ? document.getElementById("f-position").value : "";
   if (document.getElementById("dropform-phone")) document.getElementById("dropform-phone").value = document.getElementById("f-phone") ? document.getElementById("f-phone").value : "";
   if (document.getElementById("dropform-altphone")) document.getElementById("dropform-altphone").value = document.getElementById("f-altphone") ? document.getElementById("f-altphone").value : "";
@@ -2058,13 +2081,12 @@ function revealNewEntryFormDropdownFromBanner() {
   if (document.getElementById("dropform-website")) document.getElementById("dropform-website").value = document.getElementById("f-website") ? document.getElementById("f-website").value : "";
   if (document.getElementById("dropform-city")) document.getElementById("dropform-city").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-city")) ? document.getElementById("f-city").value : "";
   if (document.getElementById("dropform-state")) document.getElementById("dropform-state").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-state")) ? document.getElementById("f-state").value : "";
-  if (document.getElementById("dropform-country")) {document.getElementById("dropform-country").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-country")) ? document.getElementById("f-country").value : "";}
+  if (document.getElementById("dropform-country")) document.getElementById("dropform-country").value = (currentActiveModuleContext === "CARD" && document.getElementById("f-country")) ? document.getElementById("f-country").value : "";
   if (document.getElementById("dropform-address")) document.getElementById("dropform-address").value = document.getElementById("f-address") ? document.getElementById("f-address").value : "";
 
   if (document.getElementById("global-direct-inline-create-entry-btn")) document.getElementById("global-direct-inline-create-entry-btn").style.display = "none"; 
   if (document.getElementById("global-direct-inline-collapse-entry-btn")) document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none"; 
   
-  // SAFETY FIX: Added strict null guard around the banner back button row element
   const rowNode = document.getElementById("staged-back-button-row");
   if (rowNode) rowNode.style.display = "flex"; 
 
@@ -2586,16 +2608,18 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
   }
   
   // 2. Map and stitch multi-select arrays context definitions
-  const targetCheckKeys = ["Voltage Level", "Products Discussed", "Qualification", "Type of Vendor"];
+  const targetCheckKeys = ["Voltage Level Requirements", "Products Discussed", "Type of Customer", "Type of Vendor"];
   
   targetCheckKeys.forEach(masterKey => {
     let selectedPillsList = [];
+    // Standardize selection queries variables paths cleanly
+    let keySelectorString = masterKey.replace(/\s+/g, '_');
+    
     document.querySelectorAll(`.live-lead-check-subset-${leadRef}[data-master-key="${masterKey}"]:checked`).forEach(chk => {
       if (chk.value !== "Others") selectedPillsList.push(chk.value);
     });
     
-    // Check if custom text was added inside the line item box element
-    const textInputNode = document.getElementById(`live-subset-other-text-${leadRef}-${masterKey.replace(/\s+/g, '_')}`);
+    const textInputNode = document.getElementById(`live-subset-other-text-${leadRef}-${keySelectorString}`);
     if (textInputNode && textInputNode.value.trim() !== "") {
       selectedPillsList.push(textInputNode.value.trim());
     }
@@ -2616,8 +2640,9 @@ async function commitTargetedLeadsMutationsRows(leadRef) {
     });
     const r = await res.json(); 
     if (r.success) {
-      alert("Modifications Saved.");
-      const updatedNameText = fieldsPayload["Name"] || "Unspecified";
+      alert("Modifications Saved Successfully.");
+      // FIXED: Point to renamed structural data attributes identifiers
+      const updatedNameText = fieldsPayload["Contact Person Name"] || "Unspecified Name";
       const updatedPositionText = fieldsPayload["Position"] || "Unspecified";
       const updatedStatusText = fieldsPayload["Status"] || "N/A";
       
@@ -3064,18 +3089,16 @@ async function submitLead() {
             if (canvasNode) {
               canvasNode.style.display = "block";
               
-              // Render cards directory framework elements lines
+              // Render cards directory framework elements lines safely
               buildMultiContactDirectoryInterface(refreshData.leads, targetPersonNameParam);
               
-              // OPTIMIZATION FLOW: Inject highlighted border around the freshly generated lead node wrapper card
+              // Inject highlighted border around the freshly generated lead node wrapper card
               const topFreshCardNode = document.getElementById(`contact-parent-wrapper-${d.leadRef}`);
               if (topFreshCardNode) {
                 topFreshCardNode.style.cssText = "border: 2.5px solid var(--accent) !important; box-shadow: 0 4px 12px rgba(0, 168, 120, 0.15) !important;";
               }
             }
           }
-          
-          // Re-fetch company lists asynchronously to instantly group brackets contents parameters
           await triggerCompanyDropdownArrayFetch();
         }
       }, 3500);
@@ -4027,7 +4050,7 @@ async function submitMaterialRequestTicketToBackend() {
     const result = await res.json();
     
     if (result.success) {
-      // 3. FULL-PANEL REPLACEMENT SUCCESS ENGINE: Wipes out the form inputs instantly
+      // Inline success message swaps the panels out safely
       materialRequestPanelContainer.style.padding = "20px";
       materialRequestPanelContainer.innerHTML = `
         <div style="background: #dcfce7; border: 1px solid #15803d; border-left: 4px solid #15803d; color: #15803d; padding: 20px; border-radius: var(--radius); text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin: 10px 0;">
@@ -4044,22 +4067,27 @@ async function submitMaterialRequestTicketToBackend() {
         </div>
       `;
       
-      // Clear current selection memory contexts arrays
       dynamicTicketShoppingBasketArray = [];
       
-      // 4. TIMEOUT EXTENSION: Hold the pristine success card layout for exactly 5 seconds
       setTimeout(() => {
-        // Full clean rebuild optimization: Reloads form framework dynamically on exit to avoid layout traps
+        // FIXED: Wipes out visual footprints and returns home without triggering system logging traps
         materialRequestPanelContainer.style.display = "none";
+        document.getElementById("module-store-workspace-enclosure-panel").style.display = "none";
         
-        // Restore standard static view back to workspace defaults
-        exitStoreWorkspacePanelBackToMenu();
+        // Re-initialize default clean form state structure dynamically
+        document.getElementById("ticket-item-selection-dropdown").value = "";
+        document.getElementById("ticket-item-quantity-input").value = "";
+        document.getElementById("ticket-project-id-dropdown").value = "";
+        document.getElementById("ticket-requested-by-operator-dropdown").value = "";
         
-        // Force fully fresh panel initialization to reset inputs structures
+        // Bring back the main dashboard menu cards panel grid
+        document.getElementById("dashboard-view").style.display = "flex";
+        
+        // Rebuild or clear any existing success content layout lines on the fly
         location.reload(); 
       }, 5000);
-      
-    } else {
+    } 
+    else {
       if (feedbackBanner) {
         feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px; border-left: 4px solid #b91c1c; text-align: left;";
         feedbackBanner.innerHTML = `<strong>Submission Rejected by Server:</strong> ${result.error}`;
