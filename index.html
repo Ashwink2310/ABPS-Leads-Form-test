@@ -242,7 +242,7 @@
       <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Store Department</h2>
       
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
-        <div class="nav-group-title-label" style="font-size:0.72rem; color:var(--brand); font-weight:800; margin-bottom:6px;">1) Store Inward</div>
+        <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Store Inward</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-store-gate" onclick="navigateToStoreWorkspacePanel('store-gate-entry')">Gate Entry</div>
           <div class="menu-card" id="mod-store-entry" onclick="navigateToStoreWorkspacePanel('store-entry')">Store Entry</div>
@@ -251,7 +251,7 @@
       </div>
 
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
-        <div class="nav-group-title-label" style="font-size:0.72rem; color:var(--brand); font-weight:800; margin-bottom:6px;">2) Store Outward</div>
+        <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Store Outward</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-store-ticket" onclick="navigateToStoreWorkspacePanel('store-material-request')">Store Create Ticket</div>
           <div class="menu-card" id="mod-store-approvals" onclick="navigateToStoreWorkspacePanel('store-manager-approvals')">Store Approve Tickets</div>
@@ -259,7 +259,7 @@
       </div>
 
       <div class="nav-department-group-wrapper" style="margin-bottom: 8px;">
-        <div class="nav-group-title-label" style="font-size:0.72rem; color:var(--brand); font-weight:800; margin-bottom:6px;">3) Store Quantity and Tickets</div>
+        <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Store Quantity and Tickets</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-live-store-stock" onclick="navigateToStoreWorkspacePanel('store-live-stock')">Live Store Stock</div>
           <div class="menu-card" id="mod-store-matrix" onclick="navigateToStoreWorkspacePanel('store-history-matrix')">Search Store Tickets</div>
@@ -1875,11 +1875,18 @@ function handleOpsFileChange(inputNode, uploadBoxId, confirmationMsg) {
 function returnToDashboard() { 
   collapseNewEntryDropdownFormExplicitly(); 
   
-  // Hide all store modules views panels
-  document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
-  document.getElementById("canvas-module-store-material-request").style.display = "none";
-  document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
-  document.getElementById("canvas-module-store-history-matrix").style.display = "none";
+  // FIXED: Hide the main parent store container explicitly by target ID instead of class
+  document.getElementById("module-store-workspace-enclosure-panel").style.display = "none";
+  
+  // Hide all independent inward/outbound sub-modules views panels cleanly
+  if(document.getElementById("canvas-module-store-invoice-intake")) document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
+  if(document.getElementById("canvas-module-store-material-request")) document.getElementById("canvas-module-store-material-request").style.display = "none";
+  if(document.getElementById("canvas-module-store-manager-approvals")) document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
+  if(document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
+  if(document.getElementById("canvas-module-store-gate-entry")) document.getElementById("canvas-module-store-gate-entry").style.display = "none";
+  if(document.getElementById("canvas-module-store-entry")) document.getElementById("canvas-module-store-entry").style.display = "none";
+  if(document.getElementById("canvas-module-store-grn")) document.getElementById("canvas-module-store-grn").style.display = "none";
+  if(document.getElementById("canvas-module-store-live-stock")) document.getElementById("canvas-module-store-live-stock").style.display = "none";
   
   document.getElementById("module-workspace-container").style.display = "none";
   document.getElementById("dashboard-view").style.display = "block"; // Brings back home grid view
@@ -1891,7 +1898,7 @@ function returnToDashboard() {
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
   document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
   
-  document.querySelectorAll(".workspace-panel").forEach(p => p.style.display = "none");
+  document.querySelectorAll("#module-workspace-container .workspace-panel").forEach(p => p.style.display = "none");
 }
 
 /**
