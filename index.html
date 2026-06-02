@@ -241,20 +241,36 @@
     <div id="dashboard-store-department-header-block" style="display: none;">
       <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Store Department</h2>
       
-      <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
-        <!-- STANDARDIZED: Spans full width but mirrors identical internal padding, sizing, and typography parameters -->
-        <div class="menu-card" id="mod-live-store-stock" onclick="navigateToStoreWorkspacePanel('store-live-stock')" style="grid-column: span 2;">Live Store Stock</div>
+      <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
+        <div class="nav-group-title-label" style="font-size:0.72rem; color:var(--brand); font-weight:800; margin-bottom:6px;">1) Store Inward</div>
+        <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
+          <div class="menu-card" id="mod-store-gate" onclick="navigateToStoreWorkspacePanel('store-gate-entry')">Gate Entry</div>
+          <div class="menu-card" id="mod-store-entry" onclick="navigateToStoreWorkspacePanel('store-entry')">Store Entry</div>
+          <div class="menu-card" id="mod-store-grn" onclick="navigateToStoreWorkspacePanel('store-grn')">GRN (Goods Recieved Note)</div>
+        </div>
+      </div>
 
-        <div class="menu-card" id="mod-store-upload" onclick="navigateToStoreWorkspacePanel('store-invoice-intake')">Store Upload Invoice and Challan</div>
-        <div class="menu-card" id="mod-store-ticket" onclick="navigateToStoreWorkspacePanel('store-material-request')">Store Create Ticket</div>
-        <div class="menu-card" id="mod-store-approvals" onclick="navigateToStoreWorkspacePanel('store-manager-approvals')">Store Approve Tickets</div>
-        <div class="menu-card" id="mod-store-matrix" onclick="navigateToStoreWorkspacePanel('store-history-matrix')">Search Store Tickets</div>
+      <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
+        <div class="nav-group-title-label" style="font-size:0.72rem; color:var(--brand); font-weight:800; margin-bottom:6px;">2) Store Outward</div>
+        <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
+          <div class="menu-card" id="mod-store-ticket" onclick="navigateToStoreWorkspacePanel('store-material-request')">Store Create Ticket</div>
+          <div class="menu-card" id="mod-store-approvals" onclick="navigateToStoreWorkspacePanel('store-manager-approvals')">Store Approve Tickets</div>
+        </div>
+      </div>
+
+      <div class="nav-department-group-wrapper" style="margin-bottom: 8px;">
+        <div class="nav-group-title-label" style="font-size:0.72rem; color:var(--brand); font-weight:800; margin-bottom:6px;">3) Store Quantity and Tickets</div>
+        <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
+          <div class="menu-card" id="mod-live-store-stock" onclick="navigateToStoreWorkspacePanel('store-live-stock')">Live Store Stock</div>
+          <div class="menu-card" id="mod-store-matrix" onclick="navigateToStoreWorkspacePanel('store-history-matrix')">Search Store Tickets</div>
+        </div>
       </div>
     </div>
+    
   </div> 
   
   <div id="module-store-workspace-enclosure-panel" style="display: none; padding: 12px 10px;">
-    
+
     <div class="navigation-action-header-row" style="margin-bottom: 15px; position: relative; display: flex; align-items: center; justify-content: space-between;">
       <div id="store-panel-left-controls" style="visibility: hidden;">
         <button class="nav-btn-styled" id="live-stock-sync-btn" style="background: var(--brand); padding: 6px 18px; display: inline-flex; align-items: center; gap: 6px;" onclick="triggerLiveWarehouseStockMetricsSync()">Sync</button>
@@ -263,70 +279,57 @@
       <button class="nav-btn-styled" onclick="exitStoreWorkspacePanelBackToMenu()">Return to Main Dashboard</button>
     </div>
 
-    <div id="canvas-module-store-live-stock" class="workspace-panel" style="display:none;">
-      <div style="background: var(--highlight-bg); border: 1.5px solid var(--border); border-left: 4px solid var(--brand); padding: 16px; border-radius: var(--radius); text-align: left;">
-        <div id="dashboard-live-inventory-metrics-mount-zone" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
-          <p style="font-size: 0.85rem; color: var(--muted); text-align: center; grid-column: 1 / -1; padding: 20px;">Syncing Current Stock Quantity...</p>
-        </div>
-      </div>
-    </div>
-
-    <div id="canvas-module-store-invoice-intake" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2 style="margin-bottom: 16px;">Store Upload Invoice and Challan</h2>
-      <p style="color:var(--muted); font-size:0.82rem; margin-top:-4px; margin-bottom:16px;">
-        Upload phone photos or digital scans of your signed Invoice, Delivery Challan, or Both.
-      </p>
+    <div id="canvas-module-store-gate-entry" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+      <h2 style="margin-bottom: 16px;">Gate Entry Inbound Intake</h2>
+      <div id="store-gate-runtime-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
       
-      <div id="store-invoice-runtime-inline-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
-      
-      <div class="section" style="background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius);">
-        
-        <div id="invoice-and-chalan-upload-fields-wrapper-group" style="display: block;">
-          <div style="margin-bottom: 16px;">
-            <div class="card-row" style="display: flex; gap: 10px;">
-              <div class="card-box" id="invoice-upload-box" onclick="document.getElementById('invoice-image-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Invoice Image</div>
-              <div class="card-box" id="challan-upload-box" onclick="document.getElementById('challan-image-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Challan Image</div>
-            </div>
-            <input type="file" id="invoice-image-file" accept="image/*,application/pdf" hidden />
-            <input type="file" id="challan-image-file" accept="image/*,application/pdf" hidden />
-            <button class="btn btn-ai" id="invoice-parse-ai-btn" onclick="parseInboundInvoiceWithAI()" style="margin-top: 12px; font-weight: 700;">Parse Invoice & Challan with AI</button>
+      <div class="section" style="padding: 16px;">
+        <div id="gate-upload-fields-wrapper-group" style="display: block;">
+          <div class="card-row" style="display: flex; gap: 10px; margin-bottom: 12px;">
+            <div class="card-box" id="gate-invoice-box" onclick="document.getElementById('gate-invoice-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Invoice Image</div>
+            <div class="card-box" id="gate-challan-box" onclick="document.getElementById('gate-challan-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Challan Image</div>
           </div>
+          <input type="file" id="gate-invoice-file" accept="image/*,application/pdf" hidden onchange="handleGateFileSelectionChange(this, 'gate-invoice-box', 'Invoice Attached ✅')" />
+          <input type="file" id="gate-challan-file" accept="image/*,application/pdf" hidden onchange="handleGateFileSelectionChange(this, 'gate-challan-box', 'Challan Attached ✅')" />
+          <button class="btn btn-ai" id="gate-parse-ai-btn" onclick="parseGateDocumentsWithAI()">Parse Documents with AI</button>
         </div>
 
-        <div id="invoice-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
-          
-          <!-- Extracted Metadata Fields Rows -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-            <div><label class="field-label">Invoice Number</label><input type="text" id="inv-meta-number" readonly style="background:#f1f5f9;" /></div>
-            <div><label class="field-label">Vendor Name</label><input type="text" id="inv-meta-vendor" readonly style="background:#f1f5f9;" /></div>
-            <div><label class="field-label">Invoice Date</label><input type="text" id="inv-meta-date" readonly style="background:#f1f5f9;" /></div>
+        <div id="gate-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+            <div><label class="field-label">Invoice Number</label><input type="text" id="gate-meta-invoice" style="background:#f1f5f9;" /></div>
+            <div><label class="field-label">Challan Number</label><input type="text" id="gate-meta-challan" style="background:#f1f5f9;" /></div>
+            <div><label class="field-label">Vendor Name</label><input type="text" id="gate-meta-vendor" style="background:#f1f5f9;" /></div>
+            <div><label class="field-label">Date</label><input type="text" id="gate-meta-date" style="background:#f1f5f9;" /></div>
           </div>
-
-          <!-- Line Items Adjustments Grid Canvas Viewport -->
           <div style="margin-bottom: 16px; overflow-x: auto;">
             <table class="store-basket-data-table" style="width: 100%;">
               <thead>
-                <tr>
-                  <th>Invoice Materials</th>
-                  <th>Standard Material Name</th>
-                  <th style="width: 100px;">Invoice Qty</th>
-                  <th style="width: 140px; color: var(--brand);">Physically Received Qty *</th>
-                </tr>
+                <tr><th>Description of Material</th><th>Standard Material Name</th><th style="width: 140px;">Invoice Quantity</th></tr>
               </thead>
-              <tbody id="invoice-verification-table-body">
-                </tbody>
+              <tbody id="gate-verification-table-body"></tbody>
             </table>
           </div>
-
-          <!-- Final Submit Action Controls -->
-          <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border); padding-top: 14px;">
-            <button class="nav-btn-styled" onclick="resetInvoiceUploadIntakeState()" style="background: #718096;">Cancel</button>
-            <button class="nav-btn-styled" id="invoice-submit-ledger-btn" onclick="commitVerifiedInvoiceToInventoryLedger()" style="background: var(--accent); padding: 8px 25px; font-weight: 700;">Verify & Add Stock</button>
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button class="nav-btn-styled" onclick="resetGateEntryWorkspaceState()" style="background: #718096;">Cancel</button>
+            <button class="nav-btn-styled" id="gate-submit-btn" onclick="commitGateEntryRecordsToBackend()" style="background: var(--brand); padding: 8px 25px; font-weight: 700;">Generate Gate Entry</button>
           </div>
-
         </div>
       </div>
     </div>
+
+    <div id="canvas-module-store-entry" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+      <h2 style="margin-bottom: 16px;">Store Entry Verification</h2>
+      <div id="store-entry-runtime-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
+      <div id="store-entry-queue-cards-feed" style="display: flex; flex-direction: column; gap: 14px;"></div>
+    </div>
+
+    <div id="canvas-module-store-grn" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+      <h2 style="margin-bottom: 16px;">Goods Recieved Note (GRN) Inbound Sign-Off</h2>
+      <div id="store-grn-runtime-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
+      <div id="store-grn-queue-cards-feed" style="display: flex; flex-direction: column; gap: 14px;"></div>
+    </div>  
+
+  </div>
 
     <div id="canvas-module-store-material-request" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <!-- TOP NAVIGATION ACTION GRID WITH ACTION SELECTION DROPDOWN -->
@@ -496,9 +499,7 @@
           <div class="section">
             <div class="section-header">Upload Dispatched Bill</div>
             <div class="section-body" style="text-align: left; padding: 16px;">
-              
               <div id="dispatch-bill-feedback-banner" style="display: none; padding: 12px; font-size: 0.88rem; font-weight: 700; border-radius: var(--radius); margin-bottom: 16px; border-left: 4px solid;"></div>
-
               <div id="dispatch-bill-inputs-container" style="display: block;">
                 <div class="card-box" id="dispatch-bill-upload-box" onclick="document.getElementById('dispatch-bill-raw-file').click()" style="padding: 24px; font-size: 0.9rem; min-height: 90px; display: flex; align-items: center; justify-content: center;">📋 Select Dispatched Bill</div>
                 <input type="file" id="dispatch-bill-raw-file" accept="image/*,application/pdf" hidden onchange="handleOpsFileChange(this, 'dispatch-bill-upload-box', 'Dispatched Bill Document Added ✅')" />
@@ -512,9 +513,7 @@
           <div class="section">
             <div class="section-header">Upload Commissioning Report</div>
             <div class="section-body" style="text-align: left; padding: 16px;">
-              
               <div id="commissioning-report-feedback-banner" style="display: none; padding: 12px; font-size: 0.88rem; font-weight: 700; border-radius: var(--radius); margin-bottom: 16px; border-left: 4px solid;"></div>
-
               <div id="commissioning-report-inputs-container" style="display: block;">
                 <div class="card-box" id="commissioning-report-upload-box" onclick="document.getElementById('commissioning-report-raw-file').click()" style="padding: 24px; font-size: 0.9rem; min-height: 90px; display: flex; align-items: center; justify-content: center;">🛠️ Select Commissioning Report</div>
                 <input type="file" id="commissioning-report-raw-file" accept="image/*,application/pdf" hidden onchange="handleOpsFileChange(this, 'commissioning-report-upload-box', 'Commissioning Report Document Added ✅')" />
@@ -1069,7 +1068,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxsUVAXMJZmwxRTOEaXTfnOeIqN9F6BYjywuw21Gj-5a1jbby7NcLRxCavJkb__wqSk0A/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzBDj2EPUCyX0CcLjs1nv5_ckALjrEZwQ75B_8yKUILlqNz_xv8Sl0_H7vw6FoqSApfYA/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1098,6 +1097,9 @@ let targetInvoiceUploadFileObject = null;
 let targetChallanUploadFileObject = null;
 let activeParsedInvoicePayloadCache = null;
 let masterStoreTicketsHistoryCacheCollection = [];
+let targetGateInvoiceFileObj = null;
+let targetGateChallanFileObj = null;
+let activeParsedGatePayloadCache = null;
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken"); 
@@ -3596,9 +3598,6 @@ async function executeTaskMatrixSearch() {
         document.getElementById(`matrix-edit-task-btn-${t.id}`).onclick = function() {
           injectMatrixInlineTaskForm(t, card);
         };
-        document.getElementById(`matrix-delete-task-btn-${t.id}`).onclick = function(e) {
-          removeMatrixTaskFromEngine(t.id, e);
-        };
       });
     }
   } catch(e) { alert("Task matrix engine fetch error: " + e.message); } finally { btn.classList.remove("loading"); btn.textContent = "Search Tasks Combination"; }
@@ -3864,8 +3863,14 @@ async function executeInboundEmailSyncPipelineFetch() {
   }
 }
 
+/**
+ * RENDER EMAIL LEADS LIVE FEED CANVAS
+ * Generates interactive lead cards off compiled email assets caches,
+ * implementing smart admin-only action guards and inline form workspace drawers.
+ */
 function renderEmailLeadsFeedInterface(emailLeadsList) {
   const canvas = document.getElementById("email-leads-inbound-feed-canvas");
+  if (!canvas) return;
   canvas.innerHTML = "";
   
   if (emailLeadsList.length === 0) {
@@ -3887,6 +3892,8 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
     card.style.borderLeft = "4px solid var(--accent)";
     
     const attsLabel = mail.attachments && mail.attachments.length > 0 ? mail.attachments.join(", ") : "None";
+    
+    // FIXED: Enforce role visibility restriction boundaries to guard delete actions
     const isAdminUser = localStorage.getItem("isUserAdminGlobal") === "true";
     const deleteActionHtml = isAdminUser 
       ? `<button class="nav-btn-styled" style="background:var(--warn); font-size:0.75rem; padding:4px 8px;" onclick="archiveEmailLeadFromSystemDatabaseCache('${mail.messageIdReference}', ${mIdx})">Delete</button>` 
@@ -3910,24 +3917,19 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
           ${deleteActionHtml}
         </div>
       </div>
-      ...
       
-      <!-- 50-Word AI Summary Block Row -->
       <div style="font-size:0.85rem; background:#f8fafc; border:1px solid #e2e8f0; padding:8px; border-radius:4px; margin:6px 0; line-height:1.4; color:var(--text);">
         <strong>AI Executive Summary:</strong> ${mail.aiSummaryText}
       </div>
       
-      <!-- Filenames Attachments Label Matrix -->
       <div style="font-size:0.72rem; font-weight:700; color:var(--muted); margin-bottom:8px;">
         📎 Attachments: <span style="color:#4a5568; font-family:monospace;">${attsLabel}</span>
       </div>
       
-      <!-- Actions Row Trigger Button -->
       <div style="margin-top:10px;" id="email-action-response-mount-zone-${mIdx}">
         <button class="btn btn-sub" style="width:auto; font-size:0.78rem; padding:5px 12px;" onclick="triggerEmailLeadDatabaseActionPipeline(${mIdx})" id="email-form-toggle-btn-text-${mIdx}">Create New Entry</button>
       </div>
       
-      <!-- Dynamic Nested Placement Mount Panel Box Anchor Point -->
       <div id="email-nested-inline-database-workspace-anchor-${mIdx}" style="margin-top:10px; display:none; background:#f1f5f9; padding:8px; border-radius:6px; border:1px solid var(--border);"></div>
     `;
     canvas.appendChild(card);
@@ -4590,25 +4592,37 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
   }
 }
 
+/**
+ * NAVIGATE TO STORE PANEL CONTROLLER
+ * Explicitly clears the workspace state frames and mounts the requested 
+ * store inward, outward, or stock tracking canvases dynamically.
+ */
 function navigateToStoreWorkspacePanel(targetPanelModuleId) {
   document.getElementById("dashboard-view").style.display = "none";
   document.getElementById("module-workspace-container").style.display = "none";
 
+  // Collapse and hide all modular store view wrappers panels explicitly
   document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
   document.getElementById("canvas-module-store-material-request").style.display = "none";
   document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
   document.getElementById("canvas-module-store-history-matrix").style.display = "none";
   document.getElementById("canvas-module-store-live-stock").style.display = "none";
+  
+  // Clean initialization passes over the new 3-Step Store Inward panel states
+  document.getElementById("canvas-module-store-gate-entry").style.display = "none";
+  document.getElementById("canvas-module-store-entry").style.display = "none";
+  document.getElementById("canvas-module-store-grn").style.display = "none";
 
   document.getElementById("module-store-workspace-enclosure-panel").style.display = "block";
 
-  // Show/hide the Sync + title only for the live stock panel
+  // Toggle explicit synchronization controllers visibility rules only on live stock pane tracking
   const leftControls = document.getElementById("store-panel-left-controls");
   const centerTitle = document.getElementById("store-panel-center-title");
   const isLiveStock = targetPanelModuleId === 'store-live-stock';
   if (leftControls) leftControls.style.visibility = isLiveStock ? "visible" : "hidden";
   if (centerTitle) centerTitle.style.visibility = isLiveStock ? "visible" : "hidden";
 
+  // CORE ROUTING GATEWAYS BRANCHING SWITCH
   if (targetPanelModuleId === 'store-material-request') {
     document.getElementById("canvas-module-store-material-request").style.display = "block";
     initializeMaterialRequestWorkspace();
@@ -4623,6 +4637,17 @@ function navigateToStoreWorkspacePanel(targetPanelModuleId) {
   } else if (targetPanelModuleId === 'store-live-stock') {
     document.getElementById("canvas-module-store-live-stock").style.display = "block";
     triggerLiveWarehouseStockMetricsSync();
+  } 
+  // NEW INWARD ENGINE INTERCEPT ROUTERS
+  else if (targetPanelModuleId === 'store-gate-entry') {
+    document.getElementById("canvas-module-store-gate-entry").style.display = "block";
+    resetGateEntryWorkspaceState();
+  } else if (targetPanelModuleId === 'store-entry') {
+    document.getElementById("canvas-module-store-entry").style.display = "block";
+    initializeStoreEntryWorkspaceQueue();
+  } else if (targetPanelModuleId === 'store-grn') {
+    document.getElementById("canvas-module-store-grn").style.display = "block";
+    initializeStoreGrnWorkspaceQueue();
   }
 }
 
@@ -5422,6 +5447,250 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
       targetBtn.innerHTML = isDispatch ? "Process Dispatched Bill with AI" : "Process Commissioning Report with AI";
     }
   }
+}
+
+function handleGateFileSelectionChange(input, boxId, textMsg) {
+  const file = input.files[0];
+  if (!file) return;
+  if (boxId === 'gate-invoice-box') targetGateInvoiceFileObj = file;
+  else if (boxId === 'gate-challan-box') targetGateChallanFileObj = file;
+  const box = document.getElementById(boxId);
+  box.textContent = textMsg; box.classList.add('done');
+}
+
+function resetGateEntryWorkspaceState() {
+  targetGateInvoiceFileObj = null; targetGateChallanFileObj = null; activeParsedGatePayloadCache = null;
+  document.getElementById('gate-invoice-file').value = ""; document.getElementById('gate-challan-file').value = "";
+  const b1 = document.getElementById('gate-invoice-box'); const b2 = document.getElementById('gate-challan-box');
+  if (b1) { b1.textContent = "📷 Select Invoice Image"; b1.classList.remove('done'); }
+  if (b2) { b2.textContent = "📷 Select Challan Image"; b2.classList.remove('done'); }
+  document.getElementById('gate-ai-verification-workspace').style.display = "none";
+  document.getElementById('gate-verification-table-body').innerHTML = "";
+}
+
+async function parseGateDocumentsWithAI() {
+  const btn = document.getElementById('gate-parse-ai-btn');
+  if (!targetGateInvoiceFileObj && !targetGateChallanFileObj) return alert("Select at least one document image first.");
+  btn.disabled = true; btn.innerHTML = 'AI Parsing...';
+  try {
+    const convertToBase64 = file => new Promise(res => {
+      if (!file) return res(null); const r = new FileReader();
+      r.onload = () => res(r.result.split(',')[1]); r.readAsDataURL(file);
+    });
+    const [inv64, chal64] = await Promise.all([convertToBase64(targetGateInvoiceFileObj), convertToBase64(targetGateChallanFileObj)]);
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "storeProcessAIInvoiceBlob", sessionToken: localStorage.getItem("sessionToken"), imageBlobBase64: inv64, challanBlobBase64: chal64 })
+    });
+    const data = await res.json();
+    if (!data.success) return alert("AI parsing failed: " + data.error);
+    activeParsedGatePayloadCache = data.extractedData;
+    
+    document.getElementById('gate-meta-invoice').value = activeParsedGatePayloadCache.invoiceNumber || "";
+    document.getElementById('gate-meta-challan').value = activeParsedGatePayloadCache.challanNumber || "";
+    document.getElementById('gate-meta-vendor').value = activeParsedGatePayloadCache.vendorName || "";
+    document.getElementById('gate-meta-date').value = activeParsedGatePayloadCache.invoiceDate || "";
+    
+    const tbody = document.getElementById('gate-verification-table-body'); tbody.innerHTML = "";
+    activeParsedGatePayloadCache.lineItems.forEach(item => {
+      tbody.innerHTML += `<tr><td>${item.rawDescriptionLine}</td><td style="font-weight:600;">${item.mappedMaterialName}</td><td style="font-family:monospace;font-weight:700;">${item.extractedQuantity}</td></tr>`;
+    });
+    document.getElementById('gate-ai-verification-workspace').style.display = "block";
+  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.textContent = "Parse Documents with AI"; }
+}
+
+async function commitGateEntryRecordsToBackend() {
+  const btn = document.getElementById('gate-submit-btn');
+  const banner = document.getElementById('store-gate-runtime-feedback-banner');
+  btn.disabled = true; btn.textContent = 'Generating Gate Ticket...';
+  try {
+    const getBase64 = file => new Promise(res => {
+      if (!file) return res(""); const r = new FileReader();
+      r.onload = () => res(r.result.split(',')[1]); r.readAsDataURL(file);
+    });
+    const [inv64, chal64] = await Promise.all([getBase64(targetGateInvoiceFileObj), getBase64(targetGateChallanFileObj)]);
+    const payload = {
+      action: "commitGateEntryPipelineStep", sessionToken: localStorage.getItem("sessionToken"), activeEngineer: appActiveOperatorIdentityString,
+      metadata: { invoiceNumber: document.getElementById('gate-meta-invoice').value, challanNumber: document.getElementById('gate-meta-challan').value, vendorName: document.getElementById('gate-meta-vendor').value, invoiceDate: document.getElementById('gate-meta-date').value, invoiceImageBase64Raw: inv64, challanImageBase64Raw: chal64 },
+      lineItems: activeParsedGatePayloadCache.lineItems
+    };
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (data.success) {
+      banner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 20px; border-left: 4px solid #15803d;";
+      banner.innerHTML = `<strong>Success! Gate Entry Generated Perfectly.</strong><br/>Assigned Tracking Code: <strong>${data.gateNumber}</strong>`;
+      document.getElementById('gate-ai-verification-workspace').style.display = "none";
+      setTimeout(() => { exitStoreWorkspacePanelBackToMenu(); location.reload(); }, 5000);
+    }
+  } catch(e) { alert(e.message); btn.disabled = false; btn.textContent = "Generate Gate Entry"; }
+}
+
+async function initializeStoreEntryWorkspaceQueue() {
+  const feed = document.getElementById("store-entry-queue-cards-feed");
+  feed.innerHTML = `<p style="padding:20px;text-align:center;color:var(--muted);">Loading pending Gate entries...</p>`;
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "GATE_DONE" }) });
+    const data = await res.json();
+    if (!data.success || data.queue.length === 0) {
+      feed.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px dashed var(--border);border-radius:6px;">No records waiting for Store Entry.</div>`;
+      return;
+    }
+    feed.innerHTML = "";
+    data.queue.forEach(item => {
+      let trs = "";
+      item.lineItems.forEach((line, idx) => {
+        trs += `<tr>
+          <td>${line.rawDescriptionLine}</td><td>${line.mappedMaterialName}</td><td style="font-family:monospace;font-weight:700;">${line.extractedQuantity}</td>
+          <td><input type="number" min="0" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.extractedQuantity}" style="width:90px;border-color:var(--brand);font-weight:700;"></td>
+          <td><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Enter transit damage notes..." style="font-size:0.8rem;"></td>
+        </tr>`;
+      });
+      let card = document.createElement("div"); card.className = "contact-summary-card-parent";
+      card.innerHTML = `
+        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer;">
+          <div class="contact-summary-title-info">
+            <div class="meta-row-line-block">
+              <span style="background:var(--brand);color:#fff;">GATE ID: ${item.gateNumber}</span>
+              <span style="background:#e0f2fe;color:#0369a1;font-weight:700;">INVOICE: ${item.invoiceNumber}</span>
+            </div>
+            <div class="meta-row-line-block" style="margin-top:4px;font-size:0.82rem;color:var(--muted);">
+              Vendor: <strong>${item.vendorName}</strong> | Date: <strong>${item.invoiceDate}</strong>
+            </div>
+          </div>
+        </div>
+        <div style="display:none; padding-top:10px; border-top:1px dashed var(--border); margin-top:8px;">
+          <table class="store-basket-data-table" style="width:100%;margin-bottom:12px;">
+            <thead><tr><th>Description of Material</th><th>Standard Material Name</th><th>Invoice Qty</th><th>Physically Received Qty *</th><th>Transit Damage Description</th></tr></thead>
+            <tbody>${trs}</tbody>
+          </table>
+          <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--accent);" onclick="commitStoreEntryVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Generate Store Entry</button></div>
+        </div>`;
+      feed.appendChild(card);
+    });
+  } catch(e) { feed.innerHTML = `<p style="color:var(--warn);">${e.message}</p>`; }
+}
+
+async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
+  const itemData = JSON.parse(decodeURIComponent(encodedItem));
+  const banner = document.getElementById('store-entry-runtime-feedback-banner');
+  const physInputs = document.querySelectorAll(`.se-phys-qty-${gateNum}`);
+  const damageInputs = document.querySelectorAll(`.se-damage-desc-${gateNum}`);
+  
+  physInputs.forEach(inp => {
+    const idx = parseInt(inp.dataset.idx, 10);
+    itemData.lineItems[idx].verifiedPhysicalQuantity = parseInt(inp.value, 10) || 0;
+  });
+  damageInputs.forEach(inp => {
+    const idx = parseInt(inp.dataset.idx, 10);
+    itemData.lineItems[idx].transitDamageDescription = inp.value.trim();
+  });
+  
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "commitStoreEntryPipelineStep", sessionToken: localStorage.getItem("sessionToken"), activeEngineer: appActiveOperatorIdentityString, payload: itemData })
+    });
+    const data = await res.json();
+    if (data.success) {
+      banner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 20px; border-left: 4px solid #15803d; margin-bottom:15px;";
+      banner.innerHTML = `<strong>Success! Store Entry Generated Perfectly.</strong><br/>Assigned Tracking Code: <strong>${data.storeEntryNumber}</strong>`;
+      document.getElementById("store-entry-queue-cards-feed").innerHTML = "";
+      setTimeout(() => { exitStoreWorkspacePanelBackToMenu(); location.reload(); }, 5000);
+    }
+  } catch(e) { alert(e.message); }
+}
+
+async function initializeStoreGrnWorkspaceQueue() {
+  const feed = document.getElementById("store-grn-queue-cards-feed");
+  feed.innerHTML = `<p style="padding:20px;text-align:center;color:var(--muted);">Loading pending Store entries...</p>`;
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "STORE_DONE" }) });
+    const data = await res.json();
+    if (!data.success || data.queue.length === 0) {
+      feed.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px dashed var(--border);border-radius:6px;">No records waiting for GRN.</div>`;
+      return;
+    }
+    feed.innerHTML = "";
+    data.queue.forEach(item => {
+      let trs = "";
+      item.lineItems.forEach((line, idx) => {
+        trs += `<tr>
+          <td>${line.rawDescriptionLine}</td><td>${line.mappedMaterialName}</td>
+          <td style="font-family:monospace;font-weight:700;color:var(--muted);">${line.verifiedPhysicalQuantity}</td>
+          <td><select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:2px;"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+          <td><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${line.verifiedPhysicalQuantity}" value="${line.verifiedPhysicalQuantity}" style="width:80px;border-color:var(--brand);font-weight:700;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
+          <td><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:80px;" readonly style="background:#f1f5f9;"></td>
+          <td><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Provide rejection reason details..." style="font-size:0.8rem;"></td>
+        </tr>`;
+      });
+      let card = document.createElement("div"); card.className = "contact-summary-card-parent";
+      card.innerHTML = `
+        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer;">
+          <div class="contact-summary-title-info">
+            <div class="meta-row-line-block">
+              <span style="background:var(--accent);color:#fff;">STORE ID: ${item.storeEntryNumber}</span>
+              <span style="background:#edf2f7;color:var(--text);font-weight:700;">GATE ID: ${item.gateNumber}</span>
+            </div>
+            <div class="meta-row-line-block" style="margin-top:4px;font-size:0.82rem;color:var(--muted);">
+              Vendor: <strong>${item.vendorName}</strong> | Invoice No: <strong>${item.invoiceNumber}</strong>
+            </div>
+          </div>
+        </div>
+        <div style="display:none; padding-top:10px; border-top:1px dashed var(--border); margin-top:8px;">
+          <table class="store-basket-data-table" style="width:100%;margin-bottom:12px;">
+            <thead><tr><th>Description of Material</th><th>Standard Material Name</th><th>Received Qty</th><th>Q/A Done</th><th>OK Qty *</th><th>Not OK Qty</th><th>Rejection Details Description</th></tr></thead>
+            <tbody>${trs}</tbody>
+          </table>
+          <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--brand);" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Ledger</button></div>
+        </div>`;
+      feed.appendChild(card);
+    });
+  } catch(e) { feed.innerHTML = `<p style="color:var(--warn);">${e.message}</p>`; }
+}
+
+function autoBalanceGrnQuantities(okInput, gateNum, idx) {
+  const max = parseInt(okInput.dataset.max, 10);
+  let okVal = parseInt(okInput.value, 10) || 0;
+  if (okVal > max) { okVal = max; okInput.value = max; }
+  if (okVal < 0) { okVal = 0; okInput.value = 0; }
+  const notOkInput = document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`);
+  if (notOkInput) notOkInput.value = max - okVal;
+}
+
+async function commitGrnVerificationToBackend(gateNum, encodedItem) {
+  const itemData = JSON.parse(decodeURIComponent(encodedItem));
+  const banner = document.getElementById('store-grn-runtime-feedback-banner');
+  
+  let validationError = false;
+  itemData.lineItems.forEach((line, idx) => {
+    const qa = document.querySelector(`.grn-qa-${gateNum}[data-idx="${idx}"]`).value;
+    const ok = parseInt(document.querySelector(`.grn-ok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
+    const notOk = parseInt(document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
+    const desc = document.querySelector(`.grn-rej-desc-${gateNum}[data-idx="${idx}"]`).value.trim();
+    
+    if (ok + notOk !== line.verifiedPhysicalQuantity) validationError = true;
+    
+    line.qaDoneOption = qa;
+    line.okQuantity = ok;
+    line.notOkQuantity = notOk;
+    line.rejectionDetailsDescription = desc;
+  });
+  
+  if (validationError) return alert("Quantity Balancing Violation: OK Quantity and Not OK Quantity must sum up exactly to the Received Quantity.");
+  
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "commitGrnPipelineStep", sessionToken: localStorage.getItem("sessionToken"), activeEngineer: appActiveOperatorIdentityString, payload: itemData })
+    });
+    const data = await res.json();
+    if (data.success) {
+      banner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 20px; border-left: 4px solid #15803d; margin-bottom:15px;";
+      banner.innerHTML = `<strong>Success! GRN Certified & Stock Balances Transmitted Perfectly.</strong><br/>System Entry Reference: <strong>${data.grnNumber}</strong>`;
+      document.getElementById("store-grn-queue-cards-feed").innerHTML = "";
+      setTimeout(() => { exitStoreWorkspacePanelBackToMenu(); location.reload(); }, 5000);
+    }
+  } catch(e) { alert(e.message); }
 }
 
 </script>
