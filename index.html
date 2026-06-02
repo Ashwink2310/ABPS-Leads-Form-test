@@ -1068,7 +1068,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxNMKAIHYucCW_u7zLEZumRalrg2Mo_mrPPWSMBBJHH5T_sI8H-Kcv-u75XSsmnIvGN-Q/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzDUGCuEomjuYFSwNzaYstIZrug_qUAxHXB49EorSLckqTYj0_rSlNLp-6cnbM8z3o2tA/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -5481,24 +5481,33 @@ function resetGateEntryWorkspaceState() {
 
 async function parseGateDocumentsWithAI() {
   const btn = document.getElementById('gate-parse-ai-btn');
-  if (!targetGateInvoiceFileObj && !targetGateChallanFileObj) return alert("Select at least one document image first.");
+  // Removed targetGateChallanFileObj validation
+  if (!targetGateInvoiceFileObj) return alert("Please select an Invoice image.");
+  
   btn.disabled = true; btn.innerHTML = 'AI Parsing...';
   try {
     const convertToBase64 = file => new Promise(res => {
       if (!file) return res(null); const r = new FileReader();
       r.onload = () => res(r.result.split(',')[1]); r.readAsDataURL(file);
     });
-    const [inv64, chal64] = await Promise.all([convertToBase64(targetGateInvoiceFileObj), convertToBase64(targetGateChallanFileObj)]);
+    const inv64 = await convertToBase64(targetGateInvoiceFileObj);
+    
+    // Updated action to your backend
     const res = await fetch(GAS_URL, {
       method: "POST",
-      body: JSON.stringify({ action: "storeProcessAIInvoiceBlob", sessionToken: localStorage.getItem("sessionToken"), imageBlobBase64: inv64, challanBlobBase64: chal64 })
+      body: JSON.stringify({ 
+        action: "storeProcessAIInvoiceBlob", 
+        sessionToken: localStorage.getItem("sessionToken"), 
+        imageBlobBase64: inv64, 
+        challanBlobBase64: "" // Pass empty
+      })
     });
     const data = await res.json();
     if (!data.success) return alert("AI parsing failed: " + data.error);
     activeParsedGatePayloadCache = data.extractedData;
     
     document.getElementById('gate-meta-invoice').value = activeParsedGatePayloadCache.invoiceNumber || "";
-    document.getElementById('gate-meta-challan').value = activeParsedGatePayloadCache.challanNumber || "";
+    // gate-meta-challan removed from UI
     document.getElementById('gate-meta-vendor').value = activeParsedGatePayloadCache.vendorName || "";
     document.getElementById('gate-meta-date').value = activeParsedGatePayloadCache.invoiceDate || "";
     
@@ -5534,19 +5543,19 @@ async function commitGateEntryRecordsToBackend() {
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
     const data = await res.json();
     if (data.success) {
-      // Hide document picker indicators and parse buttons completely on success
-      if (uploadWrapperBlock) uploadWrapperBlock.style.display = "none";
+      // Hide UI elements instead of reloading
+      document.getElementById('gate-upload-fields-wrapper-group').style.display = "none";
       document.getElementById('gate-ai-verification-workspace').style.display = "none";
       
       banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px;";
       banner.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-          <div>
-            <strong>Success! Gate Entry Generated Perfectly.</strong><br/>
-            <span>Assigned Code: <span style="font-family:monospace; font-weight:800; background:#fff; padding:2px 6px; border:1px solid #15803d; border-radius:4px;">${data.gateNumber}</span></span>
-          </div>
-          <button class="nav-btn-styled" onclick="navigateToStoreWorkspacePanel('store-gate-entry')" style="background:#15803d; color:white;">+ Create New Entry</button>
-        </div>`;
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                  <strong>Success! Gate Entry Generated Perfectly.</strong><br/>
+                  Assigned Code: <strong>${data.gateNumber}</strong>
+              </div>
+              <button class="nav-btn-styled" onclick="location.reload()" style="background:#15803d;">+ Create New Entry</button>
+          </div>`;
     }
   } catch(e) { alert(e.message); btn.disabled = false; btn.textContent = "Generate Gate Entry"; }
 }
@@ -5618,25 +5627,31 @@ async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
     });
     const data = await res.json();
     if (data.success) {
-      document.getElementById("store-entry-queue-cards-feed").innerHTML = "";
-      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px; margin-bottom:15px;";
+      // Hide UI elements instead of reloading
+      document.getElementById('gate-upload-fields-wrapper-group').style.display = "none";
+      document.getElementById('gate-ai-verification-workspace').style.display = "none";
+      
+      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px;";
       banner.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-          <div>
-            <strong>Success! Store Entry Generated Perfectly.</strong><br/>
-            <span>Assigned Code: <span style="font-family:monospace; font-weight:800; background:#fff; padding:2px 6px; border:1px solid #15803d; border-radius:4px;">${data.storeEntryNumber}</span></span>
-          </div>
-          <button class="nav-btn-styled" onclick="navigateToStoreWorkspacePanel('store-entry')" style="background:#15803d; color:white;">+ Create New Entry</button>
-        </div>`;
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                  <strong>Success! Gate Entry Generated Perfectly.</strong><br/>
+                  Assigned Code: <strong>${data.gateNumber}</strong>
+              </div>
+              <button class="nav-btn-styled" onclick="location.reload()" style="background:#15803d;">+ Create New Entry</button>
+          </div>`;
     }
   } catch(e) { alert(e.message); btn.disabled = false; btn.textContent = "Verify & Generate Store Entry"; }
 }
 
 async function initializeStoreGrnWorkspaceQueue() {
   const feed = document.getElementById("store-grn-queue-cards-feed");
-  feed.innerHTML = `<p style="padding:20px;text-align:center;color:var(--muted);">Loading pending Store entries...</p>`;
+  feed.innerHTML = `<p style="padding:20px;text-align:center;color:var(--muted);">Loading pending GRN entries...</p>`;
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "STORE_DONE" }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "STORE_PENDING" }) 
+    });
     const data = await res.json();
     if (!data.success || data.queue.length === 0) {
       feed.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px dashed var(--border);border-radius:6px;">No records waiting for GRN.</div>`;
@@ -5644,42 +5659,43 @@ async function initializeStoreGrnWorkspaceQueue() {
     }
     feed.innerHTML = "";
     data.queue.forEach(item => {
+      // Correct Time Formatting:
+      let cleanTimeLabel = item.invoiceDate ? item.invoiceDate.toString().split(" ")[1] : "N/A";
+      let cleanDateLabel = item.invoiceDate ? item.invoiceDate.toString().split(" ")[0] : "N/A";
+
       let trs = "";
       item.lineItems.forEach((line, idx) => {
+        trs += `<tr>
+          <td>${line.rawDescriptionLine}</td><td>${line.mappedMaterialName}</td>
+          <td><select class="grn-qa-${item.gateNumber}" data-idx="${idx}"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+          <td><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${line.verifiedPhysicalQuantity}" value="${line.verifiedPhysicalQuantity}" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
+          <td><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" readonly></td>
+          <td><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Rejection reason..."></td>
+        </tr>`;
       });
-      
-      let cleanCardDateStringLabel = item.invoiceDate || "";
-      if (cleanCardDateStringLabel.indexOf("T") !== -1) {
-        let parts = cleanCardDateStringLabel.split("T");
-        let dPart = parts[0]; 
-        let tPart = parts[1].substring(0, 5);
-        let hour = parseInt(tPart.split(":")[0], 10);
-        let mins = tPart.split(":")[1];
-        let ampm = hour >= 12 ? "pm" : "am";
-        hour = hour % 12; hour = hour ? hour : 12;
-        cleanCardDateStringLabel = `${dPart} ${hour}:${mins}${ampm}`;
-      }
 
       let card = document.createElement("div"); card.className = "contact-summary-card-parent";
       card.innerHTML = `
         <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer;">
           <div class="contact-summary-title-info">
             <div class="meta-row-line-block">
-              <span style="background:var(--brand); color:#fff;">STORE ID: ${item.storeEntryNumber}</span>
-              <span style="background:#edf2f7; color:var(--text); font-weight:700;">GATE ID: ${item.gateNumber}</span>
-              <span style="background:#cbd5e1; color:#1e293b; font-weight:700; text-transform:none;">${cleanCardDateStringLabel}</span>
+              <span style="background:var(--accent);color:#fff;">GRN ID: ${item.storeEntryNumber}</span>
+              <span style="background:#edf2f7;color:var(--text);font-weight:700;">GATE: ${item.gateNumber}</span>
+              <span style="background:#cbd5e1;color:#1e293b;font-weight:700;">${cleanDateLabel} ${cleanTimeLabel}</span>
             </div>
-            <div class="meta-row-line-block" style="margin-top:4px; font-size:0.82rem; color:var(--muted);">
+            <div class="meta-row-line-block" style="margin-top:4px;font-size:0.82rem;color:var(--muted);">
               Vendor: <strong>${item.vendorName}</strong> | Invoice No: <strong>${item.invoiceNumber}</strong>
             </div>
           </div>
         </div>
         <div style="display:none; padding-top:10px; border-top:1px dashed var(--border); margin-top:8px;">
-          <table class="store-basket-data-table" style="width:100%;margin-bottom:12px;">
-            <thead><tr><th>Description of Material</th><th>Standard Material Name</th><th>Received Qty</th><th>Q/A Done</th><th>OK Qty *</th><th>Not OK Qty</th><th>Rejection Details Description</th></tr></thead>
+          <table class="store-basket-data-table" style="width:100%;">
+            <thead><tr><th>Material</th><th>Name</th><th>Q/A</th><th>OK Qty</th><th>Not OK</th><th>Rejection Details</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
-          <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--brand);" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Ledger</button></div>
+          <div style="display:flex;justify-content:flex-end;">
+            <button class="nav-btn-styled" style="background:var(--brand);" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock</button>
+          </div>
         </div>`;
       feed.appendChild(card);
     });
@@ -5723,18 +5739,19 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
     });
     const data = await res.json();
     if (data.success) {
-      document.getElementById("store-grn-queue-cards-feed").innerHTML = "";
-      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px; border-radius: var(--radius); margin-bottom:15px;";
+      // Hide UI elements instead of reloading
+      document.getElementById('gate-upload-fields-wrapper-group').style.display = "none";
+      document.getElementById('gate-ai-verification-workspace').style.display = "none";
+      
+      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px;";
       banner.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-          <div>
-            <strong>Success! GRN Certified & Stock Balances Transmitted Perfectly.</strong><br/>
-            <span>System Entry Reference Code: <span style="font-family: monospace; font-weight: 800; background: #fff; padding: 2px 6px; border: 1px solid #15803d; border-radius: 4px;">${data.grnNumber}</span></span>
-          </div>
-          <button class="nav-btn-styled" onclick="navigateToStoreWorkspacePanel('store-grn')" style="background: #15803d; color: white;">
-            + Create New Entry
-          </button>
-        </div>`;
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                  <strong>Success! Gate Entry Generated Perfectly.</strong><br/>
+                  Assigned Code: <strong>${data.gateNumber}</strong>
+              </div>
+              <button class="nav-btn-styled" onclick="location.reload()" style="background:#15803d;">+ Create New Entry</button>
+          </div>`;
     }
   } catch(e) { alert(e.message); btn.disabled = false; btn.textContent = "Verify & Add Stock to Ledger"; }
 }
