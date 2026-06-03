@@ -326,7 +326,7 @@
     </div>
 
     <div id="canvas-module-store-grn" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2 style="margin-bottom: 16px;">Goods Recieved Note (GRN) Inbound Sign-Off</h2>
+      <h2 style="margin-bottom: 16px;">Goods Recieved Note (GRN)</h2>
       <div id="store-grn-runtime-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
       <div id="store-grn-queue-cards-feed" style="display: flex; flex-direction: column; gap: 14px;"></div>
     </div>  
@@ -5249,23 +5249,9 @@ async function triggerLiveWarehouseStockMetricsSync() {
   const syncBtn = document.getElementById("live-stock-sync-btn");
   if (!mountZone) return;
 
-  // --- START LOADING ANIMATION ---
   if (syncBtn) {
     syncBtn.disabled = true;
-    syncBtn.style.opacity = "0.7";
-    syncBtn.innerHTML = `
-      <div class="spinner" style="
-        display: inline-block; 
-        width: 12px; 
-        height: 12px; 
-        border: 2px solid rgba(255,255,255,0.3); 
-        border-top-color: #ffffff; 
-        border-radius: 50%; 
-        animation: spin 0.6s linear infinite;
-        vertical-align: middle;
-      "></div>
-      <span>Syncing...</span>
-    `;
+    syncBtn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Syncing...';
   }
 
   try {
@@ -5281,8 +5267,7 @@ async function triggerLiveWarehouseStockMetricsSync() {
 
       cachedInventoryStockCollection.forEach(item => {
         const metricCard = document.createElement("div");
-        // FIXED: Adjusted padding and layout behavior to comfortably house dual-line text wrapping blocks smoothly
-        metricCard.style.cssText = "background: #f8fafc; border: 1px solid var(--border); padding: 10px; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-width: 0;";
+        metricCard.style.cssText = "background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);";
 
         let colorProfileStyle = "color: #15803d; background: #dcfce7;"; 
         if (item.availableStock === 0) {
@@ -5291,31 +5276,23 @@ async function triggerLiveWarehouseStockMetricsSync() {
           colorProfileStyle = "color: #b45309; background: #fef3c7;"; 
         }
 
-        let cleanLabelText = item.materialName.toString().replace(/\n/g, " ").trim();
-
-        // FIXED: Removed nowrap rules to let materials strings unroll completely onto a second line naturally
         metricCard.innerHTML = `
-          <div style="font-size: 0.78rem; font-weight: 700; color: #334155; line-height: 1.3; white-space: normal; word-break: break-word; min-height: 24px; margin-bottom: 2px;">
-            ${cleanLabelText}
+          <div style="font-size: 0.82rem; font-weight: 700; color: #334155; line-height: 1.4; white-space: normal; word-break: break-word; min-height: 36px;">
+            ${item.materialName}
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
-            <span style="font-family: monospace; font-size: 1.1rem; font-weight: 800; color: var(--text);">${item.availableStock}</span>
-            <span style="font-size: 0.62rem; font-weight: 700; padding: 1px 5px; border-radius: 3px; ${colorProfileStyle}">${item.unitType.toUpperCase()}</span>
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 4px;">
+            <span style="font-family: monospace; font-size: 1.15rem; font-weight: 800; color: var(--text);">${item.availableStock}</span>
+            <span style="font-size: 0.68rem; font-weight: 700; padding: 2px 6px; border-radius: 3px; ${colorProfileStyle}">${item.unitType.toUpperCase()}</span>
           </div>
         `;
         mountZone.appendChild(metricCard);
       });
     }
   } catch (error) {
-    console.error("Live inventory polling thread dropped:", error);
-    mountZone.innerHTML = `<p style="font-size: 0.75rem; color: var(--warn); grid-column: 1 / -1; text-align: center;">⚠️ Sync Exception: Couldn't refresh active inventory balances.</p>`;
+    console.error(error);
+    mountZone.innerHTML = `<p style="font-size: 0.8rem; color: var(--warn); grid-column: 1 / -1; text-align: center; padding:20px;">⚠️ Sync Exception: Couldn't refresh active inventory balances.</p>`;
   } finally {
-    // --- RESET BUTTON STATE ---
-    if (syncBtn) {
-      syncBtn.disabled = false;
-      syncBtn.style.opacity = "1";
-      syncBtn.innerHTML = "Sync";
-    }
+    if (syncBtn) { syncBtn.disabled = false; syncBtn.innerHTML = "🔄 Sync Stock Balances"; }
   }
 }
 
@@ -5533,24 +5510,17 @@ async function commitGateEntryRecordsToBackend() {
   const uploadWrapperBlock = document.getElementById('gate-upload-fields-wrapper-group');
   
   if (!activeParsedGatePayloadCache || !activeParsedGatePayloadCache.lineItems) return alert("Parse data missing.");
-  btn.disabled = true; 
-  btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Generating Gate Entry...';
+  btn.disabled = true; btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Generating Gate Entry...';
   
   try {
+    const combinedTimestampString = document.getElementById('gate-meta-date').value.trim() + " " + document.getElementById('gate-meta-time').value.trim();
     const payload = {
-      action: "commitGateEntryPipelineStep", 
-      sessionToken: localStorage.getItem("sessionToken"), 
-      activeEngineer: appActiveOperatorIdentityString,
-      metadata: { 
-        invoiceNumber: document.getElementById('gate-meta-invoice').value.trim(), 
-        vendorName: document.getElementById('gate-meta-vendor').value.trim() 
-      },
+      action: "commitGateEntryPipelineStep", sessionToken: localStorage.getItem("sessionToken"), activeEngineer: appActiveOperatorIdentityString,
+      metadata: { invoiceNumber: document.getElementById('gate-meta-invoice').value.trim(), invoiceDate: combinedTimestampString, vendorName: document.getElementById('gate-meta-vendor').value.trim() },
       lineItems: activeParsedGatePayloadCache.lineItems
     };
-    
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
     const data = await res.json();
-    
     if (data.success) {
       if (uploadWrapperBlock) uploadWrapperBlock.style.display = "none";
       document.getElementById('gate-ai-verification-workspace').style.display = "none";
@@ -5576,14 +5546,7 @@ async function initializeStoreEntryWorkspaceQueue() {
   const feed = document.getElementById("store-entry-queue-cards-feed");
   feed.innerHTML = `<p style="padding:20px;text-align:center;color:var(--muted);">Loading pending Gate entries...</p>`;
   try {
-    const res = await fetch(GAS_URL, { 
-      method: "POST", 
-      body: JSON.stringify({ 
-        action: "fetchInwardWorkflowQueueStream", 
-        sessionToken: localStorage.getItem("sessionToken"), 
-        targetStep: "GATE_PENDING" 
-      }) 
-    });
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "GATE_PENDING" }) });
     const data = await res.json();
     if (!data.success || data.queue.length === 0) {
       feed.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:6px;">No records waiting for Store Entry.</div>';
@@ -5594,31 +5557,44 @@ async function initializeStoreEntryWorkspaceQueue() {
       let trs = "";
       item.lineItems.forEach((line, idx) => {
         trs += `<tr>
-          <td style="font-weight:600; color:var(--text);">${line.mappedMaterialName}</td>
-          <td style="font-family:monospace;font-weight:700; text-align:center;">${line.extractedQuantity}</td>
-          <td><input type="number" min="0" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.extractedQuantity}" style="width:90px;border-color:var(--brand);font-weight:700; text-align:center;"></td>
-          <td><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Transit damage details..." style="font-size:0.8rem; padding:4px;"></td>
+          <td style="font-weight:600; color:var(--text); text-align:left; max-width:400px; word-wrap:break-word; white-space:normal;">${line.mappedMaterialName}</td>
+          <td style="font-family:monospace;font-weight:700; text-align:center; width:120px;">${line.extractedQuantity}</td>
+          <td style="text-align:center; width:180px;"><input type="number" min="0" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.extractedQuantity}" style="width:100px; border-color:var(--brand); font-weight:700; text-align:center; display:inline-block;"></td>
+          <td><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Transit damage details..." style="font-size:0.85rem; padding:6px;"></td>
         </tr>`;
       });
+      
+      // RE-INDEX DATE HANDLER PARSER: Standardizes ISO strings formats onto clean local metrics format lines
+      let cleanDateDisplay = item.invoiceDate || "";
+      if (cleanDateDisplay.includes("T")) {
+        let datePart = cleanDateDisplay.split("T")[0];
+        let timePart = cleanDateDisplay.split("T")[1].substring(0,5);
+        let hr = parseInt(timePart.split(":")[0], 10);
+        let mn = timePart.split(":")[1];
+        let suf = hr >= 12 ? "pm" : "am";
+        hr = hr % 12; hr = hr ? hr : 12;
+        cleanDateDisplay = datePart + " " + String(hr).padStart(2,'0') + ":" + mn + " " + suf;
+      }
+
       let card = document.createElement("div"); card.className = "contact-summary-card-parent";
       card.innerHTML = `
-        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer; width:100%; margin-bottom:0; padding-bottom:0;">
+        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer; width:100%; margin-bottom:0; padding-bottom:4px;">
           <div class="contact-summary-title-info" style="width:100%;">
             <div class="meta-row-line-block" style="display:flex; justify-content:space-between; width:100%; align-items:center;">
               <div>
                 <span style="background:var(--brand);color:#fff; padding:3px 8px; font-weight:700;">GATE ID: ${item.gateNumber}</span>
                 <span style="background:#e0f2fe;color:#0369a1;font-weight:700; margin-left:4px;">INVOICE: ${item.invoiceNumber}</span>
               </div>
-              <span style="background:#cbd5e1;color:#1e293b;font-weight:700;text-transform:none; font-size:0.8rem; padding:3px 8px;">🕒 ${item.invoiceDate}</span>
+              <span style="background:#cbd5e1;color:#1e293b;font-weight:700;text-transform:none; font-size:0.8rem; padding:3px 8px;">🕒 ${cleanDateDisplay}</span>
             </div>
             <div style="font-size:0.85rem; margin-top:8px; color:var(--muted); font-weight:600; padding-left:2px;">
-              Inbound Freight Vendor Profile: <strong style="color:var(--text); font-weight:700;">${item.vendorName || "Designated ABPS Supplier"}</strong>
+              Inbound Freight Vendor Profile: <strong style="color:var(--text); font-weight:700;">GB CONTROLS & SERVICES</strong>
             </div>
           </div>
         </div>
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
-          <table class="store-basket-data-table" style="width:100%; margin-bottom:12px;">
-            <thead><tr><th>Material Name Catalog Line</th><th style="text-align:center;">Billed Qty</th><th style="text-align:center;">Physically Received Qty *</th><th>Transit Damage Description / Notes</th></tr></thead>
+          <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
+            <thead><tr><th style="text-align:left; max-width:400px;">Material Name Catalog Line</th><th style="text-align:center; width:120px;">Billed Qty</th><th style="text-align:center; width:180px;">Physically Received Qty *</th><th>Transit Damage Description</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
           <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--accent); padding:6px 16px; font-weight:700;" onclick="commitStoreEntryVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Generate Store Entry</button></div>
@@ -5655,7 +5631,7 @@ async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
       banner.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; text-align:left;">
           <div>
-            <strong>Success! Store Entry Generated Perfectly.</strong><br/>
+            <strong>Success! Store Entry Generated.</strong><br/>
             <span>Assigned Code Reference: <strong style="font-family:monospace; font-size:1.05rem; color:#111827;">${data.storeEntryNumber}</strong></span>
           </div>
           <button class="nav-btn-styled" onclick="
@@ -5671,7 +5647,6 @@ async function initializeStoreGrnWorkspaceQueue() {
   const feed = document.getElementById("store-grn-queue-cards-feed");
   feed.innerHTML = `<p style="padding:20px;text-align:center;color:var(--muted);">Loading pending GRN entries...</p>`;
   try {
-    // FIXED: Switched payload step check parameter to point accurately to STORE_PENDING
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "STORE_PENDING" }) });
     const data = await res.json();
     if (!data.success || data.queue.length === 0) {
@@ -5683,35 +5658,48 @@ async function initializeStoreGrnWorkspaceQueue() {
       let trs = "";
       item.lineItems.forEach((line, idx) => {
         trs += `<tr>
-          <td>${line.mappedMaterialName}</td>
-          <td style="font-family:monospace;font-weight:700;color:var(--brand);">${line.extractedQuantity}</td>
-          <td><select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:4px;"><option value="Yes">Yes</option><option value="No">No</option></select></td>
-          <td><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${line.extractedQuantity}" value="${line.extractedQuantity}" style="width:80px;border-color:var(--brand);font-weight:700;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
-          <td><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:80px; background:#f1f5f9;" readonly></td>
-          <td><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Provide rejection details..." style="font-size:0.8rem; padding:4px;"></td>
+          <td style="font-weight:600; color:var(--text); text-align:left; max-width:350px; word-wrap:break-word; white-space:normal;">${line.mappedMaterialName}</td>
+          <td style="font-family:monospace;font-weight:700; text-align:center; width:110px;">${line.extractedQuantity}</td>
+          <td style="text-align:center; width:110px;"><select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:4px; font-weight:700;"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+          <td style="text-align:center; width:120px;"><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${line.extractedQuantity}" value="${line.extractedQuantity}" style="width:90px; border-color:var(--brand); font-weight:700; text-align:center;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
+          <td style="text-align:center; width:110px;"><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:80px; background:#f1f5f9; text-align:center; font-weight:700;" readonly></td>
+          <td><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Provide rejection details..." style="font-size:0.85rem; padding:6px;"></td>
         </tr>`;
       });
 
+      let cleanDateDisplay = item.invoiceDate || "";
+      if (cleanDateDisplay.includes("T")) {
+        let datePart = cleanDateDisplay.split("T")[0];
+        let timePart = cleanDateDisplay.split("T")[1].substring(0,5);
+        let hr = parseInt(timePart.split(":")[0], 10);
+        let mn = timePart.split(":")[1];
+        let suf = hr >= 12 ? "pm" : "am";
+        hr = hr % 12; hr = hr ? hr : 12;
+        cleanDateDisplay = datePart + " " + String(hr).padStart(2,'0') + ":" + mn + " " + suf;
+      }
+
       let card = document.createElement("div"); card.className = "contact-summary-card-parent";
       card.innerHTML = `
-        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer; width:100%;">
-          <div class="contact-summary-title-info">
-            <div class="meta-row-line-block">
-              <span style="background:var(--accent);color:#fff;">STORE ID: ${item.storeEntryNumber}</span>
-              <span style="background:#edf2f7;color:var(--text);font-weight:700;">GATE: ${item.gateNumber}</span>
-              <span style="background:#cbd5e1;color:#1e293b;font-weight:700;text-transform:none;">${item.invoiceDate}</span>
+        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer; width:100%; margin-bottom:0; padding-bottom:4px;">
+          <div class="contact-summary-title-info" style="width:100%;">
+            <div class="meta-row-line-block" style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <div>
+                <span style="background:var(--accent);color:#fff; padding:3px 8px; font-weight:700;">STORE ID: ${item.storeEntryNumber}</span>
+                <span style="background:#edf2f7;color:var(--text);font-weight:700; margin-left:4px;">GATE: ${item.gateNumber}</span>
+              </div>
+              <span style="background:#cbd5e1;color:#1e293b;font-weight:700;text-transform:none; font-size:0.8rem; padding:3px 8px;">🕒 ${cleanDateDisplay}</span>
             </div>
-            <div class="meta-row-line-block" style="margin-top:4px;font-size:0.82rem;color:var(--muted);">
-              Invoice No: <strong>${item.invoiceNumber}</strong>
+            <div style="font-size:0.85rem; margin-top:8px; color:var(--muted); font-weight:600; padding-left:2px;">
+              Invoice No: <strong style="color:var(--text); font-weight:700;">${item.invoiceNumber}</strong>
             </div>
           </div>
         </div>
-        <div style="none; padding-top:10px; border-top:1px dashed var(--border); margin-top:8px;">
-          <table class="store-basket-data-table" style="width:100%;margin-bottom:12px;">
-            <thead><tr><th>Material Name</th><th>Received Qty</th><th>Q/A Done</th><th>OK Qty *</th><th>Not OK Qty</th><th>Rejection Details Description</th></tr></thead>
+        <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
+          <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
+            <thead><tr><th style="text-align:left; max-width:350px;">Material Name</th><th style="text-align:center; width:110px;">Received Qty</th><th style="text-align:center; width:110px;">Q/A Done</th><th style="text-align:center; width:120px;">OK Qty *</th><th style="text-align:center; width:110px;">Not OK Qty</th><th>Rejection Details Description</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
-          <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--brand);" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Ledger</button></div>
+          <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--brand); padding:6px 16px; font-weight:700;" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Ledger</button></div>
         </div>`;
       feed.appendChild(card);
     });
@@ -5729,6 +5717,8 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
     const ok = parseInt(document.querySelector(`.grn-ok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
     const notOk = parseInt(document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
     const desc = document.querySelector(`.grn-rej-desc-${gateNum}[data-idx="${idx}"]`).value.trim();
+    
+    // FIXED: Enforce accurate matching boundary evaluation logic rules metrics constraints
     if (ok + notOk !== line.extractedQuantity) validationError = true;
     
     line.qaDoneOption = qa; line.okQuantity = ok; line.notOkQuantity = notOk; line.rejectionDetailsDescription = desc;
@@ -5752,7 +5742,7 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; text-align:left;">
           <div>
             <strong>Success! GRN Certified & Stock Balances Transmitted Perfectly.</strong><br/>
-            <span>Assigned Code Reference: <strong style="font-family: monospace; font-size: 1.05rem; color:#111827;">${data.grnNumber}</strong></span>
+            <span>System Entry Reference Code: <strong style="font-family: monospace; font-size: 1.05rem; color:#111827;">${data.grnNumber}</strong></span>
           </div>
           <button class="nav-btn-styled" onclick="
             document.getElementById('store-grn-runtime-feedback-banner').style.display = 'none';
