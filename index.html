@@ -1048,7 +1048,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycby5s8KvlahtmmQ4kYCjd2_egjjVxSoFPOTO0ATGhUB-IxjPQdOunX0w8bC3AKiO01Fm1w/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycby6nbWQh9JfB7hmsnSnANuIgqosIkxONWNWSub0qOnjSWTy5EkNSv5RPvoMRyKQvIPF6w/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -5545,7 +5545,7 @@ async function initializeStoreEntryWorkspaceQueue() {
       <span style="font-size:0.9rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Synchronizing Store Verification Queue...</span>
     </div>`;
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "GATE_PENDING" }) });
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "STORE pending" }) });
     const data = await res.json();
     if (!data.success || data.queue.length === 0) {
       feed.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:6px;">No records waiting for Store Entry.</div>';
@@ -5586,7 +5586,7 @@ async function initializeStoreEntryWorkspaceQueue() {
                 <span style="background:var(--brand);color:#fff; padding:3px 8px; font-weight:700;">GATE ID: ${item.gateNumber}</span>
                 <span style="background:#e0f2fe;color:#0369a1;font-weight:700; margin-left:4px;">INVOICE: ${item.invoiceNumber}</span>
               </div>
-              <span style="background:#cbd5e1;color:#1e293b;font-weight:700; font-size:0.8rem; padding:3px 8px;">🕒 ${cleanDateDisplay}</span>
+              <span style="background:#cbd5e1;color:#1e293b;font-weight:700; font-size:0.8rem; padding:3px 8px;">${cleanDateDisplay}</span>
             </div>
             <div style="font-size:0.85rem; margin-top:8px; color:var(--muted); font-weight:600; padding-left:2px;">
               Vendor: <strong style="color:var(--text); font-weight:700;">${item.vendorName || "Designated ABPS Supplier Profile"}</strong>
@@ -5595,7 +5595,7 @@ async function initializeStoreEntryWorkspaceQueue() {
         </div>
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
           <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
-            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Description of Material</th><th style="text-align:center; width:100px;">Billed Qty</th><th style="text-align:center; width:180px;">Physically Received Qty *</th><th>Transit Damage Description</th></tr></thead>
+            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Description of Material</th><th style="text-align:center; width:100px;">Billed Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Transit Damage Description</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
           <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--accent);" onclick="commitStoreEntryVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Generate Store Entry</button></div>
@@ -5672,7 +5672,7 @@ async function initializeStoreGrnWorkspaceQueue() {
       <span style="font-size:0.9rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Synchronizing Active GRN Queue...</span>
     </div>`;
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInboundWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "STORE_PENDING" }) });
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "GRN pending" }) });
     const data = await res.json();
     if (!data.success || data.queue.length === 0) {
       feed.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:6px;">No records waiting for GRN.</div>';
@@ -5716,7 +5716,7 @@ async function initializeStoreGrnWorkspaceQueue() {
                 <span style="background:var(--accent); color:#fff; padding:3px 8px; font-weight:700;">STORE ID: ${item.storeEntryNumber || "SE-PENDING"}</span>
                 <span style="background:#edf2f7; color:var(--text); font-weight:700; margin-left:4px;">GATE ref: ${item.gateNumber}</span>
               </div>
-              <span style="background:#cbd5e1; color:#1e293b; font-weight:700; text-transform:none; font-size:0.8rem; padding:3px 8px;">🕒 ${cleanDateDisplay}</span>
+              <span style="background:#cbd5e1; color:#1e293b; font-weight:700; text-transform:none; font-size:0.8rem; padding:3px 8px;">${cleanDateDisplay}</span>
             </div>
             <div style="font-size:0.85rem; margin-top:8px; color:var(--muted); font-weight:600; padding-left:2px;">
               Vendor: <strong style="color:var(--brand); font-weight:700;">${item.vendorName || "Designated ABPS Supplier Profile"}</strong> | Invoice No: <strong style="color:var(--text); font-weight:700;">${item.invoiceNumber}</strong>
@@ -5725,7 +5725,7 @@ async function initializeStoreGrnWorkspaceQueue() {
         </div>
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
           <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
-            <thead><tr><th style="width:150px; text-align:center;">Item Code Number</th><th>Description of Material</th><th style="width:100px; text-align:center;">Received Qty</th><th style="width:100px; text-align:center;">Q/A Done</th><th style="width:120px; text-align:center;">OK Qty *</th><th style="width:100px; text-align:center;">Not OK Qty</th><th>Rejection Details Description</th></tr></thead>
+            <thead><tr><th style="width:150px; text-align:center;">Item Code Number</th><th>Description of Material</th><th style="width:100px; text-align:center;">Received Quantity</th><th style="width:100px; text-align:center;">Q/A Done</th><th style="width:120px; text-align:center;">OK Quantity *</th><th style="width:100px; text-align:center;">Not OK Quantity</th><th>Rejection Details Description</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
           <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--brand);" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Ledger</button></div>
