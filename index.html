@@ -5474,7 +5474,6 @@ async function parseGateDocumentsWithAI() {
     });
     const inv64 = await convertToBase64(targetGateInvoiceFileObj);
     
-    // Fetch unique catalog lines item profile list keys dynamically behind the scenes for fuzzy matching checks
     const lookupRes = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })});
     const catalogData = await lookupRes.json();
     const existingMaterialNamesList = catalogData.success ? catalogData.inventory.map(i => i.materialName) : [];
@@ -5490,25 +5489,27 @@ async function parseGateDocumentsWithAI() {
     document.getElementById('gate-meta-invoice').value = activeParsedGatePayloadCache.invoiceNumber || "";
     document.getElementById('gate-meta-vendor').value = activeParsedGatePayloadCache.vendorName || "";
     
-    // TIME FORMATTING MODULE: Splits incoming parameters strings nodes to apply requested structures
+    // NATIVE BROWSER DATE & TIME FIX: Replaces standard Apps Script Utilities call safely
     let rawDateObj = new Date();
-    let formattedDateStr = Utilities ? "" : rawDateObj.toISOString().split("T")[0];
-    let formattedTimeStr = "12:00 am";
-    
     if (activeParsedGatePayloadCache.invoiceDate) {
       let parsedTimeNode = new Date(activeParsedGatePayloadCache.invoiceDate);
-      if(!isNaN(parsedTimeNode.getTime())) {
-        formattedDateStr = parsedTimeNode.toISOString().split("T")[0];
+      if (!isNaN(parsedTimeNode.getTime())) {
+        rawDateObj = parsedTimeNode;
       }
-    } else {
-      formattedDateStr = rawDateObj.toISOString().split("T")[0];
     }
     
-    let currentHours = rawDateObj.getHours();
-    let currentMinutes = rawDateObj.getMinutes();
-    let timeSuffixAMPM = currentHours >= 12 ? "pm" : "am";
-    currentHours = currentHours % 12; currentHours = currentHours ? currentHours : 12;
-    formattedTimeStr = String(currentHours).padStart(2, '0') + ":" + String(currentMinutes).padStart(2, '0') + timeSuffixAMPM;
+    // Extract date component (YYYY-MM-DD)
+    const formattedDateStr = rawDateObj.toISOString().split("T")[0];
+    
+    // Extract time component formatted precisely as hh:mmam/pm
+    const timeFormatter = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+    
+    // Normalizes to lowercase 'am/pm' and strips spaces to match 03:09am format
+    const formattedTimeStr = timeFormatter.format(rawDateObj).toLowerCase().replace(/\s+/g, '');
 
     document.getElementById('gate-meta-date').value = formattedDateStr;
     document.getElementById('gate-meta-time').value = formattedTimeStr;
@@ -5518,7 +5519,12 @@ async function parseGateDocumentsWithAI() {
       tbody.innerHTML += `<tr><td>${item.rawDescriptionLine}</td><td style="font-weight:600;">${item.mappedMaterialName}</td><td style="font-family:monospace;font-weight:700;">${item.extractedQuantity}</td></tr>`;
     });
     document.getElementById('gate-ai-verification-workspace').style.display = "block";
-  } catch(e) { alert("AI extraction pipeline failed: " + e.message); } finally { btn.disabled = false; btn.textContent = "Parse Documents with AI"; }
+  } catch(e) { 
+    alert("AI extraction pipeline failed: " + e.message); 
+  } finally { 
+    btn.disabled = false; 
+    btn.textContent = "Parse Documents with AI"; 
+  }
 }
 
 async function commitGateEntryRecordsToBackend() {
