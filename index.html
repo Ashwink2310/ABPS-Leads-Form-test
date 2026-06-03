@@ -288,8 +288,10 @@
         <div id="gate-upload-fields-wrapper-group" style="display: block;">
           <div class="card-row" style="display: flex; gap: 10px; margin-bottom: 12px;">
             <div class="card-box" id="gate-invoice-box" onclick="document.getElementById('gate-invoice-file').click()" style="padding: 24px; font-size: 0.95rem; flex: 1; min-height: 80px; display: flex; align-items: center; justify-content: center;">📷 Select Invoice Image</div>
+            <div class="card-box" id="gate-challan-box" onclick="document.getElementById('gate-challan-file').click()" style="padding: 24px; font-size: 0.95rem; flex: 1; min-height: 80px; display: flex; align-items: center; justify-content: center;">📷 Select Challan Image</div>
           </div>
           <input type="file" id="gate-invoice-file" accept="image/*,application/pdf" hidden onchange="handleGateFileSelectionChange(this, 'gate-invoice-box', 'Invoice Attached ✅')" />
+          <input type="file" id="gate-challan-file" accept="image/*,application/pdf" hidden onchange="handleGateFileSelectionChange(this, 'gate-challan-box', 'Challan Attached ✅')" />
           <button class="btn btn-ai" id="gate-parse-ai-btn" onclick="parseGateDocumentsWithAI()">Parse Documents with AI</button>
         </div>
 
@@ -314,6 +316,7 @@
           </div>
         </div>
       </div>
+      
     </div>
 
     <div id="canvas-module-store-entry" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
