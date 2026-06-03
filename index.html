@@ -5647,7 +5647,14 @@ async function initializeStoreGrnWorkspaceQueue() {
   const feed = document.getElementById("store-grn-queue-cards-feed");
   feed.innerHTML = `<p style="padding:20px;text-align:center;color:var(--muted);">Loading pending GRN entries...</p>`;
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "STORE_PENDING" }) });
+    const res = await fetch(GAS_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        action: "fetchInwardWorkflowQueueStream", 
+        sessionToken: localStorage.getItem("sessionToken"), 
+        targetStep: "STORE_PENDING" 
+      }) 
+    });
     const data = await res.json();
     if (!data.success || data.queue.length === 0) {
       feed.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:6px;">No records waiting for GRN.</div>';
@@ -5657,11 +5664,14 @@ async function initializeStoreGrnWorkspaceQueue() {
     data.queue.forEach(item => {
       let trs = "";
       item.lineItems.forEach((line, idx) => {
+        // FIXED properties mapping indicators keys to read verified physical count instead of billed quantity
+        const safeReceivedQty = parseInt(line.verifiedPhysicalQuantity, 10) || 0;
+        
         trs += `<tr>
           <td style="font-weight:600; color:var(--text); text-align:left; max-width:350px; word-wrap:break-word; white-space:normal;">${line.mappedMaterialName}</td>
-          <td style="font-family:monospace;font-weight:700; text-align:center; width:110px;">${line.extractedQuantity}</td>
+          <td style="font-family:monospace; font-weight:700; text-align:center; width:110px;">${safeReceivedQty}</td>
           <td style="text-align:center; width:110px;"><select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:4px; font-weight:700;"><option value="Yes">Yes</option><option value="No">No</option></select></td>
-          <td style="text-align:center; width:120px;"><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${line.extractedQuantity}" value="${line.extractedQuantity}" style="width:90px; border-color:var(--brand); font-weight:700; text-align:center;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
+          <td style="text-align:center; width:120px;"><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${safeReceivedQty}" value="${safeReceivedQty}" style="width:90px; border-color:var(--brand); font-weight:700; text-align:center;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
           <td style="text-align:center; width:110px;"><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:80px; background:#f1f5f9; text-align:center; font-weight:700;" readonly></td>
           <td><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Provide rejection details..." style="font-size:0.85rem; padding:6px;"></td>
         </tr>`;
@@ -5669,8 +5679,9 @@ async function initializeStoreGrnWorkspaceQueue() {
 
       let cleanDateDisplay = item.invoiceDate || "";
       if (cleanDateDisplay.includes("T")) {
-        let datePart = cleanDateDisplay.split("T")[0];
-        let timePart = cleanDateDisplay.split("T")[1].substring(0,5);
+        let parts = cleanDateDisplay.split("T");
+        let datePart = parts[0];
+        let timePart = parts[1].substring(0,5);
         let hr = parseInt(timePart.split(":")[0], 10);
         let mn = timePart.split(":")[1];
         let suf = hr >= 12 ? "pm" : "am";
@@ -5684,10 +5695,10 @@ async function initializeStoreGrnWorkspaceQueue() {
           <div class="contact-summary-title-info" style="width:100%;">
             <div class="meta-row-line-block" style="display:flex; justify-content:space-between; width:100%; align-items:center;">
               <div>
-                <span style="background:var(--accent);color:#fff; padding:3px 8px; font-weight:700;">STORE ID: ${item.storeEntryNumber}</span>
-                <span style="background:#edf2f7;color:var(--text);font-weight:700; margin-left:4px;">GATE: ${item.gateNumber}</span>
+                <span style="background:var(--accent); color:#fff; padding:3px 8px; font-weight:700;">STORE ID: ${item.storeEntryNumber}</span>
+                <span style="background:#edf2f7; color:var(--text); font-weight:700; margin-left:4px;">GATE: ${item.gateNumber}</span>
               </div>
-              <span style="background:#cbd5e1;color:#1e293b;font-weight:700;text-transform:none; font-size:0.8rem; padding:3px 8px;">🕒 ${cleanDateDisplay}</span>
+              <span style="background:#cbd5e1; color:#1e293b; font-weight:700; text-transform:none; font-size:0.8rem; padding:3px 8px;">🕒 ${cleanDateDisplay}</span>
             </div>
             <div style="font-size:0.85rem; margin-top:8px; color:var(--muted); font-weight:600; padding-left:2px;">
               Invoice No: <strong style="color:var(--text); font-weight:700;">${item.invoiceNumber}</strong>
@@ -5699,7 +5710,9 @@ async function initializeStoreGrnWorkspaceQueue() {
             <thead><tr><th style="text-align:left; max-width:350px;">Material Name</th><th style="text-align:center; width:110px;">Received Qty</th><th style="text-align:center; width:110px;">Q/A Done</th><th style="text-align:center; width:120px;">OK Qty *</th><th style="text-align:center; width:110px;">Not OK Qty</th><th>Rejection Details Description</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
-          <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--brand); padding:6px 16px; font-weight:700;" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Ledger</button></div>
+          <div style="display:flex; justify-content:flex-end;">
+            <button class="nav-btn-styled" style="background:var(--brand); padding:6px 16px; font-weight:700;" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Store</button>
+          </div>
         </div>`;
       feed.appendChild(card);
     });
@@ -5712,27 +5725,42 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
   const btn = event.target;
   
   let validationError = false;
+  
   itemData.lineItems.forEach((line, idx) => {
     const qa = document.querySelector(`.grn-qa-${gateNum}[data-idx="${idx}"]`).value;
     const ok = parseInt(document.querySelector(`.grn-ok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
     const notOk = parseInt(document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
     const desc = document.querySelector(`.grn-rej-desc-${gateNum}[data-idx="${idx}"]`).value.trim();
     
-    // FIXED: Enforce accurate matching boundary evaluation logic rules metrics constraints
-    if (ok + notOk !== line.extractedQuantity) validationError = true;
+    // FIXED: Compare directly against verifiedPhysicalQuantity (the Received Qty from Step 2)
+    if (ok + notOk !== line.verifiedPhysicalQuantity) {
+      validationError = true;
+    }
     
-    line.qaDoneOption = qa; line.okQuantity = ok; line.notOkQuantity = notOk; line.rejectionDetailsDescription = desc;
+    line.qaDoneOption = qa; 
+    line.okQuantity = ok; 
+    line.notOkQuantity = notOk; 
+    line.rejectionDetailsDescription = desc;
   });
   
-  if (validationError) return alert("Quantity Balancing Violation: OK Quantity and Not OK Quantity must sum up exactly to the Received Quantity.");
+  if (validationError) {
+    alert("Quantity Balancing Violation: The sum of OK Quantity and Not OK Quantity must equal the Received Quantity exactly.");
+    return;
+  }
   
+  // Activate loading feedback animation
   btn.disabled = true; 
   btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Certifying GRN Note...';
   
   try {
     const res = await fetch(GAS_URL, {
       method: "POST",
-      body: JSON.stringify({ action: "commitGrnPipelineStep", sessionToken: localStorage.getItem("sessionToken"), activeEngineer: appActiveOperatorIdentityString, payload: itemData })
+      body: JSON.stringify({ 
+        action: "commitGrnPipelineStep", 
+        sessionToken: localStorage.getItem("sessionToken"), 
+        activeEngineer: appActiveOperatorIdentityString, 
+        payload: itemData 
+      })
     });
     const data = await res.json();
     if (data.success) {
@@ -5751,8 +5779,16 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
             + Create New Entry
           </button>
         </div>`;
+    } else {
+      alert("Server Error: " + data.error);
+      btn.disabled = false;
+      btn.textContent = "Verify & Add Stock to Store";
     }
-  } catch(e) { alert(e.message); btn.disabled = false; btn.textContent = "Verify & Add Stock to Ledger"; }
+  } catch(e) { 
+    alert("Network request execution failure: " + e.message); 
+    btn.disabled = false; 
+    btn.textContent = "Verify & Add Stock to Store"; 
+  }
 }
 
 function autoBalanceGrnQuantities(okInput, gateNum, idx) {
