@@ -287,19 +287,18 @@
       <div class="section" style="padding: 16px;">
         <div id="gate-upload-fields-wrapper-group" style="display: block;">
           <div class="card-row" style="display: flex; gap: 10px; margin-bottom: 12px;">
-            <div class="card-box" id="gate-invoice-box" onclick="document.getElementById('gate-invoice-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Invoice Image</div>
-            <div class="card-box" id="gate-challan-box" onclick="document.getElementById('gate-challan-file').click()" style="padding: 20px; font-size: 0.9rem; flex: 1;">📷 Select Challan Image</div>
+            <div class="card-box" id="gate-invoice-box" onclick="document.getElementById('gate-invoice-file').click()" style="padding: 24px; font-size: 0.95rem; flex: 1; min-height: 80px; display: flex; align-items: center; justify-content: center;">📷 Select Invoice Image</div>
           </div>
           <input type="file" id="gate-invoice-file" accept="image/*,application/pdf" hidden onchange="handleGateFileSelectionChange(this, 'gate-invoice-box', 'Invoice Attached ✅')" />
-          <input type="file" id="gate-challan-file" accept="image/*,application/pdf" hidden onchange="handleGateFileSelectionChange(this, 'gate-challan-box', 'Challan Attached ✅')" />
           <button class="btn btn-ai" id="gate-parse-ai-btn" onclick="parseGateDocumentsWithAI()">Parse Documents with AI</button>
         </div>
 
         <div id="gate-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
             <div><label class="field-label">Invoice Number</label><input type="text" id="gate-meta-invoice" style="background:#f1f5f9;" /></div>
             <div><label class="field-label">Vendor Name</label><input type="text" id="gate-meta-vendor" style="background:#f1f5f9;" /></div>
             <div><label class="field-label">Date</label><input type="text" id="gate-meta-date" style="background:#f1f5f9;" /></div>
+            <div><label class="field-label">Time</label><input type="text" id="gate-meta-time" style="background:#f1f5f9;" /></div>
           </div>
           <div style="margin-bottom: 16px; overflow-x: auto;">
             <table class="store-basket-data-table" style="width: 100%;">
@@ -1068,7 +1067,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzDUGCuEomjuYFSwNzaYstIZrug_qUAxHXB49EorSLckqTYj0_rSlNLp-6cnbM8z3o2tA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzLO4V80xspxnIXI5DlSYu53zpEwq_UOrV9T1R_oCZ-GWgniAHjXMxKTNHh1b71cx0c/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -5481,9 +5480,7 @@ function resetGateEntryWorkspaceState() {
 
 async function parseGateDocumentsWithAI() {
   const btn = document.getElementById('gate-parse-ai-btn');
-  // Removed targetGateChallanFileObj validation
-  if (!targetGateInvoiceFileObj) return alert("Please select an Invoice image.");
-  
+  if (!targetGateInvoiceFileObj) return alert("Please select your Invoice document image first.");
   btn.disabled = true; btn.innerHTML = 'AI Parsing...';
   try {
     const convertToBase64 = file => new Promise(res => {
@@ -5492,70 +5489,87 @@ async function parseGateDocumentsWithAI() {
     });
     const inv64 = await convertToBase64(targetGateInvoiceFileObj);
     
-    // Updated action to your backend
+    // Fetch unique catalog lines item profile list keys dynamically behind the scenes for fuzzy matching checks
+    const lookupRes = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })});
+    const catalogData = await lookupRes.json();
+    const existingMaterialNamesList = catalogData.success ? catalogData.inventory.map(i => i.materialName) : [];
+
     const res = await fetch(GAS_URL, {
       method: "POST",
-      body: JSON.stringify({ 
-        action: "storeProcessAIInvoiceBlob", 
-        sessionToken: localStorage.getItem("sessionToken"), 
-        imageBlobBase64: inv64, 
-        challanBlobBase64: "" // Pass empty
-      })
+      body: JSON.stringify({ action: "storeProcessAIInvoiceBlob", sessionToken: localStorage.getItem("sessionToken"), imageBlobBase64: inv64, canonicalMaterialsCatalog: existingMaterialNamesList })
     });
     const data = await res.json();
     if (!data.success) return alert("AI parsing failed: " + data.error);
     activeParsedGatePayloadCache = data.extractedData;
     
     document.getElementById('gate-meta-invoice').value = activeParsedGatePayloadCache.invoiceNumber || "";
-    // gate-meta-challan removed from UI
     document.getElementById('gate-meta-vendor').value = activeParsedGatePayloadCache.vendorName || "";
-    document.getElementById('gate-meta-date').value = activeParsedGatePayloadCache.invoiceDate || "";
+    
+    // TIME FORMATTING MODULE: Splits incoming parameters strings nodes to apply requested structures
+    let rawDateObj = new Date();
+    let formattedDateStr = Utilities ? "" : rawDateObj.toISOString().split("T")[0];
+    let formattedTimeStr = "12:00 am";
+    
+    if (activeParsedGatePayloadCache.invoiceDate) {
+      let parsedTimeNode = new Date(activeParsedGatePayloadCache.invoiceDate);
+      if(!isNaN(parsedTimeNode.getTime())) {
+        formattedDateStr = parsedTimeNode.toISOString().split("T")[0];
+      }
+    } else {
+      formattedDateStr = rawDateObj.toISOString().split("T")[0];
+    }
+    
+    let currentHours = rawDateObj.getHours();
+    let currentMinutes = rawDateObj.getMinutes();
+    let timeSuffixAMPM = currentHours >= 12 ? "pm" : "am";
+    currentHours = currentHours % 12; currentHours = currentHours ? currentHours : 12;
+    formattedTimeStr = String(currentHours).padStart(2, '0') + ":" + String(currentMinutes).padStart(2, '0') + timeSuffixAMPM;
+
+    document.getElementById('gate-meta-date').value = formattedDateStr;
+    document.getElementById('gate-meta-time').value = formattedTimeStr;
     
     const tbody = document.getElementById('gate-verification-table-body'); tbody.innerHTML = "";
     activeParsedGatePayloadCache.lineItems.forEach(item => {
       tbody.innerHTML += `<tr><td>${item.rawDescriptionLine}</td><td style="font-weight:600;">${item.mappedMaterialName}</td><td style="font-family:monospace;font-weight:700;">${item.extractedQuantity}</td></tr>`;
     });
     document.getElementById('gate-ai-verification-workspace').style.display = "block";
-  } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.textContent = "Parse Documents with AI"; }
+  } catch(e) { alert("AI extraction pipeline failed: " + e.message); } finally { btn.disabled = false; btn.textContent = "Parse Documents with AI"; }
 }
 
-/**
- * COMMIT GATE ENTRY PIPELINE STEP
- * Safely aggregates frontend state metadata parameters, guards against null payload caches,
- * and handles server transactional turnarounds gracefully without freezing.
- */
 async function commitGateEntryRecordsToBackend() {
   const btn = document.getElementById('gate-submit-btn');
   const banner = document.getElementById('store-gate-runtime-feedback-banner');
   const uploadWrapperBlock = document.getElementById('gate-upload-fields-wrapper-group');
   
-  if (!activeParsedGatePayloadCache || !activeParsedGatePayloadCache.lineItems) return alert("Parse data missing.");
-  
-  btn.disabled = true; 
-  btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Generating Gate Ticket...';
+  if (!activeParsedGatePayloadCache || !activeParsedGatePayloadCache.lineItems) return alert("Verify line data first.");
+  btn.disabled = true; btn.innerHTML = 'Generating Gate Entry...';
   
   try {
+    const combinedTimestampString = document.getElementById('gate-meta-date').value + " " + document.getElementById('gate-meta-time').value;
     const payload = {
       action: "commitGateEntryPipelineStep", sessionToken: localStorage.getItem("sessionToken"), activeEngineer: appActiveOperatorIdentityString,
-      metadata: { invoiceNumber: document.getElementById('gate-meta-invoice').value.trim(), challanNumber: "", vendorName: document.getElementById('gate-meta-vendor').value.trim(), invoiceDate: document.getElementById('gate-meta-date').value.trim() },
+      metadata: { invoiceNumber: document.getElementById('gate-meta-invoice').value.trim(), invoiceDate: combinedTimestampString, vendorName: document.getElementById('gate-meta-vendor').value.trim() },
       lineItems: activeParsedGatePayloadCache.lineItems
     };
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
     const data = await res.json();
     if (data.success) {
-      // Hide UI elements instead of reloading
-      document.getElementById('gate-upload-fields-wrapper-group').style.display = "none";
+      if (uploadWrapperBlock) uploadWrapperBlock.style.display = "none";
       document.getElementById('gate-ai-verification-workspace').style.display = "none";
       
-      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px;";
+      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px; border-radius: var(--radius);";
       banner.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                  <strong>Success! Gate Entry Generated Perfectly.</strong><br/>
-                  Assigned Code: <strong>${data.gateNumber}</strong>
-              </div>
-              <button class="nav-btn-styled" onclick="location.reload()" style="background:#15803d;">+ Create New Entry</button>
-          </div>`;
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; text-align:left;">
+          <div>
+            <strong>Success! Gate Entry Generated Perfectly.</strong><br/>
+            <span>Assigned Code Reference: <strong style="font-family:monospace; font-size:1.05rem; color:#111827;">${data.gateNumber}</strong></span>
+          </div>
+          <button class="nav-btn-styled" onclick="
+            document.getElementById('store-gate-runtime-feedback-banner').style.display = 'none';
+            document.getElementById('gate-upload-fields-wrapper-group').style.display = 'block';
+            resetGateEntryWorkspaceState();
+          " style="background:#15803d; color:white; padding:8px 16px; font-weight:700;">+ Create New Entry</button>
+        </div>`;
     }
   } catch(e) { alert(e.message); btn.disabled = false; btn.textContent = "Generate Gate Entry"; }
 }
@@ -5564,10 +5578,11 @@ async function initializeStoreEntryWorkspaceQueue() {
   const feed = document.getElementById("store-entry-queue-cards-feed");
   feed.innerHTML = `<p style="padding:20px;text-align:center;color:var(--muted);">Loading pending Gate entries...</p>`;
   try {
-    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "GATE_DONE" }) });
+    // FIXED: Switched payload step check parameter to point accurately to GATE_PENDING
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "GATE_PENDING" }) });
     const data = await res.json();
     if (!data.success || data.queue.length === 0) {
-      feed.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px dashed var(--border);border-radius:6px;">No records waiting for Store Entry.</div>`;
+      feed.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:6px;">No records waiting for Store Entry.</div>';
       return;
     }
     feed.innerHTML = "";
@@ -5575,27 +5590,25 @@ async function initializeStoreEntryWorkspaceQueue() {
       let trs = "";
       item.lineItems.forEach((line, idx) => {
         trs += `<tr>
-          <td>${line.rawDescriptionLine}</td><td>${line.mappedMaterialName}</td><td style="font-family:monospace;font-weight:700;">${line.extractedQuantity}</td>
+          <td>${line.mappedMaterialName}</td><td style="font-family:monospace;font-weight:700;">${line.extractedQuantity}</td>
           <td><input type="number" min="0" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.extractedQuantity}" style="width:90px;border-color:var(--brand);font-weight:700;"></td>
-          <td><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Enter transit damage notes..." style="font-size:0.8rem;"></td>
+          <td><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Enter transit damage notes..." style="font-size:0.8rem; padding:4px;"></td>
         </tr>`;
       });
       let card = document.createElement("div"); card.className = "contact-summary-card-parent";
       card.innerHTML = `
-        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer;">
+        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer; width:100%;">
           <div class="contact-summary-title-info">
             <div class="meta-row-line-block">
               <span style="background:var(--brand);color:#fff;">GATE ID: ${item.gateNumber}</span>
               <span style="background:#e0f2fe;color:#0369a1;font-weight:700;">INVOICE: ${item.invoiceNumber}</span>
-            </div>
-            <div class="meta-row-line-block" style="margin-top:4px;font-size:0.82rem;color:var(--muted);">
-              Vendor: <strong>${item.vendorName}</strong> | Date: <strong>${item.invoiceDate}</strong>
+              <span style="background:#cbd5e1;color:#1e293b;font-weight:700;text-transform:none;">${item.invoiceDate}</span>
             </div>
           </div>
         </div>
         <div style="display:none; padding-top:10px; border-top:1px dashed var(--border); margin-top:8px;">
           <table class="store-basket-data-table" style="width:100%;margin-bottom:12px;">
-            <thead><tr><th>Description of Material</th><th>Standard Material Name</th><th>Invoice Qty</th><th>Physically Received Qty *</th><th>Transit Damage Description</th></tr></thead>
+            <thead><tr><th>Standard Material Name</th><th>Invoice Qty</th><th>Physically Received Qty *</th><th>Transit Damage Description</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
           <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--accent);" onclick="commitStoreEntryVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Generate Store Entry</button></div>
@@ -5617,7 +5630,7 @@ async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
     itemData.lineItems[parseInt(inp.dataset.idx, 10)].verifiedPhysicalQuantity = parseInt(inp.value, 10) || 0;
   });
   document.querySelectorAll(`.se-damage-desc-${gateNum}`).forEach(inp => {
-    itemData.lineItems[parseInt(inp.dataset.idx, 10)].transitDamageDescription = inp.value.trim();
+    itemData.lineItems[parseInt(inp.dataset.idx, 10)].transitDamageDescription = inp.value.trim() || "No Transit Damage";
   });
   
   try {
@@ -5627,19 +5640,19 @@ async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
     });
     const data = await res.json();
     if (data.success) {
-      // Hide UI elements instead of reloading
-      document.getElementById('gate-upload-fields-wrapper-group').style.display = "none";
-      document.getElementById('gate-ai-verification-workspace').style.display = "none";
-      
-      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px;";
+      document.getElementById("store-entry-queue-cards-feed").innerHTML = "";
+      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px; border-radius: var(--radius); margin-bottom:15px;";
       banner.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                  <strong>Success! Gate Entry Generated Perfectly.</strong><br/>
-                  Assigned Code: <strong>${data.gateNumber}</strong>
-              </div>
-              <button class="nav-btn-styled" onclick="location.reload()" style="background:#15803d;">+ Create New Entry</button>
-          </div>`;
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; text-align:left;">
+          <div>
+            <strong>Success! Store Entry Generated Perfectly.</strong><br/>
+            <span>Assigned Code Reference: <strong style="font-family:monospace; font-size:1.05rem; color:#111827;">${data.storeEntryNumber}</strong></span>
+          </div>
+          <button class="nav-btn-styled" onclick="
+            document.getElementById('store-entry-runtime-feedback-banner').style.display = 'none';
+            initializeStoreEntryWorkspaceQueue();
+          " style="background:#15803d; color:white; padding:8px 16px; font-weight:700;">+ Create New Entry</button>
+        </div>`;
     }
   } catch(e) { alert(e.message); btn.disabled = false; btn.textContent = "Verify & Generate Store Entry"; }
 }
@@ -5648,67 +5661,51 @@ async function initializeStoreGrnWorkspaceQueue() {
   const feed = document.getElementById("store-grn-queue-cards-feed");
   feed.innerHTML = `<p style="padding:20px;text-align:center;color:var(--muted);">Loading pending GRN entries...</p>`;
   try {
-    const res = await fetch(GAS_URL, { 
-      method: "POST", 
-      body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "STORE_PENDING" }) 
-    });
+    // FIXED: Switched payload step check parameter to point accurately to STORE_PENDING
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchInwardWorkflowQueueStream", sessionToken: localStorage.getItem("sessionToken"), targetStep: "STORE_PENDING" }) });
     const data = await res.json();
     if (!data.success || data.queue.length === 0) {
-      feed.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px dashed var(--border);border-radius:6px;">No records waiting for GRN.</div>`;
+      feed.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:6px;">No records waiting for GRN.</div>';
       return;
     }
     feed.innerHTML = "";
     data.queue.forEach(item => {
-      // Correct Time Formatting:
-      let cleanTimeLabel = item.invoiceDate ? item.invoiceDate.toString().split(" ")[1] : "N/A";
-      let cleanDateLabel = item.invoiceDate ? item.invoiceDate.toString().split(" ")[0] : "N/A";
-
       let trs = "";
       item.lineItems.forEach((line, idx) => {
         trs += `<tr>
-          <td>${line.rawDescriptionLine}</td><td>${line.mappedMaterialName}</td>
-          <td><select class="grn-qa-${item.gateNumber}" data-idx="${idx}"><option value="Yes">Yes</option><option value="No">No</option></select></td>
-          <td><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${line.verifiedPhysicalQuantity}" value="${line.verifiedPhysicalQuantity}" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
-          <td><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" readonly></td>
-          <td><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Rejection reason..."></td>
+          <td>${line.mappedMaterialName}</td>
+          <td style="font-family:monospace;font-weight:700;color:var(--brand);">${line.extractedQuantity}</td>
+          <td><select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:4px;"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+          <td><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${line.extractedQuantity}" value="${line.extractedQuantity}" style="width:80px;border-color:var(--brand);font-weight:700;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
+          <td><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:80px; background:#f1f5f9;" readonly></td>
+          <td><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Provide rejection details..." style="font-size:0.8rem; padding:4px;"></td>
         </tr>`;
       });
 
       let card = document.createElement("div"); card.className = "contact-summary-card-parent";
       card.innerHTML = `
-        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer;">
+        <div class="contact-summary-header-row" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display==='block'?'none':'block'" style="cursor:pointer; width:100%;">
           <div class="contact-summary-title-info">
             <div class="meta-row-line-block">
-              <span style="background:var(--accent);color:#fff;">GRN ID: ${item.storeEntryNumber}</span>
+              <span style="background:var(--accent);color:#fff;">STORE ID: ${item.storeEntryNumber}</span>
               <span style="background:#edf2f7;color:var(--text);font-weight:700;">GATE: ${item.gateNumber}</span>
-              <span style="background:#cbd5e1;color:#1e293b;font-weight:700;">${cleanDateLabel} ${cleanTimeLabel}</span>
+              <span style="background:#cbd5e1;color:#1e293b;font-weight:700;text-transform:none;">${item.invoiceDate}</span>
             </div>
             <div class="meta-row-line-block" style="margin-top:4px;font-size:0.82rem;color:var(--muted);">
-              Vendor: <strong>${item.vendorName}</strong> | Invoice No: <strong>${item.invoiceNumber}</strong>
+              Invoice No: <strong>${item.invoiceNumber}</strong>
             </div>
           </div>
         </div>
-        <div style="display:none; padding-top:10px; border-top:1px dashed var(--border); margin-top:8px;">
-          <table class="store-basket-data-table" style="width:100%;">
-            <thead><tr><th>Material</th><th>Name</th><th>Q/A</th><th>OK Qty</th><th>Not OK</th><th>Rejection Details</th></tr></thead>
+        <div style="none; padding-top:10px; border-top:1px dashed var(--border); margin-top:8px;">
+          <table class="store-basket-data-table" style="width:100%;margin-bottom:12px;">
+            <thead><tr><th>Material Name</th><th>Received Qty</th><th>Q/A Done</th><th>OK Qty *</th><th>Not OK Qty</th><th>Rejection Details Description</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
-          <div style="display:flex;justify-content:flex-end;">
-            <button class="nav-btn-styled" style="background:var(--brand);" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock</button>
-          </div>
+          <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--brand);" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Ledger</button></div>
         </div>`;
       feed.appendChild(card);
     });
   } catch(e) { feed.innerHTML = `<p style="color:var(--warn);">${e.message}</p>`; }
-}
-
-function autoBalanceGrnQuantities(okInput, gateNum, idx) {
-  const max = parseInt(okInput.dataset.max, 10);
-  let okVal = parseInt(okInput.value, 10) || 0;
-  if (okVal > max) { okVal = max; okInput.value = max; }
-  if (okVal < 0) { okVal = 0; okInput.value = 0; }
-  const notOkInput = document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`);
-  if (notOkInput) notOkInput.value = max - okVal;
 }
 
 async function commitGrnVerificationToBackend(gateNum, encodedItem) {
@@ -5722,7 +5719,7 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
     const ok = parseInt(document.querySelector(`.grn-ok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
     const notOk = parseInt(document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
     const desc = document.querySelector(`.grn-rej-desc-${gateNum}[data-idx="${idx}"]`).value.trim();
-    if (ok + notOk !== line.verifiedPhysicalQuantity) validationError = true;
+    if (ok + notOk !== line.extractedQuantity) validationError = true;
     
     line.qaDoneOption = qa; line.okQuantity = ok; line.notOkQuantity = notOk; line.rejectionDetailsDescription = desc;
   });
@@ -5739,21 +5736,32 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
     });
     const data = await res.json();
     if (data.success) {
-      // Hide UI elements instead of reloading
-      document.getElementById('gate-upload-fields-wrapper-group').style.display = "none";
-      document.getElementById('gate-ai-verification-workspace').style.display = "none";
-      
-      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px;";
+      document.getElementById("store-grn-queue-cards-feed").innerHTML = "";
+      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 20px; border-radius: var(--radius); margin-bottom:15px;";
       banner.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                  <strong>Success! Gate Entry Generated Perfectly.</strong><br/>
-                  Assigned Code: <strong>${data.gateNumber}</strong>
-              </div>
-              <button class="nav-btn-styled" onclick="location.reload()" style="background:#15803d;">+ Create New Entry</button>
-          </div>`;
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; text-align:left;">
+          <div>
+            <strong>Success! GRN Certified & Stock Balances Transmitted Perfectly.</strong><br/>
+            <span>Assigned Code Reference: <strong style="font-family: monospace; font-size: 1.05rem; color:#111827;">${data.grnNumber}</strong></span>
+          </div>
+          <button class="nav-btn-styled" onclick="
+            document.getElementById('store-grn-runtime-feedback-banner').style.display = 'none';
+            initializeStoreGrnWorkspaceQueue();
+          " style="background: #15803d; color: white; padding:8px 16px; font-weight:700;">
+            + Create New Entry
+          </button>
+        </div>`;
     }
   } catch(e) { alert(e.message); btn.disabled = false; btn.textContent = "Verify & Add Stock to Ledger"; }
+}
+
+function autoBalanceGrnQuantities(okInput, gateNum, idx) {
+  const max = parseInt(okInput.dataset.max, 10);
+  let okVal = parseInt(okInput.value, 10) || 0;
+  if (okVal > max) { okVal = max; okInput.value = max; }
+  if (okVal < 0) { okVal = 0; okInput.value = 0; }
+  const notOkInput = document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`);
+  if (notOkInput) notOkInput.value = max - okVal;
 }
 
 </script>
