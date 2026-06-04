@@ -1067,7 +1067,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz6nhM_-BiyAcM0ukqKsz3yGyIC7ty_p6kxdCvm8lbPKd6yFQuMEJOgcb8Q5tD2uXYKuA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyF0ESXaox92IF2zcHkEB-dJglGnuU1nDtEqu7ys-2iDW5xs13mf3zvyVCMxp1sngm7HQ/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -4463,24 +4463,33 @@ function updateSelectedLiveStockPillCounter() {
     return;
   }
   
-  const match = cachedInventoryStockCollection.find(i => i.materialName === selectedMaterial);
+  const cleanSearchKey = selectedMaterial.replace(/\s+/g, '').toLowerCase();
+  const match = cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+  
   if (match) {
     let styleClass = "pill-stock-healthy";
-    if (match.availableStock === 0) styleClass = "pill-stock-empty";
-    else if (match.availableStock <= match.reorderLevel) styleClass = "pill-stock-low";
     
-    // UPDATED: Font sizing boosted to 1.1rem, margins balanced, and text styled bold
+    // FIXED MATCHING FIELDS: Reads variables cleanly from your normalized object properties cache mapping
+    const availableCount = Number(match.availableStock) || 0;
+    const reservedCount = Number(match.reservedStock) || 0;
+    const unitToken = match.unitType || "Pcs";
+    
+    if (availableCount === 0) styleClass = "pill-stock-empty";
+    else if (availableCount <= 5) styleClass = "pill-stock-low"; // Fallback check against default reorder base
+    
     counterZone.innerHTML = `
       <div style="margin: 12px 0 4px; font-size: 0.9rem; font-weight: 700; color: var(--text);">
         Real-time Stock Count: 
         <span class="live-counter-pill ${styleClass}" style="font-size: 1.1rem; padding: 4px 10px; margin-left: 4px; letter-spacing: 0.5px;">
-          ${match.availableStock} ${match.unitType} Available
+          ${availableCount} ${unitToken.toUpperCase()} AVAILABLE
         </span> 
         <span style="font-size: 0.8rem; color: var(--muted); margin-left: 8px; font-weight: normal;">
-          (Reserved: ${match.reservedStock} ${match.unitType})
+          (Reserved: ${reservedCount} ${unitToken})
         </span>
       </div>
     `;
+  } else {
+    counterZone.innerHTML = `<span style="color:var(--warn); font-size:0.8rem;">⚠️ Material mismatch inside client memory ledger.</span>`;
   }
 }
 
@@ -4496,52 +4505,37 @@ function addItemToShoppingBasketRow() {
   const materialName = itemSelect.value;
   const quantity = parseInt(qtyInput.value, 10);
   
-  feedbackBanner.style.display = "none"; // Hide any existing notifications
+  if (feedbackBanner) feedbackBanner.style.display = "none";
   
   if (!materialName || isNaN(quantity) || quantity <= 0) {
-    feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px;";
-    feedbackBanner.innerHTML = `<strong>Validation Warning:</strong> Please select an item and input a positive numeric quantity.`;
+    alert("Please select a material item line and enter a valid quantity count.");
     return;
   }
   
-  // FIXED: Standardize string comparison by removing all internal whitespaces, line-breaks, and hidden tabs
   const cleanSearchKey = materialName.replace(/\s+/g, '').toLowerCase();
-  const itemData = cachedInventoryStockCollection.find(i => {
-    return i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey;
-  });
+  const itemData = cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
   
-  if (!itemData) {
-    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
-    feedbackBanner.innerHTML = `<strong>System Error:</strong> Selected material target lookup dropped inside client memory arrays.`;
+  if (!itemData) return alert("Selected material target lookup dropped.");
+  
+  // FIXED RE-INDEX: Compare against the true available stock count properties values
+  if (quantity > Number(itemData.availableStock)) {
+    alert(`Ghost-Stock Alert: You requested ${quantity} units, but only ${itemData.availableStock} are available on the shelves.`);
     return;
   }
   
-  // GHOST-STOCK INLINE REPLACEMENT WARNING BANNER
-  if (quantity > itemData.availableStock) {
-    feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
-    feedbackBanner.innerHTML = `You are attempting to reserve ${quantity} units, but only ${itemData.availableStock} are currently available.`;
-    return;
-  }
-  
-  // FIXED: Standardize duplicate checking using whitespace-insensitive rules
-  const existingLineItem = dynamicTicketShoppingBasketArray.find(i => {
-    return i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey;
-  });
-  
+  const existingLineItem = dynamicTicketShoppingBasketArray.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
   if (existingLineItem) {
     const projectedNewQty = existingLineItem.quantity + quantity;
-    if (projectedNewQty > itemData.availableStock) {
-      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 12px;";
-      feedbackBanner.innerHTML = `Basket total (${projectedNewQty}) exceeds remaining shelf limit of ${itemData.availableStock}.`;
+    if (projectedNewQty > Number(itemData.availableStock)) {
+      alert(`Basket total (${projectedNewQty}) exceeds shelf inventory limits.`);
       return;
     }
     existingLineItem.quantity = projectedNewQty;
   } else {
-    // Keep the original canonical item name from your master catalog for database uniformity
     dynamicTicketShoppingBasketArray.push({
       materialName: itemData.materialName,
       quantity: quantity,
-      unitType: itemData.unitType
+      unitType: itemData.unitType || "Pcs"
     });
   }
   
@@ -5760,7 +5754,7 @@ async function initializeStoreGrnWorkspaceQueue() {
                 <span style="background:var(--accent); color:#fff; padding:3px 8px; font-weight:700;">STORE ID: ${item.storeEntryNumber || "SE-PENDING"}</span>
                 <span style="background:#edf2f7; color:var(--text); margin-left:4px; font-weight:700;">GATE ref: ${item.gateNumber}</span>
               </div>
-              <span style="background:#cbd5e1; color:#1e293b; font-weight:700; text-transform:none; font-size:0.8rem; padding:3px 8px;">🕒 ${cleanDateDisplay}</span>
+              <span style="background:#cbd5e1; color:#1e293b; font-weight:700; text-transform:none; font-size:0.8rem; padding:3px 8px;">${cleanDateDisplay}</span>
             </div>
             <div style="font-size:0.85rem; margin-top:8px; color:var(--muted); font-weight:600; padding-left:2px;">
               Vendor Name: <strong style="color:var(--brand); font-weight:700;">${item.vendorName}</strong> | Invoice No: <strong style="color:var(--text); font-weight:700;">${item.invoiceNumber}</strong>
@@ -5895,9 +5889,6 @@ function autoBalanceGrnQuantities(okInput, gateNum, idx) {
   if (notOkInput) notOkInput.value = max - okVal;
 }
 
-/**
- * OVERWRITE: initializeMaterialRequestWorkspace to remove direct mapping writes
- */
 async function initializeMaterialRequestWorkspace() {
   const deptDropdown = document.getElementById("ticket-department-outgoing-dropdown");
   if (!deptDropdown) return;
@@ -5908,11 +5899,10 @@ async function initializeMaterialRequestWorkspace() {
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
 
   try {
-    // Fire parallel requests down to sync items catalog, codes entries, and entire staff tree references list parameters
     const [inventoryResponse, projectsResponse, staffResponse] = await Promise.all([
       fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") }) }),
       fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") }) }),
-      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken"), includeFullTreePayload: true }) })
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken") }) })
     ]);
     
     const inventoryData = await inventoryResponse.json();
@@ -5923,11 +5913,13 @@ async function initializeMaterialRequestWorkspace() {
       cachedInventoryStockCollection = inventoryData.inventory;
       globalOperatorsDatabasePayloadCache = staffData.fullPersonnelDataRecordsTree || []; 
       
-      // A. Seed Material Options Box
+      // A. Populate Material Catalog choices showing the descriptive Material Name
       const itemDropdown = document.getElementById("ticket-item-selection-dropdown");
       itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
       cachedInventoryStockCollection.forEach(item => {
-        let opt = document.createElement("option"); opt.value = item.materialName; opt.textContent = item.materialName;
+        let opt = document.createElement("option"); 
+        opt.value = item.materialName; 
+        opt.textContent = item.materialName; // FIXED: Shows text description, not the numeric code
         itemDropdown.appendChild(opt);
       });
 
@@ -5939,7 +5931,7 @@ async function initializeMaterialRequestWorkspace() {
         projectDropdown.appendChild(opt);
       });
       
-      // C. Process autofill lookups
+      // C. Process autofill lookups with instant evaluation execution
       const activeDeptRawString = localStorage.getItem("abps_user_raw_departments") || ""; 
       const lowerDeptsArray = activeDeptRawString.toLowerCase().split(",").map(d => d.trim());
       const priorityChecks = ["reactor", "capacitor", "panel"];
@@ -5951,9 +5943,11 @@ async function initializeMaterialRequestWorkspace() {
           break;
         }
       }
+      
       if (matchedDefault) {
         deptDropdown.value = matchedDefault;
-        handleCreateTicketDepartmentChange(matchedDefault);
+        // FIXED: Explicitly run the change handler here using the freshly cached dataset
+        handleCreateTicketDepartmentChange(matchedDefault); 
       }
     }
   } catch (error) { 
