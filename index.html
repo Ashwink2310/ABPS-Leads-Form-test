@@ -4290,7 +4290,7 @@ async function initializeMaterialRequestWorkspace() {
       });
 
       // C. Populate Store/Admin Staff choices
-      storeStaffDropdown.innerHTML = '<option value="">— Select Your —</option>';
+      storeStaffDropdown.innerHTML = '<option value="">— Select Your Name —</option>';
       staffData.operators.forEach(name => {
         let opt = document.createElement("option");
         opt.value = name.trim(); opt.textContent = name.trim();
@@ -5979,7 +5979,8 @@ function resetMaterialRequestCascadingLockState() {
 }
 
 /**
- * STEP 1 CHANGE: Triggers dynamic staff filtration and unlocks Step 2 fields
+ * STEP 1 CHANGE: Dynamic personnel filtration for any chosen outgoing use case.
+ * Populates options with personnel belonging to Store, Reactor, Capacitor, Panel, or Admin.
  */
 function handleCreateTicketDepartmentChange(chosenDepartmentVal) {
   const staffDrop = document.getElementById("ticket-requested-by-operator-dropdown");
@@ -5989,16 +5990,19 @@ function handleCreateTicketDepartmentChange(chosenDepartmentVal) {
   if (!chosenDepartmentVal) return;
 
   staffDrop.innerHTML = '<option value="">— Select Your Name —</option>';
-  const cleanTargetDept = chosenDepartmentVal.toLowerCase().trim();
+  
+  // Set up authorized containment check matches list
+  const authorizedRoles = ["store", "reactor", "capacitor", "panel", "admin"];
 
-  // Filter staff whose profiles match selected department, store department, or admin privileges
   const filteredPersonnelList = globalOperatorsDatabasePayloadCache.filter(user => {
-    let userDepts = user.departmentsList.map(d => d.toLowerCase().trim());
-    return userDepts.indexOf(cleanTargetDept) !== -1 || userDepts.indexOf("store") !== -1 || userDepts.indexOf("admin") !== -1;
+    // Check if any of the user's assigned departments match the authorized roles list
+    return user.departmentsList.some(dept => authorizedRoles.includes(dept.toLowerCase().trim()));
   });
 
   filteredPersonnelList.forEach(user => {
-    let opt = document.createElement("option"); opt.value = user.fullName; opt.textContent = user.fullName;
+    let opt = document.createElement("option"); 
+    opt.value = user.fullName; 
+    opt.textContent = user.fullName;
     staffDrop.appendChild(opt);
   });
 
