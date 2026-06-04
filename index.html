@@ -350,6 +350,16 @@
           </select>
         </div>
         <div style="margin-bottom: 16px;">
+          <label class="field-label" style="font-weight: 700; color: var(--brand);">Department / Outgoing Use *</label>
+          <select id="ticket-department-outgoing-dropdown" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600;">
+            <option value="Reactor">Reactor</option>
+            <option value="Capacitor">Capacitor</option>
+            <option value="Panel">Panel</option>
+            <option value="Processing">Processing</option>
+            <option value="Service">Service</option>
+          </select>
+        </div>
+        <div style="margin-bottom: 16px;">
           <label class="field-label" style="font-weight: 700; color: var(--brand);">Select Project ID *</label>
           <select id="ticket-project-id-dropdown" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius);"><option value="">— Loading Active Projects —</option></select>
         </div>
@@ -1048,7 +1058,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycby6nbWQh9JfB7hmsnSnANuIgqosIkxONWNWSub0qOnjSWTy5EkNSv5RPvoMRyKQvIPF6w/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzFBgQ17YXv9ymOeENTWzxsrrDzkMJxNvLwKO4xdcyXC7ogMEFnZkbG5xdhhdZhtB4w8w/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1257,6 +1267,7 @@ async function handleGooglePlatformCredentialResponse(response) {
       localStorage.setItem("userLastName", data.lastName);
       localStorage.setItem("userPermissions", JSON.stringify(data.permissions));
       localStorage.setItem("activeOperatorSignature", selectedEngineer);
+      localStorage.setItem("abps_user_raw_departments", data.rawDepartmentsString || "");
       appActiveOperatorIdentityString = selectedEngineer;
       userPermissions = data.permissions;
 
@@ -4241,7 +4252,7 @@ async function initializeMaterialRequestWorkspace() {
       }),
       fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken") }) // New endpoint
+        body: JSON.stringify({ action: "getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken") })
       })
     ]);
     
@@ -4275,6 +4286,24 @@ async function initializeMaterialRequestWorkspace() {
         opt.value = name.trim(); opt.textContent = name.trim();
         storeStaffDropdown.appendChild(opt);
       });
+      
+      // D. DYNAMIC AUTOFILL LOGIC FOR DEPARTMENT dropdown
+      const activeDeptRawString = localStorage.getItem("abps_user_raw_departments") || ""; 
+      const lowerDeptsArray = activeDeptRawString.toLowerCase().split(",").map(d => d.trim());
+      
+      const deptTargetDropdown = document.getElementById("ticket-department-outgoing-dropdown");
+      if (deptTargetDropdown) {
+        const priorityChecks = ["reactor", "capacitor", "panel"];
+        let matchedDefault = "Reactor"; // Base fallback option
+        
+        for (let check of priorityChecks) {
+          if (lowerDeptsArray.indexOf(check) !== -1) {
+            matchedDefault = check.charAt(0).toUpperCase() + check.slice(1);
+            break;
+          }
+        }
+        deptTargetDropdown.value = matchedDefault;
+      }
     }
   } catch (error) { 
     alert("Sync Exception Error: Dropdown selection matrices failed to parse correctly."); 
@@ -4292,8 +4321,7 @@ async function submitMaterialRequestTicketToBackend() {
   const typeDropdownField = document.getElementById("ticket-action-type-toggle-dropdown");
   const submitBtn = document.getElementById("submit-ticket-final-btn");
   const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
-  
-  // Isolate the parent container zone so we can swap out its contents on success
+  const departmentVal = document.getElementById("ticket-department-outgoing-dropdown").value;
   const materialRequestPanelContainer = document.getElementById("canvas-module-store-material-request");
   
   if (!projectIdField || !operatorDropdownField || !submitBtn || !materialRequestPanelContainer) {
@@ -4343,9 +4371,10 @@ async function submitMaterialRequestTicketToBackend() {
     const payload = {
       action: "submitEngineerMaterialTicket",
       sessionToken: localStorage.getItem("sessionToken"),
-      activeEngineer: operatorSignatureName, 
+      activeEngineer: operatorSignatureName,
       projectId: projectId,
-      ticketTypeCommandString: ticketTypeVal, 
+      departmentOutgoing: departmentVal, // Forward selected dropdown value parameter
+      ticketTypeCommandString: ticketTypeVal,
       itemsClusterArray: dynamicTicketShoppingBasketArray
     };
     
