@@ -5742,8 +5742,8 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
   
   let validationError = false;
   let codeMissing = false;
+  let qaIncomplete = false;
   
-  // 1. Grab the item code input elements from the DOM template
   const codeInputs = document.querySelectorAll(`.grn-item-code-${gateNum}`);
   
   itemData.lineItems.forEach((line, idx) => {
@@ -5752,27 +5752,35 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
     const notOk = parseInt(document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
     const desc = document.querySelector(`.grn-rej-desc-${gateNum}[data-idx="${idx}"]`).value.trim();
     
-    // Extract and trim the Item Code input value
     const itemCodeVal = codeInputs[idx] ? codeInputs[idx].value.trim() : "";
     
-    // MANDATORY CHECK: If any item code is empty, mark it missing
+    // MANDATORY CHECK 1: Ensure Item Code is provided
     if (!itemCodeVal) {
       codeMissing = true;
     }
     
+    // MANDATORY CHECK 2: All Q/A Done options must explicitly be changed to "Yes"
+    if (qa !== "Yes") {
+      qaIncomplete = true;
+    }
+    
+    // MANDATORY CHECK 3: Balance validation rules
     if (ok + notOk !== line.verifiedPhysicalQuantity) {
       validationError = true;
     }
     
-    // Attach the data parameters directly onto the line object context
     line.itemCodeNumber = itemCodeVal;
     line.qaDoneOption = qa; 
     line.okQuantity = ok; 
     line.notOkQuantity = notOk; 
-    line.rejectionDetailsDescription = desc;
+    line.rejectionDetailsDescription = desc; // Captures real form inputs explicitly
   });
   
-  // 2. RUN STRICT INPUT VALIDATION CHECKS
+  if (qaIncomplete) {
+    alert("Compulsory Quality Check Failure: You must change the Q/A Done selection to 'Yes' for all line items before you can verify and add stock to the ledger.");
+    return;
+  }
+  
   if (codeMissing) {
     alert("Compulsory Validation Failure: Every single inventory line item must have a valid Item Code Number filled before you can finalize and sign off the GRN section.");
     return;
@@ -5783,7 +5791,6 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
     return;
   }
   
-  // Activate loading feedback animation
   btn.disabled = true; 
   btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Certifying GRN Note...';
   
@@ -5816,13 +5823,11 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
         </div>`;
     } else {
       alert("Server Error: " + data.error);
-      btn.disabled = false;
-      btn.textContent = "Verify & Add Stock to Store";
+      btn.disabled = false; btn.textContent = "Verify & Add Stock to Ledger";
     }
   } catch(e) { 
     alert("Network request execution failure: " + e.message); 
-    btn.disabled = false; 
-    btn.textContent = "Verify & Add Stock to Store"; 
+    btn.disabled = false; btn.textContent = "Verify & Add Stock to Ledger"; 
   }
 }
 
