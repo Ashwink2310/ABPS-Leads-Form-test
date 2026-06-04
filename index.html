@@ -490,7 +490,7 @@
       </div>
       <input type="file" id="boq-upload-file-raw" accept="image/*,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden onchange="handleBOQFileSelection(this, 'boq-upload-file-dropzone')" />
 
-      <button class="btn btn-sub" id="boq-upload-submit-action-btn" onclick="executeBOQDocumentUploadSubmit('NEW')" style="background:var(--brand); font-weight:700; padding:12px;">Parse Document & Seed Inventory Matrix</button>
+      <button class="btn btn-sub" id="boq-upload-submit-action-btn" onclick="executeBOQDocumentUploadSubmit('NEW')" style="background:var(--brand); font-weight:700; padding:12px;">Parse BOQ Document</button>
     </div>
 
     <div id="canvas-module-design-update" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
@@ -1060,7 +1060,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycby13VulG0F5hBL9SF5pntqfA3mYMoQRUfES8r2tt-ff_a3CEBOBeUEKmiqaDs-Wf_4Pzg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyjDzPwINXtfT9MrWRVlC5dmchG_hz1MDPWXWxQXxcXaOykx8A_MK3K2Yp2WeERfdJaCA/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -6420,7 +6420,7 @@ function handleBOQFileSelection(inputNode, zoneId) {
   targetBOQUploadFileRawObject = inputNode.files[0];
   if (targetBOQUploadFileRawObject) {
     const box = document.getElementById(zoneId);
-    box.textContent = "BOQ Blueprint Page Attached ✅";
+    box.textContent = "BOQ Document Attached ✅";
     box.classList.add("done");
   }
 }
@@ -6549,20 +6549,19 @@ async function executeBOQDocumentUploadSubmit(modeString) {
   
   try {
     const actionKey = isNew ? "processNewBOQUploadDocument" : "commitBOQUpdatePipelineStep";
-    const payloadPayload = {
+    
+    const serverPayload = {
       action: actionKey,
       sessionToken: localStorage.getItem("sessionToken"),
       activeEngineer: appActiveOperatorIdentityString,
-      payload: { 
-        projectId: projectId, 
-        fileData64: fileBase64Raw,
-        mimeType: fileMimeType // Relays format type to backend parsing router switches
-      }
+      projectId: projectId, 
+      fileData64: fileBase64Raw,
+      mimeType: fileMimeType
     };
     
     const response = await fetch(GAS_URL, {
       method: "POST",
-      body: JSON.stringify(payloadPayload)
+      body: JSON.stringify(serverPayload)
     });
     
     const data = await response.json();
@@ -6597,17 +6596,17 @@ async function executeBOQDocumentUploadSubmit(modeString) {
     else {
       alert("Processing Error: " + (data.error || "The server rejected this document structure layout format parameters."));
       btn.disabled = false;
-      btn.textContent = isNew ? "Parse Document & Seed Inventory Matrix" : "Commit BOQ Change";
+      btn.textContent = isNew ? "Parse BOQ Document" : "Commit BOQ Change";
     }
   } catch (error) {
     alert("Network request execution failure: " + error.message);
     btn.disabled = false;
-    btn.textContent = isNew ? "Parse Document & Seed Inventory Matrix" : "Commit BOQ Change";
+    btn.textContent = isNew ? "Parse BOQ Document" : "Commit BOQ Change";
   } finally {
     // Failsafe rollback button state visibility styles if parsing drops connections out mid-way
     if (btn.disabled && !targetBOQUploadFileRawObject) {
       btn.disabled = false;
-      btn.textContent = isNew ? "Parse Document & Seed Inventory Matrix" : "Commit BOQ Change";
+      btn.textContent = isNew ? "Parse BOQ Document" : "Commit BOQ Change";
     }
   }
 }
