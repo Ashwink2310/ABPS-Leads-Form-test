@@ -1067,7 +1067,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxz2lvxcOUJdKcbO0o4oMyNq6C5WMcMT5DMW0kOIhu9cRLtMj7C1Nzduaz1-9dGaeYczg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwmp6a6uE4ZLxbTlmPrV9d6gIZ3gD4timUWRe_yftSV1LEkKWcf-sNiExwWdkiXpNXc/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -5598,7 +5598,7 @@ async function initializeStoreEntryWorkspaceQueue() {
           <td style="width:160px; padding:6px;"><input type="text" class="se-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCodeNumber || ""}" placeholder="Item Code" style="padding:6px; font-weight:700; border-color:var(--brand); text-align:center;"></td>
           <td style="font-weight:600; color:var(--text); text-align:left; padding:6px; word-wrap:break-word; white-space:normal;">${line.mappedMaterialName}</td>
           <td style="font-family:monospace; font-weight:700; text-align:center; width:100px; padding:6px;">${line.extractedQuantity}</td>
-          <td style="text-align:center; width:180px; padding:6px;"><input type="number" min="0" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.extractedQuantity}" style="width:100px; font-weight:700; text-align:center; border: 1.5px solid var(--brand); padding:6px;"></td>
+          <td style="text-align:center; width:180px; padding:6px;"><input type="number" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.extractedQuantity}" style="width:100px; font-weight:700; text-align:center; border: 1.5px solid var(--brand); padding:6px;"></td>
           <td style="padding:6px;"><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Transit damage details..." style="font-size:0.85rem; padding:6px;"></td>
         </tr>`;
       });
