@@ -488,8 +488,8 @@
       <div class="card-box" id="boq-upload-file-dropzone" onclick="document.getElementById('boq-upload-file-raw').click()" style="padding:40px; border:2px dashed var(--brand); font-weight:700; color:var(--brand); margin-bottom:16px;">
         📷 Select or Capture Bill of Quantity Document Page Image
       </div>
-      <input type="file" id="boq-upload-file-raw" accept="image/*" hidden onchange="handleBOQFileSelection(this, 'boq-upload-file-dropzone')" />
-      
+      <input type="file" id="boq-upload-file-raw" accept="image/*,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden onchange="handleBOQFileSelection(this, 'boq-upload-file-dropzone')" />
+
       <button class="btn btn-sub" id="boq-upload-submit-action-btn" onclick="executeBOQDocumentUploadSubmit('NEW')" style="background:var(--brand); font-weight:700; padding:12px;">Parse Document & Seed Inventory Matrix</button>
     </div>
 
@@ -502,7 +502,7 @@
           <label class="field-label" style="margin-top:0;">Search By Project ID *</label>
           <select id="boq-update-project-search-dropdown"></select>
         </div>
-        <button class="nav-btn-styled" onclick="executeBOQProjectQueryLookupSearch()" style="background:var(--brand); padding:10px 24px; font-weight:700;">Find BOQ Blueprint</button>
+        <button class="nav-btn-styled" onclick="executeBOQProjectQueryLookupSearch()" style="background:var(--brand); padding:10px 24px; font-weight:700;">Find Bill of Quantity</button>
       </div>
 
       <div id="boq-update-search-results-viewport" style="margin-bottom:16px; display:none;">
@@ -518,7 +518,7 @@
           <div class="card-box" id="boq-revision-file-dropzone" onclick="document.getElementById('boq-revision-file-raw').click()" style="padding:20px; border:2px dashed var(--brand); font-weight:700; color:var(--brand); margin-bottom:12px; background:#fff;">
             📷 Select Revised BOQ Document Page Image
           </div>
-          <input type="file" id="boq-revision-file-raw" accept="image/*" hidden onchange="handleBOQFileSelection(this, 'boq-revision-file-dropzone')" />
+          <input type="file" id="boq-revision-file-raw" accept="image/*,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden onchange="handleBOQFileSelection(this, 'boq-revision-file-dropzone')" />
           <button class="btn btn-sub" id="boq-revision-submit-action-btn" onclick="executeBOQDocumentUploadSubmit('UPDATE')" style="background:var(--accent); font-weight:700;">Commit BOQ Change</button>
         </div>
       </div>
@@ -1060,7 +1060,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx1oyYiW4qR_qjNF54aok1hrcvFZ_gGil1_MG67U5jib6f0XzypN8SsvvCuTj56hSjaVA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycby13VulG0F5hBL9SF5pntqfA3mYMoQRUfES8r2tt-ff_a3CEBOBeUEKmiqaDs-Wf_4Pzg/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -4466,42 +4466,66 @@ function resetStoreCreateTicketToInitialState() {
  * 2. LIVE SELECTION STOCK COUNTER LOOKUP PILL
  * Scans cache maps instantly as the user clicks options to show stock states
  */
-function updateSelectedLiveStockPillCounter() {
+async function updateSelectedLiveStockPillCounter() {
   const selectedMaterial = document.getElementById("ticket-item-selection-dropdown").value;
+  const projectId = document.getElementById("ticket-project-id-dropdown").value;
   const counterZone = document.getElementById("ticket-live-counter-pill-zone");
   
-  if (!selectedMaterial) {
-    counterZone.innerHTML = "";
-    return;
+  if (!selectedMaterial || !projectId) {
+    counterZone.innerHTML = ""; return;
   }
   
-  const cleanSearchKey = selectedMaterial.replace(/\s+/g, '').toLowerCase();
-  const match = cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+  counterZone.innerHTML = `<span style="font-size:0.75rem; color:var(--brand); font-weight:700;">🔄 Evaluating Real-Time Project BOQ Allocations...</span>`;
   
-  if (match) {
-    let styleClass = "pill-stock-healthy";
+  try {
+    // Call the unified server reporting channel path to cross-reference stock and metrics balances
+    const response = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "fetchActiveBOQRecordsByProject",
+        sessionToken: localStorage.getItem("sessionToken"),
+        projectId: projectId
+      })
+    });
+    const boqData = await response.json();
     
-    // FIXED MATCHING FIELDS: Reads variables cleanly from your normalized object properties cache mapping
-    const availableCount = Number(match.availableStock) || 0;
-    const reservedCount = Number(match.reservedStock) || 0;
-    const unitToken = match.unitType || "Pcs";
+    const cleanSearchKey = selectedMaterial.replace(/\s+/g, '').toLowerCase();
+    const inventoryMatch = cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+    const boqMatch = (boqData.records || []).find(r => r.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
     
-    if (availableCount === 0) styleClass = "pill-stock-empty";
-    else if (availableCount <= 5) styleClass = "pill-stock-low"; // Fallback check against default reorder base
-    
-    counterZone.innerHTML = `
-      <div style="margin: 12px 0 4px; font-size: 0.9rem; font-weight: 700; color: var(--text);">
-        Real-time Stock Count: 
-        <span class="live-counter-pill ${styleClass}" style="font-size: 1.1rem; padding: 4px 10px; margin-left: 4px; letter-spacing: 0.5px;">
-          ${availableCount} ${unitToken.toUpperCase()} AVAILABLE
-        </span> 
-        <span style="font-size: 0.8rem; color: var(--muted); margin-left: 8px; font-weight: normal;">
-          (Reserved: ${reservedCount} ${unitToken})
-        </span>
-      </div>
-    `;
-  } else {
-    counterZone.innerHTML = `<span style="color:var(--warn); font-size:0.8rem;">⚠️ Material mismatch inside client memory ledger.</span>`;
+    if (inventoryMatch && boqMatch) {
+      let styleClass = "pill-stock-healthy";
+      const availableCount = Number(inventoryMatch.availableStock) || 0;
+      const reservedCount = Number(inventoryMatch.reservedStock) || 0;
+      const unitToken = inventoryMatch.unitType || "Pcs";
+      
+      if (availableCount === 0) styleClass = "pill-stock-empty";
+      else if (availableCount <= 5) styleClass = "pill-stock-low";
+      
+      // Render the comprehensive tracking indicators pill interface zone row block
+      counterZone.innerHTML = `
+        <div style="margin: 12px 0 4px; font-size: 0.88rem; font-weight: 700; color: var(--text); text-align:left; line-height:1.6;">
+          <div>
+            Real-time Warehouse Count: 
+            <span class="live-counter-pill ${styleClass}" style="font-size: 1rem; padding: 3px 8px; margin-left: 4px;">
+              ${availableCount} ${unitToken.toUpperCase()} AVAILABLE
+            </span> 
+            <span style="font-size: 0.78rem; color: var(--muted); margin-left: 6px; font-weight: normal;">
+              (Reserved: ${reservedCount} ${unitToken})
+            </span>
+          </div>
+          <div style="margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 0.72rem; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px;">ALLOTTED BOQ: ${boqMatch.totalQty || 0} ${unitToken}</span>
+            <span style="font-size: 0.72rem; font-weight: 700; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px;">USED BOQ: ${boqMatch.usedQty || 0} ${unitToken}</span>
+            <span style="font-size: 0.72rem; font-weight: 700; background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px;">REMAINING BOQ: ${boqMatch.remainingQty || 0} ${unitToken}</span>
+          </div>
+        </div>
+      `;
+    } else {
+      counterZone.innerHTML = `<span style="color:var(--warn); font-size:0.8rem;">⚠️ Selected item missing configuration parameters mappings.</span>`;
+    }
+  } catch(err) {
+    console.error("Pill allocation tracking crash:", err);
   }
 }
 
@@ -4509,15 +4533,13 @@ function updateSelectedLiveStockPillCounter() {
  * 3. ADD LINE ITEM TO BASKET STREAM
  * Validates against ghost-stock limitations and formats rows inside the view viewport
  */
-function addItemToShoppingBasketRow() {
+async function addItemToShoppingBasketRow() {
   const itemSelect = document.getElementById("ticket-item-selection-dropdown");
   const qtyInput = document.getElementById("ticket-item-quantity-input");
-  const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
+  const projectId = document.getElementById("ticket-project-id-dropdown").value;
   
   const materialName = itemSelect.value;
   const quantity = parseInt(qtyInput.value, 10);
-  
-  if (feedbackBanner) feedbackBanner.style.display = "none";
   
   if (!materialName || isNaN(quantity) || quantity <= 0) {
     alert("Please select a material item line and enter a valid quantity count.");
@@ -4527,27 +4549,33 @@ function addItemToShoppingBasketRow() {
   const cleanSearchKey = materialName.replace(/\s+/g, '').toLowerCase();
   const itemData = cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
   
-  if (!itemData) return alert("Selected material target lookup dropped.");
+  // Pull design data to validate if request total breaks allocation boundaries
+  const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchActiveBOQRecordsByProject", sessionToken: localStorage.getItem("sessionToken"), projectId: projectId }) });
+  const boqData = await res.json();
+  const boqMatch = (boqData.records || []).find(r => r.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
   
-  // FIXED RE-INDEX: Compare against the true available stock count properties values
-  if (quantity > Number(itemData.availableStock)) {
-    alert(`Ghost-Stock Alert: You requested ${quantity} units, but only ${itemData.availableStock} are available on the shelves.`);
-    return;
-  }
+  if (!itemData || !boqMatch) return alert("Selected material target lookup dropped.");
   
   const existingLineItem = dynamicTicketShoppingBasketArray.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+  let totalRequestedQuantity = quantity;
   if (existingLineItem) {
-    const projectedNewQty = existingLineItem.quantity + quantity;
-    if (projectedNewQty > Number(itemData.availableStock)) {
-      alert(`Basket total (${projectedNewQty}) exceeds shelf inventory limits.`);
-      return;
-    }
-    existingLineItem.quantity = projectedNewQty;
+    totalRequestedQuantity += existingLineItem.quantity;
+  }
+
+  // FIXED CHECK GATES: Flag items requiring a BOQ limit increase directly inside your array tree properties
+  const isOverAllottedBOQLimit = totalRequestedQuantity > Number(boqMatch.remainingQty);
+  
+  if (existingLineItem) {
+    existingLineItem.quantity = totalRequestedQuantity;
+    existingLineItem.requiresBOQIncreaseFlag = isOverAllottedBOQLimit;
+    existingLineItem.allottedRemainingLimit = Number(boqMatch.remainingQty);
   } else {
     dynamicTicketShoppingBasketArray.push({
       materialName: itemData.materialName,
-      quantity: quantity,
-      unitType: itemData.unitType || "Pcs"
+      quantity: totalRequestedQuantity,
+      unitType: itemData.unitType || "Pcs",
+      requiresBOQIncreaseFlag: isOverAllottedBOQLimit,
+      allottedRemainingLimit: Number(boqMatch.remainingQty)
     });
   }
   
@@ -4560,17 +4588,34 @@ function addItemToShoppingBasketRow() {
  */
 function renderDraftBasketTableViewportRows() {
   const tbody = document.getElementById("shopping-basket-table-body");
+  const materialRequestPanelContainer = document.getElementById("canvas-module-store-material-request");
   
   if (dynamicTicketShoppingBasketArray.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">Your request basket is currently empty.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--muted); padding: 20px;">Your request ticket basket is currently empty.</td></tr>`;
+    resetMaterialRequestFormSubmissionActionControlsRow(); // Restores generation defaults
     return;
   }
   
   tbody.innerHTML = "";
+  let containsOverAllottedItems = false;
+  let overAllottedMaterialsList = [];
+
   dynamicTicketShoppingBasketArray.forEach((rowItem, arrayIdx) => {
     const tr = document.createElement("tr");
+    
+    // Highlight over-allocated items with high-contrast text and warm formatting colors
+    if (rowItem.requiresBOQIncreaseFlag === true) {
+      containsOverAllottedItems = true;
+      overAllottedMaterialsList.push(rowItem.materialName);
+      tr.style.background = "#fffbeb";
+      tr.style.color = "#b45309";
+    }
+
     tr.innerHTML = `
-      <td style="font-weight:600; color:var(--text);">${rowItem.materialName}</td>
+      <td style="font-weight:600; padding:10px 8px;">
+        ${rowItem.materialName} 
+        ${rowItem.requiresBOQIncreaseFlag ? '<span style="font-size:0.65rem; background:#fef3c7; color:#b45309; padding:1px 4px; border-radius:3px; font-weight:bold; margin-left:4px;">⚠️ EXCEEDS BOQ LIMIT</span>' : ''}
+      </td>
       <td style="font-family:monospace; font-weight:700;">${rowItem.quantity}</td>
       <td style="color:var(--muted); font-size:0.8rem;">${rowItem.unitType}</td>
       <td style="text-align:center;">
@@ -4579,6 +4624,53 @@ function renderDraftBasketTableViewportRows() {
     `;
     tbody.appendChild(tr);
   });
+
+  // 4. ACTION SWAP INTERCEPTOR: Inject the approval request panel text box if allocation limits are broken
+  if (containsOverAllottedItems) {
+    renderBOQLimitExceededApprovalRequestWorkspaceBlock(overAllottedMaterialsList);
+  } else {
+    resetMaterialRequestFormSubmissionActionControlsRow();
+  }
+}
+
+function renderBOQLimitExceededApprovalRequestWorkspaceBlock(materialsList) {
+  const inlineFeedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
+  const bottomActionControlsRow = document.getElementById("submit-ticket-final-btn").parentNode;
+  
+  if (inlineFeedbackBanner) {
+    inlineFeedbackBanner.style.cssText = "display: block; background: #fffaf0; border-left: 4px solid #dd6b20; color: #c05621; padding: 12px; font-size: 0.82rem; font-weight: 700; text-align: left; margin-bottom: 12px;";
+    inlineFeedbackBanner.innerHTML = `Requested Materials <strong>{ ${materialsList.join(", ")} }</strong> are over the Allotted BOQ for this project. Send an Approval request to Admin or Reduce the requested quantity.`;
+  }
+
+  // Overwrite submission controls row layout area to mount the justification text box window natively
+  bottomActionControlsRow.innerHTML = `
+    <div style="width: 100%; text-align: left; background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: var(--radius); display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
+      <label class="field-label" style="margin: 0; color: var(--brand); font-weight: bold;">Explain Request / Justification Text *</label>
+      <textarea id="boq-increase-justification-notes-input" placeholder="Specify why additional component volume allotment is required for this project build tracker..." style="min-height: 55px; padding: 8px; font-size: 0.82rem; border-color: var(--brand);"></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px;">
+        <button class="nav-btn-styled" onclick="clearFullBasketDraftState()" style="background: #718096; padding: 6px 14px;">Clear Basket</button>
+        <button class="nav-btn-styled" id="submit-ticket-final-btn" onclick="executeBOQLimitIncreaseRequestTransmissionPipeline()" style="background: var(--brand); padding: 8px 20px; font-weight: 700;">Send Approval Request to Admin</button>
+      </div>
+    </div>
+  `;
+}
+
+function resetMaterialRequestFormSubmissionActionControlsRow() {
+  const inlineFeedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
+  const bottomActionControlsRow = document.getElementById("shopping-basket-preview-table").nextElementSibling;
+  
+  if (inlineFeedbackBanner) inlineFeedbackBanner.style.display = "none";
+  if (bottomActionControlsRow && !document.getElementById("boq-increase-justification-notes-input")) return;
+  
+  const parentNodeBox = document.getElementById("shopping-basket-preview-table").parentNode;
+  // Recover native Generate Material Ticket options parameters row
+  let controlsRow = parentNodeBox.nextElementSibling;
+  if (controlsRow) {
+    controlsRow.innerHTML = `
+      <button class="nav-btn-styled" onclick="clearFullBasketDraftState()" style="background: #718096;">Clear Basket</button>
+      <button class="nav-btn-styled" id="submit-ticket-final-btn" onclick="submitMaterialRequestTicketToBackend()" style="background: var(--accent); padding: 8px 20px; font-weight: 700;">Generate Material Ticket</button>
+    `;
+  }
 }
 
 function removeSingleBasketItemLineAtIndex(index) {
@@ -4589,6 +4681,50 @@ function removeSingleBasketItemLineAtIndex(index) {
 function clearFullBasketDraftState() {
   dynamicTicketShoppingBasketArray = [];
   renderDraftBasketTableViewportRows();
+}
+
+async function executeBOQLimitIncreaseRequestTransmissionPipeline() {
+  const notesField = document.getElementById("boq-increase-justification-notes-input");
+  const projectId = document.getElementById("ticket-project-id-dropdown").value;
+  const operatorName = document.getElementById("ticket-requested-by-operator-dropdown").value;
+  const departmentVal = document.getElementById("ticket-department-outgoing-dropdown").value;
+  const materialRequestPanelContainer = document.getElementById("canvas-module-store-material-request");
+
+  if (!notesField || !notesField.value.trim()) {
+    alert("Compulsory Input Missing: You must fill out the Explain Request justification text box notes before sending to Admin.");
+    return;
+  }
+  
+  const btn = document.getElementById("submit-ticket-final-btn");
+  btn.disabled = true; btn.innerHTML = "Transmitting Request to Admin...";
+  
+  try {
+    const payload = {
+      action: "commitBOQLimitIncreaseRequestTicket",
+      sessionToken: localStorage.getItem("sessionToken"),
+      activeEngineer: operatorName,
+      projectId: projectId,
+      departmentOutgoing: departmentVal,
+      justificationNotesText: notesField.value.trim(),
+      itemsClusterArray: dynamicTicketShoppingBasketArray
+    };
+    
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
+    const result = await res.json();
+    
+    if (result.success) {
+      dynamicTicketShoppingBasketArray = [];
+      materialRequestPanelContainer.style.padding = "20px";
+      materialRequestPanelContainer.innerHTML = `
+        <div style="background: #e0f2fe; border: 1px solid #0369a1; border-left: 4px solid #0369a1; color: #0369a1; padding: 20px; border-radius: var(--radius); text-align: left;">
+          <h3 style="font-size: 1.1rem; margin: 0 0 6px 0; font-weight: 700;">Allotted BOQ Threshold Limit Breached!</h3>
+          <p style="font-size: 0.9rem; margin: 0 0 10px 0; font-weight:600;">An allocation review request has been safely compiled and dispatched to the System Administrator for approval verification.</p>
+          <div style="font-size: 0.85rem; font-weight: 700;">Assigned Audit Ticket ID: <span style="font-family: monospace; background: #fff; padding: 2px 6px; border: 1px solid #0369a1; border-radius: 4px; color:#111827;">${result.ticketId}</span></div>
+        </div>
+      `;
+      setTimeout(() => { location.reload(); }, 4000);
+    }
+  } catch(e) { alert("Transmission failed: " + e.message); }
 }
 
 function switchActiveDashboardModule(targetCanvasModuleId) {
@@ -4997,14 +5133,18 @@ function handleStoreTicketTypeInterfaceLayoutChange(chosenModeString) {
   const labelNode = document.getElementById("lbl-dynamic-operator-signature-title");
   const submitBtn = document.getElementById("submit-ticket-final-btn");
   
-  if (!labelNode || !submitBtn) return;
+  if (!labelNode) return;
   
+  // CHANGED: Clears the shopping basket arrays completely upon swapping interaction modes to avoid mixing up request types
+  clearFullBasketDraftState();
+  resetMaterialRequestFormSubmissionActionControlsRow();
+
   if (chosenModeString === "Return Material") {
     labelNode.textContent = "Returned By *";
-    submitBtn.textContent = "Generate Return Ticket";
+    if (submitBtn) submitBtn.textContent = "Generate Return Ticket";
   } else {
     labelNode.textContent = "Requested By *";
-    submitBtn.textContent = "Generate Material Ticket";
+    if (submitBtn) submitBtn.textContent = "Generate Material Ticket";
   }
 }
 
@@ -5023,33 +5163,51 @@ function handleStoreTicketTypeInterfaceLayoutChange(chosenModeString) {
 // Reconstruct Approvals View Node Generator UI Engine Builder
 function renderStoreManagerApprovalsCardsFeed(pendingTicketsList) {
   const cardsFeedZone = document.getElementById("store-manager-approvals-queue-cards-feed");
+  if (!cardsFeedZone) return;
+  
   cardsFeedZone.innerHTML = "";
   if (pendingTicketsList.length === 0) {
     cardsFeedZone.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted); font-size:0.9rem; background:#fff; border:1px solid var(--border); border-radius:6px;"><h3 style="color:var(--accent);">Approvals Queue Clear</h3></div>`;
     return;
   }
+  
   pendingTicketsList.forEach((ticket) => {
     let cardWrapper = document.createElement("div");
     cardWrapper.className = "contact-summary-card-parent";
     cardWrapper.id = `store-pending-ticket-card-node-${ticket.ticketId}`;
+    
     let itemsArray = [];
     try { itemsArray = JSON.parse(ticket.itemsJson); } catch(e) { itemsArray = []; }
     let itemRowsHtml = "";
+    
     itemsArray.forEach(item => {
-      itemRowsHtml += `<tr><td style="padding:6px; font-weight:600;">${item.materialName}</td><td style="padding:6px; font-family:monospace; font-weight:700; color:var(--brand);">${item.quantity}</td><td style="padding:6px; color:var(--muted); font-size:0.78rem;">${item.unitType}</td></tr>`;
+      // Highlights specific out-of-bounds materials if they are flag-marked inside an increase request basket array
+      const overrunHighlightStyle = item.requiresBOQIncreaseFlag === true ? 'color: var(--warn); font-weight: 800; background: #fff5f5; padding: 2px 4px; border-radius: 4px;' : '';
+      itemRowsHtml += `
+        <tr>
+          <td style="padding:6px; font-weight:600; ${overrunHighlightStyle}">${item.materialName}</td>
+          <td style="padding:6px; font-family:monospace; font-weight:700; color:var(--brand);">${item.quantity}</td>
+          <td style="padding:6px; color:var(--muted); font-size:0.78rem;">${item.unitType}</td>
+        </tr>`;
     });
     
-    // Check type constraints to print high-contrast operational status flags tags
     const typeLabel = ticket.ticketType || "Request Material";
-    const typeColorStyle = (typeLabel === "Return Material") ? "background:#e0f2fe; color:#0369a1;" : "background:#edf2f7; color:#1e293b;";
+    
+    // UPDATED INTERCEPTOR: Checks if this item represents a custom Admin BOQ Increase ticket pass
+    const isBoqInc = (typeLabel === "BOQ INCREASE REQUEST");
+    const typeColorStyle = isBoqInc 
+      ? "background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;" 
+      : ((typeLabel === "Return Material") ? "background:#e0f2fe; color:#0369a1;" : "background:#edf2f7; color:#1e293b;");
+      
+    const statusBadgeText = isBoqInc ? "BOQ OVERRUN APPROVAL" : "PENDING RELEASE";
 
     cardWrapper.innerHTML = `
       <div class="contact-summary-header-row" style="margin-bottom:10px; padding-bottom:6px; border-bottom:1px dashed var(--border);">
-        <div class="contact-summary-title-info">
+        <div class="contact-summary-title-info" style="width:100%;">
           <div class="meta-row-line-block">
             <span style="background:var(--brand); color:#fff; font-family:monospace; font-size:0.75rem; padding:3px 6px;">${ticket.ticketId}</span>
             <span style="font-weight:800; font-size:0.72rem; padding:3px 6px; border-radius:4px; ${typeColorStyle}">${typeLabel.toUpperCase()}</span>
-            <span style="background:#fef3c7; color:#b45309; font-weight:700;">PENDING RELEASE</span>
+            <span style="background:#fef3c7; color:#b45309; font-weight:700;">${statusBadgeText}</span>
           </div>
           <div class="meta-row-line-block" style="margin-top:6px; font-size:0.85rem;">
             <span>Operator:</span><strong style="margin-right:15px; color:#111827;">${ticket.requestedBy}</strong>
@@ -5062,7 +5220,9 @@ function renderStoreManagerApprovalsCardsFeed(pendingTicketsList) {
       </div>
       <div style="display:flex; justify-content:flex-end; gap:8px;">
         <button class="nav-btn-styled" id="btn-reject-${ticket.ticketId}" style="background:#e53e3e; padding:6px 12px; font-size:0.75rem;" onclick="executeStoreManagerTicketActionDecision('${ticket.ticketId}', 'REJECT')">Reject</button>
-        <button class="nav-btn-styled" id="btn-approve-${ticket.ticketId}" style="background:var(--accent); padding:6px 14px; font-size:0.78rem; font-weight:700;" onclick="executeStoreManagerTicketActionDecision('${ticket.ticketId}', 'APPROVE')">Approve Action</button>
+        <button class="nav-btn-styled" id="btn-approve-${ticket.ticketId}" style="background:var(--accent); padding:6px 14px; font-size:0.78rem; font-weight:700;" onclick="executeStoreManagerTicketActionDecision('${ticket.ticketId}', 'APPROVE')">
+          ${isBoqInc ? 'Approve BOQ Increase' : 'Approve Action'}
+        </button>
       </div>
     `;
     cardsFeedZone.appendChild(cardWrapper);
@@ -6025,6 +6185,11 @@ async function initializeMaterialRequestWorkspace() {
   }
 }
 
+/**
+ * RESET MATERIAL REQUEST CASCADING LOCK STATE
+ * Clears dependent child selectors footprint, re-disables subsequent input fields,
+ * and standardizes font colors and opacities across cascading dropdown verification tiers.
+ */
 function resetMaterialRequestCascadingLockState() {
   const staffDrop = document.getElementById("ticket-requested-by-operator-dropdown");
   const projDrop = document.getElementById("ticket-project-id-dropdown");
@@ -6032,13 +6197,37 @@ function resetMaterialRequestCascadingLockState() {
   const qtyInp = document.getElementById("ticket-item-quantity-input");
   const addBtn = document.getElementById("ticket-add-item-action-btn");
   
-  staffDrop.innerHTML = '<option value="">— Choose Department First —</option>'; staffDrop.disabled = true;
-  projDrop.disabled = true;
-  itemDrop.disabled = true; qtyInp.disabled = true; addBtn.disabled = true;
+  if (!staffDrop || !projDrop || !itemDrop || !qtyInp || !addBtn) {
+    console.error("UI Reference Error: Cascading lock fields are missing from the current layout DOM.");
+    return;
+  }
   
+  // 1. Flush inner selection listings text strings elements parameters templates safely
+  staffDrop.innerHTML = '<option value="">— Choose Department First —</option>';
+  projDrop.innerHTML = '<option value="">— Choose Operator First —</option>';
+  itemDrop.innerHTML = '<option value="">Unlock Section First...</option>';
+  qtyInp.value = "";
+
+  // 2. Enforce strict sequential gating hardware fields element lock checks
+  staffDrop.disabled = true;
+  projDrop.disabled = true;
+  itemDrop.disabled = true;
+  qtyInp.disabled = true;
+  addBtn.disabled = true;
+
+  // 3. Reset decorative typography branding colors and container opacities layout states
   document.getElementById("lbl-dynamic-operator-signature-title").style.color = "var(--muted)";
-  document.getElementById("wrapper-ticket-project-id").querySelector("label").style.color = "var(--muted)";
-  document.getElementById("wrapper-ticket-add-item-zone").style.opacity = "0.5";
+  
+  const wrapperProjectIdNode = document.getElementById("wrapper-ticket-project-id");
+  if (wrapperProjectIdNode && wrapperProjectIdNode.querySelector("label")) {
+    wrapperProjectIdNode.querySelector("label").style.color = "var(--muted)";
+  }
+  
+  const wrapperAddItemZoneNode = document.getElementById("wrapper-ticket-add-item-zone");
+  if (wrapperAddItemZoneNode) {
+    wrapperAddItemZoneNode.style.opacity = "0.5";
+  }
+  
   addBtn.style.cursor = "not-allowed";
 }
 
@@ -6098,11 +6287,13 @@ function handleCreateTicketOperatorChange(chosenOperatorVal) {
 /**
  * STEP 3 CHANGE: Final cascade tier unlocks Step 4 Add Item Canvas Zone Box
  */
-function handleCreateTicketProjectChange(chosenProjectVal) {
+// --- LOCATE AND UPDATE THE PROJECT CHANGE HANDLER INSIDE index.html ---
+async function handleCreateTicketProjectChange(chosenProjectVal) {
   const itemDrop = document.getElementById("ticket-item-selection-dropdown");
   const qtyInp = document.getElementById("ticket-item-quantity-input");
   const addBtn = document.getElementById("ticket-add-item-action-btn");
   const addZone = document.getElementById("wrapper-ticket-add-item-zone");
+  const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
 
   if (!chosenProjectVal) {
     itemDrop.disabled = true; qtyInp.disabled = true; addBtn.disabled = true;
@@ -6110,9 +6301,47 @@ function handleCreateTicketProjectChange(chosenProjectVal) {
     return;
   }
 
-  addZone.style.opacity = "1";
-  itemDrop.disabled = false; qtyInp.disabled = false; addBtn.disabled = false;
-  addBtn.style.cursor = "pointer";
+  itemDrop.innerHTML = '<option value="">Syncing Project BOQ Catalog...</option>';
+  if (feedbackBanner) feedbackBanner.style.display = "none";
+
+  try {
+    // Pull the active design blueprint specifications directly from the server
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "fetchActiveBOQRecordsByProject",
+        sessionToken: localStorage.getItem("sessionToken"),
+        projectId: chosenProjectVal
+      })
+    });
+    const data = await res.json();
+
+    if (data.success && data.records.length > 0) {
+      itemDrop.innerHTML = '<option value="">— Select Material from BOQ —</option>';
+      
+      // Filter out duplicate material line entries from the multi-sheet document tree
+      let uniqueMaterialsMap = {};
+      data.records.forEach(r => {
+        if (!uniqueMaterialsMap[r.materialName]) {
+          uniqueMaterialsMap[r.materialName] = true;
+          let opt = document.createElement("option");
+          opt.value = r.materialName;
+          opt.textContent = r.materialName;
+          itemDrop.appendChild(opt);
+        }
+      });
+
+      // Unlock operational fields input boxes markers
+      addZone.style.opacity = "1";
+      itemDrop.disabled = false; qtyInp.disabled = false; addBtn.disabled = false;
+      addBtn.style.cursor = "pointer";
+    } else {
+      itemDrop.innerHTML = '<option value="">⚠️ No BOQ Allotted for this Project</option>';
+      alert("Design Configuration Failure: This Project ID does not possess an uploaded Bill of Quantity blueprint yet.");
+    }
+  } catch(e) {
+    console.error("BOQ filtration setup crash:", e);
+  }
 }
 
 function navigateToDesignWorkspacePanel(targetModuleId) {
@@ -6273,46 +6502,81 @@ async function executeBOQProjectQueryLookupSearch() {
         </tr>`;
     });
   } else {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--warn); font-weight:700;">No active Bill of Quantity blueprint lines mapped to this project reference code yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--warn); font-weight:700;">No active Bill of Quantity for this project id yet.</td></tr>`;
   }
 }
 
+/**
+ * EXECUTE BOQ DOCUMENT UPLOAD & REVISION SUBMIT
+ * Extracts raw base64 data payloads, detects input MIME types (images, PDFs, Excel),
+ * maps requests context parameters onto backend routing endpoints, and updates the viewports.
+ */
 async function executeBOQDocumentUploadSubmit(modeString) {
   const isNew = modeString === "NEW";
   const btn = document.getElementById(isNew ? "boq-upload-submit-action-btn" : "boq-revision-submit-action-btn");
   const banner = document.getElementById(isNew ? "design-upload-feedback-banner" : "design-update-feedback-banner");
   const projectId = document.getElementById(isNew ? "boq-upload-project-dropdown" : "boq-update-project-search-dropdown").value;
   
-  if (!projectId) return alert("Compulsory Parameter Missing: Target Project ID code is blank.");
-  if (!targetBOQUploadFileRawObject) return alert("Compulsory Document Missing: Select or capture your document page blueprint image.");
+  if (!projectId) {
+    alert("Compulsory Parameter Missing: Target Project ID code must be selected first.");
+    return;
+  }
+  if (!targetBOQUploadFileRawObject) {
+    alert("Compulsory Document Missing: Please select or capture a valid sheet document asset page first.");
+    return;
+  }
   
+  // Wipe legacy layout runtime notifications out of sight completely
   if (banner) banner.style.display = "none";
   
+  // 1. ACTIVATE HARDWARE MULTI-TAP GHOST PROTECTION LOCK
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div> AI Parsing Design Document...';
+  btn.innerHTML = `
+    <div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div>
+    <span>AI Unpacking Multi-Product Workbook Sheets...</span>
+  `;
   
-  const fileBase64Raw = await new Promise((resolve) => {
+  // 2. CONVERT UPLOADED FILE TO BASE64 DATA STREAM STRING
+  const fileBase64Raw = await new Promise((resolve, reject) => {
     const reader = new FileReader(); 
     reader.onload = () => resolve(reader.result.split(',')[1]); 
+    reader.onerror = error => reject(error);
     reader.readAsDataURL(targetBOQUploadFileRawObject);
   });
   
+  // 3. CAPTURE DISPATCHED ASSET EXTENSION FILE TYPE METADATA
+  const fileMimeType = targetBOQUploadFileRawObject.type;
+  
   try {
     const actionKey = isNew ? "processNewBOQUploadDocument" : "commitBOQUpdatePipelineStep";
-    const res = await fetch(GAS_URL, {
+    const payloadPayload = {
+      action: actionKey,
+      sessionToken: localStorage.getItem("sessionToken"),
+      activeEngineer: appActiveOperatorIdentityString,
+      payload: { 
+        projectId: projectId, 
+        fileData64: fileBase64Raw,
+        mimeType: fileMimeType // Relays format type to backend parsing router switches
+      }
+    };
+    
+    const response = await fetch(GAS_URL, {
       method: "POST",
-      body: JSON.stringify({
-        action: actionKey,
-        sessionToken: localStorage.getItem("sessionToken"),
-        activeEngineer: appActiveOperatorIdentityString,
-        payload: { projectId: projectId, fileData64: fileBase64Raw }
-      })
+      body: JSON.stringify(payloadPayload)
     });
-    const data = await res.json();
+    
+    const data = await response.json();
+    
     if (data.success) {
-      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 16px; border-radius: var(--radius); margin-bottom:15px;";
-      banner.innerHTML = `<strong>Success! Bill of Quantity Processing Complete.</strong><br/>Project reference blueprint synchronized live onto ledger databases under version handle: <strong>v${data.version}</strong>`;
+      // 4. DISPLAY PERSISTENT BANNER CARD WITH VERSION INDICATOR UPON SUCCESS
+      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 16px; border-radius: var(--radius); margin-bottom: 15px; text-align: left;";
+      banner.innerHTML = `
+        <strong>Success! Bill of Quantity Processing Complete.</strong><br/>
+        Project ID reference blueprint synchronized live onto ledger databases under version handle: 
+        <span style="font-family: monospace; font-weight: 800; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #15803d; color: #111827; margin-left: 4px;">v${data.version}</span>
+      `;
       
+      // 5. RESIZE & RESET THE RESPECTIVE MODULE DISPATCH BLOCKS VISUAL FOOTPRINTS
       if (isNew) {
         document.getElementById("boq-upload-file-dropzone").textContent = "📷 Select or Capture Bill of Quantity Document Page Image";
         document.getElementById("boq-upload-file-dropzone").classList.remove("done");
@@ -6321,18 +6585,30 @@ async function executeBOQDocumentUploadSubmit(modeString) {
         document.getElementById("boq-revision-file-dropzone").textContent = "📷 Select Revised BOQ Document Page Image";
         document.getElementById("boq-revision-file-dropzone").classList.remove("done");
         document.getElementById("boq-revision-file-raw").value = "";
-        // FIXED ACTION FOR REVISION MODE: Re-run project search query lookup to instantly display fresh overwritten balances
+        
+        // RE-INITIALIZE WORKSPACE QUEUE: Instantly pulls and updates view tables showing rewritten lines
         executeBOQProjectQueryLookupSearch();
       }
+      
+      // Free file pointer memory
       targetBOQUploadFileRawObject = null;
-    } else {
-      alert("Processing Error: " + data.error);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } 
+    else {
+      alert("Processing Error: " + (data.error || "The server rejected this document structure layout format parameters."));
+      btn.disabled = false;
+      btn.textContent = isNew ? "Parse Document & Seed Inventory Matrix" : "Commit BOQ Change";
     }
-  } catch(e) { 
-    alert("Network exception caught: " + e.message); 
-  } finally { 
-    btn.disabled = false; 
-    btn.textContent = isNew ? "Parse Document & Seed Inventory Matrix" : "Commit BOQ Change"; 
+  } catch (error) {
+    alert("Network request execution failure: " + error.message);
+    btn.disabled = false;
+    btn.textContent = isNew ? "Parse Document & Seed Inventory Matrix" : "Commit BOQ Change";
+  } finally {
+    // Failsafe rollback button state visibility styles if parsing drops connections out mid-way
+    if (btn.disabled && !targetBOQUploadFileRawObject) {
+      btn.disabled = false;
+      btn.textContent = isNew ? "Parse Document & Seed Inventory Matrix" : "Commit BOQ Change";
+    }
   }
 }
 
