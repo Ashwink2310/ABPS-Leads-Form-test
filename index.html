@@ -4702,17 +4702,17 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
   document.getElementById("step2-inline-interaction-canvas").style.display = "none";
   
   // 2. Hide all modular store dashboard section wrapper panels completely
-  if(document.getElementById("canvas-module-store-invoice-intake")) document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
-  if(document.getElementById("canvas-module-store-material-request")) document.getElementById("canvas-module-store-material-request").style.display = "none";
-  if(document.getElementById("canvas-module-store-manager-approvals")) document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
-  if(document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
+  if (document.getElementById("canvas-module-store-invoice-intake")) document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
+  if (document.getElementById("canvas-module-store-material-request")) document.getElementById("canvas-module-store-material-request").style.display = "none";
+  if (document.getElementById("canvas-module-store-manager-approvals")) document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
+  if (document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
   
-  // NEW VISIBILITY SAFETAIL: Reset parent and child Design Department panels to prevent overlapping element draws
-  if(document.getElementById("module-design-workspace-enclosure-panel")) document.getElementById("module-design-workspace-enclosure-panel").style.display = "none";
-  if(document.getElementById("canvas-module-design-upload")) document.getElementById("canvas-module-design-upload").style.display = "none";
-  if(document.getElementById("canvas-module-design-update")) document.getElementById("canvas-module-design-update").style.display = "none";
+  // 3. CLEAN UP & HIDE ALL DESIGN DEPARTMENT PANELS ON SWITCH
+  if (document.getElementById("module-design-workspace-enclosure-panel")) document.getElementById("module-design-workspace-enclosure-panel").style.display = "none";
+  if (document.getElementById("canvas-module-design-upload")) document.getElementById("canvas-module-design-upload").style.display = "none";
+  if (document.getElementById("canvas-module-design-update")) document.getElementById("canvas-module-design-update").style.display = "none";
 
-  // 3. SECURE REDIRECT ROUTING OVERRIDES
+  // 4. SECURE REDIRECT ROUTING OVERRIDES
   if (targetCanvasModuleId === 'marketing-leads') {
     navigateToModule('searchCompany');
   } else if (targetCanvasModuleId === 'marketing-email-leads') {
@@ -4720,7 +4720,7 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
   } else if (targetCanvasModuleId === 'marketing-tasks') {
     navigateToModule('searchTasks');
   } 
-  // 4. STORE PIPELINE ROUTING SWITCHES
+  // 5. STORE PIPELINE ROUTING SWITCHES
   else if (targetCanvasModuleId === 'store-material-request') {
     navigateToStoreWorkspacePanel('store-material-request');
   } else if (targetCanvasModuleId === 'store-invoice-intake') {
@@ -4730,11 +4730,15 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
   } else if (targetCanvasModuleId === 'store-history-matrix') {
     navigateToStoreWorkspacePanel('store-history-matrix');
   }
-  // NEW ROUTING INTERCEPT: Maps main dashboard menu clicks straight into the Design engine panel workspace
+  // FIXED DESIGN DEPARTMENT INTERCEPT ROUTERS: Activates parent layer before rendering child panels
   else if (targetCanvasModuleId === 'design-upload') {
-    navigateToDesignWorkspacePanel('design-upload');
+    document.getElementById("module-design-workspace-enclosure-panel").style.display = "block";
+    document.getElementById("canvas-module-design-upload").style.display = "block";
+    initializeDesignDepartmentUploadModule();
   } else if (targetCanvasModuleId === 'design-update') {
-    navigateToDesignWorkspacePanel('design-update');
+    document.getElementById("module-design-workspace-enclosure-panel").style.display = "block";
+    document.getElementById("canvas-module-design-update").style.display = "block";
+    initializeDesignDepartmentUpdateModule();
   }
 }
 
@@ -6216,25 +6220,61 @@ function handleCreateTicketProjectChange(chosenProjectVal) {
 }
 
 function navigateToDesignWorkspacePanel(targetModuleId) {
+  // 1. Un-nest and minimize homepage structures
   document.getElementById("dashboard-view").style.display = "none";
-  document.getElementById("module-design-workspace-enclosure-panel").style.display = "block";
+  if (document.getElementById("module-workspace-container")) {
+    document.getElementById("module-workspace-container").style.display = "none";
+  }
   
-  document.getElementById("canvas-module-design-upload").style.display = "none";
-  document.getElementById("canvas-module-design-update").style.display = "none";
+  // 2. Force reveal the master parent enclosure block wide
+  const masterParentEnclosure = document.getElementById("module-design-workspace-enclosure-panel");
+  if (masterParentEnclosure) {
+    masterParentEnclosure.style.display = "block";
+  } else {
+    console.error("Layout Render Error: module-design-workspace-enclosure-panel container not found in DOM.");
+    return;
+  }
   
-  document.getElementById("boq-upload-file-dropzone").textContent = "📷 Select or Capture Bill of Quantity Document Page Image";
-  document.getElementById("boq-upload-file-dropzone").classList.remove("done");
-  document.getElementById("boq-revision-file-dropzone").textContent = "📷 Select Revised BOQ Document Page Image";
-  document.getElementById("boq-revision-file-dropzone").classList.remove("done");
-  document.getElementById("boq-update-search-results-viewport").style.display = "none";
+  // 3. Isolate child views to prevent element draw overlap anomalies
+  const uploadSubCanvas = document.getElementById("canvas-module-design-upload");
+  const updateSubCanvas = document.getElementById("canvas-module-design-update");
+  
+  if (uploadSubCanvas) uploadSubCanvas.style.display = "none";
+  if (updateSubCanvas) updateSubCanvas.style.display = "none";
+  
+  // 4. Wipe operational dropzone feedback notes caches
+  const dropzoneUpload = document.getElementById("boq-upload-file-dropzone");
+  const dropzoneRevision = document.getElementById("boq-revision-file-dropzone");
+  const resultsViewport = document.getElementById("boq-update-search-results-viewport");
+  
+  if (dropzoneUpload) {
+    dropzoneUpload.textContent = "📷 Select or Capture Bill of Quantity Document Page Image";
+    dropzoneUpload.classList.remove("done");
+  }
+  if (dropzoneRevision) {
+    dropzoneRevision.textContent = "📷 Select Revised BOQ Document Page Image";
+    dropzoneRevision.classList.remove("done");
+  }
+  if (resultsViewport) {
+    resultsViewport.style.display = "none";
+  }
+  
   targetBOQUploadFileRawObject = null;
 
-  if (targetModuleId === 'design-upload') {
-    document.getElementById("canvas-module-design-upload").style.display = "block";
-    initializeDesignDepartmentUploadModule();
-  } else if (targetModuleId === 'design-update') {
-    document.getElementById("canvas-module-design-update").style.display = "block";
-    initializeDesignDepartmentUpdateModule();
+  // 5. STRICT ROUTING INTERCEPT SWEEP
+  // Fixed mapping triggers to avoid string parsing dropouts or uppercase mismatch locks
+  if (targetModuleId === 'design-upload' || targetModuleId === 'mod-design-upload') {
+    if (uploadSubCanvas) {
+      uploadSubCanvas.style.display = "block";
+      initializeDesignDepartmentUploadModule();
+    }
+  } else if (targetModuleId === 'design-update' || targetModuleId === 'mod-design-update') {
+    if (updateSubCanvas) {
+      updateSubCanvas.style.display = "block";
+      initializeDesignDepartmentUpdateModule();
+    }
+  } else {
+    console.warn("Design routing gateway parameter fallback unmapped: ", targetModuleId);
   }
 }
 
