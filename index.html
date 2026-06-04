@@ -204,7 +204,7 @@
     <!-- MARKETING DEPARTMENT BUTTONS INTERFACE GRID MAP -->
 
     <div id="dashboard-marketing-department-header-block">
-      <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Marketing Department</h2>
+      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--brand); margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Marketing Department</h2>
       
       <!-- SUB-SECTION 1: LEAD SOURCE -->
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
@@ -240,7 +240,7 @@
 
     <!-- STORE DEPARTMENT BUTTONS INTERFACE GRID MAP -->
     <div id="dashboard-store-department-header-block" style="display: none;">
-      <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Store Department</h2>
+      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--brand); margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Store Department</h2>
       
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
         <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Store Inward</div>
@@ -346,7 +346,7 @@
       <div class="section" style="background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius);">
         
         <div style="margin-bottom: 16px;">
-          <label class="field-label" style="font-weight: 700; color: var(--brand);">Department / Outgoing Use *</label>
+          <label class="field-label" style="font-weight: 700; color: var(--brand);">Production Department / Outgoing Use *</label>
           <select id="ticket-department-outgoing-dropdown" onchange="handleCreateTicketDepartmentChange(this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600;">
             <option value="">— Select Department —</option>
             <option value="Reactor">Reactor</option>
@@ -1067,7 +1067,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz1UApD7DwcambLTqxotABaPlstgJEQYFUu4bbpK09CLSEk7FF1q56THK1epwvmErCSWw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxmaJLO-LJ75c--h9NW-HqUx_k2_0F_fpB_WQ0HFk0o2bo85Siub5heDpf5101q8Vo9mA/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -4326,7 +4326,6 @@ async function submitMaterialRequestTicketToBackend() {
 
   if (feedbackBanner) feedbackBanner.style.display = "none";
   
-  // 1. INPUT VALIDATION CHECKS
   if (!operatorSignatureName) {
     if (feedbackBanner) {
       feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b45309; text-align: left;";
@@ -4351,12 +4350,16 @@ async function submitMaterialRequestTicketToBackend() {
     return;
   }
   
-  // 2. LOADER BUTTON ANIMATION ACTIVATION
   submitBtn.disabled = true;
   submitBtn.innerHTML = `
     <div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div>
     <span>${ticketTypeVal === "Return Material" ? 'Generating Return Ticket...' : 'Generating Request Ticket...'}</span>
   `;
+  
+  // Cache the inner template markup configuration completely before clearing for success screen view layout
+  if (!window.storeCreateTicketOriginalTemplateCacheHTML) {
+    window.storeCreateTicketOriginalTemplateCacheHTML = materialRequestPanelContainer.innerHTML;
+  }
   
   try {
     const payload = {
@@ -4364,7 +4367,7 @@ async function submitMaterialRequestTicketToBackend() {
       sessionToken: localStorage.getItem("sessionToken"),
       activeEngineer: operatorSignatureName,
       projectId: projectId,
-      departmentOutgoing: departmentVal, // Captured strictly from document element dropdown value selection
+      departmentOutgoing: departmentVal, 
       ticketTypeCommandString: ticketTypeVal,
       itemsClusterArray: dynamicTicketShoppingBasketArray
     };
@@ -4376,42 +4379,27 @@ async function submitMaterialRequestTicketToBackend() {
     const result = await res.json();
     
     if (result.success) {
-      // Inline success message swaps the panels out safely
-      materialRequestPanelContainer.style.padding = "20px";
-      materialRequestPanelContainer.innerHTML = `
-        <div style="background: #dcfce7; border: 1px solid #15803d; border-left: 4px solid #15803d; color: #15803d; padding: 20px; border-radius: var(--radius); text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin: 10px 0;">
-          <h3 style="font-size: 1.1rem; margin-top: 0; margin-bottom: 6px; font-weight: 700;">Success! Transaction Ticket Created.</h3>
-          <div style="font-size: 0.92rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-            Assigned Reference Tracking ID: 
-            <span style="font-family: monospace; font-weight: 800; background: #fff; padding: 3px 8px; border-radius: 4px; border: 1px solid #15803d; color: #111827; margin-left: 4px; font-size: 1rem;">
-              ${result.ticketId}
-            </span>
-          </div>
-          <p style="font-size: 0.78rem; margin: 12px 0 0; color: #166534; opacity: 0.85; font-style: italic;">
-            Returning to main dashboard automatically in 5 seconds...
-          </p>
-        </div>
-      `;
-      
+      // Wipes dynamic ticket material array draft states parameters securely
       dynamicTicketShoppingBasketArray = [];
       
-      setTimeout(() => {
-        // FIXED: Wipes out visual footprints and returns home without triggering system logging traps
-        materialRequestPanelContainer.style.display = "none";
-        document.getElementById("module-store-workspace-enclosure-panel").style.display = "none";
-        
-        // Re-initialize default clean form state structure dynamically
-        document.getElementById("ticket-item-selection-dropdown").value = "";
-        document.getElementById("ticket-item-quantity-input").value = "";
-        document.getElementById("ticket-project-id-dropdown").value = "";
-        document.getElementById("ticket-requested-by-operator-dropdown").value = "";
-        
-        // Bring back the main dashboard menu cards panel grid
-        document.getElementById("dashboard-view").style.display = "flex";
-        
-        // Rebuild or clear any existing success content layout lines on the fly
-        location.reload(); 
-      }, 5000);
+      // FIXED: Injects clean success panel callout banner card element container layout with a dynamic loop action handle button
+      materialRequestPanelContainer.style.padding = "20px";
+      materialRequestPanelContainer.innerHTML = `
+        <div style="background: #dcfce7; border: 1px solid #15803d; border-left: 4px solid #15803d; color: #15803d; padding: 20px; border-radius: var(--radius); text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin: 10px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h3 style="font-size: 1.1rem; margin-top: 0; margin-bottom: 6px; font-weight: 700;">Success! Transaction Ticket Created.</h3>
+            <div style="font-size: 0.92rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+              Assigned Reference Tracking ID: 
+              <span style="font-family: monospace; font-weight: 800; background: #fff; padding: 3px 8px; border-radius: 4px; border: 1px solid #15803d; color: #111827; margin-left: 4px; font-size: 1rem;">
+                ${result.ticketId}
+              </span>
+            </div>
+          </div>
+          <button class="nav-btn-styled" style="background: #15803d; color: white; padding: 10px 20px; font-weight: 700; font-size: 0.85rem;" onclick="resetStoreCreateTicketToInitialState()">
+            + Create New Ticket
+          </button>
+        </div>
+      `;
     } 
     else {
       if (feedbackBanner) {
@@ -4428,6 +4416,21 @@ async function submitMaterialRequestTicketToBackend() {
     }
     submitBtn.disabled = false;
     submitBtn.textContent = ticketTypeVal === "Return Material" ? "Generate Return Ticket" : "Generate Material Ticket";
+  }
+}
+
+/**
+ * NEW WORKSPACE LOOP INITIALIZER ENGINE
+ * Programmatically restores full form shell layout and pulls live dropdown metrics down instantly
+ */
+function resetStoreCreateTicketToInitialState() {
+  const materialRequestPanelContainer = document.getElementById("canvas-module-store-material-request");
+  if (materialRequestPanelContainer && window.storeCreateTicketOriginalTemplateCacheHTML) {
+    // 1. Recover full native original HTML elements fields layouts structure structures template pass
+    materialRequestPanelContainer.innerHTML = window.storeCreateTicketOriginalTemplateCacheHTML;
+    
+    // 2. Re-fire initialization metrics to pull live inventory stock counts and operator signatures lists
+    initializeMaterialRequestWorkspace();
   }
 }
 
