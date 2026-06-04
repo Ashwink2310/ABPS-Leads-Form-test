@@ -441,29 +441,33 @@
             </div>
           </div>
         </div>
-        <div style="width: 100%; border-top: 1px dashed rgba(0, 86, 179, 0.15); padding-top: 12px; margin-top: 4px;">
-          <label class="field-label">Filter By Project ID</label>
-          <div class="pill-group" id="matrix-search-projects-checkbox-mount" style="margin-bottom:6px;"></div>
-        </div>
-
-        <div style="width: 100%; border-top: 1px dashed rgba(0, 86, 179, 0.15); padding-top: 12px; margin-top: 10px;">
-          <label class="field-label">Filter By Production Department / Outgoing Use</label>
-          <div class="pill-group" style="margin-bottom:6px;">
-            <input type="checkbox" name="matrixDepartmentFilter" value="Reactor" id="m_dept_reactor" onchange="executeClientSideStoreTicketFilterSearch()">
-            <label for="m_dept_reactor">Reactor</label>
-            
-            <input type="checkbox" name="matrixDepartmentFilter" value="Capacitor" id="m_dept_capacitor" onchange="executeClientSideStoreTicketFilterSearch()">
-            <label for="m_dept_capacitor">Capacitor</label>
-            
-            <input type="checkbox" name="matrixDepartmentFilter" value="Panel" id="m_dept_panel" onchange="executeClientSideStoreTicketFilterSearch()">
-            <label for="m_dept_panel">Panel</label>
-            
-            <input type="checkbox" name="matrixDepartmentFilter" value="Processing" id="m_dept_processing" onchange="executeClientSideStoreTicketFilterSearch()">
-            <label for="m_dept_processing">Processing</label>
-            
-            <input type="checkbox" name="matrixDepartmentFilter" value="Service" id="m_dept_service" onchange="executeClientSideStoreTicketFilterSearch()">
-            <label for="m_dept_service">Service</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 24px; margin-top: 10px; border-top: 1px dashed rgba(0, 86, 179, 0.15); padding-top: 12px; width: 100%;">
+      
+          <div style="flex: 1; min-width: 280px;">
+            <label class="field-label" style="margin-top: 0;">Filter By Project ID</label>
+            <div class="pill-group" id="matrix-search-projects-checkbox-mount" style="margin-bottom: 0;"></div>
           </div>
+
+          <div style="flex: 1; min-width: 280px;">
+            <label class="field-label" style="margin-top: 0;">Filter By Production Department / Outgoing Use</label>
+            <div class="pill-group" style="margin-bottom: 0;">
+              <input type="checkbox" name="matrixDepartmentFilter" value="Reactor" id="m_dept_reactor" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="m_dept_reactor">Reactor</label>
+              
+              <input type="checkbox" name="matrixDepartmentFilter" value="Capacitor" id="m_dept_capacitor" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="m_dept_capacitor">Capacitor</label>
+              
+              <input type="checkbox" name="matrixDepartmentFilter" value="Panel" id="m_dept_panel" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="m_dept_panel">Panel</label>
+              
+              <input type="checkbox" name="matrixDepartmentFilter" value="Processing" id="m_dept_processing" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="m_dept_processing">Processing</label>
+              
+              <input type="checkbox" name="matrixDepartmentFilter" value="Service" id="m_dept_service" onchange="executeClientSideStoreTicketFilterSearch()">
+              <label for="m_dept_service">Service</label>
+            </div>
+          </div>
+          
         </div>
       </div>
       <div id="store-historical-matrix-results-feed" style="display: flex; flex-direction: column; gap: 12px;"></div>
@@ -5085,7 +5089,7 @@ function executeClientSideStoreTicketFilterSearch() {
   });
 
   if (filteredOutputList.length === 0) {
-    resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; background:#fff; border:1px solid var(--border); border-radius:4px; color:var(--muted); font-size:0.85rem;">No historical tickets matched your current criteria combination.</div>`;
+    resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; background:#fff; border:1px solid var(--border); border-radius:4px; color:var(--muted); font-size:0.85rem;">No historical tickets matched your current combination.</div>`;
     return;
   }
 
@@ -5132,7 +5136,7 @@ function executeClientSideStoreTicketFilterSearch() {
           <span style="font-family:monospace; font-weight:800; background:var(--highlight-bg); color:var(--brand); padding:2px 6px; border-radius:4px; font-size:0.8rem;">${ticket.ticketId}</span>
           <span style="font-size:0.65rem; font-weight:700; border-radius:3px; padding:1px 5px; margin-left:4px; ${typeLabelColorStyle}">${typeLabel.toUpperCase()}</span>
           <strong style="margin-left:8px; font-size:0.85rem; color:var(--brand);">Project ID: ${ticket.projectId}</strong>
-          <span style="font-size:0.65rem; font-weight:700; background:#f1f5f9; color:#475569; padding:2px 6px; border-radius:3px; margin-left:4px;">Dept: ${ticket.department || "General Store"}</span>
+          <span style="font-size:0.65rem; font-weight:700; background:#f1f5f9; color:#475569; padding:2px 6px; border-radius:3px; margin-left:4px;">Department: ${ticket.department || "General Store"}</span>
         </div>
         <span style="font-size:0.68rem; font-weight:700; border-radius:4px; padding:2px 6px; ${badgeColorStyle}">${ticket.status.toUpperCase()}</span>
       </div>
