@@ -1067,7 +1067,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyF0ESXaox92IF2zcHkEB-dJglGnuU1nDtEqu7ys-2iDW5xs13mf3zvyVCMxp1sngm7HQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz1UApD7DwcambLTqxotABaPlstgJEQYFUu4bbpK09CLSEk7FF1q56THK1epwvmErCSWw/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -4236,34 +4236,19 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
  * Synchronizes inventory counts, project codes, and authorized store operators simultaneously
  */
 async function initializeMaterialRequestWorkspace() {
-  const projectDropdown = document.getElementById("ticket-project-id-dropdown");
-  const itemDropdown = document.getElementById("ticket-item-selection-dropdown");
-  const storeStaffDropdown = document.getElementById("ticket-requested-by-operator-dropdown");
+  const deptDropdown = document.getElementById("ticket-department-outgoing-dropdown");
+  if (!deptDropdown) return;
   
-  if (!projectDropdown || !itemDropdown || !storeStaffDropdown) return;
-  
-  document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
+  deptDropdown.value = ""; // Force clean initialization pass
+  resetMaterialRequestCascadingLockState();
   clearFullBasketDraftState();
-
-  projectDropdown.innerHTML = '<option value="">Syncing Active Projects...</option>';
-  itemDropdown.innerHTML = '<option value="">Syncing Material List...</option>';
-  storeStaffDropdown.innerHTML = '<option value="">Loading Authorized Staff List...</option>';
+  document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
 
   try {
-    // Fire off three concurrent network hits simultaneously via parallel promises tracks
     const [inventoryResponse, projectsResponse, staffResponse] = await Promise.all([
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })
-      }),
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") })
-      }),
-      fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken") })
-      })
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") }) }),
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") }) }),
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken") }) })
     ]);
     
     const inventoryData = await inventoryResponse.json();
@@ -4272,51 +4257,47 @@ async function initializeMaterialRequestWorkspace() {
     
     if (inventoryData.success && projectsData.success && staffData.success) {
       cachedInventoryStockCollection = inventoryData.inventory;
+      globalOperatorsDatabasePayloadCache = staffData.fullPersonnelDataRecordsTree || []; 
       
-      // A. Populate Material Catalog choices
+      // A. Populate Material Catalog choices showing the descriptive Material Name
+      const itemDropdown = document.getElementById("ticket-item-selection-dropdown");
       itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
       cachedInventoryStockCollection.forEach(item => {
-        let opt = document.createElement("option");
-        opt.value = item.materialName; opt.textContent = item.materialName;
+        let opt = document.createElement("option"); 
+        opt.value = item.materialName; 
+        opt.textContent = item.materialName; // FIXED: Shows text description, not the numeric code
         itemDropdown.appendChild(opt);
       });
 
-      // B. Populate Live Projects list choices
+      // B. Seed Active Project Choices
+      const projectDropdown = document.getElementById("ticket-project-id-dropdown");
       projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
       projectsData.projects.forEach(code => {
-        let opt = document.createElement("option");
-        opt.value = code; opt.textContent = code;
+        let opt = document.createElement("option"); opt.value = code; opt.textContent = code;
         projectDropdown.appendChild(opt);
       });
-
-      // C. Populate Store/Admin Staff choices
-      storeStaffDropdown.innerHTML = '<option value="">— Select Your Name —</option>';
-      staffData.operators.forEach(name => {
-        let opt = document.createElement("option");
-        opt.value = name.trim(); opt.textContent = name.trim();
-        storeStaffDropdown.appendChild(opt);
-      });
       
-      // D. DYNAMIC AUTOFILL LOGIC FOR DEPARTMENT dropdown
+      // C. Process autofill lookups with instant evaluation execution
       const activeDeptRawString = localStorage.getItem("abps_user_raw_departments") || ""; 
       const lowerDeptsArray = activeDeptRawString.toLowerCase().split(",").map(d => d.trim());
+      const priorityChecks = ["reactor", "capacitor", "panel"];
+      let matchedDefault = "";
       
-      const deptTargetDropdown = document.getElementById("ticket-department-outgoing-dropdown");
-      if (deptTargetDropdown) {
-        const priorityChecks = ["reactor", "capacitor", "panel"];
-        let matchedDefault = "Reactor"; // Base fallback option
-        
-        for (let check of priorityChecks) {
-          if (lowerDeptsArray.indexOf(check) !== -1) {
-            matchedDefault = check.charAt(0).toUpperCase() + check.slice(1);
-            break;
-          }
+      for (let check of priorityChecks) {
+        if (lowerDeptsArray.indexOf(check) !== -1) {
+          matchedDefault = check.charAt(0).toUpperCase() + check.slice(1);
+          break;
         }
-        deptTargetDropdown.value = matchedDefault;
+      }
+      
+      if (matchedDefault) {
+        deptDropdown.value = matchedDefault;
+        // FIXED: Explicitly run the change handler here using the freshly cached dataset
+        handleCreateTicketDepartmentChange(matchedDefault); 
       }
     }
   } catch (error) { 
-    alert("Sync Exception Error: Dropdown selection matrices failed to parse correctly."); 
+    console.error("Matrices load fail exception dropped:", error); 
   }
 }
 
@@ -4383,7 +4364,7 @@ async function submitMaterialRequestTicketToBackend() {
       sessionToken: localStorage.getItem("sessionToken"),
       activeEngineer: operatorSignatureName,
       projectId: projectId,
-      departmentOutgoing: departmentVal, // Forward selected dropdown value parameter
+      departmentOutgoing: departmentVal, // Captured strictly from document element dropdown value selection
       ticketTypeCommandString: ticketTypeVal,
       itemsClusterArray: dynamicTicketShoppingBasketArray
     };
@@ -5890,8 +5871,12 @@ function autoBalanceGrnQuantities(okInput, gateNum, idx) {
 }
 
 async function initializeMaterialRequestWorkspace() {
+  const projectDropdown = document.getElementById("ticket-project-id-dropdown");
+  const itemDropdown = document.getElementById("ticket-item-selection-dropdown");
+  const storeStaffDropdown = document.getElementById("ticket-requested-by-operator-dropdown");
   const deptDropdown = document.getElementById("ticket-department-outgoing-dropdown");
-  if (!deptDropdown) return;
+  
+  if (!projectDropdown || !itemDropdown || !storeStaffDropdown || !deptDropdown) return;
   
   deptDropdown.value = ""; // Force clean initialization pass
   resetMaterialRequestCascadingLockState();
@@ -5913,25 +5898,23 @@ async function initializeMaterialRequestWorkspace() {
       cachedInventoryStockCollection = inventoryData.inventory;
       globalOperatorsDatabasePayloadCache = staffData.fullPersonnelDataRecordsTree || []; 
       
-      // A. Populate Material Catalog choices showing the descriptive Material Name
-      const itemDropdown = document.getElementById("ticket-item-selection-dropdown");
+      // A. Populate Material Catalog choices
       itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
       cachedInventoryStockCollection.forEach(item => {
         let opt = document.createElement("option"); 
         opt.value = item.materialName; 
-        opt.textContent = item.materialName; // FIXED: Shows text description, not the numeric code
+        opt.textContent = item.materialName; 
         itemDropdown.appendChild(opt);
       });
 
       // B. Seed Active Project Choices
-      const projectDropdown = document.getElementById("ticket-project-id-dropdown");
       projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
       projectsData.projects.forEach(code => {
         let opt = document.createElement("option"); opt.value = code; opt.textContent = code;
         projectDropdown.appendChild(opt);
       });
       
-      // C. Process autofill lookups with instant evaluation execution
+      // C. Process autofill lookups with forced event dispatching
       const activeDeptRawString = localStorage.getItem("abps_user_raw_departments") || ""; 
       const lowerDeptsArray = activeDeptRawString.toLowerCase().split(",").map(d => d.trim());
       const priorityChecks = ["reactor", "capacitor", "panel"];
@@ -5946,8 +5929,17 @@ async function initializeMaterialRequestWorkspace() {
       
       if (matchedDefault) {
         deptDropdown.value = matchedDefault;
-        // FIXED: Explicitly run the change handler here using the freshly cached dataset
-        handleCreateTicketDepartmentChange(matchedDefault); 
+        
+        // FIXED: Explicitly run the change handler using the freshly downloaded memory tree
+        handleCreateTicketDepartmentChange(matchedDefault);
+        
+        // FAIL-SAFE DISPATCH: Programmatically fire a native change event so the browser locks in the active selection state
+        const changeEvent = new Event('change', { bubbles: true });
+        deptDropdown.dispatchEvent(changeEvent);
+      } else {
+        // Fallback if no matching department tags are bound to the current employee session profile
+        deptDropdown.value = "";
+        resetMaterialRequestCascadingLockState();
       }
     }
   } catch (error) { 
