@@ -1058,7 +1058,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzFBgQ17YXv9ymOeENTWzxsrrDzkMJxNvLwKO4xdcyXC7ogMEFnZkbG5xdhhdZhtB4w8w/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwmF0xZ2DmoPKU9xDwCpZSnp-rusvOKlnTSWqOq0QpJa0wI0DKwsRkOZaa-n8WrJAffQg/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -5743,21 +5743,33 @@ async function initializeStoreGrnWorkspaceQueue() {
             <div class="meta-row-line-block" style="display:flex; justify-content:space-between; width:100%; align-items:center;">
               <div>
                 <span style="background:var(--accent); color:#fff; padding:3px 8px; font-weight:700;">STORE ID: ${item.storeEntryNumber || "SE-PENDING"}</span>
-                <span style="background:#edf2f7; color:var(--text); font-weight:700; margin-left:4px;">GATE ref: ${item.gateNumber}</span>
+                <span style="background:#edf2f7; color:var(--text); margin-left:4px; font-weight:700;">GATE ref: ${item.gateNumber}</span>
               </div>
-              <span style="background:#cbd5e1; color:#1e293b; font-weight:700; text-transform:none; font-size:0.8rem; padding:3px 8px;">${cleanDateDisplay}</span>
+              <span style="background:#cbd5e1; color:#1e293b; font-weight:700; text-transform:none; font-size:0.8rem; padding:3px 8px;">🕒 ${cleanDateDisplay}</span>
             </div>
             <div style="font-size:0.85rem; margin-top:8px; color:var(--muted); font-weight:600; padding-left:2px;">
-              Vendor: <strong style="color:var(--brand); font-weight:700;">${item.vendorName || "Designated ABPS Supplier Profile"}</strong> | Invoice No: <strong style="color:var(--text); font-weight:700;">${item.invoiceNumber}</strong>
+              Vendor Name: <strong style="color:var(--brand); font-weight:700;">${item.vendorName}</strong> | Invoice No: <strong style="color:var(--text); font-weight:700;">${item.invoiceNumber}</strong>
             </div>
           </div>
         </div>
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
           <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
-            <thead><tr><th style="width:150px; text-align:center;">Item Code Number</th><th>Description of Material</th><th style="width:100px; text-align:center;">Received Quantity</th><th style="width:100px; text-align:center;">Q/A Done</th><th style="width:120px; text-align:center;">OK Quantity *</th><th style="width:100px; text-align:center;">Not OK Quantity</th><th>Rejection Details Description</th></tr></thead>
+            <thead>
+              <tr>
+                <th style="width:150px; text-align:center;">Item Code Number</th>
+                <th style="text-align:left;">Description of Material</th>
+                <th style="width:100px; text-align:center;">Received Qty</th>
+                <th style="width:100px; text-align:center;">Q/A Done</th>
+                <th style="width:120px; text-align:center;">OK Qty *</th>
+                <th style="width:100px; text-align:center;">Not OK Qty</th>
+                <th>Rejection Details Description</th>
+              </tr>
+            </thead>
             <tbody>${trs}</tbody>
           </table>
-          <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--brand);" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Ledger</button></div>
+          <div style="display:flex; justify-content:flex-end;">
+            <button class="nav-btn-styled" style="background:var(--brand);" onclick="commitGrnVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Add Stock to Store</button>
+          </div>
         </div>`;
       feed.appendChild(card);
     });
@@ -5806,7 +5818,7 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
   });
   
   if (qaIncomplete) {
-    alert("Compulsory Quality Check Failure: You must change the Q/A Done selection to 'Yes' for all line items before you can verify and add stock to the ledger.");
+    alert("Compulsory Quality Check: You must change the Q/A Done selection to 'Yes' for all line items before you can add stock to the Store.");
     return;
   }
   
@@ -5840,8 +5852,7 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
       banner.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; text-align:left;">
           <div>
-            <strong>Success! GRN Certified & Stock Balances Updated.</strong><br/>
-            <span>System Entry Reference Code: <strong style="font-family: monospace; font-size: 1.05rem; color:#111827;">${data.grnNumber}</strong></span>
+            <strong>Success! GRN Certified & Stock Balances Updated.</strong>
           </div>
           <button class="nav-btn-styled" onclick="
             document.getElementById('store-grn-runtime-feedback-banner').style.display = 'none';
@@ -5852,11 +5863,11 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
         </div>`;
     } else {
       alert("Server Error: " + data.error);
-      btn.disabled = false; btn.textContent = "Verify & Add Stock to Ledger";
+      btn.disabled = false; btn.textContent = "Verify & Add Stock to Store";
     }
   } catch(e) { 
     alert("Network request execution failure: " + e.message); 
-    btn.disabled = false; btn.textContent = "Verify & Add Stock to Ledger"; 
+    btn.disabled = false; btn.textContent = "Verify & Add Stock to Store"; 
   }
 }
 
