@@ -1164,7 +1164,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbztOHeYbZdlc3wpjFwN0rozB4UjlPCYgvPdPuCoEURmxevkkChyrlvfIzLccmP-k4iG7g/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx1oyYiW4qR_qjNF54aok1hrcvFZ_gGil1_MG67U5jib6f0XzypN8SsvvCuTj56hSjaVA/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -6390,11 +6390,15 @@ async function executeBOQDocumentUploadSubmit(modeString) {
   if (!projectId) return alert("Compulsory Parameter Missing: Target Project ID code is blank.");
   if (!targetBOQUploadFileRawObject) return alert("Compulsory Document Missing: Select or capture your document page blueprint image.");
   
+  if (banner) banner.style.display = "none";
+  
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div> AI Parsing Design Document...';
   
   const fileBase64Raw = await new Promise((resolve) => {
-    const reader = new FileReader(); reader.onload = () => resolve(reader.result.split(',')[1]); reader.readAsDataURL(targetBOQUploadFileRawObject);
+    const reader = new FileReader(); 
+    reader.onload = () => resolve(reader.result.split(',')[1]); 
+    reader.readAsDataURL(targetBOQUploadFileRawObject);
   });
   
   try {
@@ -6416,16 +6420,24 @@ async function executeBOQDocumentUploadSubmit(modeString) {
       if (isNew) {
         document.getElementById("boq-upload-file-dropzone").textContent = "📷 Select or Capture Bill of Quantity Document Page Image";
         document.getElementById("boq-upload-file-dropzone").classList.remove("done");
+        document.getElementById("boq-upload-file-raw").value = "";
       } else {
         document.getElementById("boq-revision-file-dropzone").textContent = "📷 Select Revised BOQ Document Page Image";
         document.getElementById("boq-revision-file-dropzone").classList.remove("done");
-        document.getElementById("boq-update-search-results-viewport").style.display = "none";
+        document.getElementById("boq-revision-file-raw").value = "";
+        // FIXED ACTION FOR REVISION MODE: Re-run project search query lookup to instantly display fresh overwritten balances
+        executeBOQProjectQueryLookupSearch();
       }
       targetBOQUploadFileRawObject = null;
     } else {
       alert("Processing Error: " + data.error);
     }
-  } catch(e) { alert("Network exception caught: " + e.message); } finally { btn.disabled = false; btn.textContent = isNew ? "Parse Document & Seed Inventory Matrix" : "Commit Overwrite Revision & Increment Version"; }
+  } catch(e) { 
+    alert("Network exception caught: " + e.message); 
+  } finally { 
+    btn.disabled = false; 
+    btn.textContent = isNew ? "Parse Document & Seed Inventory Matrix" : "Commit BOQ Change"; 
+  }
 }
 
 </script>
