@@ -276,8 +276,8 @@
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
         <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Bill of Quantity / Bill of Material</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
-          <div class="menu-card" id="mod-design-upload" onclick="navigateToDesignWorkspacePanel('design-upload')">Upload Bill of Quantity</div>
-          <div class="menu-card" id="mod-design-update" onclick="navigateToDesignWorkspacePanel('design-update')">Update Bill of Quantity</div>
+          <div class="menu-card" id="mod-design-upload" onclick="switchActiveDashboardModule('design-upload')">Upload Bill of Quantity</div>
+          <div class="menu-card" id="mod-design-update" onclick="switchActiveDashboardModule('design-update')">Update Bill of Quantity</div>
         </div>
       </div>
     </div>
@@ -487,6 +487,7 @@
     </div>
 
     <div id="module-design-workspace-enclosure-panel" class="workspace-panel" style="display: none; padding: 12px 10px;">
+
     <div class="navigation-action-header-row" style="margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
       <div></div>
       <button class="nav-btn-styled" onclick="exitDesignWorkspacePanelBackToMenu()" style="background:#4a5568;">Return to Main Dashboard</button>
@@ -4701,12 +4702,17 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
   document.getElementById("step2-inline-interaction-canvas").style.display = "none";
   
   // 2. Hide all modular store dashboard section wrapper panels completely
-  document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
-  document.getElementById("canvas-module-store-material-request").style.display = "none";
-  document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
-  document.getElementById("canvas-module-store-history-matrix").style.display = "none";
+  if(document.getElementById("canvas-module-store-invoice-intake")) document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
+  if(document.getElementById("canvas-module-store-material-request")) document.getElementById("canvas-module-store-material-request").style.display = "none";
+  if(document.getElementById("canvas-module-store-manager-approvals")) document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
+  if(document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
   
-  // 3. SECURE REDIRECT ROUTING OVERRIDES: Route sidebar hooks to appropriate dashboards
+  // NEW VISIBILITY SAFETAIL: Reset parent and child Design Department panels to prevent overlapping element draws
+  if(document.getElementById("module-design-workspace-enclosure-panel")) document.getElementById("module-design-workspace-enclosure-panel").style.display = "none";
+  if(document.getElementById("canvas-module-design-upload")) document.getElementById("canvas-module-design-upload").style.display = "none";
+  if(document.getElementById("canvas-module-design-update")) document.getElementById("canvas-module-design-update").style.display = "none";
+
+  // 3. SECURE REDIRECT ROUTING OVERRIDES
   if (targetCanvasModuleId === 'marketing-leads') {
     navigateToModule('searchCompany');
   } else if (targetCanvasModuleId === 'marketing-email-leads') {
@@ -4716,14 +4722,19 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
   } 
   // 4. STORE PIPELINE ROUTING SWITCHES
   else if (targetCanvasModuleId === 'store-material-request') {
-    document.getElementById("canvas-module-store-material-request").style.display = "block";
-    initializeMaterialRequestWorkspace(); // Pulls quantities down live
+    navigateToStoreWorkspacePanel('store-material-request');
   } else if (targetCanvasModuleId === 'store-invoice-intake') {
-    document.getElementById("canvas-module-store-invoice-intake").style.display = "block";
+    navigateToStoreWorkspacePanel('store-invoice-intake');
   } else if (targetCanvasModuleId === 'store-manager-approvals') {
-    document.getElementById("canvas-module-store-manager-approvals").style.display = "block";
+    navigateToStoreWorkspacePanel('store-manager-approvals');
   } else if (targetCanvasModuleId === 'store-history-matrix') {
-    document.getElementById("canvas-module-store-history-matrix").style.display = "block";
+    navigateToStoreWorkspacePanel('store-history-matrix');
+  }
+  // NEW ROUTING INTERCEPT: Maps main dashboard menu clicks straight into the Design engine panel workspace
+  else if (targetCanvasModuleId === 'design-upload') {
+    navigateToDesignWorkspacePanel('design-upload');
+  } else if (targetCanvasModuleId === 'design-update') {
+    navigateToDesignWorkspacePanel('design-update');
   }
 }
 
@@ -6229,7 +6240,15 @@ function navigateToDesignWorkspacePanel(targetModuleId) {
 
 function exitDesignWorkspacePanelBackToMenu() {
   document.getElementById("module-design-workspace-enclosure-panel").style.display = "none";
+  
+  // Re-sync visibility rules matrices before showing menu elements
+  enforceDynamicModuleRoleGateways(userPermissions);
+  
+  // FIXED: Restores your home grid cleanly to avoid layout breaks
   document.getElementById("dashboard-view").style.display = "flex";
+  
+  // Refresh company listings background cache
+  triggerCompanyDropdownArrayFetch(); 
 }
 
 function handleBOQFileSelection(inputNode, zoneId) {
