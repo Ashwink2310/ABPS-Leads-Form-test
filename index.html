@@ -246,8 +246,8 @@
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
         <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Store Outward</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
-          <div class="menu-card" id="mod-store-ticket" onclick="navigateToStoreWorkspacePanel('store-material-request')">Store Create Ticket</div>
-          <div class="menu-card" id="mod-store-approvals" onclick="navigateToStoreWorkspacePanel('store-manager-approvals')">Store Approve Tickets</div>
+          <div class="menu-card" id="mod-store-ticket" onclick="navigateToStoreWorkspacePanel('store-material-request')">Create Store Ticket</div>
+          <div class="menu-card" id="mod-store-approvals" onclick="navigateToStoreWorkspacePanel('store-manager-approvals')">Approve Store Tickets</div>
         </div>
       </div>
 
@@ -333,7 +333,7 @@
 
     <div id="canvas-module-store-material-request" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:2px solid var(--bg); padding-bottom:10px;">
-        <h2 style="margin:0;">Store Create Ticket</h2>
+        <h2 style="margin:0;">Create Store Ticket</h2>
         <div style="width:180px;">
           <select id="ticket-action-type-toggle-dropdown" onchange="handleStoreTicketTypeInterfaceLayoutChange(this.value)" style="border-color:var(--brand); font-weight:700; color:var(--brand); padding:6px;">
             <option value="Request Material">Request Material</option>
@@ -405,7 +405,7 @@
     </div>
 
     <div id="canvas-module-store-manager-approvals" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2 style="margin-bottom: 16px;">Store Approve Tickets</h2>
+      <h2 style="margin-bottom: 16px;">Approve Store Tickets</h2>
       <div id="store-approvals-runtime-inline-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
       <div id="store-manager-approvals-queue-cards-feed" style="display: flex; flex-direction: column; gap: 14px;"></div>
     </div>
@@ -1060,7 +1060,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzjEPDCp4gJF_3cjiTWSIgq9bcw4uFxYWmv2g26bT0C4fork98PMRP2knM_n_Y5CUS5pw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyeMbqgwPFwF3YlIqG-dcjaG6r7yFBQIfVql0Scf2N7Z_FFhY6ZJD6DRlZAokKH5gWovw/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
