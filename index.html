@@ -204,7 +204,7 @@
     <!-- MARKETING DEPARTMENT BUTTONS INTERFACE GRID MAP -->
 
     <div id="dashboard-marketing-department-header-block">
-      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--brand); margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Marketing Department</h2>
+      <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Marketing Department</h2>
       
       <!-- SUB-SECTION 1: LEAD SOURCE -->
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
@@ -241,7 +241,7 @@
     <!-- STORE DEPARTMENT BUTTONS INTERFACE GRID MAP -->
 
     <div id="dashboard-store-department-header-block" style="display: none;">
-      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--brand); margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Store Department</h2>
+      <h2 style="font-size: 1.25rem; font-weight: 700; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Store Department</h2>
       
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
         <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Store Inward</div>
@@ -272,7 +272,7 @@
     <!-- STORE DEPARTMENT BUTTONS INTERFACE GRID MAP -->
 
     <div id="dashboard-design-department-header-block" style="display: none;">
-      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--brand); margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Design Department</h2>
+      <h2 style="font-size: 1.25rem; font-weight: 700; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Design Department</h2>
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
         <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Bill of Quantity / Bill of Material</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
@@ -1163,7 +1163,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwYf_dvgwD1c9RZ9uTSRTRA0Mio3mqiDx1R0l_Wl7yXeGCyEavlEc_nF8pSl3Bt7Fyekg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbztOHeYbZdlc3wpjFwN0rozB4UjlPCYgvPdPuCoEURmxevkkChyrlvfIzLccmP-k4iG7g/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -6145,7 +6145,7 @@ function handleCreateTicketDepartmentChange(chosenDepartmentVal) {
   staffDrop.innerHTML = '<option value="">— Select Your Name —</option>';
   
   // Updated list of authorized department strings allowed to request/return materials
-  const authorizedRoles = ["store", "production", "admin"];
+  const authorizedRoles = ["design", "store", "production", "admin"];
 
   const filteredPersonnelList = globalOperatorsDatabasePayloadCache.filter(user => {
     // Returns true if any of the user's assigned departments match Store, Production, or Admin
@@ -6241,6 +6241,10 @@ function handleBOQFileSelection(inputNode, zoneId) {
   }
 }
 
+/**
+ * NEW INITIALIZATION GATING: Filters personnel tree data explicitly for the Design Department.
+ * Populates options with personnel belonging strictly to Design or Admin.
+ */
 async function initializeDesignDepartmentUploadModule() {
   const staffDrop = document.getElementById("boq-upload-staff-dropdown");
   const projDrop = document.getElementById("boq-upload-project-dropdown");
@@ -6257,8 +6261,15 @@ async function initializeDesignDepartmentUploadModule() {
   const projData = await projRes.json();
   
   staffDrop.innerHTML = '<option value="">— Select Your Name —</option>';
-  staffData.operators.forEach(name => {
-    let opt = document.createElement("option"); opt.value = name; opt.textContent = name; staffDrop.appendChild(opt);
+  
+  // STRICT FILTER: Restricts access selections strictly to Design or Admin profiles
+  const allowedDesignRoles = ["design", "admin"];
+  const designStaffList = (staffData.fullPersonnelDataRecordsTree || []).filter(user => 
+    user.departmentsList.some(dept => allowedDesignRoles.includes(dept.toLowerCase().trim()))
+  );
+
+  designStaffList.forEach(user => {
+    let opt = document.createElement("option"); opt.value = user.fullName; opt.textContent = user.fullName; staffDrop.appendChild(opt);
   });
   staffDrop.value = appActiveOperatorIdentityString;
 
