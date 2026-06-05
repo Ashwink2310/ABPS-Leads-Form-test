@@ -5424,8 +5424,8 @@ function executeClientSideStoreTicketFilterSearch() {
           <span style="font-family:monospace; font-weight:800; background:var(--highlight-bg); color:var(--brand); padding:2px 6px; border-radius:4px; font-size:0.8rem;">${ticket.ticketId}</span>
           <strong style="margin-left:8px; font-size:0.85rem; color:var(--brand);">Project ID: ${ticket.projectId}</strong>
           <span style="font-size:0.65rem; font-weight:700; border-radius:3px; padding:1px 5px; margin-left:4px; ${typeLabelColorStyle}">${typeLabel.toUpperCase()}</span>
+          <span style="font-size:0.65rem; font-weight:700; background:#f1f5f9; color:#475569; padding:2px 6px; border-radius:3px; margin-left:4px;">Store: ${mappedStorageScope}</span>
           <span style="font-size:0.65rem; font-weight:700; background:#f1f5f9; color:#475569; padding:2px 6px; border-radius:3px; margin-left:4px;">Department: ${ticket.department || "General Store"}</span>
-          <span style="font-size:0.65rem; font-weight:700; background:#f1f5f9; color:#475569; padding:2px 6px; border-radius:3px; margin-left:4px;">Store: ${mappedStorageScope.toUpperCase()}</span>
         </div>
         <span style="font-size:0.68rem; font-weight:700; border-radius:4px; padding:2px 6px; ${badgeColorStyle}">${statusBadgeText}</span>
       </div>
