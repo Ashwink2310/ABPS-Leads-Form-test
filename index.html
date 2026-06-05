@@ -476,10 +476,10 @@
           </div>
         </div>
 
-        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; margin-bottom: 20px; font-size: 0.78rem; color: var(--muted);">
+        <!-- <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; margin-bottom: 20px; font-size: 0.78rem; color: var(--muted);">
           <strong style="color: var(--text);">Auto-filled on submit:</strong>
           Reserved Stock = 0 &nbsp;·&nbsp; Available Stock = Total Stock &nbsp;·&nbsp; Reorder Level = N/A &nbsp;·&nbsp; Unit Price = N/A &nbsp;·&nbsp; BOQ Active = YES
-        </div>
+        </div> -->
 
         <button class="btn btn-sub" id="fg-add-submit-btn" onclick="submitFinishedGoodsAddEntry()" style="background: var(--accent); padding: 12px; font-weight: 700;">
           Add to Finished Goods Store
@@ -1158,7 +1158,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz0Rl8i61D6AR5LXZhVScf3oWPOGVNvmDDf_4nczR5uttFoSwjglzMr5Cg6Vceo8kQBcQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxpBeHBBRtmoWsBnkMKc0kz9BCshMAH6wkappVTRwrgsUBT72Cwwu7fjkOfiWIx5uKLzg/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1185,9 +1185,6 @@ let activeEmailLeadContextIndex = null;
 // --- GLOBAL INVENTORY MODULE STATE STORAGE ---
 let cachedInventoryStockCollection = [];
 let dynamicTicketShoppingBasketArray = [];
-let targetInvoiceUploadFileObject = null;
-let targetChallanUploadFileObject = null;
-let activeParsedInvoicePayloadCache = null;
 let masterStoreTicketsHistoryCacheCollection = [];
 let targetGateInvoiceFileObj = null;
 let targetGateChallanFileObj = null;
@@ -1804,6 +1801,7 @@ async function showAppView() {
       if (targetFormEngSelector) {
         targetFormEngSelector.innerHTML = '<option value="">— Select Your Name —</option>';
         cachedEngineers.forEach(eng => {
+          if (appActiveOperatorIdentityString) targetFormEngSelector.value = appActiveOperatorIdentityString;
           let opt = document.createElement("option");
           opt.value = eng; opt.textContent = eng;
           targetFormEngSelector.appendChild(opt);
@@ -1974,7 +1972,6 @@ function returnToDashboard() {
   document.getElementById("module-store-workspace-enclosure-panel").style.display = "none";
   
   // Hide all independent inward/outbound sub-modules views panels cleanly
-  if(document.getElementById("canvas-module-store-invoice-intake")) document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
   if(document.getElementById("canvas-module-store-material-request")) document.getElementById("canvas-module-store-material-request").style.display = "none";
   if(document.getElementById("canvas-module-store-manager-approvals")) document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
   if(document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
@@ -2400,6 +2397,7 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
   
   fupEngSelect.innerHTML = "";
   cachedEngineers.forEach(eng => {
+    if (appActiveOperatorIdentityString) fupEngSelect.value = appActiveOperatorIdentityString;
     let o1 = document.createElement("option"); o1.textContent = eng; fupEngSelect.appendChild(o1);
   });
 
@@ -2422,6 +2420,10 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
 
   taskEngSelect.innerHTML = ""; taskAssignerSelect.innerHTML = "";
   cachedEngineers.forEach(eng => {
+    if (appActiveOperatorIdentityString) {
+      taskEngSelect.value = appActiveOperatorIdentityString;
+      taskAssignerSelect.value = appActiveOperatorIdentityString;
+    }
     let o2 = document.createElement("option"); o2.textContent = eng; taskEngSelect.appendChild(o2);
     let o3 = document.createElement("option"); o3.textContent = eng; taskAssignerSelect.appendChild(o3);
   });
@@ -4839,7 +4841,6 @@ function navigateToStoreWorkspacePanel(targetPanelModuleId) {
   document.getElementById("module-workspace-container").style.display = "none";
 
   // 2. Hide all store sub-modules panels explicitly to ensure no element blending artifact drops
-  if (document.getElementById("canvas-module-store-invoice-intake")) document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
   if (document.getElementById("canvas-module-store-material-request")) document.getElementById("canvas-module-store-material-request").style.display = "none";
   if (document.getElementById("canvas-module-store-manager-approvals")) document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
   if (document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
@@ -4882,8 +4883,6 @@ function navigateToStoreWorkspacePanel(targetPanelModuleId) {
   } else if (targetPanelModuleId === 'store-manager-approvals') {
     document.getElementById("canvas-module-store-manager-approvals").style.display = "block";
     initializeStoreManagerApprovalsWorkspace();
-  } else if (targetPanelModuleId === 'store-invoice-intake') {
-    document.getElementById("canvas-module-store-invoice-intake").style.display = "block";
   } else if (targetPanelModuleId === 'store-history-matrix') {
     document.getElementById("canvas-module-store-history-matrix").style.display = "block";
     initializeStoreHistoryMatrixWorkspace();
@@ -4992,259 +4991,6 @@ function exitStoreWorkspacePanelBackToMenu() {
 
   document.getElementById("dashboard-view").style.display = "flex"; 
   triggerCompanyDropdownArrayFetch(); 
-}
-
-// Handle visual file confirmation indicators for Invoice
-document.getElementById('invoice-image-file').onchange = (e) => {
-  targetInvoiceUploadFileObject = e.target.files[0];
-  const uploadBox = document.getElementById('invoice-upload-box');
-  if (uploadBox && targetInvoiceUploadFileObject) {
-    uploadBox.textContent = "Invoice Added ✅";
-    uploadBox.classList.add('done');
-  }
-};
-
-// Handle visual file confirmation indicators for Challan
-document.getElementById('challan-image-file').onchange = (e) => {
-  targetChallanUploadFileObject = e.target.files[0];
-  const uploadBox = document.getElementById('challan-upload-box');
-  if (uploadBox && targetChallanUploadFileObject) {
-    uploadBox.textContent = "Challan Added ✅";
-    uploadBox.classList.add('done');
-  }
-};
-
-// Update structural cleaner loop rules reset routines
-function resetInvoiceUploadIntakeState() {
-  targetInvoiceUploadFileObject = null;
-  targetChallanUploadFileObject = null;
-  activeParsedInvoicePayloadCache = null;
-  
-  const invBox = document.getElementById('invoice-upload-box');
-  const chkBox = document.getElementById('challan-upload-box');
-  if (invBox) { invBox.textContent = "📷 Select Invoice Image"; invBox.classList.remove('done'); }
-  if (chkBox) { chkBox.textContent = "📷 Select Challan Image"; chkBox.classList.remove('done'); }
-  
-  document.getElementById('invoice-image-file').value = "";
-  document.getElementById('challan-image-file').value = "";
-  document.getElementById('invoice-ai-verification-workspace').style.display = "none";
-  document.getElementById('invoice-verification-table-body').innerHTML = "";
-}
-
-/**
- * 1. RUN GEMINI IMAGE EXTRACTION PIPELINE
- */
-async function parseInboundInvoiceWithAI() {
-  const parseBtn = document.getElementById('invoice-parse-ai-btn');
-  if (!targetInvoiceUploadFileObject && !targetChallanUploadFileObject) {
-    return alert("Please select or capture at least one document image first.");
-  }
-
-  if (parseBtn) {
-    parseBtn.disabled = true;
-    parseBtn.innerHTML = '<div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div> AI Extracting Document Details...';
-  }
-
-  try {
-    const lookupRes = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })
-    });
-    const catalogData = await lookupRes.json();
-    const existingMaterialNamesList = catalogData.success ? catalogData.inventory.map(i => i.materialName) : [];
-
-    const convertToBase64 = file => new Promise((resolve) => {
-      if (!file) { resolve(null); return; }
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(file);
-    });
-
-    // Run conversions concurrently to eliminate execution delays
-    const [invoiceBase64, challanBase64] = await Promise.all([
-      convertToBase64(targetInvoiceUploadFileObject),
-      convertToBase64(targetChallanUploadFileObject)
-    ]);
-
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "storeProcessAIInvoiceBlob",
-        sessionToken: localStorage.getItem("sessionToken"),
-        imageBlobBase64: invoiceBase64,
-        challanBlobBase64: challanBase64, // Appends second base64 data stream to payload
-        canonicalMaterialsCatalog: existingMaterialNamesList
-      })
-    });
-
-    const data = await res.json();
-    if (!data.success) {
-      alert("AI Processing Failed: " + data.error);
-      return;
-    }
-
-    activeParsedInvoicePayloadCache = data.extractedData;
-    renderInvoiceDualSignOffVerificationWorkspace();
-
-  } catch (err) {
-    alert("Invoice Parse Exception: " + err.message);
-  } finally {
-    if (parseBtn) {
-      parseBtn.disabled = false;
-      parseBtn.innerHTML = "Parse Invoice & Challan with AI";
-    }
-  }
-}
-
-/**
- * 2. RENDER DUAL-SIGN-OFF EDIT FORM INPUT ROWS
- * Populates form sheet input text lines letting the store manager verify actual quantities
- */
-function renderInvoiceDualSignOffVerificationWorkspace() {
-  document.getElementById('inv-meta-number').value = activeParsedInvoicePayloadCache.invoiceNumber || "";
-  document.getElementById('inv-meta-vendor').value  = activeParsedInvoicePayloadCache.vendorName || "";
-  document.getElementById('inv-meta-date').value    = activeParsedInvoicePayloadCache.invoiceDate || "";
-
-  const tbody = document.getElementById('invoice-verification-table-body');
-  tbody.innerHTML = "";
-
-  activeParsedInvoicePayloadCache.lineItems.forEach((item, index) => {
-    const tr = document.createElement('tr');
-    
-    // FIXED: Removed the pricing cell completely. Now generating exactly 4 aligned cells.
-    tr.innerHTML = `
-      <td style="color: var(--muted); font-size: 0.8rem; padding: 10px 8px;">${item.rawDescriptionLine}</td>
-      <td style="font-weight: 600; color: var(--text); padding: 10px 8px;">${item.mappedMaterialName}</td>
-      <td style="font-family: monospace; font-weight: 700; padding: 10px 8px;">${item.extractedQuantity}</td>
-      <td style="padding: 6px 8px;">
-        <input type="number" min="0" class="invoice-verification-physical-override-qty" 
-          data-array-index="${index}" value="${item.extractedQuantity}" 
-          style="border-color: var(--brand); font-weight: 700; color: var(--brand); padding: 6px; width: 100%; max-width: 120px;" />
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  document.getElementById('invoice-ai-verification-workspace').style.display = "block";
-}
-
-/**
- * 3. COMMIT VERIFIED BALANCES TO LEDGER
- * Direct-converts raw file data blocks to Base64 strings to write files into Drive folders.
- */
-async function commitVerifiedInvoiceToInventoryLedger() {
-  const submitBtn = document.getElementById('invoice-submit-ledger-btn');
-  const overrideQtyInputs = document.querySelectorAll('.invoice-verification-physical-override-qty');
-  const feedbackBanner = document.getElementById('store-invoice-runtime-inline-feedback-banner');
-  
-  let finalizedActualPhysicalQuantitiesArray = [];
-  overrideQtyInputs.forEach(inputNode => {
-    const idx = parseInt(inputNode.dataset.arrayIndex, 10);
-    const verifiedPhysicalCount = parseInt(inputNode.value, 10);
-    let sourceLineData = activeParsedInvoicePayloadCache.lineItems[idx];
-    sourceLineData.verifiedPhysicalQuantity = isNaN(verifiedPhysicalCount) ? 0 : verifiedPhysicalCount;
-    finalizedActualPhysicalQuantitiesArray.push(sourceLineData);
-  });
-
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = "Processing Drive Uploads...";
-  }
-  if (feedbackBanner) feedbackBanner.style.display = "none";
-
-  try {
-    // Utility worker function maps files to data arrays
-    const getBase64DataString = file => new Promise((resolve) => {
-      if (!file) { resolve(""); return; }
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(file);
-    });
-
-    // Extract raw string blocks concurrently
-    const [invoiceBase64String, challanBase64String] = await Promise.all([
-      getBase64DataString(targetInvoiceUploadFileObject),
-      getBase64DataString(targetChallanUploadFileObject)
-    ]);
-
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "logInboundInvoiceIngest",
-        sessionToken: localStorage.getItem("sessionToken"),
-        activeEngineer: appActiveOperatorIdentityString,
-        invoiceMetadata: {
-          invoiceNumber: activeParsedInvoicePayloadCache.invoiceNumber,
-          vendorName: activeParsedInvoicePayloadCache.vendorName,
-          invoiceDate: activeParsedInvoicePayloadCache.invoiceDate,
-          // Encapsulate images payloads variables off metadata elements object wrapper
-          invoiceImageBase64Raw: invoiceBase64String,
-          challanImageBase64Raw: challanBase64String
-        },
-        actualPhysicalQuantities: finalizedActualPhysicalQuantitiesArray,
-        driveFileUrl: "STUB_MOCK_DRIVE_LINK_PLACEHOLDER"
-      })
-    });
-
-    const output = await res.json();
-    if (output.success) {
-      if (userPermissions.liveStoreStock === true) triggerLiveWarehouseStockMetricsSync();
-      
-      if (feedbackBanner) {
-        feedbackBanner.style.cssText = "display: block; background: #dcfce7; border-color: #15803d; color: #15803d; padding: 16px; margin-bottom: 16px; border-left: 4px solid #15803d;";
-        feedbackBanner.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <strong style="font-size:0.95rem;">Invoice & Chalan Saved to Google Drive!</strong><br/>
-              <span>Invoice No: ${activeParsedInvoicePayloadCache.invoiceNumber} processed successfully.</span>
-            </div>
-            <button class="nav-btn-styled" onclick="resetAndPrepareForNewInvoiceIntakeLoop()" style="background:#15803d; color:white; padding:6px 12px; font-weight:700;">+ Process Another Invoice</button>
-          </div>
-        `;
-      }
-      
-      document.getElementById('invoice-and-chalan-upload-fields-wrapper-group').style.display = "none";
-      document.getElementById('invoice-ai-verification-workspace').style.display = "none";
-      
-    } else {
-      if (feedbackBanner) {
-        feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 14px; margin-bottom: 16px;";
-        feedbackBanner.innerHTML = `<strong>Stock Addition Rejected:</strong> ${output.error}`;
-      }
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = "Verify & Add Stock";
-      }
-    }
-  } catch (error) {
-    if (feedbackBanner) {
-      feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 14px; margin-bottom: 16px;";
-      feedbackBanner.innerHTML = `<strong>Network Transmit Failure:</strong> ${error.message}`;
-    }
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = "Verify & Add Stock";
-    }
-  }
-}
-
-/**
- * RECURRENT LOOP CLEANER
- * Fully resets the screen canvas loop state layout back to fresh base form drop-zones parameters
- */
-function resetAndPrepareForNewInvoiceIntakeLoop() {
-  document.getElementById('store-invoice-runtime-inline-feedback-banner').style.display = "none";
-  
-  // FIXED: Restore the full parent upload card block framework layout visibility immediately
-  document.getElementById('invoice-and-chalan-upload-fields-wrapper-group').style.display = "block";
-  
-  resetInvoiceUploadIntakeState();
-  
-  const submitBtn = document.getElementById('invoice-submit-ledger-btn');
-  if (submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = "Verify & Add Stock"; 
-  }
 }
 
 /**
@@ -5948,10 +5694,34 @@ async function commitGateEntryRecordsToBackend() {
   });
   
   try {
+    // Convert gate files to base64 for Drive storage
+    const convertToBase64 = file => new Promise(resolve => {
+      if (!file) { resolve(""); return; }
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.readAsDataURL(file);
+    });
+    const [invoiceBase64, challanBase64] = await Promise.all([
+      convertToBase64(targetGateInvoiceFileObj),
+      convertToBase64(targetGateChallanFileObj)
+    ]);
+
+    // Local cleanup — no API call needed for short fields
+    const rawVendor  = document.getElementById('gate-meta-vendor').value.trim();
+    const rawInvoice = document.getElementById('gate-meta-invoice').value.trim();
+    const cleanVendorName   = rawVendor.replace(/\s+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const cleanInvoiceNumber = rawInvoice.replace(/\s+/g, '').toUpperCase();
+
     const combinedTimestampString = document.getElementById('gate-meta-date').value.trim() + " " + document.getElementById('gate-meta-time').value.trim();
     const payload = {
       action: "commitGateEntryPipelineStep", sessionToken: localStorage.getItem("sessionToken"), activeEngineer: appActiveOperatorIdentityString,
-      metadata: { invoiceNumber: document.getElementById('gate-meta-invoice').value.trim(), invoiceDate: combinedTimestampString, vendorName: document.getElementById('gate-meta-vendor').value.trim() },
+      metadata: {
+        invoiceNumber: cleanInvoiceNumber,
+        invoiceDate: combinedTimestampString,
+        vendorName: cleanVendorName,
+        invoiceImageBase64Raw: invoiceBase64,
+        challanImageBase64Raw: challanBase64
+      },
       lineItems: activeParsedGatePayloadCache.lineItems
     };
     const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) });
@@ -6354,6 +6124,8 @@ function handleCreateTicketDepartmentChange(chosenDepartmentVal) {
 
   titleLbl.style.color = "var(--brand)";
   staffDrop.disabled = false;
+
+  if (appActiveOperatorIdentityString) staffDrop.value = appActiveOperatorIdentityString;
 }
 
 /**
