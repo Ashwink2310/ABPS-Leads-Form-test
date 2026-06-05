@@ -281,11 +281,15 @@
   </div> 
   
   <div id="module-store-workspace-enclosure-panel" class="workspace-panel" style="display: none; padding: 12px 10px;">
+    
     <div class="navigation-action-header-row" style="margin-bottom: 15px; position: relative; display: flex; align-items: center; justify-content: space-between;">
       <div id="store-panel-left-controls" style="visibility: hidden;">
         <button class="nav-btn-styled" id="live-stock-sync-btn" style="background: var(--brand); padding: 6px 18px; display: inline-flex; align-items: center; gap: 6px;" onclick="triggerLiveWarehouseStockMetricsSync()">Sync</button>
       </div>
-      <span id="store-panel-center-title" style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 1.1rem; font-weight: 700; color: var(--text); letter-spacing: 0.2px; visibility: hidden; white-space: nowrap;">Live Store Stock</span>
+      
+      <!-- FIXED: Added id="store-panel-center-title" to allow dynamic title swapping -->
+      <span id="store-panel-center-title" style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 1.1rem; font-weight: 700; color: var(--text); letter-spacing: 0.2px; visibility: hidden; white-space: nowrap;">Live Raw Materials Store Stock</span>
+      
       <button class="nav-btn-styled" onclick="exitStoreWorkspacePanelBackToMenu()">Return to Main Dashboard</button>
     </div>
 
@@ -4808,11 +4812,73 @@ async function executeBOQLimitIncreaseRequestTransmissionPipeline() {
   }
 }
 
-/**
- * CENTRAL WORKSPACE INTERCEPT ROUTER
- * Programmatically manages display visibility across marketing, warehouse inward, 
- * warehouse outward, and engineering design canvas module containers cleanly.
- */
+function navigateToStoreWorkspacePanel(targetPanelModuleId) {
+  // 1. Hide the primary dashboard menu grid view and the global marketing containers completely
+  document.getElementById("dashboard-view").style.display = "none";
+  document.querySelectorAll("#module-workspace-container .workspace-panel").forEach(p => p.style.display = "none");
+  document.getElementById("module-workspace-container").style.display = "none";
+
+  // 2. Hide all store sub-modules panels explicitly to ensure no element blending artifact drops
+  if (document.getElementById("canvas-module-store-invoice-intake")) document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
+  if (document.getElementById("canvas-module-store-material-request")) document.getElementById("canvas-module-store-material-request").style.display = "none";
+  if (document.getElementById("canvas-module-store-manager-approvals")) document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
+  if (document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
+  if (document.getElementById("canvas-module-store-live-stock")) document.getElementById("canvas-module-store-live-stock").style.display = "none";
+  if (document.getElementById("canvas-module-store-finished-goods-live-stock")) document.getElementById("canvas-module-store-finished-goods-live-stock").style.display = "none";
+  if (document.getElementById("canvas-module-store-gate-entry")) document.getElementById("canvas-module-store-gate-entry").style.display = "none";
+  if (document.getElementById("canvas-module-store-entry")) document.getElementById("canvas-module-store-entry").style.display = "none";
+  if (document.getElementById("canvas-module-store-grn")) document.getElementById("canvas-module-store-grn").style.display = "none";
+
+  // 3. Force reveal the parent enclosure panel wrapper canvas box wide
+  document.getElementById("module-store-workspace-enclosure-panel").style.display = "block";
+
+  // Toggle explicit synchronization header controllers visibility rules context parameters
+  const leftControls = document.getElementById("store-panel-left-controls");
+  const centerTitle = document.getElementById("store-panel-center-title");
+  
+  // Handled explicitly for standard raw materials inventory panels
+  const isLiveStock = targetPanelModuleId === 'store-live-stock';
+  if (leftControls) leftControls.style.visibility = isLiveStock ? "visible" : "hidden";
+  if (centerTitle) {
+    centerTitle.style.visibility = isLiveStock ? "visible" : "hidden";
+    if (isLiveStock) {
+      centerTitle.textContent = "Live Raw Materials Store Stock";
+    }
+  }
+  
+  // Re-map sync action click listener attributes natively back to default
+  const syncBtn = document.getElementById("live-stock-sync-btn");
+  if (syncBtn && isLiveStock) {
+    syncBtn.setAttribute("onclick", "triggerLiveWarehouseStockMetricsSync()");
+  }
+
+  // 4. CORE STORE PIPELINE WORKSPACE GATING SWITCH
+  if (targetPanelModuleId === 'store-material-request') {
+    document.getElementById("canvas-module-store-material-request").style.display = "block";
+    initializeMaterialRequestWorkspace();
+  } else if (targetPanelModuleId === 'store-manager-approvals') {
+    document.getElementById("canvas-module-store-manager-approvals").style.display = "block";
+    initializeStoreManagerApprovalsWorkspace();
+  } else if (targetPanelModuleId === 'store-invoice-intake') {
+    document.getElementById("canvas-module-store-invoice-intake").style.display = "block";
+  } else if (targetPanelModuleId === 'store-history-matrix') {
+    document.getElementById("canvas-module-store-history-matrix").style.display = "block";
+    initializeStoreHistoryMatrixWorkspace();
+  } else if (targetPanelModuleId === 'store-live-stock') {
+    document.getElementById("canvas-module-store-live-stock").style.display = "block";
+    triggerLiveWarehouseStockMetricsSync();
+  } else if (targetPanelModuleId === 'store-gate-entry') {
+    document.getElementById("canvas-module-store-gate-entry").style.display = "block";
+    resetGateEntryWorkspaceState();
+  } else if (targetPanelModuleId === 'store-entry') {
+    document.getElementById("canvas-module-store-entry").style.display = "block";
+    initializeStoreEntryWorkspaceQueue();
+  } else if (targetPanelModuleId === 'store-grn') {
+    document.getElementById("canvas-module-store-grn").style.display = "block";
+    initializeStoreGrnWorkspaceQueue();
+  }
+}
+
 function switchActiveDashboardModule(targetCanvasModuleId) {
   // 1. Hide the primary dashboard menu card view and inline popup filters
   document.getElementById("dashboard-view").style.display = "none";
@@ -4862,6 +4928,21 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
   } else if (targetCanvasModuleId === 'store-live-finished-goods' || targetCanvasModuleId === 'live-finished-goods') {
     document.getElementById("module-store-workspace-enclosure-panel").style.display = "block";
     document.getElementById("canvas-module-store-finished-goods-live-stock").style.display = "block";
+    
+    // Dynamically reassign titles and synchronization parameters to context-target Finished Goods
+    const leftControls = document.getElementById("store-panel-left-controls");
+    const centerTitle = document.getElementById("store-panel-center-title");
+    const syncBtn = document.getElementById("live-stock-sync-btn");
+    
+    if (leftControls) leftControls.style.visibility = "visible";
+    if (centerTitle) {
+      centerTitle.style.visibility = "visible";
+      centerTitle.textContent = "Live Finished Goods Store Stock";
+    }
+    if (syncBtn) {
+      syncBtn.setAttribute("onclick", "triggerLiveFinishedGoodsStoreStockMetricsSync()");
+    }
+    
     triggerLiveFinishedGoodsStoreStockMetricsSync();
   } else if (targetCanvasModuleId === 'store-history-matrix') {
     navigateToStoreWorkspacePanel('store-history-matrix');
@@ -4872,66 +4953,8 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
   } else if (targetCanvasModuleId === 'design-update') {
     navigateToDesignWorkspacePanel('design-update');
   } else if (targetCanvasModuleId === 'finished-goods-add') {
-    // Structural layout stub reservation placeholder for future FG addition workflow
     alert("Add to Finished Goods function wrapper initialized.");
     exitStoreWorkspacePanelBackToMenu();
-  }
-}
-
-/**
- * NAVIGATE TO STORE PANEL CONTROLLER
- * Safely clears active workspace panels without tripping parent element visibility locks.
- */
-function navigateToStoreWorkspacePanel(targetPanelModuleId) {
-  // 1. Hide the primary dashboard menu grid view and the global marketing containers completely
-  document.getElementById("dashboard-view").style.display = "none";
-  document.querySelectorAll("#module-workspace-container .workspace-panel").forEach(p => p.style.display = "none");
-  document.getElementById("module-workspace-container").style.display = "none";
-
-  // 2. Hide all store sub-modules panels explicitly to ensure no element blending artifact drops
-  if (document.getElementById("canvas-module-store-invoice-intake")) document.getElementById("canvas-module-store-invoice-intake").style.display = "none";
-  if (document.getElementById("canvas-module-store-material-request")) document.getElementById("canvas-module-store-material-request").style.display = "none";
-  if (document.getElementById("canvas-module-store-manager-approvals")) document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
-  if (document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
-  if (document.getElementById("canvas-module-store-live-stock")) document.getElementById("canvas-module-store-live-stock").style.display = "none";
-  if (document.getElementById("canvas-module-store-gate-entry")) document.getElementById("canvas-module-store-gate-entry").style.display = "none";
-  if (document.getElementById("canvas-module-store-entry")) document.getElementById("canvas-module-store-entry").style.display = "none";
-  if (document.getElementById("canvas-module-store-grn")) document.getElementById("canvas-module-store-grn").style.display = "none";
-
-  // 3. Force reveal the parent enclosure panel wrapper canvas box wide
-  document.getElementById("module-store-workspace-enclosure-panel").style.display = "block";
-
-  // Toggle explicit synchronization header controllers visibility rules context parameters
-  const leftControls = document.getElementById("store-panel-left-controls");
-  const centerTitle = document.getElementById("store-panel-center-title");
-  const isLiveStock = targetPanelModuleId === 'store-live-stock';
-  if (leftControls) leftControls.style.visibility = isLiveStock ? "visible" : "hidden";
-  if (centerTitle) centerTitle.style.visibility = isLiveStock ? "visible" : "hidden";
-
-  // 4. CORE STORE PIPELINE WORKSPACE GATING SWITCH
-  if (targetPanelModuleId === 'store-material-request') {
-    document.getElementById("canvas-module-store-material-request").style.display = "block";
-    initializeMaterialRequestWorkspace();
-  } else if (targetPanelModuleId === 'store-manager-approvals') {
-    document.getElementById("canvas-module-store-manager-approvals").style.display = "block";
-    initializeStoreManagerApprovalsWorkspace();
-  } else if (targetPanelModuleId === 'store-invoice-intake') {
-    document.getElementById("canvas-module-store-invoice-intake").style.display = "block";
-  } else if (targetPanelModuleId === 'store-history-matrix') {
-    document.getElementById("canvas-module-store-history-matrix").style.display = "block";
-    initializeStoreHistoryMatrixWorkspace();
-  } else if (targetPanelModuleId === 'store-live-stock') {
-    document.getElementById("canvas-module-store-live-stock").style.display = "block";
-    triggerLiveWarehouseStockMetricsSync();
-  } else if (targetPanelModuleId === 'store-gate-entry') {
-    document.getElementById("canvas-module-store-gate-entry").style.display = "block";
-    resetGateEntryWorkspaceState();
-  } else if (targetPanelModuleId === 'store-entry') {
-    document.getElementById("canvas-module-store-entry").style.display = "block";
-    initializeStoreEntryWorkspaceQueue();
-  } else if (targetPanelModuleId === 'store-grn') {
-    document.getElementById("canvas-module-store-grn").style.display = "block";
-    initializeStoreGrnWorkspaceQueue();
   }
 }
 
@@ -5680,11 +5703,15 @@ showAppView = async function() {
   if (userPermissions && userPermissions.liveStoreStock === true) {
     // Background polling routine tracks panel visibility status keys before hitting server
     setInterval(() => {
-      const liveStockPanel = document.getElementById("canvas-module-store-live-stock");
-      if (liveStockPanel && liveStockPanel.style.display === "block") {
-        triggerLiveWarehouseStockMetricsSync();
-      }
-    }, 30000); // Polls every 30 seconds to lock real-time stock balances parity
+    const liveStockPanel = document.getElementById("canvas-module-store-live-stock");
+    const liveFinishedPanel = document.getElementById("canvas-module-store-finished-goods-live-stock");
+    
+    if (liveStockPanel && liveStockPanel.style.display === "block") {
+      triggerLiveWarehouseStockMetricsSync();
+    } else if (liveFinishedPanel && liveFinishedPanel.style.display === "block") {
+      triggerLiveFinishedGoodsStoreStockMetricsSync();
+    }
+  }, 30000);// Polls every 30 seconds to lock real-time stock balances parity
   }
 };
 
@@ -6769,9 +6796,6 @@ async function triggerLiveFinishedGoodsStoreStockMetricsSync() {
   const mountZone = document.getElementById("dashboard-finished-goods-live-inventory-mount-zone");
   const syncBtn = document.getElementById("live-stock-sync-btn");
   if (!mountZone) return;
-
-  mountZone.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--brand); font-weight:700;"><div class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin 0.6s linear infinite;margin-right:8px;vertical-align:middle;"></div>Syncing Live Finished Goods Ledger balances...</div>`;
-
   try {
     const res = await fetch(GAS_URL, {
       method: "POST",
