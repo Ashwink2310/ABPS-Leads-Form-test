@@ -1100,7 +1100,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycby4bRV1h1KAS2LGSNV_H4OBZRMEKghwDG1oS_jvDs0shUj4PofPFI-ftoPX85CPMpFQLA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzbN-uKLEcrl8u0WN_TgawVQsOxZbwNlSCUnr0UgjOBDMBSiRBV74Aerdl691DYY1Xdiw/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -4238,6 +4238,9 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   }
   if (document.getElementById("mod-store-ticket")) {
     document.getElementById("mod-store-ticket").style.display = canCreateTicket ? "block" : "none";
+  }
+  if (document.getElementById("mod-finished-goods-add")) {
+    document.getElementById("mod-finished-goods-add").style.display = userPermissionsObject.addFinishedGoods === true ? "block" : "none";
   }
   if (document.getElementById("mod-store-approvals")) {
     document.getElementById("mod-store-approvals").style.display = canReleaseTicket ? "block" : "none";
