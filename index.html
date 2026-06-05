@@ -1100,7 +1100,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz0Uf5_aMlZhI9gKHiOWqHDXHCVQ_OVfiA00fbXiWBMSJy9WUCGhRj91KbRxCkPvQ2xIQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyXsR-KkoW-HqtsGRxNubLtwonawMFGI3-oYdkE6bzVJHTm_bCPk6rzkjR6ZH7-p5he-A/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -6491,7 +6491,7 @@ async function executeBOQProjectQueryLookupSearch() {
   
   if (!projectId) return alert("Please select a target Project ID code first.");
   
-  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--brand); font-weight:700;">Loading Blueprint Configuration Records...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--brand); font-weight:700;">Loading BOQ Records...</td></tr>`;
   viewport.style.display = "block";
   
   const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchActiveBOQRecordsByProject", sessionToken: localStorage.getItem("sessionToken"), projectId: projectId }) });
@@ -6510,7 +6510,7 @@ async function executeBOQProjectQueryLookupSearch() {
         </tr>`;
     });
   } else {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--warn); font-weight:700;">No active Bill of Quantity for this project id yet.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--warn); font-weight:700;">No active Bill of Quantity for this Project ID</td></tr>`;
   }
 }
 
@@ -6575,32 +6575,38 @@ async function executeBOQDocumentUploadSubmit(modeString) {
     const data = await response.json();
     
     if (data.success) {
-      // 4. DISPLAY PERSISTENT BANNER CARD WITH VERSION INDICATOR UPON SUCCESS
+      // Hide input fields explicitly for the active mode container box
+      if (isNew) {
+        document.getElementById("boq-upload-staff-dropdown").parentNode.style.display = "none";
+        document.getElementById("boq-upload-project-dropdown").parentNode.style.display = "none";
+        document.getElementById("boq-upload-file-dropzone").style.display = "none";
+        btn.style.display = "none";
+      } else {
+        document.getElementById("boq-update-search-results-viewport").style.display = "none";
+        const updateSearchRow = document.querySelector("#canvas-module-design-update div[style*='display:flex']");
+        if (updateSearchRow) updateSearchRow.style.display = "none";
+      }
+      
+      // DISPLAY PERSISTENT BANNER WITH ADD-ANOTHER ACTION BUTTON
       banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 16px; border-radius: var(--radius); margin-bottom: 15px; text-align: left;";
       banner.innerHTML = `
-        <strong>Success! Bill of Quantity Processing Complete.</strong><br/>
-        Project ID reference blueprint synchronized live onto ledger databases under version handle: 
-        <span style="font-family: monospace; font-weight: 800; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #15803d; color: #111827; margin-left: 4px;">v${data.version}</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <strong style="font-size: 1rem;">Success! Bill of Quantity Processing Complete.</strong><br/>
+            <span style="font-size: 0.9rem; font-weight: 600;">Project ID <strong>${projectId}</strong> Bill of Quantity version: 
+              <span style="font-family: monospace; font-weight: 800; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #15803d; color: #111827; margin-left: 4px;">v${data.version}</span>
+            </span>
+          </div>
+          <button class="nav-btn-styled" onclick="resetBOQUploadWorkspaceToInitialState('${isNew ? 'NEW' : 'UPDATE'}')" style="background: #15803d; color: white; padding: 10px 18px; font-weight: 700;">
+            + Add Another BOQ Document
+          </button>
+        </div>
       `;
-      
-      // 5. RESIZE & RESET THE RESPECTIVE MODULE DISPATCH BLOCKS VISUAL FOOTPRINTS
-      if (isNew) {
-        document.getElementById("boq-upload-file-dropzone").textContent = "📷 Select or Capture Bill of Quantity Document Page Image";
-        document.getElementById("boq-upload-file-dropzone").classList.remove("done");
-        document.getElementById("boq-upload-file-raw").value = "";
-      } else {
-        document.getElementById("boq-revision-file-dropzone").textContent = "📷 Select Revised BOQ Document Page Image";
-        document.getElementById("boq-revision-file-dropzone").classList.remove("done");
-        document.getElementById("boq-revision-file-raw").value = "";
-        
-        // RE-INITIALIZE WORKSPACE QUEUE: Instantly pulls and updates view tables showing rewritten lines
-        executeBOQProjectQueryLookupSearch();
-      }
       
       // Free file pointer memory
       targetBOQUploadFileRawObject = null;
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } 
+    }
     else {
       alert("Processing Error: " + (data.error || "The server rejected this document structure layout format parameters."));
       btn.disabled = false;
@@ -6617,6 +6623,66 @@ async function executeBOQDocumentUploadSubmit(modeString) {
       btn.textContent = isNew ? "Parse BOQ Document" : "Commit BOQ Change";
     }
   }
+}
+
+/**
+ * RESET BOQ UPLOAD WORKSPACE TO INITIAL STATE
+ * Restores all hidden form elements, clears file pointers, and re-syncs dropdowns 
+ * to prepare the workspace for a fresh new BOQ document upload submission.
+ */
+function resetBOQUploadWorkspaceToInitialState(modeString) {
+  const isNew = modeString === "NEW";
+  const banner = document.getElementById(isNew ? "design-upload-feedback-banner" : "design-update-feedback-banner");
+  const btn = document.getElementById(isNew ? "boq-upload-submit-action-btn" : "boq-revision-submit-action-btn");
+  
+  // 1. Wipe the success message banner panel
+  if (banner) {
+    banner.style.display = "none";
+    banner.innerHTML = "";
+  }
+  
+  // 2. Restore input form field visibility states
+  if (isNew) {
+    document.getElementById("boq-upload-staff-dropdown").parentNode.style.display = "block";
+    document.getElementById("boq-upload-project-dropdown").parentNode.style.display = "block";
+    
+    const dropzone = document.getElementById("boq-upload-file-dropzone");
+    dropzone.style.display = "block";
+    dropzone.textContent = "📷 Select or Capture Bill of Quantity Document Page Image";
+    dropzone.classList.remove("done");
+    
+    document.getElementById("boq-upload-file-raw").value = "";
+    
+    if (btn) {
+      btn.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Parse BOQ Document";
+    }
+  } else {
+    const dropzone = document.getElementById("boq-revision-file-dropzone");
+    dropzone.style.display = "block";
+    dropzone.textContent = "📷 Select Revised BOQ Document Page Image";
+    dropzone.classList.remove("done");
+    
+    document.getElementById("boq-revision-file-raw").value = "";
+    
+    if (btn) {
+      btn.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Commit BOQ Change";
+    }
+    
+    const updateSearchRow = document.querySelector("#canvas-module-design-update div[style*='display:flex']");
+    if (updateSearchRow) updateSearchRow.style.display = "flex";
+    
+    // Refresh the viewport with latest BOQ
+    executeBOQProjectQueryLookupSearch();
+  }
+  
+  // 3. Free file pointer memory
+  targetBOQUploadFileRawObject = null;
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
