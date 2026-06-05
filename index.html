@@ -393,7 +393,7 @@
           </div>
         </div>
 
-        <div style="background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: var(--radius); margin-bottom: 16px; opacity: 0.5;" id="wrapper-ticket-add-item-zone">
+        <div style="background: #f8fafc; border: 1px solid var(--border); padding: 10px; border-radius: var(--radius); margin-bottom: 14px; opacity: 0.5;" id="wrapper-ticket-add-item-zone">
           <span style="display: block; font-size: 0.72rem; font-weight: 800; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">Add Item</span>
           <div style="display: flex; gap: 10px; align-items: flex-end;">
             <div style="flex-grow: 1;">
@@ -6380,7 +6380,7 @@ async function handleCreateTicketProjectChange(chosenProjectVal) {
       addBtn.style.cursor = "pointer";
     } else {
       itemDrop.innerHTML = '<option value="">⚠️ No BOQ Allotted for this Project</option>';
-      alert("Design Configuration Failure: This Project ID does not possess an uploaded Bill of Quantity blueprint yet.");
+      alert("Design Configuration Failure: This Project ID does not have an uploaded Bill of Quantity");
     }
   } catch(e) {
     console.error("BOQ filtration setup crash:", e);
