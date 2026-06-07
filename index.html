@@ -213,9 +213,9 @@
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
         <div class="nav-group-title-label" style="font-size: 0.8rem; color: var(--brand); font-weight: 800; margin-bottom: 8px;">Upload Documents</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
+                    <div class="menu-card" id="mod-purchase-order" onclick="navigateToModule('purchaseOrder')">Upload Purchase Order</div>
           <div class="menu-card" id="mod-dispatch-bill" onclick="navigateToModule('dispatchBill')">Upload Dispatched Bill</div>
           <div class="menu-card" id="mod-commissioning-report" onclick="navigateToModule('commissioningReport')">Upload Commissioning Report</div>
-          <div class="menu-card" id="mod-purchase-order" onclick="navigateToModule('purchaseOrder')">Upload Purchase Order</div>
         </div>
       </div>
 
@@ -224,9 +224,9 @@
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-company" onclick="navigateToModule('searchCompany')">Search by Company Name</div>
           <div class="menu-card" id="mod-qual" onclick="navigateToModule('searchQualification')">Search by Type of Customer</div>
-          <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')">Search Tasks by ABPS Engineer Name and Status</div>
           <div class="menu-card" id="mod-status" onclick="navigateToModule('searchStatus')">Search Leads by ABPS Engineer Name and Status</div>
           <div class="menu-card" id="mod-city-state" onclick="navigateToModule('searchCityState')">Search by City, State and Country</div>
+          <div class="menu-card" id="mod-tasks" onclick="navigateToModule('searchTasks')">Search Tasks by ABPS Engineer Name and Status</div>
         </div>
       </div>
     </div>
@@ -309,8 +309,9 @@
         </div>
 
         <div id="gate-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
             <div><label class="field-label">Invoice Number</label><input type="text" id="gate-meta-invoice" style="background:#f1f5f9;" /></div>
+            <div><label class="field-label">Challan Number</label><input type="text" id="gate-meta-challan" placeholder="If available" style="background:#f1f5f9;" /></div>
             <div><label class="field-label">Vendor Name</label><input type="text" id="gate-meta-vendor" style="background:#f1f5f9;" /></div>
             <div><label class="field-label">Date</label><input type="text" id="gate-meta-date" style="background:#f1f5f9;" /></div>
             <input type="hidden" id="gate-meta-time" value="" />
@@ -368,8 +369,7 @@
           <div>
             <label class="field-label" style="font-weight: 700; color: var(--brand);">Production Department / Outgoing Use *</label>
             <select id="ticket-department-outgoing-dropdown" onchange="handleCreateTicketDepartmentChange(this.value)" disabled style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600; opacity: 0.5; cursor: not-allowed;">
-              <option value="">— Choose Store First —</option>  
-              option value="">— Select Department —</option>
+              <option value="">— Choose Store First —</option>
               <option value="Reactor">Reactor</option>
               <option value="Capacitor">Capacitor</option>
               <option value="Panel">Panel</option>
@@ -1156,9 +1156,59 @@
   </div>
 </div>
 
+<div id="reusable-child-modules-template" style="display:none;">
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+    <button class="nav-btn-styled trigger-fup-open" style="background:var(--brand);">+ Log Follow-Up</button>
+    <button class="nav-btn-styled trigger-fup-close" style="display:none; background:#718096;">Cancel</button>
+  </div>
+  
+  <div class="template-fup-form" style="display:none; grid-template-columns:1fr 1fr; gap:8px; background:#f8fafc; padding:10px; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:8px;">
+    <input type="hidden" class="fup-is-edit-flag" value="false">
+    <input type="hidden" class="fup-leadid-input">
+    <input type="hidden" class="fup-num-input">
+    <div><label class="field-label">Follow-Up Status</label><select class="fup-status-select"><option value="Pending">Pending</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select></div>
+    <div><label class="field-label">Engineer Name</label><select class="fup-eng-select"></select></div>
+    <div><label class="field-label">Next Follow-Up Date</label><input type="date" class="fup-nexttarget-input"></div>
+    <div><label class="field-label">Next Follow-Up Time</label><select class="fup-nexttime-select"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></div>
+    <div><label class="field-label">NQ1 — Send Company Profile</label><select class="fup-nq1"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ2 — Send Technical Presentation</label><select class="fup-nq2"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ3 — Arrange Site Visit</label><select class="fup-nq3"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ4 — Get Enquiry</label><select class="fup-nq4"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ5 — Send Offer</label><select class="fup-nq5"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ6 — Follow-Up Required</label><select class="fup-nq6"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div style="grid-column:span 2;"><label class="field-label">Follow-Up Notes *</label><textarea class="fup-notes-input" style="min-height:50px;"></textarea></div>
+    <div style="grid-column:span 2; display:flex; justify-content:flex-end;">
+      <button class="nav-btn-styled commit-fup-btn-trigger" style="background:var(--accent); padding:8px 20px;">Save Follow-Up</button>
+    </div>
+  </div>
+
+  <div class="template-timeline-box" style="margin-bottom:12px;"></div>
+  
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+    <button class="nav-btn-styled trigger-task-open" style="background:var(--brand);">+ Add Task</button>
+    <button class="nav-btn-styled trigger-task-close" style="display:none; background:#718096;">Cancel</button>
+  </div>
+
+  <div class="template-task-form" style="display:none; grid-template-columns:1fr 1fr; gap:8px; background:#f0fdf4; padding:10px; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:8px;">
+    <input type="hidden" class="task-edit-id">
+    <div><label class="field-label">Task Type</label><select class="task-type-select"><option value="Site Visit">Site Visit</option><option value="Call">Call</option><option value="Email">Email</option><option value="Meeting">Meeting</option><option value="Proposal">Proposal</option><option value="Other">Other</option></select></div>
+    <div><label class="field-label">Task Status</label><select class="task-status-select"><option value="Assigned">Assigned</option><option value="In Progress">In Progress</option><option value="Under Review">Under Review</option><option value="Resolved">Resolved</option></select></div>
+    <div><label class="field-label">Assigned To (Engineer)</label><select class="task-eng-select"></select></div>
+    <div><label class="field-label">Assigned By</label><select class="task-assigner-select"></select></div>
+    <div><label class="field-label">Shift / Time Slot</label><select class="task-shift-select"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></div>
+    <div><label class="field-label">Target Date *</label><input type="date" class="task-targetdate-input"></div>
+    <div style="grid-column:span 2;"><label class="field-label">Task Description *</label><textarea class="task-desc-input" style="min-height:45px;"></textarea></div>
+    <div style="grid-column:span 2; display:flex; justify-content:flex-end;">
+      <button class="nav-btn-styled commit-task-btn-trigger" style="background:var(--accent); padding:8px 20px;">Save Task</button>
+    </div>
+  </div>
+
+  <div class="template-task-box" style="margin-bottom:8px;"></div>
+</div>
+
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxpBeHBBRtmoWsBnkMKc0kz9BCshMAH6wkappVTRwrgsUBT72Cwwu7fjkOfiWIx5uKLzg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw_e2SP_ND_VcF4MEv8lYrSy7vzsGYlayJKUNwXw67Qd-9LyoZQKw9c0jtXu9cFN7c1Fg/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1801,11 +1851,11 @@ async function showAppView() {
       if (targetFormEngSelector) {
         targetFormEngSelector.innerHTML = '<option value="">— Select Your Name —</option>';
         cachedEngineers.forEach(eng => {
-          if (appActiveOperatorIdentityString) targetFormEngSelector.value = appActiveOperatorIdentityString;
           let opt = document.createElement("option");
           opt.value = eng; opt.textContent = eng;
           targetFormEngSelector.appendChild(opt);
         });
+        if (appActiveOperatorIdentityString) targetFormEngSelector.value = appActiveOperatorIdentityString;
       }
       
       // 2. SEARCH BY ENGINEER FILTER DROPDOWN
@@ -2002,7 +2052,7 @@ function returnToDashboard() {
  */
 function resetSequentialFormState() {
   document.getElementById('remaining-sections-form').style.display = 'block';
-  document.getElementById('success-screen').style.display = 'none';
+  if (document.getElementById('success-screen')) document.getElementById('success-screen').style.display = 'none';
   
   // 1. Loop and clear all baseline input tags, textareas, and select elements
   const inputs = document.querySelectorAll('#remaining-sections-form input, #remaining-sections-form textarea, #remaining-sections-form select');
@@ -2375,7 +2425,12 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
     activeSearchRef = leadRef; 
     buildTargetedLeadsFormCanvas(leadRef, leadMap);
     
-    const templateClone = document.getElementById("reusable-child-modules-template").cloneNode(true);
+    const templateSource = document.getElementById("reusable-child-modules-template");
+    if (!templateSource) {
+      console.error("View Details broken: reusable-child-modules-template not found in DOM.");
+      return;
+    }
+    const templateClone = templateSource.cloneNode(true);
     templateClone.style.display = "block"; templateClone.id = 'active-modules-clone-' + leadRef;
     
     setupIsolatedModuleTriggersAndActions(leadRef, templateClone);
@@ -2397,9 +2452,9 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
   
   fupEngSelect.innerHTML = "";
   cachedEngineers.forEach(eng => {
-    if (appActiveOperatorIdentityString) fupEngSelect.value = appActiveOperatorIdentityString;
     let o1 = document.createElement("option"); o1.textContent = eng; fupEngSelect.appendChild(o1);
   });
+  if (appActiveOperatorIdentityString) fupEngSelect.value = appActiveOperatorIdentityString;
 
   fupOpen.onclick = function() {
     fupForm.querySelector(".fup-is-edit-flag").value = "false";
@@ -2420,13 +2475,13 @@ function setupIsolatedModuleTriggersAndActions(leadRef, nodeScope) {
 
   taskEngSelect.innerHTML = ""; taskAssignerSelect.innerHTML = "";
   cachedEngineers.forEach(eng => {
-    if (appActiveOperatorIdentityString) {
-      taskEngSelect.value = appActiveOperatorIdentityString;
-      taskAssignerSelect.value = appActiveOperatorIdentityString;
-    }
     let o2 = document.createElement("option"); o2.textContent = eng; taskEngSelect.appendChild(o2);
     let o3 = document.createElement("option"); o3.textContent = eng; taskAssignerSelect.appendChild(o3);
   });
+  if (appActiveOperatorIdentityString) {
+    taskEngSelect.value = appActiveOperatorIdentityString;
+    taskAssignerSelect.value = appActiveOperatorIdentityString;
+  }
 
   taskOpen.onclick = function() {
     taskForm.querySelector(".task-edit-id").value = ""; taskForm.querySelector(".task-desc-input").value = "";
@@ -3672,7 +3727,13 @@ function injectMatrixInlineTaskForm(taskItem, parentCardNode) {
     return;
   }
 
-  const templateClone = document.getElementById("reusable-child-modules-template").cloneNode(true);
+  const templateSource = document.getElementById("reusable-child-modules-template");
+  if (!templateSource) {
+    console.error("Task form broken: reusable-child-modules-template not found in DOM.");
+    return;
+  }
+  const templateClone = templateSource.cloneNode(true);
+  
   const coreTaskForm = templateClone.querySelector(".template-task-form");
   
   const taskEngSelect = coreTaskForm.querySelector(".task-eng-select");
@@ -3811,6 +3872,9 @@ async function executeLeadMatrixFilterSearch() {
       globalFollowUpsCacheMap = data.followups;
       globalTasksCacheMap = data.tasks;
       buildMultiContactDirectoryInterface(data.leads, "");
+      document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
+        <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568; margin-bottom: 10px; display:none;">Back to Search</button>
+      `;
       canvas.style.display = "block";
       document.getElementById("workspace-searchStatus").appendChild(canvas);
     }
@@ -4847,7 +4911,6 @@ function navigateToStoreWorkspacePanel(targetPanelModuleId) {
   if (document.getElementById("canvas-module-store-live-stock")) document.getElementById("canvas-module-store-live-stock").style.display = "none";
   if (document.getElementById("canvas-module-store-finished-goods-live-stock")) document.getElementById("canvas-module-store-finished-goods-live-stock").style.display = "none";
   if (document.getElementById("canvas-module-finished-goods-add")) document.getElementById("canvas-module-finished-goods-add").style.display = "none";
-  if (document.getElementById("canvas-module-finished-goods-add")) document.getElementById("canvas-module-finished-goods-add").style.display = "none";
   if (document.getElementById("canvas-module-store-gate-entry")) document.getElementById("canvas-module-store-gate-entry").style.display = "none";
   if (document.getElementById("canvas-module-store-entry")) document.getElementById("canvas-module-store-entry").style.display = "none";
   if (document.getElementById("canvas-module-store-grn")) document.getElementById("canvas-module-store-grn").style.display = "none";
@@ -5549,7 +5612,7 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
             <div>
               <strong>Upload Successful!</strong><br/>
-              <span><strong>${data.matchedCompany}</strong> status updated to <strong>${isDispatch ? 'Offer Dispatched' : 'Offer Commissioned'}</strong>.</span>
+              <span><strong>${data.matchedCompany}</strong> status updated to <strong>${isDispatch ? 'Order Dispatched' : (opsFlagTypeString === 'PURCHASE_ORDER' ? 'Order Received' : 'Product Commissioned')}</strong>.</span>
             </div>
             <button class="nav-btn-styled" onclick="
               targetDispatchBillFileObj = null;
@@ -5640,6 +5703,7 @@ async function parseGateDocumentsWithAI() {
     
     document.getElementById('gate-meta-invoice').value = activeParsedGatePayloadCache.invoiceNumber || "";
     document.getElementById('gate-meta-vendor').value = activeParsedGatePayloadCache.vendorName || "";
+    document.getElementById('gate-meta-challan').value = activeParsedGatePayloadCache.challanNumber || "";
     
     let rawDateObj = new Date();
     if (activeParsedGatePayloadCache.invoiceDate) {
@@ -5660,8 +5724,8 @@ async function parseGateDocumentsWithAI() {
     activeParsedGatePayloadCache.lineItems.forEach(item => {
       tbody.innerHTML += `<tr>
         <td style="width:160px;"><input type="text" class="gate-row-item-code-input" value="${item.itemCode || ""}" placeholder="Item Code..." style="font-size:0.85rem; padding:4px; font-weight:700; border:1px solid var(--border); text-align:center;"></td>
-        <td style="text-align:left; padding:8px;">${item.rawDescriptionLine || "Line Item Description"}</td>
-        <td style="font-weight:600; color:var(--brand); text-align:left; padding:8px;">${item.mappedMaterialName || item.rawDescriptionLine}</td>
+        <td style="text-align:left; padding:8px; font-size:0.82rem; color:var(--muted);">${item.rawDescriptionLine || "Line Item Description"}</td>
+        <td style="padding:6px;"><input type="text" class="gate-row-material-name-input" value="${(item.mappedMaterialName || item.rawDescriptionLine || "").replace(/"/g, '&quot;')}" style="font-weight:600; color:var(--brand); font-size:0.88rem; padding:5px; border:1.5px solid var(--brand); border-radius:3px; width:100%;"></td>
         <td style="font-family:monospace; font-weight:700; text-align:center; width:140px;">${item.extractedQuantity}</td>
       </tr>`;
     });
@@ -5686,10 +5750,14 @@ async function commitGateEntryRecordsToBackend() {
   const codeInputs = document.querySelectorAll('.gate-row-item-code-input');
   const tableRows = document.querySelectorAll('#gate-verification-table-body tr');
 
+  const materialInputs = document.querySelectorAll('.gate-row-material-name-input');
   activeParsedGatePayloadCache.lineItems.forEach((item, idx) => {
     item.itemCode = codeInputs[idx] ? codeInputs[idx].value.trim() : "";
+    if (materialInputs[idx] && materialInputs[idx].value.trim()) {
+      item.mappedMaterialName = materialInputs[idx].value.trim();
+    }
     if (!item.rawDescriptionLine && tableRows[idx]) {
-      item.rawDescriptionLine = tableRows[idx].cells[1].textContent.trim(); 
+      item.rawDescriptionLine = tableRows[idx].cells[1].textContent.trim();
     }
   });
   
@@ -5709,14 +5777,17 @@ async function commitGateEntryRecordsToBackend() {
     // Local cleanup — no API call needed for short fields
     const rawVendor  = document.getElementById('gate-meta-vendor').value.trim();
     const rawInvoice = document.getElementById('gate-meta-invoice').value.trim();
-    const cleanVendorName   = rawVendor.replace(/\s+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const rawChallan = document.getElementById('gate-meta-challan').value.trim();
+    const cleanVendorName    = rawVendor.replace(/\s+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     const cleanInvoiceNumber = rawInvoice.replace(/\s+/g, '').toUpperCase();
+    const cleanChallanNumber = rawChallan.replace(/\s+/g, '').toUpperCase();
 
     const combinedTimestampString = document.getElementById('gate-meta-date').value.trim() + " " + document.getElementById('gate-meta-time').value.trim();
     const payload = {
       action: "commitGateEntryPipelineStep", sessionToken: localStorage.getItem("sessionToken"), activeEngineer: appActiveOperatorIdentityString,
       metadata: {
         invoiceNumber: cleanInvoiceNumber,
+        challanNumber: cleanChallanNumber,
         invoiceDate: combinedTimestampString,
         vendorName: cleanVendorName,
         invoiceImageBase64Raw: invoiceBase64,
@@ -5774,7 +5845,7 @@ async function initializeStoreEntryWorkspaceQueue() {
           <td style="font-weight:600; color:var(--text); text-align:left; padding:6px; word-wrap:break-word; white-space:normal;">${line.mappedMaterialName}</td>
           <td style="font-family:monospace; font-weight:700; text-align:center; width:100px; padding:6px;">${line.extractedQuantity}</td>
           <td style="text-align:center; width:180px; padding:6px;"><input type="number" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.extractedQuantity}" style="width:100px; font-weight:700; text-align:center; border: 1.5px solid var(--brand); padding:6px;"></td>
-          <td style="padding:6px;"><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Transit damage details..." style="font-size:0.85rem; padding:6px;"></td>
+          <td style="padding:6px;"><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Reason for short / missing supply..." style="font-size:0.85rem; padding:6px;"></td>
         </tr>`;
       });
       
@@ -5799,6 +5870,7 @@ async function initializeStoreEntryWorkspaceQueue() {
               <div>
                 <span style="background:var(--brand);color:#fff; padding:3px 8px; font-weight:700;">GATE ID: ${item.gateNumber}</span>
                 <span style="background:#e0f2fe;color:#0369a1;font-weight:700; margin-left:4px;">INVOICE: ${item.invoiceNumber}</span>
+              ${item.challanNumber ? `<span style="background:#f0fdf4;color:#15803d;font-weight:700; margin-left:4px;">CHALLAN: ${item.challanNumber}</span>` : ''}
               </div>
               <span style="background:#cbd5e1;color:#1e293b;font-weight:700; font-size:0.8rem; padding:3px 8px;">${cleanDateDisplay}</span>
             </div>
@@ -5809,7 +5881,7 @@ async function initializeStoreEntryWorkspaceQueue() {
         </div>
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
           <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
-            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Description of Material</th><th style="text-align:center; width:100px;">Billed Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Transit Damage Description</th></tr></thead>
+            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Description of Material</th><th style="text-align:center; width:100px;">Billed Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Reason for Short Supply</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
           <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--accent);" onclick="commitStoreEntryVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Generate Raw Materials Store Entry</button></div>
@@ -5836,7 +5908,7 @@ async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
     itemData.lineItems[parseInt(inp.dataset.idx, 10)].verifiedPhysicalQuantity = parseInt(inp.value, 10) || 0;
   });
   document.querySelectorAll(`.se-damage-desc-${gateNum}`).forEach(inp => {
-    itemData.lineItems[parseInt(inp.dataset.idx, 10)].transitDamageDescription = inp.value.trim() || "No Transit Damage";
+    itemData.lineItems[parseInt(inp.dataset.idx, 10)].reasonForShortSupply = inp.value.trim() || "No Short Supply";
   });
   
   try {
@@ -5860,7 +5932,7 @@ async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; text-align:left;">
           <div>
             <strong>Success! Raw Materials Store Entry Generated.</strong><br/>
-            <span>Assigned Code Reference: <strong style="font-family:monospace; font-size:1.05rem; color:#111827;">${data.storeEntryNumber}</strong></span>
+            <span>Inward Number: <strong style="font-family:monospace; font-size:1.05rem; color:#111827;">${data.inwardNumber}</strong></span>
           </div>
           <button class="nav-btn-styled" onclick="
             document.getElementById('store-entry-runtime-feedback-banner').style.display = 'none';
@@ -5899,13 +5971,28 @@ async function initializeStoreGrnWorkspaceQueue() {
         const activeReceivedQtyCount = parseInt(line.verifiedPhysicalQuantity, 10) || 0;
         
         trs += `<tr>
-          <td style="width:150px; padding:6px;"><input type="text" class="grn-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCodeNumber || ""}" placeholder="MANDATORY CODE *" style="padding:4px; font-weight:700; border: 1.5px solid var(--brand); background:#fffef0; text-align:center;"></td>
-          <td style="font-weight:600; color:var(--text); text-align:left; padding:6px; word-wrap:break-word; white-space:normal;">${line.mappedMaterialName}</td>
-          <td style="font-family:monospace; font-weight:700; text-align:center; width:100px; padding:6px;">${activeReceivedQtyCount}</td>
-          <td style="text-align:center; width:100px; padding:6px;"><select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:4px; font-weight:700;"><option value="No" selected>No</option><option value="Yes">Yes</option></select></td>
-          <td style="text-align:center; width:120px; padding:6px;"><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${activeReceivedQtyCount}" value="${activeReceivedQtyCount}" style="width:90px; border-color:var(--brand); font-weight:700; text-align:center;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
-          <td style="text-align:center; width:100px; padding:6px;"><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:80px; background:#f1f5f9; text-align:center; font-weight:700;" readonly></td>
-          <td style="padding:6px;"><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Provide rejection details..." style="font-size:0.85rem; padding:6px;"></td>
+          <td style="width:140px; padding:5px;"><input type="text" class="grn-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCodeNumber || ""}" placeholder="CODE *" style="padding:4px; font-weight:700; border:1.5px solid var(--brand); background:#fffef0; text-align:center;"></td>
+          <td style="font-weight:600; color:var(--text); text-align:left; padding:6px; word-wrap:break-word; white-space:normal; font-size:0.82rem;">${line.mappedMaterialName}</td>
+          <td style="font-family:monospace; font-weight:700; text-align:center; width:80px; padding:6px;">${activeReceivedQtyCount}</td>
+          <td style="text-align:center; width:80px; padding:5px;"><select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:4px; font-weight:700; font-size:0.82rem;"><option value="No" selected>No</option><option value="Yes">Yes</option></select></td>
+          <td style="text-align:center; width:100px; padding:5px;"><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${activeReceivedQtyCount}" value="${activeReceivedQtyCount}" style="width:80px; border-color:var(--brand); font-weight:700; text-align:center;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
+          <td style="text-align:center; width:80px; padding:5px;"><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:65px; background:#f1f5f9; text-align:center; font-weight:700;" readonly></td>
+          <td style="text-align:right; width:100px; padding:5px;"><input type="number" class="grn-rate-${item.gateNumber}" data-idx="${idx}" value="${line.ratePerQuantity || 0}" style="width:90px; text-align:right; background:#f8fafc; font-weight:600;" readonly></td>
+          <td style="text-align:center; width:55px; padding:5px;"><input type="number" class="grn-gst-${item.gateNumber}" data-idx="${idx}" value="18" min="0" max="100" style="width:48px; text-align:center; padding:4px;" oninput="updateGrnRowAmounts('${item.gateNumber}', ${idx})"></td>
+          <td style="text-align:right; width:110px; padding:5px;"><input type="number" class="grn-total-basic-${item.gateNumber}" data-idx="${idx}" value="0" style="width:100px; text-align:right; background:#e0f2fe; font-weight:700; color:#0369a1;" readonly></td>
+          <td style="text-align:right; width:120px; padding:5px;"><input type="number" class="grn-total-invoice-${item.gateNumber}" data-idx="${idx}" value="0" style="width:110px; text-align:right; background:#dcfce7; font-weight:700; color:#15803d;" readonly></td>
+          <td style="padding:5px;"><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Rejection details..." style="font-size:0.82rem; padding:5px; min-width:130px;"></td>
+          <td style="padding:5px; min-width:210px;">
+            <select class="grn-action-${item.gateNumber}" data-idx="${idx}" style="width:100%; font-size:0.8rem; padding:4px; margin-bottom:3px;" onchange="handleGrnActionChange(this, '${item.gateNumber}', ${idx})">
+              <option value="">— N/A —</option>
+              <option value="Return to Vendor for Replacement">Return to Vendor for Replacement</option>
+              <option value="Return to Vendor for Repair">Return to Vendor for Repair</option>
+              <option value="Ask Vendor to repair at ABPS">Ask Vendor to repair at ABPS</option>
+              <option value="Ask ABPS to Repair at ABPS">Ask ABPS to Repair at ABPS</option>
+              <option value="Others">Others</option>
+            </select>
+            <input type="text" class="grn-action-others-${item.gateNumber}" data-idx="${idx}" placeholder="Specify action..." style="display:none; width:100%; font-size:0.8rem; padding:4px;">
+          </td>
         </tr>`;
       });
 
@@ -5927,8 +6014,10 @@ async function initializeStoreGrnWorkspaceQueue() {
           <div class="contact-summary-title-info" style="width:100%;">
             <div class="meta-row-line-block" style="display:flex; justify-content:space-between; width:100%; align-items:center;">
               <div>
-                <span style="background:var(--accent); color:#fff; padding:3px 8px; font-weight:700;">STORE ID: ${item.storeEntryNumber || "SE-PENDING"}</span>
+                <span style="background:var(--accent); color:#fff; padding:3px 8px; font-weight:700;">INWARD: ${item.inwardNumber || "PENDING"}</span>
+                ${item.grnNumber ? `<span style="background:#dcfce7; color:#15803d; font-weight:700; padding:3px 8px; margin-left:4px;">GRN: ${item.grnNumber}</span>` : ''}
                 <span style="background:#edf2f7; color:var(--text); margin-left:4px; font-weight:700;">GATE ref: ${item.gateNumber}</span>
+                ${item.challanNumber ? `<span style="background:#f0fdf4;color:#15803d;font-weight:700; margin-left:4px;">CHALLAN: ${item.challanNumber}</span>` : ''}
               </div>
               <span style="background:#cbd5e1; color:#1e293b; font-weight:700; text-transform:none; font-size:0.8rem; padding:3px 8px;">${cleanDateDisplay}</span>
             </div>
@@ -5941,13 +6030,18 @@ async function initializeStoreGrnWorkspaceQueue() {
           <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
             <thead>
               <tr>
-                <th style="width:150px; text-align:center;">Item Code Number</th>
-                <th style="text-align:left;">Description of Material</th>
-                <th style="width:100px; text-align:center;">Received Qty</th>
-                <th style="width:100px; text-align:center;">Q/A Done</th>
-                <th style="width:120px; text-align:center;">OK Qty *</th>
-                <th style="width:100px; text-align:center;">Not OK Qty</th>
-                <th>Rejection Details Description</th>
+                <th style="width:140px; text-align:center;">Item Code</th>
+                <th style="text-align:left;">Material</th>
+                <th style="width:80px; text-align:center;">Rcvd Qty</th>
+                <th style="width:80px; text-align:center;">Q/A Done</th>
+                <th style="width:100px; text-align:center;">OK Qty *</th>
+                <th style="width:80px; text-align:center;">Not OK</th>
+                <th style="width:100px; text-align:right;">Rate/Unit (₹)</th>
+                <th style="width:55px; text-align:center;">GST %</th>
+                <th style="width:110px; text-align:right;">Basic Amt (₹)</th>
+                <th style="width:120px; text-align:right;">Incl GST (₹)</th>
+                <th>Rejection Details</th>
+                <th style="min-width:210px;">Action for Rejected Material</th>
               </tr>
             </thead>
             <tbody>${trs}</tbody>
@@ -5957,8 +6051,37 @@ async function initializeStoreGrnWorkspaceQueue() {
           </div>
         </div>`;
       feed.appendChild(card);
+      // Initialise amount calculations for all rows after card is in DOM
+      item.lineItems.forEach((line, idx) => { updateGrnRowAmounts(item.gateNumber, idx); });
     });
   } catch(e) { feed.innerHTML = `<p style="color:var(--warn);">${e.message}</p>`; }
+}
+
+function updateGrnRowCalculations(qaInput, idx) {
+  const gateQty    = parseInt(qaInput.dataset.gate,    10) || 0;
+  const transitRej = parseInt(qaInput.dataset.transit, 10) || 0;
+  const qaRej      = parseInt(qaInput.value,           10) || 0;
+  const okQty      = Math.max(0, gateQty - transitRej - qaRej);
+  const okInput    = document.querySelector(`.grn-ok-qty-input[data-idx="${idx}"]`);
+  if (okInput) { okInput.value = okQty; }
+  updateGrnRowAmounts(idx);
+}
+
+function updateGrnRowAmounts(gateNum, idx) {
+  const okQty      = parseFloat(document.querySelector(`.grn-ok-${gateNum}[data-idx="${idx}"]`)?.value)          || 0;
+  const rate       = parseFloat(document.querySelector(`.grn-rate-${gateNum}[data-idx="${idx}"]`)?.value)         || 0;
+  const gstPct     = parseFloat(document.querySelector(`.grn-gst-${gateNum}[data-idx="${idx}"]`)?.value)          || 0;
+  const totalBasic = okQty * rate;
+  const totalInv   = totalBasic * (1 + gstPct / 100);
+  const basicEl    = document.querySelector(`.grn-total-basic-${gateNum}[data-idx="${idx}"]`);
+  const invEl      = document.querySelector(`.grn-total-invoice-${gateNum}[data-idx="${idx}"]`);
+  if (basicEl) basicEl.value = totalBasic.toFixed(2);
+  if (invEl)   invEl.value   = totalInv.toFixed(2);
+}
+
+function handleGrnActionChange(selectEl, gateNum, idx) {
+  const othersInput = document.querySelector(`.grn-action-others-${gateNum}[data-idx="${idx}"]`);
+  if (othersInput) othersInput.style.display = selectEl.value === "Others" ? "block" : "none";
 }
 
 async function commitGrnVerificationToBackend(gateNum, encodedItem) {
@@ -5973,33 +6096,34 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
   const codeInputs = document.querySelectorAll(`.grn-item-code-${gateNum}`);
   
   itemData.lineItems.forEach((line, idx) => {
-    const qa = document.querySelector(`.grn-qa-${gateNum}[data-idx="${idx}"]`).value;
-    const ok = parseInt(document.querySelector(`.grn-ok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
+    const qa    = document.querySelector(`.grn-qa-${gateNum}[data-idx="${idx}"]`).value;
+    const ok    = parseInt(document.querySelector(`.grn-ok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
     const notOk = parseInt(document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`).value, 10) || 0;
-    const desc = document.querySelector(`.grn-rej-desc-${gateNum}[data-idx="${idx}"]`).value.trim();
+    const desc  = document.querySelector(`.grn-rej-desc-${gateNum}[data-idx="${idx}"]`).value.trim();
+    const rate  = parseFloat(document.querySelector(`.grn-rate-${gateNum}[data-idx="${idx}"]`).value) || 0;
+    const gst   = parseFloat(document.querySelector(`.grn-gst-${gateNum}[data-idx="${idx}"]`).value) || 0;
+    const totalBasic   = parseFloat(document.querySelector(`.grn-total-basic-${gateNum}[data-idx="${idx}"]`).value) || 0;
+    const totalInvoice = parseFloat(document.querySelector(`.grn-total-invoice-${gateNum}[data-idx="${idx}"]`).value) || 0;
+    const actionSel    = document.querySelector(`.grn-action-${gateNum}[data-idx="${idx}"]`)?.value || "";
+    const actionOthers = document.querySelector(`.grn-action-others-${gateNum}[data-idx="${idx}"]`)?.value.trim() || "";
+    const actionFinal  = actionSel === "Others" ? ("Others: " + actionOthers) : actionSel;
     
     const itemCodeVal = codeInputs[idx] ? codeInputs[idx].value.trim() : "";
     
-    // MANDATORY CHECK 1: Ensure Item Code is provided
-    if (!itemCodeVal) {
-      codeMissing = true;
-    }
+    if (!itemCodeVal)            codeMissing = true;
+    if (qa !== "Yes")            qaIncomplete = true;
+    if (ok + notOk !== line.verifiedPhysicalQuantity) validationError = true;
     
-    // MANDATORY CHECK 2: All Q/A Done options must explicitly be changed to "Yes"
-    if (qa !== "Yes") {
-      qaIncomplete = true;
-    }
-    
-    // MANDATORY CHECK 3: Balance validation rules
-    if (ok + notOk !== line.verifiedPhysicalQuantity) {
-      validationError = true;
-    }
-    
-    line.itemCodeNumber = itemCodeVal;
-    line.qaDoneOption = qa; 
-    line.okQuantity = ok; 
-    line.notOkQuantity = notOk; 
-    line.rejectionDetailsDescription = desc; // Captures real form inputs explicitly
+    line.itemCodeNumber              = itemCodeVal;
+    line.qaDoneOption                = qa;
+    line.okQuantity                  = ok;
+    line.notOkQuantity               = notOk;
+    line.rejectionDetailsDescription = desc;
+    line.ratePerQuantity             = rate;
+    line.gstPercentage               = gst;
+    line.totalBasicAmount            = totalBasic;
+    line.totalInvoiceAmount          = totalInvoice;
+    line.actionForRejectedMaterial   = actionFinal;
   });
   
   if (qaIncomplete) {
@@ -6037,7 +6161,8 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
       banner.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; text-align:left;">
           <div>
-            <strong>Success! GRN Certified & Stock Balances Updated.</strong>
+            <strong>Success! GRN Certified & Stock Balances Updated.</strong><br/>
+            <span style="font-size:0.88rem; font-weight:600;">GRN Number: <span style="font-family:monospace; font-weight:800; background:#fff; padding:2px 6px; border-radius:4px; border:1px solid #15803d; color:#111827;">${data.grnNumber || "GRN-ISSUED"}</span></span>
           </div>
           <button class="nav-btn-styled" onclick="
             document.getElementById('store-grn-runtime-feedback-banner').style.display = 'none';
@@ -6063,6 +6188,7 @@ function autoBalanceGrnQuantities(okInput, gateNum, idx) {
   if (okVal < 0) { okVal = 0; okInput.value = 0; }
   const notOkInput = document.querySelector(`.grn-notok-${gateNum}[data-idx="${idx}"]`);
   if (notOkInput) notOkInput.value = max - okVal;
+  updateGrnRowAmounts(gateNum, idx);
 }
 
 /**
@@ -6210,8 +6336,13 @@ async function handleCreateTicketProjectChange(chosenProjectVal) {
 }
 
 function navigateToDesignWorkspacePanel(targetModuleId) {
+  if (!userPermissions.uploadBOQ && !userPermissions.updateBOQ) {
+    alert("Access Denied: You do not have permission to access the Bill of Quantity workspace.");
+    return;
+  }
   // 1. Un-nest and minimize homepage structures
   document.getElementById("dashboard-view").style.display = "none";
+
   if (document.getElementById("module-workspace-container")) {
     document.getElementById("module-workspace-container").style.display = "none";
   }
