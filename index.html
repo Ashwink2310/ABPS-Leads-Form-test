@@ -1512,8 +1512,9 @@ async function parseCard() {
       document.getElementById("f-address").value = resultData.address || "";
       
       // Injected clean target location assignments
-      if (document.getElementById("f-city")) document.getElementById("f-city").value = resultData.city || "";
-      if (document.getElementById("f-state")) document.getElementById("f-state").value = resultData.state || "";
+      if (document.getElementById("f-city"))    document.getElementById("f-city").value    = resultData.city    || "";
+      if (document.getElementById("f-state"))   document.getElementById("f-state").value   = resultData.state   || "";
+      if (document.getElementById("f-country")) document.getElementById("f-country").value = resultData.country || "";
       
     } else {
       alert("AI Parsing failed");
