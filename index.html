@@ -1996,6 +1996,19 @@ async function navigateToModule(key) {
 
     currentActiveModuleContext = (key === "cardDetails") ? "CARD" : (key === "searchCompany" ? "DROPDOWN" : "FILTERS");
     resetSequentialFormState();
+
+    if (key === "cardDetails") {
+      fileFront = null; fileBack = null;
+      const fb = document.getElementById('front-box'); if (fb) { fb.textContent = '📷 Front Side '; fb.classList.remove('done'); }
+      const bb = document.getElementById('back-box'); if (bb) { bb.textContent = '📷 Back Side (Optional)'; bb.classList.remove('done'); }
+      const fi = document.getElementById('card-front'); if (fi) fi.value = '';
+      const bi = document.getElementById('card-back'); if (bi) bi.value = '';
+      ['f-company','f-name','f-position','f-phone','f-altphone','f-email','f-website','f-city','f-state','f-country','f-address'].forEach(function(id){ const el=document.getElementById(id); if(el) el.value=''; });
+      document.getElementById('step1-card-capture-block').style.display = 'block';
+      document.getElementById('step2-new-entry-dropdown').style.display = 'none';
+      document.getElementById('step2-inline-interaction-canvas').style.display = 'none';
+      document.getElementById('missing-trigger-notice-block').style.display = 'none';
+    }
     
     // Runtime synchronization switches
     if (key === "searchCompany") {
@@ -3457,8 +3470,12 @@ async function submitLead() {
               const fi = document.getElementById('card-front'); if (fi) fi.value = '';
               const bi = document.getElementById('card-back'); if (bi) bi.value = '';
               ['f-company','f-name','f-position','f-phone','f-altphone','f-email','f-website','f-city','f-state','f-country','f-address'].forEach(function(id){ const el=document.getElementById(id); if(el) el.value=''; });
+              document.getElementById('step2-new-entry-dropdown').style.display = 'none';
+              document.getElementById('step2-inline-interaction-canvas').style.display = 'none';
+              document.getElementById('missing-trigger-notice-block').style.display = 'none';
+              document.getElementById('global-direct-inline-create-entry-btn').style.display = 'none';
+              document.getElementById('global-direct-inline-collapse-entry-btn').style.display = 'none';
               resetSequentialFormState();
-              revealNewEntryFormDropdown();
             " style="background: #166534; color: white; padding: 8px 16px; font-weight: 700;">
               + Create New Entry
             </button>
