@@ -642,13 +642,17 @@
           <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter Company Name..." />
           <label class="field-label">Contact Name</label><input type="text" id="f-name" />
           <label class="field-label">Position</label><input type="text" id="f-position" />
-          <label class="field-label">Phone</label><input type="tel" id="f-phone" />
-          <label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" />
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div><label class="field-label">Phone</label><input type="tel" id="f-phone" /></div>
+            <div><label class="field-label">Alt Phone</label><input type="tel" id="f-altphone" /></div>
+          </div>
           <label class="field-label">Email</label><input type="email" id="f-email" />
           <label class="field-label">Website</label><input type="url" id="f-website" />
-          <label class="field-label">City *</label><input type="text" id="f-city" />
-          <label class="field-label">State *</label><input type="text" id="f-state" />
-          <label class="field-label">Country *</label><input type="text" id="f-country" placeholder="e.g. India" />
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+            <div><label class="field-label">City *</label><input type="text" id="f-city" /></div>
+            <div><label class="field-label">State *</label><input type="text" id="f-state" /></div>
+            <div><label class="field-label">Country *</label><input type="text" id="f-country" placeholder="e.g. India" /></div>
+          </div>
           <label class="field-label">Address</label><textarea id="f-address" style="min-height:28px;"></textarea>
           
           <button class="btn btn-sub" id="gate-search-btn" onclick="triggerSequentialSearch('CARD')" style="margin-top:6px;">Search Database</button>
@@ -1215,7 +1219,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwDjPsWV9WOqu84VC1MNbqnQd_VhmJrIPQJG34Dd3pLk0F31uJAoNizXP79YYywG70Kqg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzAO_Rv0Tb2naQCoXAo74fMXHmvu6RkIskWAKPCP4_9IDerAskUMcdaPhMWaXkFhQSelg/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
