@@ -1244,6 +1244,7 @@ let activeSearchRef = "";
 let activeSearchCompany = "";
 let currentFollowUpCount = 0;
 let currentActiveModuleContext = "CARD"; 
+let canvasLastParentWorkspaceId = "workspace-searchCompany";
 let targetDispatchBillFileObj = null;
 let targetCommissioningReportFileObj = null;
 let targetPurchaseOrderFileObj = null;
@@ -1799,7 +1800,7 @@ async function triggerCityStateQuerySearchExecution() {
      if (data.success) {
         const canvas = document.getElementById("step2-inline-interaction-canvas");
         
-        // FIXED: Explicitly append to active viewport anchor before altering style fields
+        canvasLastParentWorkspaceId = "workspace-searchCityState";
         document.getElementById("workspace-searchCityState").appendChild(canvas);
         
         document.getElementById("canvas-back-btn-enclosure-row").innerHTML = `
@@ -3049,10 +3050,23 @@ function exitCanvasToCardView() {
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
   document.getElementById("step2-inline-interaction-canvas").style.display = "none";
   document.getElementById("missing-trigger-notice-block").style.display = "none";
-  if(currentActiveModuleContext === "CARD") document.getElementById("step1-card-capture-block").style.display = "block";
-  if(currentActiveModuleContext === "DROPDOWN") {
-      document.getElementById("company-dropdown-selector-block").style.display = "block";
-      triggerCompanyDropdownArrayFetch();
+  if (currentActiveModuleContext === "CARD") {
+    document.getElementById("step1-card-capture-block").style.display = "block";
+  } else if (currentActiveModuleContext === "DROPDOWN") {
+    document.getElementById("company-dropdown-selector-block").style.display = "block";
+    triggerCompanyDropdownArrayFetch();
+  } else {
+    // FILTERS context — show the search form in whichever workspace last had results
+    const filterInputMap = {
+      "workspace-searchStatus":        "status-search-section",
+      "workspace-searchEngineer":      "engineer-search-section",
+      "workspace-searchQualification": "qualification-search-section",
+      "workspace-searchCityState":     "city-state-search-section"
+    };
+    const sectionId = filterInputMap[canvasLastParentWorkspaceId];
+    if (sectionId && document.getElementById(sectionId)) {
+      document.getElementById(sectionId).style.display = "block";
+    }
   }
 }
 
@@ -3659,6 +3673,7 @@ async function triggerQualificationSearch() {
             document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
             globalFollowUpsCacheMap = data.followups; globalTasksCacheMap = data.tasks;
             buildMultiContactDirectoryInterface(data.leads, "");
+            canvasLastParentWorkspaceId = "workspace-searchQualification";
             canvas.style.display = "block"; document.getElementById("workspace-searchQualification").appendChild(canvas);
         }
     } catch(e) { alert(e.message); } finally { btn.classList.remove("loading"); btn.textContent = "Search Qualifications"; }
@@ -3687,6 +3702,7 @@ async function triggerStatusSearch() {
             document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
             globalFollowUpsCacheMap = data.followups; globalTasksCacheMap = data.tasks;
             buildMultiContactDirectoryInterface(data.leads, "");
+            canvasLastParentWorkspaceId = "workspace-searchStatus";
             canvas.style.display = "block"; document.getElementById("workspace-searchStatus").appendChild(canvas);
         } else { alert(data.error || "No leads found with this status."); }
     } catch(e) { alert(e.message); } finally { btn.classList.remove("loading"); btn.textContent = "Search Leads"; }
@@ -3714,6 +3730,7 @@ async function triggerEngineerSearch() {
           document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
           globalFollowUpsCacheMap = data.followups; globalTasksCacheMap = data.tasks;
           buildMultiContactDirectoryInterface(data.leads, "");
+          canvasLastParentWorkspaceId = "workspace-searchEngineer";
           canvas.style.display = "block"; document.getElementById("workspace-searchEngineer").appendChild(canvas);
         } else { alert("No leads found for this engineer."); }
     } catch(e) { alert(e.message); } finally { btn.classList.remove("loading"); btn.textContent = "Search Leads"; }
@@ -3948,6 +3965,7 @@ async function executeLeadMatrixFilterSearch() {
         <button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568; margin-bottom: 10px; display:none;">Back to Search</button>
       `;
       canvas.style.display = "block";
+      canvasLastParentWorkspaceId = "workspace-searchStatus";
       document.getElementById("workspace-searchStatus").appendChild(canvas);
     }
   } catch(e) {
