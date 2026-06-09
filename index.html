@@ -6124,7 +6124,7 @@ async function initializeStoreGrnWorkspaceQueue() {
             </div>
             <div style="font-size:0.85rem; margin-top:8px; color:var(--muted); font-weight:600; padding-left:2px;">
               Vendor Name: <strong style="color:var(--brand); font-weight:700;">${item.vendorName}</strong> | 
-              Invoice Number: <strong style="color:var(--text); font-weight:700;">${item.invoiceNumber}</strong>${item.challanNumber ? ' | <strong style="color:var(--text); font-weight:700;">CHALLAN Number: ' + item.challanNumber + '</strong>' : ''}
+              Invoice Number: <strong style="color:var(--text); font-weight:700;">${item.invoiceNumber}</strong>${item.challanNumber ? ' | CHALLAN Number: <strong style="color:var(--text); font-weight:700;">' + item.challanNumber + '</strong>' : ''}
             </div>
           </div>
         </div>
@@ -6133,8 +6133,8 @@ async function initializeStoreGrnWorkspaceQueue() {
             <thead>
               <tr>
                 <th style="width:140px; text-align:center;">Item Code</th>
-                <th style="text-align:left;">Material</th>
-                <th style="width:80px; text-align:center;">Rcvd Qty</th>
+                <th style="text-align:left;">Material Name</th>
+                <th style="width:80px; text-align:center;">Received Qty</th>
                 <th style="width:80px; text-align:center;">Q/A Done</th>
                 <th style="width:100px; text-align:center;">OK Qty *</th>
                 <th style="width:80px; text-align:center;">Not OK</th>
