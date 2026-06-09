@@ -846,7 +846,7 @@
     </div>
 
     <div id="missing-trigger-notice-block" style="display:none;">
-      <p>No record matched your target company inputs.</p>
+      <p>No Record Matched Your Target Company Inputs.</p>
       <button class="btn btn-sub" id="reveal-new-entry-btn" onclick="revealNewEntryFormDropdown()" style="width:auto; display:inline-flex; padding:4px 10px; font-size:0.75rem;">Create New Entry</button>
     </div>
 
@@ -872,7 +872,7 @@
           </div>
 
           <div style="margin-bottom: 12px;">
-            <label class="field-label">Engineer Name *</label>
+            <label class="field-label" placeholder="— Select ABPS Engineer Name —"> Engineer Name *</label>
             <select id="engName" style="padding: 8px; font-weight: 600;">
               <option value="">— Loading Engineers —</option>
             </select>
@@ -1506,7 +1506,7 @@ async function parseCard() {
       document.getElementById("f-name").value = resultData.name || "";
       document.getElementById("f-position").value = resultData.position || "";
       document.getElementById("f-phone").value = resultData.phone || "";
-      document.getElementById("f-altphone").value = resultData.altPhone || "";
+      document.getElementById("f-altphone").value = (resultData.altPhone || "").replace(/,/g, ", ");
       document.getElementById("f-email").value = resultData.email || "";
       document.getElementById("f-website").value = resultData.website || "";
       document.getElementById("f-address").value = resultData.address || "";
