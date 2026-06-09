@@ -1223,6 +1223,8 @@
     </div>
   </div>
 
+  <div class="doc-info-mount-point" style="margin-top: 12px;"></div>
+
   <div class="template-task-box" style="margin-bottom:8px;"></div>
 </div>
 
@@ -2498,7 +2500,8 @@ function toggleContactExpansionView(leadRef, encodedLeadMap) {
     currentFollowUpCount = globalFollowUpsCacheMap[leadRef] ? globalFollowUpsCacheMap[leadRef].length : 0;
     renderIsolatedFollowUpTimeline(leadRef, globalFollowUpsCacheMap[leadRef] || [], templateClone);
     renderIsolatedTaskItemsList(leadRef, globalTasksCacheMap[leadRef] || [], templateClone);
-    
+    renderIsolatedDocumentInfoSection(leadRef, leadMap["Lead ID"] || leadRef, templateClone);
+
     drawer.style.display = "block"; triggerBtn.textContent = "Collapse Details";
   }
 }
@@ -2582,7 +2585,7 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
     { type: "SEC3", keys: ["Low Power Factor Issue", "High Electricity Bill Issue", "Harmonics Issue", "Transformer Heating / Breakdown Issue", "Grid Stability Issue", "Tender Inquire", "Existing System Details", "Voltage Level Requirements", "Contract Demand (MVA)"] }, 
     { type: "SEC4", keys: ["Existing Project", "Products Discussed", "Expected Tender / RFQ Date", "Approx Requirement"] },
     { type: "SEC5", keys: ["Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Send Offer", "Follow-Up Required"] },
-    { type: "PO", keys: ["Purchase Order Summary"] }
+
   ];
 
   customSectionLayout.forEach((sec, secIdx) => {
@@ -2906,15 +2909,6 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           mainWrapper.appendChild(txtBox);
         }
         cell.appendChild(mainWrapper);
-      } else if (key === "Purchase Order Summary") {
-        // READ-ONLY: AI-populated field, not editable from this form
-        let poDisplay = document.createElement("textarea");
-        poDisplay.value = leadMap[key] || "No Purchase Order uploaded yet.";
-        poDisplay.readOnly = true;
-        poDisplay.style.cssText = "min-height: 70px; background: #f1f5f9; color: #475569; font-style: italic; font-size: 0.82rem; cursor: default; border-color: #cbd5e1;";
-        // No live-lead-field-input class — intentionally excluded from save payload
-        cell.appendChild(poDisplay);
-        cell.className += " span-two-units";
       } else if (["Technical Discussion Summary", "Company Address", "Company Name", "Problem Observed", "Existing System Details"].indexOf(key) !== -1) {
         let inpTypeElement = (key === "Technical Discussion Summary" || key === "Company Address") ? document.createElement("textarea") : document.createElement("input");
         inpTypeElement.type = "text"; inpTypeElement.className = 'live-lead-field-input-' + leadRef; inpTypeElement.dataset.headerKey = key;
@@ -6977,6 +6971,86 @@ async function submitFinishedGoodsAddEntry() {
     alert("Network error: " + err.message);
     submitBtn.disabled = false;
     submitBtn.textContent = "Add to Finished Goods Store";
+  }
+}
+
+async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
+  const mount = scopeNode.querySelector(".doc-info-mount-point");
+  if (!mount) return;
+  mount.innerHTML = '<p style="color:var(--muted); font-size:0.82rem; padding:8px 0;">Loading document info...</p>';
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "fetchUploadedDocumentInfo", sessionToken: localStorage.getItem("sessionToken"), leadId: leadId })
+    });
+    const data = await res.json();
+
+    if (!data.success || !data.row) {
+      mount.innerHTML = '';
+      return;
+    }
+
+    const row = data.row;
+
+    const poFields = [
+      "Project ID", "Purchase Order Number", "Purchase Order Date", "Committed Delivery Date",
+      "Purchase Order Product Name", "Purchase Order Summary", "Basic Purchase Order Amount (in Rs)",
+      "Purchase Order GST Amount", "Purchase Order Total Amount", "Payment Terms",
+      "Name of ABPS Owner of Order", "Purchase Order Warranty Terms", "ABG Required", "Scope of Work"
+    ];
+    const dispatchFields = [
+      "Dispatched Bill Invoice Number", "Dispatched Bill Invoice Date", "Customer PO Number",
+      "Customer PO Date", "Basic Dispatched Bill Amount (in Rs)", "Dispatched Bill GST Amount",
+      "Total Dispatched Bill Amount"
+    ];
+    const commissionFields = [
+      "Date of Product Commissioning", "Commissioning ABPS Engineer Name",
+      "Commissioned Product", "Customer Contact Person"
+    ];
+
+    const hasPO         = poFields.some(f => row[f] && row[f] !== "");
+    const hasDispatch   = dispatchFields.some(f => row[f] && row[f] !== "");
+    const hasCommission = commissionFields.some(f => row[f] && row[f] !== "");
+
+    if (!hasPO && !hasDispatch && !hasCommission) {
+      mount.innerHTML = '';
+      return;
+    }
+
+    const renderFieldRow = (label, value) => {
+      if (!value || value === "") return "";
+      return `<div style="display:flex; flex-direction:column; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:6px 8px; min-width:0; word-break:break-word;">
+        <span style="font-size:0.62rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-bottom:2px;">${label}</span>
+        <span style="font-size:0.82rem; font-weight:600; color:var(--text);">${value}</span>
+      </div>`;
+    };
+
+    const renderSection = (title, color, fields) => {
+      const hasData = fields.some(f => row[f] && row[f] !== "");
+      if (!hasData) return "";
+      const fieldsHtml = fields.map(f => renderFieldRow(f, row[f])).join("");
+      return `
+        <div style="margin-bottom:12px;">
+          <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:${color}; background:${color}18; padding:4px 10px; border-radius:4px; margin-bottom:8px; letter-spacing:0.5px;">
+            ${title}
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:6px;">
+            ${fieldsHtml}
+          </div>
+        </div>`;
+    };
+
+    mount.innerHTML = `
+      <div style="border-top:2px solid var(--border); padding-top:12px; margin-top:4px;">
+        <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--text); margin-bottom:10px; letter-spacing:0.5px;">📄 Uploaded Documents</div>
+        ${renderSection("Purchase Order", "#0056b3", poFields)}
+        ${renderSection("Dispatched Bill", "#059669", dispatchFields)}
+        ${renderSection("Commissioning Report", "#7c3aed", commissionFields)}
+      </div>`;
+
+  } catch(e) {
+    mount.innerHTML = '';
   }
 }
 
