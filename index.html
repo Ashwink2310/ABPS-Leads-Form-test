@@ -309,7 +309,7 @@
         </div>
 
         <div id="gate-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px;">
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
             <div><label class="field-label">Invoice Number</label><input type="text" id="gate-meta-invoice" style="background:#f1f5f9;" /></div>
             <div><label class="field-label">Challan Number</label><input type="text" id="gate-meta-challan" placeholder="If available" style="background:#f1f5f9;" /></div>
             <div><label class="field-label">Vendor Name</label><input type="text" id="gate-meta-vendor" style="background:#f1f5f9;" /></div>
@@ -1028,8 +1028,8 @@
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
-            <div><label class="field-label">Purchase Inquire</label><input type="text" id="purchaseInquire" placeholder="Enter Name of End User" /></div>
-            <div><label class="field-label">Tender Inquire</label><input type="text" id="tenderInquire" placeholder="Enter Name of End User" /></div>
+            <div><label class="field-label">Purchase Inquire</label><input type="text" id="purchaseInquire" placeholder="Name of End User" /></div>
+            <div><label class="field-label">Tender Inquire</label><input type="text" id="tenderInquire" placeholder="Name of End User" /></div>
           </div>
 
           <div style="margin-bottom: 12px;">
@@ -2727,8 +2727,8 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
         label.style.display = "none";
         let wrapper = document.createElement("div"); wrapper.style.cssText = "display: flex; flex-direction: column; gap: 6px; width:100%;";
         wrapper.innerHTML = `
-          <div><span style="font-size:0.58rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Tender Inquire</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Tender Inquire" placeholder="Enter Name of End User" value="${leadMap["Tender Inquire"] || ""}"></div>
-          <div><span style="font-size:0.58rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Purchase Inquire</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Purchase Inquire" placeholder="Enter Name of End User" value="${leadMap["Purchase Inquire"] || ""}"></div>
+          <div><span style="font-size:0.58rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Tender Inquire</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Tender Inquire" placeholder="Name of End User" value="${leadMap["Tender Inquire"] || ""}"></div>
+          <div><span style="font-size:0.58rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Purchase Inquire</span><input type="text" class="live-lead-field-input-${leadRef}" data-header-key="Purchase Inquire" placeholder="Name of End User" value="${leadMap["Purchase Inquire"] || ""}"></div>
         `;
         cell.appendChild(wrapper);
       }
