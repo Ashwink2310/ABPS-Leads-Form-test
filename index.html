@@ -640,7 +640,7 @@
           <button class="btn btn-ai" id="parse-btn" onclick="parseCard()">Parse Card with AI</button>
           
           <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter Company Name..." />
-          <label class="field-label">Contact Name</label><input type="text" id="f-name" />
+          <label class="field-label">Contact Person Name</label><input type="text" id="f-name" />
           <label class="field-label">Position</label><input type="text" id="f-position" />
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             <div><label class="field-label">Phone</label><input type="tel" id="f-phone" /></div>
@@ -651,7 +651,7 @@
           <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
             <div><label class="field-label">City *</label><input type="text" id="f-city" /></div>
             <div><label class="field-label">State *</label><input type="text" id="f-state" /></div>
-            <div><label class="field-label">Country *</label><input type="text" id="f-country" placeholder="e.g. India" /></div>
+            <div><label class="field-label">Country *</label><input type="text" id="f-country" /></div>
           </div>
           <label class="field-label">Address</label><textarea id="f-address" style="min-height:28px;"></textarea>
           
@@ -1487,6 +1487,10 @@ async function parseCard() {
     const data = await res.json();
     
     // 3. Drill down into the Gemini API raw response text node wrapper
+    if (data && data.error) {
+      alert("AI Parsing failed: " + data.error.message);
+      return;
+    }
     if (data && data.candidates && data.candidates[0].content.parts[0].text) {
       let rawText = data.candidates[0].content.parts[0].text;
       
@@ -4055,7 +4059,7 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
           </div>
           <div class="meta-row-line-block" style="margin-top:6px;">
             <span style="background:#e2e8f0;">Company:</span><strong style="margin-right:20px; color:var(--brand);">${mail.extractedCompany}</strong>
-            <span style="background:#edf2f7;">Contact Name:</span><strong>${mail.extractedContactName}</strong>
+            <span style="background:#edf2f7;">Contact Person Name:</span><strong>${mail.extractedContactName}</strong>
           </div>
         </div>
         <div class="directory-btn-actions-block" style="margin-top:4px;">
