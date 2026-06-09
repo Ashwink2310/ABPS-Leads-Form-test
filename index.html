@@ -153,6 +153,10 @@
   .task-double-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; grid-column: span 2; }
   .task-grid-inputs, .fup-grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #f1f5f9; padding: 10px; border-radius: 4px; margin: 6px 0; text-align: left; }
   .task-item-card { background: var(--card); border: 1px solid var(--border); padding: 8px; border-radius: 4px; text-align: left; margin-bottom: 4px; min-width: 0; word-wrap: break-word; overflow-wrap: break-word; }
+  
+  .pill-group.business-potential-pills {display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;}
+  .pill-group.business-potential-pills label {text-align: center; white-space: nowrap;}
+
 </style>
 
 </head>
@@ -999,31 +1003,36 @@
           <h3 style="font-size: 0.85rem; font-weight: 700; color: var(--brand); margin-bottom: 8px; text-transform: uppercase;">Section 3: Engineering Metrics & Diagnostics</h3>
           
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-            <div class="aoc-split-row-box">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:8px; display:flex; flex-direction:column; gap:6px;">
+              <label class="field-label" style="margin:0;">Low Power Factor Issue</label>
               <select id="sel-lpi" onchange="toggleDropdownNo(this, 'lpi')"><option value="">— Select —</option><option value="No">No</option><option value="Yes">Yes</option></select>
-              <div><label class="field-label" style="margin:0;">Low Power Factor Issue</label><input type="text" id="lpi" value="" /></div>
+              <input type="text" id="lpi" value="" />
             </div>
-            <div class="aoc-split-row-box">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:8px; display:flex; flex-direction:column; gap:6px;">
+              <label class="field-label" style="margin:0;">High Electricity Bill Issue</label>
               <select id="sel-hbi" onchange="toggleDropdownNo(this, 'hbi')"><option value="">— Select —</option><option value="No">No</option><option value="Yes">Yes</option></select>
-              <div><label class="field-label" style="margin:0;">High Electricity Bill Issue</label><input type="text" id="hbi" value="" /></div>
+              <input type="text" id="hbi" value="" />
             </div>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-            <div class="aoc-split-row-box">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:8px; display:flex; flex-direction:column; gap:6px;">
+              <label class="field-label" style="margin:0;">Harmonics Issue</label>
               <select id="sel-hi" onchange="toggleDropdownNo(this, 'hi')"><option value="">— Select —</option><option value="No">No</option><option value="Yes">Yes</option></select>
-              <div><label class="field-label" style="margin:0;">Harmonics Issue</label><input type="text" id="hi" value="" /></div>
+              <input type="text" id="hi" value="" />
             </div>
-            <div class="aoc-split-row-box">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:8px; display:flex; flex-direction:column; gap:6px;">
+              <label class="field-label" style="margin:0;">Transformer Heating / Breakdown Issue</label>
               <select id="sel-thi" onchange="toggleDropdownNo(this, 'thi')"><option value="">— Select —</option><option value="No">No</option><option value="Yes">Yes</option></select>
-              <div><label class="field-label" style="margin:0;">Transformer Heating / Breakdown Issue</label><input type="text" id="thi" value="" /></div>
+              <input type="text" id="thi" value="" />
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-            <div class="aoc-split-row-box" style="grid-column: span 2;">
+          <div style="margin-bottom: 12px;">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:8px; display:flex; flex-direction:column; gap:6px;">
+              <label class="field-label" style="margin:0;">Grid Stability Issue</label>
               <select id="sel-gsi" onchange="toggleDropdownNo(this, 'gsi')"><option value="">— Select —</option><option value="No">No</option><option value="Yes">Yes</option></select>
-              <div><label class="field-label" style="margin:0;">Grid Stability Issue</label><input type="text" id="gsi" value="" /></div>
+              <input type="text" id="gsi" value="" />
             </div>
           </div>
 
@@ -3457,7 +3466,7 @@ async function submitLead() {
             <div>
               <strong style="font-size: 1rem;">Success! Record Created.</strong><br/>
               <span style="font-size: 0.88rem; font-weight: 600;">Assigned Reference Tracking ID: 
-                <span style="font-family: monospace; font-weight: 800; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #15803d; color: #111827; margin-left: 4px;">${d.leadRef}</span>
+                <br/><span style="font-family: monospace; font-weight: 800; background: #fff; padding: 4px 10px; border-radius: 4px; border: 1px solid #15803d; color: #111827; display: inline-block; margin-top: 6px;">${d.leadRef}</span>
               </span>
             </div>
             <button class="nav-btn-styled" onclick="
@@ -5298,7 +5307,7 @@ function executeClientSideStoreTicketFilterSearch() {
   });
 
   if (filteredOutputList.length === 0) {
-    resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; background:#fff; border:1px solid var(--border); border-radius:4px; color:var(--muted); font-size:0.85rem;">No historical tickets matched your current criteria combination.</div>`;
+    resultsFeedZone.innerHTML = `<div style="text-align:center; padding:20px; background:#fff; border:1px solid var(--border); border-radius:4px; color:var(--muted); font-size:0.85rem;">No historical tickets matched your current combination.</div>`;
     return;
   }
 
