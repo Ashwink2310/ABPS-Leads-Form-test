@@ -2585,7 +2585,7 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
     { type: "SEC1", keys: ["Date of Meeting", "Time of Meeting", "Meeting Venue", "Venue Name / City", "Additional Meeting Details (if any)"] },
     { type: "SEC2", keys: ["ABPS Business Vertical", "Type of Customer", "Type of Vendor"] }, 
     { type: "SEC3", keys: ["Low Power Factor Issue", "High Electricity Bill Issue", "Harmonics Issue", "Transformer Heating / Breakdown Issue", "Grid Stability Issue", "Tender Inquire", "Existing System Details", "Contract Demand (MVA)", "Voltage Level Requirements"] }, 
-    { type: "SEC4", keys: ["Existing Project", "Products Discussed", "Approx Requirement", "Expected Tender / RFQ Date"] },
+    { type: "SEC4", keys: ["Existing Project", "Products Discussed", "Expected Tender / RFQ Date", "Approx Requirement"] },
     { type: "SEC5", keys: ["Send Company Profile", "Send Technical Presentation", "Arrange Site Visit", "Get Enquiry", "Send Offer", "Follow-Up Required"] },
 
   ];
@@ -2608,17 +2608,15 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
       ].indexOf(key) !== -1) {
         cell.className += " span-two-units";
       }
-      
-      if (key === "Type of Customer") {
-        cell.style.gridColumn = "span 2";
-      }
-      if (key === "Type of Vendor") {
-        cell.style.gridColumn = "span 2";
-      }
-      if (key === "Approx Requirement") {
-        cell.style.gridColumn = "span 2";
-      }
-      
+
+      // Grid column spans — 6-col desktop grid
+      if (key === "Type of Customer")           cell.style.gridColumn = "span 2";
+      if (key === "Type of Vendor")             cell.style.gridColumn = "span 2";
+      if (key === "Contract Demand (MVA)")      cell.style.gridColumn = "span 2";
+      if (key === "Voltage Level Requirements") cell.style.gridColumn = "span 2";
+      if (key === "Expected Tender / RFQ Date") cell.style.gridColumn = "span 1";
+      if (key === "Approx Requirement")         cell.style.gridColumn = "span 2";
+
       let label = document.createElement("label"); 
       label.textContent = key; 
       cell.appendChild(label);
@@ -2775,16 +2773,6 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
           sel.appendChild(op);
         });
         cell.appendChild(sel);
-        
-        // FIXED DESIGN LAYOUT OVERRIDE: Inject empty layout cell markers to balance spacing properties directly after Grid Stability Issue
-        if (key === "Grid Stability Issue") {
-          setTimeout(() => {
-            let ghostBlankCellElementA = document.createElement("div"); ghostBlankCellElementA.className = "grid-cell-item"; ghostBlankCellElementA.style.cssText = "background:transparent; border:none;";
-            let ghostBlankCellElementB = document.createElement("div"); ghostBlankCellElementB.className = "grid-cell-item"; ghostBlankCellElementB.style.cssText = "background:transparent; border:none;";
-            cell.parentNode.insertBefore(ghostBlankCellElementA, cell.nextSibling);
-            cell.parentNode.insertBefore(ghostBlankCellElementB, ghostBlankCellElementA.nextSibling);
-          }, 10);
-        }
       }
 
       // --- 7. VENDOR SELECTION AND CONDITIONAL CONTENT LOOPS ---
