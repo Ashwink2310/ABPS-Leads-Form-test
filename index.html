@@ -1189,22 +1189,24 @@
     <input type="hidden" class="fup-leadid-input">
     <input type="hidden" class="fup-num-input">
     <div><label class="field-label">Follow-Up Status</label><select class="fup-status-select"><option value="Pending">Pending</option><option value="Completed">Completed</option><option value="Cancelled">Cancelled</option></select></div>
-    <div><label class="field-label">Engineer Name</label><select class="fup-eng-select"></select></div>
+    <div><label class="field-label">ABPS Engineer Name *</label><select class="fup-eng-select"></select></div>
     <div><label class="field-label">Next Follow-Up Date</label><input type="date" class="fup-nexttarget-input"></div>
-    <div><label class="field-label">Next Follow-Up Time</label><select class="fup-nexttime-select"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></div>
-    <div><label class="field-label">NQ1</label><select class="fup-nq1"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ2</label><select class="fup-nq2"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ3</label><select class="fup-nq3"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ4</label><select class="fup-nq4"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ5</label><select class="fup-nq5"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ6</label><select class="fup-nq6"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div style="grid-column:span 2;"><label class="field-label">Follow-Up Notes *</label><textarea class="fup-notes-input" style="min-height:50px;"></textarea></div>
+    <div><label class="field-label">Next Follow-Up Time</label><select class="fup-nexttime-select"><option value="">— Select —</option><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></div>
+    <div><label class="field-label">NQ1</label><input type="text" class="fup-nq1" placeholder="Notes..." /></div>
+    <div><label class="field-label">NQ2</label><input type="text" class="fup-nq2" placeholder="Notes..." /></div>
+    <div><label class="field-label">NQ3</label><input type="text" class="fup-nq3" placeholder="Notes..." /></div>
+    <div><label class="field-label">NQ4</label><input type="text" class="fup-nq4" placeholder="Notes..." /></div>
+    <div><label class="field-label">NQ5</label><input type="text" class="fup-nq5" placeholder="Notes..." /></div>
+    <div><label class="field-label">NQ6</label><input type="text" class="fup-nq6" placeholder="Notes..." /></div>
+    <div style="grid-column:span 2;"><label class="field-label">Interaction Notes *</label><textarea class="fup-notes-input" style="min-height:50px;"></textarea></div>
     <div style="grid-column:span 2; display:flex; justify-content:flex-end;">
       <button class="nav-btn-styled commit-fup-btn-trigger" style="background:var(--accent); padding:8px 20px;">Save Follow-Up</button>
     </div>
   </div>
 
   <div class="template-timeline-box" style="margin-bottom:12px;"></div>
+
+  <div style="height:1px; background:var(--border); margin:8px 0;"></div>
   
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
     <button class="nav-btn-styled trigger-task-open" style="background:var(--accent);">+ Add Task</button>
@@ -1215,9 +1217,9 @@
     <input type="hidden" class="task-edit-id">
     <div><label class="field-label">Task Type</label><select class="task-type-select"><option value="Site Visit">Site Visit</option><option value="Call">Call</option><option value="Email">Email</option><option value="Meeting">Meeting</option><option value="Proposal">Proposal</option><option value="Other">Other</option></select></div>
     <div><label class="field-label">Task Status</label><select class="task-status-select"><option value="Assigned">Assigned</option><option value="In Progress">In Progress</option><option value="Under Review">Under Review</option><option value="Resolved">Resolved</option></select></div>
-    <div><label class="field-label">Assigned To (ABPS Engineer)</label><select class="task-eng-select"></select></div>
-    <div><label class="field-label">Assigned By (ABPS Engineer)</label><select class="task-assigner-select"></select></div>
-    <div><label class="field-label">Shift / Time Slot</label><select class="task-shift-select"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></div>
+    <div><label class="field-label">Assigned To (ABPS Engineer) *</label><select class="task-eng-select"></select></div>
+    <div><label class="field-label">Assigned By (ABPS Engineer) *</label><select class="task-assigner-select"></select></div>
+    <div><label class="field-label">Shift / Time Slot *</label><select class="task-shift-select"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></div>
     <div><label class="field-label">Target Date *</label><input type="date" class="task-targetdate-input"></div>
     <div style="grid-column:span 2;"><label class="field-label">Task Description *</label><textarea class="task-desc-input" style="min-height:45px;"></textarea></div>
     <div style="grid-column:span 2; display:flex; justify-content:flex-end;">
@@ -2106,6 +2108,18 @@ function returnToDashboard() {
   const step1 = document.getElementById('step1-card-capture-block'); if (step1) step1.style.display = 'block';
   document.getElementById("global-direct-inline-create-entry-btn").style.display = "none";
   document.getElementById("global-direct-inline-collapse-entry-btn").style.display = "none";
+
+  // Reset all search filter sections to clean state
+  document.querySelectorAll('input[name="searchQual"], #sq_others_trigger').forEach(cb => cb.checked = false);
+  document.querySelectorAll('input[name="leadMatrixStatusFilter"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('input[name="leadMatrixEngineerFilter"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('input[name="taskMatrixEngineer"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('input[name="taskMatrixStatus"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('input[name="searchCountryFilter"], input[name="searchStateFilter"], input[name="searchCityFilter"]').forEach(cb => cb.checked = false);
+  const engDrop = document.getElementById("engineer-filter-select"); if (engDrop) engDrop.value = "";
+  const selDisplay = document.getElementById("selected-quals-display"); if (selDisplay) selDisplay.textContent = "";
+  const qualDrawer = document.getElementById("custom-qualifications-sub-drawer"); if (qualDrawer) qualDrawer.style.display = "none";
+  const taskOutput = document.getElementById("task-matrix-results-output-node"); if (taskOutput) taskOutput.innerHTML = "";
 }
 
 /**
@@ -2928,10 +2942,14 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
     });
   });
   canvas.appendChild(gridWrapper);
-  
+
   let saveBtn = document.createElement("button"); saveBtn.className = "btn btn-sub"; saveBtn.id = 'save-leads-matrix-btn-' + leadRef;
   saveBtn.style.marginTop = "12px"; saveBtn.textContent = "Save Modifications";
   saveBtn.onclick = function() { commitTargetedLeadsMutationsRows(leadRef); }; canvas.appendChild(saveBtn);
+
+  let dividerAfterSave = document.createElement("div");
+  dividerAfterSave.style.cssText = "height:1px; background:var(--border); margin:12px 0;";
+  canvas.appendChild(dividerAfterSave);
 }
 
 async function commitTargetedLeadsMutationsRows(leadRef) {
@@ -3098,7 +3116,7 @@ function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
       </div>
       <div class="fup-item-body">
         <div style="font-size:0.82rem; line-height:1.5; color:var(--muted); margin-bottom:6px;">
-          <strong>Status:</strong> ${f.status}<br/><strong>Lead ID:</strong> ${f.leadId}<br/><strong>Engineer Name:</strong> ${f.eng}<br/>
+          <strong>Status:</strong> ${f.status}<br/><strong>Lead ID:</strong> ${f.leadId}<br/><strong>ABPS Engineer Name:</strong> ${f.eng}<br/>
           <strong>Next Follow-Up Date:</strong> ${formatCleanDateOnly(f.nextDate)} | <strong>Time:</strong> ${f.nextTime || "None"}<br/>
           <strong>NQ1:</strong> ${f.nq1} | <strong>NQ2:</strong> ${f.nq2} | <strong>NQ3:</strong> ${f.nq3}<br/>
           <strong>NQ4:</strong> ${f.nq4} | <strong>NQ5:</strong> ${f.nq5} | <strong>NQ6:</strong> ${f.nq6}
@@ -3219,7 +3237,7 @@ function renderIsolatedTaskItemsList(leadRef, list, scopeNode) {
 
     div.innerHTML = `<strong>${t.type}</strong> - ${t.eng}<br/><small>Time: ${t.shift} | Target Date: ${formatCleanDateOnly(t.targetDate)}</small>
                      <p style="font-size:0.82rem; margin-top:4px; color:var(--text); word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;"><strong>Desc:</strong> ${t.desc || 'None'}</p>
-                     <div style="font-size:0.75rem; font-weight:bold; color:var(--brand); margin-top:4px;">Status: ${t.status} | Assigner: ${t.assigner || "System"}</div>
+                     <div style="font-size:0.75rem; font-weight:bold; color:var(--brand); margin-top:4px;">Status: ${t.status} | Assigned By: ${t.assigner || "System"}</div>
                      <div style="margin-top:8px; display:flex; gap:6px;">
                        <button class="nav-btn-styled" id="trigger-inner-edit-task-${leadRef}-${t.id}" style="font-size:0.75rem; padding:2px 6px;">Edit</button>
                        ${deleteActionHtml}
@@ -6998,7 +7016,7 @@ async function submitFinishedGoodsAddEntry() {
 async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
   const mount = scopeNode.querySelector(".doc-info-mount-point");
   if (!mount) return;
-  mount.innerHTML = '<p style="color:var(--muted); font-size:0.82rem; padding:8px 0;">Loading document info...</p>';
+  mount.innerHTML = '<p style="color:var(--muted); font-size:0.82rem; padding:8px 0;">Loading Document Information...</p>';
 
   try {
     const res = await fetch(GAS_URL, {
