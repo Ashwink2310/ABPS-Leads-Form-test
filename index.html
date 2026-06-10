@@ -2120,6 +2120,15 @@ function returnToDashboard() {
   const selDisplay = document.getElementById("selected-quals-display"); if (selDisplay) selDisplay.textContent = "";
   const qualDrawer = document.getElementById("custom-qualifications-sub-drawer"); if (qualDrawer) qualDrawer.style.display = "none";
   const taskOutput = document.getElementById("task-matrix-results-output-node"); if (taskOutput) taskOutput.innerHTML = "";
+
+  // Restore search section input blocks that get hidden after a search runs
+  const companyDropBlock = document.getElementById("company-dropdown-selector-block"); if (companyDropBlock) companyDropBlock.style.display = "block";
+  const step1Card = document.getElementById("step1-card-capture-block"); if (step1Card) step1Card.style.display = "block";
+
+  // Move canvas back to its neutral position inside module-workspace-container
+  const canvasNode = document.getElementById("step2-inline-interaction-canvas");
+  const mwc = document.getElementById("module-workspace-container");
+  if (canvasNode && mwc && canvasNode.parentElement !== mwc) mwc.appendChild(canvasNode);
 }
 
 /**
