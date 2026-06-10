@@ -2720,7 +2720,7 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
       else if (key === "Expected Tender / RFQ Date") {
         label.textContent = "Tender Timeline Tracker";
         cell.className = cell.className.replace("span-two-units", ""); // already removed from list above
-        cell.style.gridColumn = "span 2";
+        cell.style.gridColumn = "span 1";
         let wrapper = document.createElement("div"); wrapper.style.cssText = "display: flex; flex-direction: column; gap: 6px;";
         let rawDate = leadMap["Expected Tender / RFQ Date"];
         let cleanDate = "";
