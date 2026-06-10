@@ -3109,7 +3109,7 @@ function toggleFollowUpAccordion(headerElement) {
 
 function renderIsolatedFollowUpTimeline(leadRef, list, scopeNode) {
   const box = scopeNode.querySelector(".template-timeline-box");
-  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No records</p>' : '';
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No Follow-up Records</p>' : '';
   
   list.forEach(f => {
     let card = document.createElement("div"); card.className = "fup-item-card";
@@ -3236,7 +3236,7 @@ async function removeIsolatedFollowUpItem(leadRef, fNum, event) {
 
 function renderIsolatedTaskItemsList(leadRef, list, scopeNode) {
   const box = scopeNode.querySelector(".template-task-box");
-  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No active entries.</p>' : '';
+  box.innerHTML = list.length === 0 ? '<p style="color:var(--muted); font-size:0.85rem; padding:10px;">No Active Tasks</p>' : '';
   list.forEach(t => {
     let div = document.createElement("div"); div.className = "task-item-card";
     const isAdminUser = localStorage.getItem("isUserAdminGlobal") === "true";
