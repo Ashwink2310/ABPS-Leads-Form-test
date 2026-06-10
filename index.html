@@ -740,13 +740,11 @@
             <input type="checkbox" name="searchQual" value="Developer" id="sq_developer" onchange="updateSelectedDisplay()"><label for="sq_developer">Developer</label>
             <input type="checkbox" name="searchQual" value="Electrical Contractor" id="sq_contractor" onchange="updateSelectedDisplay()"><label for="sq_contractor">Electrical Contractor</label>
             <input type="checkbox" name="searchQual" value="Dealer" id="sq_dealer" onchange="updateSelectedDisplay()"><label for="sq_dealer">Dealer</label>
-            <input type="checkbox" name="searchQual" value="Vendor" id="sq_vendor" onchange="updateSelectedDisplay()"><label for="sq_vendor">Vendor</label>
-            
-            <input type="checkbox" id="sq_others_trigger" onchange="handleOthersQualificationToggleDrawer(this)"><label for="sq_others_trigger" style="border-color: var(--brand); font-weight: 700; color: var(--brand);">Others ▾</label>
+            <input type="checkbox" name="searchQual" value="Vendor" id="sq_vendor" onchange="updateSelectedDisplay()"><label for="sq_vendor">Vendor</label>  
           </div>
           
-          <div id="custom-qualifications-sub-drawer" style="display: none; background: #f8fafc; border: 1px dashed var(--border); border-radius: var(--radius); padding: 10px; margin: 5px 0 15px; text-align: left;">
-             <span style="display: block; font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">Other Qualifications</span>
+          <div id="custom-qualifications-sub-drawer" style="display: block; background: #f8fafc; border: 1px dashed var(--border); border-radius: var(--radius); padding: 10px; margin: 5px 0 15px; text-align: left;">
+            <span style="display: block; font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">Other Qualifications</span>
              <div class="pill-group" id="qual-filter-checkboxes" style="margin: 0; gap: 6px;"></div>
           </div>
           
@@ -2039,13 +2037,11 @@ async function navigateToModule(key) {
           triggerSequentialSearch('CARD');
       }
     } else if (key === "searchQualification") {
-      document.querySelectorAll('input[name="searchQual"], #sq_others_trigger').forEach(cb => cb.checked = false);
+      document.querySelectorAll('input[name="searchQual"]').forEach(cb => cb.checked = false);
       const drawerPanel = document.getElementById("custom-qualifications-sub-drawer");
-      if (drawerPanel) drawerPanel.style.display = "none";
-      const triggerLabel = document.querySelector('label[for="sq_others_trigger"]');
-      if (triggerLabel) triggerLabel.textContent = "Others ▾";
+      if (drawerPanel) drawerPanel.style.display = "block";
       document.getElementById("selected-quals-display").textContent = "";
-      loadQualFilter(); 
+      loadQualFilter();
     } else if (key === "searchStatus") {
       document.querySelectorAll('input[name="leadMatrixStatusFilter"]').forEach(cb => cb.checked = false);
       renderLeadMatrixEngineerCheckboxes();
@@ -3706,7 +3702,7 @@ async function triggerQualificationSearch() {
             canvasLastParentWorkspaceId = "workspace-searchQualification";
             canvas.style.display = "block"; document.getElementById("workspace-searchQualification").appendChild(canvas);
         }
-    } catch(e) { alert(e.message); } finally { btn.classList.remove("loading"); btn.textContent = "Search Qualifications"; }
+    } catch(e) { alert(e.message); } finally { btn.classList.remove("loading"); btn.textContent = "Search Type of Customer"; }
 }
 
 async function triggerStatusSearch() {
