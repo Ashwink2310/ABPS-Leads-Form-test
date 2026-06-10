@@ -1225,9 +1225,9 @@
     </div>
   </div>
 
-  <div class="doc-info-mount-point" style="margin-top: 12px;"></div>
-
   <div class="template-task-box" style="margin-bottom:8px;"></div>
+
+  <div class="doc-info-mount-point" style="margin-top: 12px;"></div>
 </div>
 
 <script>
@@ -2612,14 +2612,15 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
       if (key === "Existing Project") cell.style.gridColumn = "span 2";
 
       // Grid column spans — 6-col desktop grid
-      if (key === "Type of Customer")           cell.style.gridColumn = "span 2";
-      if (key === "Type of Vendor")             cell.style.gridColumn = "span 2";
-      if (key === "Contract Demand (MVA)")      cell.style.gridColumn = "span 2";
-      if (key === "Voltage Level Requirements") cell.style.gridColumn = "span 2";
-      if (key === "Existing System Details")    cell.style.gridColumn = "span 2";
-      if (key === "Expected Tender / RFQ Date") cell.style.gridColumn = "span 1";
-      if (key === "Approx Requirement")         cell.style.gridColumn = "span 1";
-      if (key === "Products Discussed")         cell.style.gridColumn = "span 2";
+      if (key === "ABPS Business Vertical")         cell.style.gridColumn = "span 2";
+      if (key === "Type of Customer")               cell.style.gridColumn = "span 2";
+      if (key === "Type of Vendor")                 cell.style.gridColumn = "span 2";
+      if (key === "Contract Demand (MVA)")          cell.style.gridColumn = "span 2";
+      if (key === "Voltage Level Requirements")     cell.style.gridColumn = "span 2";
+      if (key === "Existing System Details")        cell.style.gridColumn = "span 2";
+      if (key === "Expected Tender / RFQ Date")     cell.style.gridColumn = "span 1";
+      if (key === "Approx Requirement")             cell.style.gridColumn = "span 1";
+      if (key === "Products Discussed")             cell.style.gridColumn = "span 2";
 
       let label = document.createElement("label"); 
       label.textContent = key; 
@@ -3149,6 +3150,7 @@ async function commitIsolatedFollowUpItem(leadRef, scopeNode) {
     nq1: form.querySelector(".fup-nq1").value, nq2: form.querySelector(".fup-nq2").value, nq3: form.querySelector(".fup-nq3").value,
     nq4: form.querySelector(".fup-nq4").value, nq5: form.querySelector(".fup-nq5").value, nq6: form.querySelector(".fup-nq6").value
   };
+  if (!followUpData.eng || !followUpData.eng.trim()) return alert("Engineer Name is a compulsory field.");
   if (!followUpData.notes) return alert("Interaction Notes required.");
   
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
@@ -3259,6 +3261,8 @@ async function commitIsolatedTaskItem(leadRef, scopeNode) {
   };
   if (!taskData.targetDate) return alert("Target Date required.");
   if (!desc || desc.trim() === "") return alert("Task Description is a compulsory field.");
+  if (!taskData.engineer || !taskData.engineer.trim()) return alert("Assigned To (Engineer) is a compulsory field.");
+  if (!taskData.assigner || !taskData.assigner.trim()) return alert("Assigned By is a compulsory field.");
   btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
   try {
     const res = await fetch(GAS_URL, { 
