@@ -813,18 +813,19 @@
       <div class="section">
         <div class="section-header">Search Tasks</div>
         <div class="section-body" style="text-align: left;">
-          <label class="field-label" style="font-size:0.8rem;">Filter By Engineers</label>
+          <label class="field-label" style="font-size:0.8rem; color:var(--brand);">Filter By Engineers</label>
           <div class="pill-group" id="task-matrix-engineer-checkboxes" style="margin:8px 0 16px;"></div>
           
-          <label class="field-label" style="font-size:0.8rem;">Filter By Task Status</label>
+          <label class="field-label" style="font-size:0.8rem; color:var(--brand);">Filter By Task Status</label>
           <div class="pill-group" id="task-matrix-status-checkboxes" style="margin:8px 0 16px;">
-            <input type="checkbox" name="taskMatrixStatus" value="Assigned" id="tms_ts1" onchange="executeTaskMatrixSearch()"><label for="tms_ts1">Assigned</label>
-            <input type="checkbox" name="taskMatrixStatus" value="In Progress" id="tms_ts2" onchange="executeTaskMatrixSearch()"><label for="tms_ts2">In Progress</label>
-            <input type="checkbox" name="taskMatrixStatus" value="Under Review" id="tms_ts3" onchange="executeTaskMatrixSearch()"><label for="tms_ts3">Under Review</label>
-            <input type="checkbox" name="taskMatrixStatus" value="Resolved" id="tms_ts4" onchange="executeTaskMatrixSearch()"><label for="tms_ts4">Resolved</label>
+            <input type="checkbox" name="taskMatrixStatus" value="Assigned" id="tms_ts1"><label for="tms_ts1">Assigned</label>
+            <input type="checkbox" name="taskMatrixStatus" value="In Progress" id="tms_ts2"><label for="tms_ts2">In Progress</label>
+            <input type="checkbox" name="taskMatrixStatus" value="Under Review" id="tms_ts3"><label for="tms_ts3">Under Review</label>
+            <input type="checkbox" name="taskMatrixStatus" value="Resolved" id="tms_ts4"><label for="tms_ts4">Resolved</label>
           </div>
           
-          <button class="btn btn-sub" id="task-matrix-search-btn" onclick="executeTaskMatrixSearch()">Run Search Filter</button>
+          <button class="btn btn-sub" id="task-matrix-search-btn" onclick="executeTaskMatrixSearch()">Run Tasks Search</button>
+          <div id="task-matrix-active-filters-display" style="display:none; font-size:0.78rem; font-weight:700; color:var(--brand); background:var(--highlight-bg); border:1px solid var(--border); border-radius:4px; padding:6px 10px; margin-top:8px;"></div>
         </div>
       </div>
       <div id="task-matrix-results-output-node" style="margin-top:12px;"></div>
@@ -1899,13 +1900,16 @@ async function showAppView() {
       // 3. SEARCH TASKS ENGINE COMBINATION CHECKBOX MATRIX
       const matrixEngBoxEnclosure = document.getElementById("task-matrix-engineer-checkboxes");
       if (matrixEngBoxEnclosure) {
-        matrixEngBoxEnclosure.innerHTML = "";
-        cachedEngineers.forEach(eng => {
-          matrixEngBoxEnclosure.innerHTML += `
-            <input type="checkbox" name="taskMatrixEngineer" value="${eng}" id="chk_tm_eng_${eng.replace(/\s+/g, '_')}" onchange="executeTaskMatrixSearch()">
-            <label for="chk_tm_eng_${eng.replace(/\s+/g, '_')}">${eng}</label>
-          `;
-        });
+        matrixEngBoxEnclosure.innerHTML = '<p style="font-size:0.75rem; color:var(--brand); font-weight:600; margin:0; display:flex; align-items:center; gap:6px;"><span class="spinner" style="display:inline-block; width:10px; height:10px; border:2px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin 0.8s linear infinite;"></span> Loading Engineers...</p>';
+        setTimeout(() => {
+          matrixEngBoxEnclosure.innerHTML = "";
+          cachedEngineers.forEach(eng => {
+            matrixEngBoxEnclosure.innerHTML += `
+              <input type="checkbox" name="taskMatrixEngineer" value="${eng}" id="chk_tm_eng_${eng.replace(/\s+/g, '_')}">
+              <label for="chk_tm_eng_${eng.replace(/\s+/g, '_')}">${eng}</label>
+            `;
+          });
+        }, 50);
       }
 
       // 4. SEARCH LEADS STATUS MATRIX CHECKBOXES
@@ -2117,7 +2121,8 @@ function returnToDashboard() {
   const selDisplay = document.getElementById("selected-quals-display"); if (selDisplay) selDisplay.textContent = "";
   const qualDrawer = document.getElementById("custom-qualifications-sub-drawer"); if (qualDrawer) qualDrawer.style.display = "none";
   const taskOutput = document.getElementById("task-matrix-results-output-node"); if (taskOutput) taskOutput.innerHTML = "";
-
+  const tfd = document.getElementById("task-matrix-active-filters-display"); if (tfd) { tfd.style.display = "none"; tfd.textContent = ""; }
+  
   // Restore search section input blocks that get hidden after a search runs
   const companyDropBlock = document.getElementById("company-dropdown-selector-block"); if (companyDropBlock) companyDropBlock.style.display = "block";
   const step1Card = document.getElementById("step1-card-capture-block"); if (step1Card) step1Card.style.display = "block";
@@ -3770,7 +3775,26 @@ async function executeTaskMatrixSearch() {
   const checkedEngineers = Array.from(document.querySelectorAll('input[name="taskMatrixEngineer"]:checked')).map(i => i.value);
   const checkedStatuses = Array.from(document.querySelectorAll('input[name="taskMatrixStatus"]:checked')).map(i => i.value);
 
+  if (checkedEngineers.length === 0 && checkedStatuses.length === 0) {
+    alert("Please select at least one Engineer or Task Status filter before searching.");
+    return;
+  }
+
   btn.classList.add("loading"); btn.textContent = "Filtering Tasks...";
+
+  // Show active filters summary
+  const filterDisplay = document.getElementById("task-matrix-active-filters-display");
+  if (filterDisplay) {
+    const parts = [];
+    if (checkedEngineers.length > 0) parts.push("Engineers: " + checkedEngineers.join(", "));
+    if (checkedStatuses.length > 0) parts.push("Status: " + checkedStatuses.join(", "));
+    filterDisplay.textContent = "Filtering for → " + parts.join(" | ");
+    filterDisplay.style.display = "block";
+    filterDisplay.style.color = "var(--brand)";
+    filterDisplay.style.background = "var(--highlight-bg)";
+    filterDisplay.style.borderColor = "var(--border)";
+  }
+
   try {
     const res = await fetch(GAS_URL, { 
       method: "POST", 
@@ -3786,21 +3810,36 @@ async function executeTaskMatrixSearch() {
 
     if (data.success) {
       outputNode.innerHTML = "";
+
       if (data.tasks.length === 0) {
-        outputNode.innerHTML = '<p style="color:var(--muted); font-size:0.85rem; padding:10px; text-align:center; background:#fff; border:1px solid var(--border); border-radius:4px;">No matching tasks found.</p>';
+        if (filterDisplay) {
+          const parts = [];
+          if (checkedEngineers.length > 0) parts.push("Engineers: " + checkedEngineers.join(", "));
+          if (checkedStatuses.length > 0) parts.push("Status: " + checkedStatuses.join(", "));
+          filterDisplay.textContent = "No tasks found for → " + parts.join(" | ");
+          filterDisplay.style.color = "var(--warn)";
+          filterDisplay.style.background = "#fff5f5";
+          filterDisplay.style.borderColor = "#fca5a5";
+        }
         return;
       }
+
       data.tasks.forEach(t => {
         let card = document.createElement("div");
-        card.className = "task-item-card"; card.style.padding = "12px"; card.style.borderLeft = "4px solid var(--brand)"; card.style.background = "#fff"; card.style.marginBottom = "6px"; card.style.boxShadow = "0 1px 3px rgba(0,0,0,0.02)";
+        card.className = "task-item-card";
+        card.style.cssText = "padding:12px; border-left:4px solid var(--brand); background:#fff; margin-bottom:6px; box-shadow:0 1px 3px rgba(0,0,0,0.02);";
         const isAdminUser = localStorage.getItem("isUserAdminGlobal") === "true";
         const deleteActionHtml = isAdminUser 
           ? `<button class="nav-btn-styled" id="matrix-delete-task-btn-${t.id}" style="font-size:0.72rem; padding:3px 8px; background:var(--warn);">Delete</button>` 
           : "";
+
         card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #edf2f7; padding-bottom:4px; margin-bottom:6px;">
-            <strong style="color:var(--brand); font-size:0.9rem;">${t.type}</strong>
-            <span style="font-size:0.7rem; background:#edf2f7; padding:2px 6px; border-radius:4px; font-weight:700;">${t.status}</span>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px dashed #edf2f7; padding-bottom:6px; margin-bottom:6px;">
+            <div>
+              <strong style="color:var(--brand); font-size:0.9rem;">${t.type}</strong>
+              <span style="font-size:0.7rem; background:#edf2f7; padding:2px 6px; border-radius:4px; font-weight:700; margin-left:8px;">${t.status}</span>
+            </div>
+            <button class="nav-btn-styled" onclick="openCompanySearchFromTask('${encodeURIComponent(t.companyName)}', '${encodeURIComponent(t.personName)}')" style="font-size:0.7rem; padding:3px 10px; background:var(--brand); white-space:nowrap;">View Company ↗</button>
           </div>
           <div style="font-size:0.8rem; line-height:1.4; color:var(--text);">
             <strong>Engineer:</strong> ${t.eng} | <strong>Assigner:</strong> ${t.assigner || "System"}<br/>
@@ -3808,29 +3847,22 @@ async function executeTaskMatrixSearch() {
             <strong>Lead Reference:</strong> ${t.companyName} (${t.personName})
           </div>
           <div style="font-size:0.82rem; color:#4a5568; padding:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; margin-top:6px; white-space:pre-wrap;"><strong>Description:</strong> ${t.desc || 'None'}</div>
-          
           <div style="margin-top:10px; display:flex; gap:8px;">
             <button class="nav-btn-styled" id="matrix-edit-task-btn-${t.id}" style="font-size:0.72rem; padding:3px 8px; background:var(--accent);">Edit Task Details</button>
             ${deleteActionHtml}
           </div>
-          
           <div id="matrix-task-form-mount-${t.id}" style="margin-top:10px; display:none;"></div>
         `;
         outputNode.appendChild(card);
 
         if (isAdminUser && document.getElementById(`matrix-delete-task-btn-${t.id}`)) {
-          document.getElementById(`matrix-delete-task-btn-${t.id}`).onclick = function(e) {
-            removeMatrixTaskFromEngine(t.id, e);
-          };
+          document.getElementById(`matrix-delete-task-btn-${t.id}`).onclick = function(e) { removeMatrixTaskFromEngine(t.id, e); };
         }
-        outputNode.appendChild(card);
-
-        document.getElementById(`matrix-edit-task-btn-${t.id}`).onclick = function() {
-          injectMatrixInlineTaskForm(t, card);
-        };
+        document.getElementById(`matrix-edit-task-btn-${t.id}`).onclick = function() { injectMatrixInlineTaskForm(t, card); };
       });
     }
-  } catch(e) { alert("Task matrix engine fetch error: " + e.message); } finally { btn.classList.remove("loading"); btn.textContent = "Search Tasks Combination"; }
+  } catch(e) { alert("Task matrix engine fetch error: " + e.message); } 
+  finally { btn.classList.remove("loading"); btn.textContent = "Run Tasks Search"; }
 }
 
 function injectMatrixInlineTaskForm(taskItem, parentCardNode) {
@@ -3943,18 +3975,66 @@ async function removeMatrixTaskFromEngine(taskId, event) {
   }
 }
 
+function openCompanySearchFromTask(encodedCompany, encodedPerson) {
+  const companyName = decodeURIComponent(encodedCompany);
+  const personName = decodeURIComponent(encodedPerson);
+
+  // Navigate to searchCompany workspace
+  navigateToModule('searchCompany');
+
+  // Wait for dropdown to load then auto-search
+  const attemptSearch = (attemptsLeft) => {
+    const dropdown = document.getElementById("lookup-module-company-dropdown");
+    if (!dropdown || dropdown.options.length <= 1) {
+      if (attemptsLeft > 0) setTimeout(() => attemptSearch(attemptsLeft - 1), 300);
+      return;
+    }
+    // Find matching option
+    let matched = false;
+    for (let i = 0; i < dropdown.options.length; i++) {
+      if (dropdown.options[i].value.toLowerCase().includes(companyName.toLowerCase()) ||
+          companyName.toLowerCase().includes(dropdown.options[i].value.toLowerCase())) {
+        dropdown.value = dropdown.options[i].value;
+        matched = true;
+        break;
+      }
+    }
+    if (matched) {
+      triggerSequentialSearch('DROPDOWN').then(() => {
+        // After results load, highlight the card matching the person name
+        setTimeout(() => {
+          const cards = document.querySelectorAll(".contact-summary-card-parent");
+          cards.forEach(card => {
+            const nameEl = card.querySelector('[id^="card-lbl-name-"]');
+            if (nameEl && nameEl.textContent.trim().toLowerCase() === personName.toLowerCase()) {
+              card.style.cssText += "; border: 2.5px solid var(--brand) !important; box-shadow: 0 4px 12px rgba(0,86,179,0.2) !important;";
+              card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+        }, 800);
+      });
+    } else {
+      alert("Company '" + companyName + "' not found in dropdown. It may not exist in your leads yet.");
+    }
+  };
+  setTimeout(() => attemptSearch(10), 400);
+}
+
 function renderLeadMatrixEngineerCheckboxes() {
   const mountPoint = document.getElementById("lead-matrix-engineer-checkboxes-mount");
   if (!mountPoint) return;
   
   mountPoint.innerHTML = '<p style="font-size:0.75rem; color:var(--brand); font-weight:600; margin:0; display:flex; align-items:center; gap:6px;"><span class="spinner" style="display:inline-block; width:10px; height:10px; border:2px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin 0.8s linear infinite;"></span> Loading Engineers...</p>';
-  cachedEngineers.forEach(eng => {
+  setTimeout(() => {
+    mountPoint.innerHTML = "";
+    cachedEngineers.forEach(eng => {
      const cleanId = `chk_lm_eng_${eng.replace(/\s+/g, '_')}`;
      mountPoint.innerHTML += `
        <input type="checkbox" name="leadMatrixEngineerFilter" value="${eng}" id="${cleanId}">
        <label for="${cleanId}">${eng}</label>
      `;
   });
+  }, 50);
 }
 
 async function executeLeadMatrixFilterSearch() {
