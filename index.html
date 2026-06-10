@@ -1180,7 +1180,7 @@
 
 <div id="reusable-child-modules-template" style="display:none;">
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
-    <button class="nav-btn-styled trigger-fup-open" style="background:var(--brand);">+ Log Follow-Up</button>
+    <button class="nav-btn-styled trigger-fup-open" style="background:var(--accent);">+ Log Follow-Up</button>
     <button class="nav-btn-styled trigger-fup-close" style="display:none; background:#718096;">Cancel</button>
   </div>
   
@@ -1192,12 +1192,12 @@
     <div><label class="field-label">Engineer Name</label><select class="fup-eng-select"></select></div>
     <div><label class="field-label">Next Follow-Up Date</label><input type="date" class="fup-nexttarget-input"></div>
     <div><label class="field-label">Next Follow-Up Time</label><select class="fup-nexttime-select"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></div>
-    <div><label class="field-label">NQ1 — Send Company Profile</label><select class="fup-nq1"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ2 — Send Technical Presentation</label><select class="fup-nq2"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ3 — Arrange Site Visit</label><select class="fup-nq3"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ4 — Get Enquiry</label><select class="fup-nq4"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ5 — Send Offer</label><select class="fup-nq5"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-    <div><label class="field-label">NQ6 — Follow-Up Required</label><select class="fup-nq6"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ1</label><select class="fup-nq1"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ2</label><select class="fup-nq2"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ3</label><select class="fup-nq3"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ4</label><select class="fup-nq4"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ5</label><select class="fup-nq5"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+    <div><label class="field-label">NQ6</label><select class="fup-nq6"><option value="No">No</option><option value="Yes">Yes</option></select></div>
     <div style="grid-column:span 2;"><label class="field-label">Follow-Up Notes *</label><textarea class="fup-notes-input" style="min-height:50px;"></textarea></div>
     <div style="grid-column:span 2; display:flex; justify-content:flex-end;">
       <button class="nav-btn-styled commit-fup-btn-trigger" style="background:var(--accent); padding:8px 20px;">Save Follow-Up</button>
@@ -1207,7 +1207,7 @@
   <div class="template-timeline-box" style="margin-bottom:12px;"></div>
   
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
-    <button class="nav-btn-styled trigger-task-open" style="background:var(--brand);">+ Add Task</button>
+    <button class="nav-btn-styled trigger-task-open" style="background:var(--accent);">+ Add Task</button>
     <button class="nav-btn-styled trigger-task-close" style="display:none; background:#718096;">Cancel</button>
   </div>
 
@@ -1215,8 +1215,8 @@
     <input type="hidden" class="task-edit-id">
     <div><label class="field-label">Task Type</label><select class="task-type-select"><option value="Site Visit">Site Visit</option><option value="Call">Call</option><option value="Email">Email</option><option value="Meeting">Meeting</option><option value="Proposal">Proposal</option><option value="Other">Other</option></select></div>
     <div><label class="field-label">Task Status</label><select class="task-status-select"><option value="Assigned">Assigned</option><option value="In Progress">In Progress</option><option value="Under Review">Under Review</option><option value="Resolved">Resolved</option></select></div>
-    <div><label class="field-label">Assigned To (Engineer)</label><select class="task-eng-select"></select></div>
-    <div><label class="field-label">Assigned By</label><select class="task-assigner-select"></select></div>
+    <div><label class="field-label">Assigned To (ABPS Engineer)</label><select class="task-eng-select"></select></div>
+    <div><label class="field-label">Assigned By (ABPS Engineer)</label><select class="task-assigner-select"></select></div>
     <div><label class="field-label">Shift / Time Slot</label><select class="task-shift-select"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option></select></div>
     <div><label class="field-label">Target Date *</label><input type="date" class="task-targetdate-input"></div>
     <div style="grid-column:span 2;"><label class="field-label">Task Description *</label><textarea class="task-desc-input" style="min-height:45px;"></textarea></div>
@@ -2604,18 +2604,22 @@ function buildTargetedLeadsFormCanvas(leadRef, leadMap) {
       // GRID GEOMETRY MANAGEMENT
       if ([
         "Technical Discussion Summary", "Additional Meeting Details (if any)",
-        "Existing Project", "Company Address"
+        "Company Address"
       ].indexOf(key) !== -1) {
         cell.className += " span-two-units";
       }
+
+      if (key === "Existing Project") cell.style.gridColumn = "span 2";
 
       // Grid column spans — 6-col desktop grid
       if (key === "Type of Customer")           cell.style.gridColumn = "span 2";
       if (key === "Type of Vendor")             cell.style.gridColumn = "span 2";
       if (key === "Contract Demand (MVA)")      cell.style.gridColumn = "span 2";
       if (key === "Voltage Level Requirements") cell.style.gridColumn = "span 2";
+      if (key === "Existing System Details")    cell.style.gridColumn = "span 2";
       if (key === "Expected Tender / RFQ Date") cell.style.gridColumn = "span 1";
-      if (key === "Approx Requirement")         cell.style.gridColumn = "span 2";
+      if (key === "Approx Requirement")         cell.style.gridColumn = "span 1";
+      if (key === "Products Discussed")         cell.style.gridColumn = "span 2";
 
       let label = document.createElement("label"); 
       label.textContent = key; 
@@ -7001,7 +7005,18 @@ async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
     const data = await res.json();
 
     if (!data.success || !data.row) {
-      mount.innerHTML = '';
+      const renderEmptyPlaceholder = (title, color) => `
+        <div style="margin-bottom:12px;">
+          <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:${color}; background:${color}18; padding:4px 10px; border-radius:4px; margin-bottom:8px; letter-spacing:0.5px;">${title}</div>
+          <div style="font-size:0.8rem; color:var(--muted); font-style:italic; padding:6px 8px; background:#f8fafc; border:1px dashed #e2e8f0; border-radius:4px;">Not uploaded yet</div>
+        </div>`;
+      mount.innerHTML = `
+        <div style="border-top:2px solid var(--border); padding-top:12px; margin-top:4px;">
+          <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--text); margin-bottom:10px; letter-spacing:0.5px;">📄 Uploaded Documents</div>
+          ${renderEmptyPlaceholder("Purchase Order", "#0056b3")}
+          ${renderEmptyPlaceholder("Dispatched Bill", "#059669")}
+          ${renderEmptyPlaceholder("Commissioning Report", "#7c3aed")}
+        </div>`;
       return;
     }
 
@@ -7027,10 +7042,7 @@ async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
     const hasDispatch   = dispatchFields.some(f => row[f] && row[f] !== "");
     const hasCommission = commissionFields.some(f => row[f] && row[f] !== "");
 
-    if (!hasPO && !hasDispatch && !hasCommission) {
-      mount.innerHTML = '';
-      return;
-    }
+    // Always show the section — with data if available, with placeholder if not
 
     const renderFieldRow = (label, value) => {
       if (!value || value === "") return "";
@@ -7055,12 +7067,22 @@ async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
         </div>`;
     };
 
+    const renderEmptySection = (title, color) => `
+      <div style="margin-bottom:12px;">
+        <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:${color}; background:${color}18; padding:4px 10px; border-radius:4px; margin-bottom:8px; letter-spacing:0.5px;">
+          ${title}
+        </div>
+        <div style="font-size:0.8rem; color:var(--muted); font-style:italic; padding:6px 8px; background:#f8fafc; border:1px dashed #e2e8f0; border-radius:4px;">
+          Not uploaded yet
+        </div>
+      </div>`;
+
     mount.innerHTML = `
       <div style="border-top:2px solid var(--border); padding-top:12px; margin-top:4px;">
         <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--text); margin-bottom:10px; letter-spacing:0.5px;">📄 Uploaded Documents</div>
-        ${renderSection("Purchase Order", "#0056b3", poFields)}
-        ${renderSection("Dispatched Bill", "#059669", dispatchFields)}
-        ${renderSection("Commissioning Report", "#7c3aed", commissionFields)}
+        ${hasPO         ? renderSection("Purchase Order", "#0056b3", poFields)             : renderEmptySection("Purchase Order", "#0056b3")}
+        ${hasDispatch   ? renderSection("Dispatched Bill", "#059669", dispatchFields)       : renderEmptySection("Dispatched Bill", "#059669")}
+        ${hasCommission ? renderSection("Commissioning Report", "#7c3aed", commissionFields) : renderEmptySection("Commissioning Report", "#7c3aed")}
       </div>`;
 
   } catch(e) {
