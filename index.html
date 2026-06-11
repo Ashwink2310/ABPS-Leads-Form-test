@@ -220,7 +220,7 @@
         <div class="nav-group-title-label" style="font-size: 0.8rem; color: var(--brand); font-weight: 800; margin-bottom: 8px;">Upload Documents</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
                     <div class="menu-card" id="mod-purchase-order" onclick="navigateToModule('purchaseOrder')">Upload Purchase Order</div>
-          <div class="menu-card" id="mod-dispatch-bill" onclick="navigateToModule('dispatchBill')">Upload Dispatched Bill</div>
+          <div class="menu-card" id="mod-dispatch-bill" onclick="navigateToModule('dispatchBill')">Upload Dispatch Bill</div>
           <div class="menu-card" id="mod-commissioning-report" onclick="navigateToModule('commissioningReport')">Upload Commissioning Report</div>
         </div>
       </div>
@@ -668,13 +668,13 @@
 
     <div id="workspace-dispatchBill" class="workspace-panel" style="display: none;">
       <div class="section">
-        <div class="section-header">Upload Dispatched Bill</div>
+        <div class="section-header">Upload Dispatch Bill</div>
         <div class="section-body" style="text-align: left; padding: 16px;">
           <div id="dispatch-bill-feedback-banner" style="display: none; padding: 12px; font-size: 0.88rem; font-weight: 700; border-radius: var(--radius); margin-bottom: 16px; border-left: 4px solid;"></div>
           <div id="dispatch-bill-inputs-container" style="display: block;">
             <div class="card-box" id="dispatch-bill-upload-box" onclick="document.getElementById('dispatch-bill-raw-file').click()" style="padding: 24px; font-size: 0.9rem; min-height: 90px; display: flex; align-items: center; justify-content: center;">📋 Select Dispatched Bill</div>
-            <input type="file" id="dispatch-bill-raw-file" accept="image/*,application/pdf" hidden onchange="handleOpsFileChange(this, 'dispatch-bill-upload-box', 'Dispatched Bill Document Added ✅')" />
-            <button class="nav-btn-styled" id="btn-ops-dispatch-submit" style="margin-top: 14px; width: 100%; padding: 10px;" onclick="executeMarketingOperationsDocumentCommit('DISPATCH')">Process Dispatched Bill with AI</button>
+            <input type="file" id="dispatch-bill-raw-file" accept="image/*,application/pdf" hidden onchange="handleOpsFileChange(this, 'dispatch-bill-upload-box', 'Dispatch Bill Document Added ✅')" />
+            <button class="nav-btn-styled" id="btn-ops-dispatch-submit" style="margin-top: 14px; width: 100%; padding: 10px;" onclick="executeMarketingOperationsDocumentCommit('DISPATCH')">Process Dispatch Bill with AI</button>
           </div>
         </div>
       </div>
@@ -1233,7 +1233,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyoe8LX0T1Ezvq8oZlNfrr_49Iupa66WhXbs1zSgn9CjJWikNvim9E1-_cfVjCtUXOz/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwoLqRLNX06a8n989NJWDrOPJQXRrXJnsT-30AQwGZJaTeGiScZ-1YeUfoeiVVsWfO4wg/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -2009,6 +2009,12 @@ async function navigateToModule(key) {
               }
             }, 200);
           }
+          // Always default to logged-in user
+          setTimeout(() => {
+            if (poOwnerDrop.value === "" && appActiveOperatorIdentityString) {
+              poOwnerDrop.value = appActiveOperatorIdentityString;
+            }
+          }, 300);
         }
     }
 
@@ -5786,7 +5792,7 @@ async function executeStoreManagerTicketActionDecision(ticketId, decisionString)
   } catch (error) {
     if (feedbackBanner) {
       feedbackBanner.style.cssText = "display: block; background: #fee2e2; border-color: #b91c1c; color: #b91c1c; padding: 12px; margin-bottom: 14px; border-left: 4px solid #b91c1c;";
-      feedbackBanner.innerHTML = `<strong>Network Dispatched Exception Failure:</strong> ${error.message}`;
+      feedbackBanner.innerHTML = `<strong>Network Exception Failure:</strong> ${error.message}`;
     }
     // Restoration loop rollbacks button state styles elements layout flags if network connection completely collapses
     if (approveBtn && rejectBtn) {
@@ -5930,7 +5936,7 @@ showAppView = async function() {
 document.getElementById('dispatch-bill-raw-file').onchange = (e) => {
   targetDispatchBillFileObj = e.target.files[0];
   const box = document.getElementById('dispatch-bill-upload-box');
-  if (box && targetDispatchBillFileObj) { box.textContent = "Dispatched Bill Document Added ✅"; box.classList.add('done'); }
+  if (box && targetDispatchBillFileObj) { box.textContent = "Dispatch Bill Document Added ✅"; box.classList.add('done'); }
 };
 
 document.getElementById('commissioning-report-raw-file').onchange = (e) => {
@@ -5948,7 +5954,7 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
   const btnIds      = { "DISPATCH": "btn-ops-dispatch-submit",       "COMMISSION": "btn-ops-commission-submit",            "PURCHASE_ORDER": "btn-ops-purchase-order-submit" };
   const containerIds= { "DISPATCH": "dispatch-bill-inputs-container","COMMISSION": "commissioning-report-inputs-container", "PURCHASE_ORDER": "purchase-order-inputs-container" };
   const fileObjects = { "DISPATCH": targetDispatchBillFileObj,        "COMMISSION": targetCommissioningReportFileObj,        "PURCHASE_ORDER": targetPurchaseOrderFileObj };
-  const defaultBtnLabels = { "DISPATCH": "Process Dispatched Bill with AI", "COMMISSION": "Process Commissioning Report with AI", "PURCHASE_ORDER": "Process Purchase Order with AI" };
+  const defaultBtnLabels = { "DISPATCH": "Process Dispatch Bill with AI", "COMMISSION": "Process Commissioning Report with AI", "PURCHASE_ORDER": "Process Purchase Order with AI" };
 
   const feedbackBanner  = document.getElementById(bannerIds[opsFlagTypeString]);
   const targetBtn       = document.getElementById(btnIds[opsFlagTypeString]);
@@ -5958,6 +5964,15 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
   if (!activeWorkingFile) {
     alert(`Please capture or select the corresponding document before running the AI engine.`);
     return;
+  }
+
+  if (isPO) {
+    const poOwnerDropEl = document.getElementById("po-owner-of-order-dropdown");
+    if (!poOwnerDropEl || !poOwnerDropEl.value || poOwnerDropEl.value.trim() === "") {
+      alert("Please select the Name of Owner of Order before processing.");
+      if (poOwnerDropEl) poOwnerDropEl.focus();
+      return;
+    }
   }
   
   if (feedbackBanner) feedbackBanner.style.display = "none";
@@ -6031,7 +6046,7 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
               const b1 = document.getElementById('dispatch-bill-upload-box');
               const b2 = document.getElementById('commissioning-report-upload-box');
               const b3 = document.getElementById('purchase-order-upload-box');
-              if (b1) { b1.textContent = '📋 Select Dispatched Bill'; b1.classList.remove('done'); }
+              if (b1) { b1.textContent = '📋 Select Dispatch Bill'; b1.classList.remove('done'); }
               if (b2) { b2.textContent = '📋 Select Commissioning Report'; b2.classList.remove('done'); }
               if (b3) { b3.textContent = '📋 Select Purchase Order'; b3.classList.remove('done'); }
               document.getElementById('dispatch-bill-feedback-banner').style.display = 'none';
@@ -6960,7 +6975,7 @@ async function executeBOQDocumentUploadSubmit(modeString) {
     reader.readAsDataURL(targetBOQUploadFileRawObject);
   });
   
-  // 3. CAPTURE DISPATCHED ASSET EXTENSION FILE TYPE METADATA
+  // 3. CAPTURE DISPATCH ASSET EXTENSION FILE TYPE METADATA
   const fileMimeType = targetBOQUploadFileRawObject.type;
   
   try {
@@ -7311,7 +7326,7 @@ async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
         <div style="border-top:2px solid var(--border); padding-top:12px; margin-top:4px;">
           <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--text); margin-bottom:10px; letter-spacing:0.5px;">📄 Uploaded Documents</div>
           ${renderEmptyPlaceholder("Purchase Order", "#0056b3")}
-          ${renderEmptyPlaceholder("Dispatched Bill", "#059669")}
+          ${renderEmptyPlaceholder("Dispatch Bill", "#059669")}
           ${renderEmptyPlaceholder("Commissioning Report", "#7c3aed")}
         </div>`;
       return;
@@ -7326,9 +7341,9 @@ async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
       "Name of ABPS Owner of Order", "Purchase Order Warranty Terms", "ABG Required", "Scope of Work"
     ];
     const dispatchFields = [
-      "Dispatched Bill Invoice Number", "Dispatched Bill Invoice Date", "Customer PO Number",
-      "Customer PO Date", "Basic Dispatched Bill Amount (in Rs)", "Dispatched Bill GST Amount",
-      "Total Dispatched Bill Amount"
+      "Dispatch Bill Invoice Number", "Dispatch Bill Invoice Date", "Customer PO Number",
+      "Customer PO Date", "Basic Dispatched Bill Amount (in Rs)", "Dispatch Bill GST Amount",
+      "Total Dispatch Bill Amount"
     ];
     const commissionFields = [
       "Date of Product Commissioning", "Commissioning ABPS Engineer Name",
@@ -7378,7 +7393,7 @@ async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
       <div style="border-top:2px solid var(--border); padding-top:12px; margin-top:4px;">
         <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--text); margin-bottom:10px; letter-spacing:0.5px;">📄 Uploaded Documents</div>
         ${hasPO         ? renderSection("Purchase Order", "#0056b3", poFields)             : renderEmptySection("Purchase Order", "#0056b3")}
-        ${hasDispatch   ? renderSection("Dispatched Bill", "#059669", dispatchFields)       : renderEmptySection("Dispatched Bill", "#059669")}
+        ${hasDispatch   ? renderSection("Dispatch Bill", "#059669", dispatchFields)        : renderEmptySection("Dispatch Bill", "#059669")}
         ${hasCommission ? renderSection("Commissioning Report", "#7c3aed", commissionFields) : renderEmptySection("Commissioning Report", "#7c3aed")}
       </div>`;
 
