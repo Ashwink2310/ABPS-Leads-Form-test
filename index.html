@@ -2256,9 +2256,7 @@ async function triggerSequentialSearch(triggerSourceMode) {
 
   try {
     const headerRowEnclosure = document.getElementById("canvas-back-btn-enclosure-row");
-    if (headerRowEnclosure) {
-      headerRowEnclosure.innerHTML = `<button class="nav-btn-styled" onclick="exitCanvasToCardView()" style="background:#4a5568;">Back to Search</button>`;
-    }
+    if (headerRowEnclosure) headerRowEnclosure.innerHTML = "";
 
     const res = await fetch(GAS_URL, { 
       method: "POST", 
@@ -3207,7 +3205,14 @@ async function commitIsolatedFollowUpItem(leadRef, scopeNode) {
       }) 
     });
     const r = await res.json();
-    if (r.success) { form.style.display = "none"; scopeNode.querySelector(".trigger-fup-open").style.display = "inline-flex"; scopeNode.querySelector(".trigger-fup-close").style.display = "none"; await globalExecutionScopeReloader(leadRef, scopeNode); }
+    if (r.success) { 
+      form.style.display = "none"; 
+      scopeNode.querySelector(".trigger-fup-open").style.display = "inline-flex"; 
+      scopeNode.querySelector(".trigger-fup-close").style.display = "none";
+      const timelineBox = scopeNode.querySelector(".template-timeline-box");
+      if (timelineBox) timelineBox.innerHTML = '<div style="font-size:0.8rem; color:var(--brand); font-weight:600; padding:8px; display:flex; align-items:center; gap:6px;"><span class="spinner" style="display:inline-block; width:10px; height:10px; border:2px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin 0.8s linear infinite;"></span> Creating new follow-up...</div>';
+      await globalExecutionScopeReloader(leadRef, scopeNode); 
+    }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Follow-Up"; }
 }
 
@@ -3317,7 +3322,14 @@ async function commitIsolatedTaskItem(leadRef, scopeNode) {
       }) 
     });
     const r = await res.json();
-    if (r.success) { form.style.display = "none"; scopeNode.querySelector(".trigger-task-open").style.display = "inline-flex"; scopeNode.querySelector(".trigger-task-close").style.display = "none"; await globalExecutionScopeReloader(leadRef, scopeNode); }
+    if (r.success) { 
+      form.style.display = "none"; 
+      scopeNode.querySelector(".trigger-task-open").style.display = "inline-flex"; 
+      scopeNode.querySelector(".trigger-task-close").style.display = "none";
+      const taskBox = scopeNode.querySelector(".template-task-box");
+      if (taskBox) taskBox.innerHTML = '<div style="font-size:0.8rem; color:var(--brand); font-weight:600; padding:8px; display:flex; align-items:center; gap:6px;"><span class="spinner" style="display:inline-block; width:10px; height:10px; border:2px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin 0.8s linear infinite;"></span> Creating new task...</div>';
+      await globalExecutionScopeReloader(leadRef, scopeNode); 
+    }
   } catch(e) { alert(e.message); } finally { btn.disabled = false; btn.innerHTML = "Save Task"; }
 }
 
@@ -4351,7 +4363,8 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
             <span style="background:#edf2f7;">Contact Person Name:</span><strong>${mail.extractedContactName}</strong>
           </div>
         </div>
-        <div class="directory-btn-actions-block" style="margin-top:4px;">
+        <div class="directory-btn-actions-block" style="margin-top:4px; display:flex; gap:6px; align-items:center;">
+          <a href="${mail.originalDeepLinkThreadUrl}" target="_blank" class="nav-btn-styled" style="background:#4a5568; text-decoration:none; font-size:0.75rem; padding:4px 8px; display:inline-flex; align-items:center;">Open Email ↗</a>
           ${deleteActionHtml}
         </div>
       </div>
@@ -4364,14 +4377,14 @@ function renderEmailLeadsFeedInterface(emailLeadsList) {
         📎 Attachments: <span style="color:#4a5568; font-family:monospace;">${attsLabel}</span>
       </div>
 
-      <div style="margin-top:8px; display:flex; align-items:flex-end; gap:8px;">
-        <div style="flex:1;">
-          <label style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:3px;">Notes</label>
-          <textarea id="email-note-${mIdx}" placeholder="Add notes about this email lead..." style="width:100%; min-height:38px; padding:5px 8px; font-size:0.82rem; border:1px solid var(--border); border-radius:4px; resize:vertical;">${mail.notes || ""}</textarea>
+      <div style="margin-top:8px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:3px;">
+          <label style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase;">Notes</label>
+          <span id="email-note-creator-${mIdx}" style="font-size:0.7rem; color:var(--muted); font-style:italic;">${mail.creatorOfNote ? "Last saved by: " + mail.creatorOfNote : ""}</span>
         </div>
-        <div style="display:flex; flex-direction:column; gap:6px; flex-shrink:0;">
-          <button class="nav-btn-styled" style="background:var(--brand); font-size:0.75rem; padding:4px 10px; white-space:nowrap;" onclick="saveEmailLeadNote(${mIdx}, '${mail.messageIdReference}')">Save Note</button>
-          <a href="${mail.originalDeepLinkThreadUrl}" target="_blank" class="nav-btn-styled" style="background:#4a5568; text-decoration:none; font-size:0.75rem; padding:4px 8px; display:inline-flex; align-items:center; justify-content:center;">Open Email ↗</a>
+        <div style="display:flex; align-items:flex-end; gap:8px;">
+          <textarea id="email-note-${mIdx}" placeholder="Add notes about this email lead..." style="flex:1; min-height:38px; padding:5px 8px; font-size:0.82rem; border:1px solid var(--border); border-radius:4px; resize:vertical;">${mail.notes || ""}</textarea>
+          <button class="nav-btn-styled" style="background:var(--brand); font-size:0.75rem; padding:4px 10px; white-space:nowrap; flex-shrink:0;" onclick="saveEmailLeadNote(${mIdx}, '${mail.messageIdReference}')">Save Note</button>
         </div>
       </div>
       
@@ -4404,10 +4417,17 @@ async function saveEmailLeadNote(idx, messageId) {
     if (d.success) {
       btn.textContent = "Saved ✓";
       btn.style.background = "var(--accent)";
+      // Update creator display immediately
+      const creatorEl = document.getElementById(`email-note-creator-${idx}`);
+      if (creatorEl) creatorEl.textContent = "Last saved by: " + appActiveOperatorIdentityString;
       // Update local cache
       const mail = cachedInboundEmailLeadsArray.find(m => m.messageIdReference === messageId);
-      if (mail) { mail.notes = noteText; localStorage.setItem("abps_active_email_leads_cache", JSON.stringify(cachedInboundEmailLeadsArray)); }
-      setTimeout(() => { btn.textContent = "Save Note"; btn.style.background = "var(--brand)"; btn.disabled = false; }, 2000);
+      if (mail) { 
+        mail.notes = noteText; 
+        mail.creatorOfNote = appActiveOperatorIdentityString;
+        localStorage.setItem("abps_active_email_leads_cache", JSON.stringify(cachedInboundEmailLeadsArray)); 
+      }
+      setTimeout(() => { btn.textContent = "Save Note"; btn.style.background = "var(--brand)"; btn.disabled = false; }, 2000);  
     } else {
       alert("Failed to save note: " + (d.error || "Unknown error"));
       btn.disabled = false; btn.textContent = "Save Note";
@@ -4505,7 +4525,10 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
     // --- SCENARIO A: COMPANY EXISTS IN DATABASE MATRIX ---
     if (data.success) {
       actionBtn.disabled = false;
-      actionBtn.style.display = "none";
+      actionBtn.textContent = "Create New Entry";
+      actionBtn.style.display = "inline-flex";
+      nestedWorkspace.style.display = "none";
+      nestedWorkspace.innerHTML = "";
       nestedWorkspace.innerHTML = `
         <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--brand); margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid var(--border);">
           🏢 Existing Database Records found for ${mailObject.extractedCompany}:
@@ -4534,11 +4557,6 @@ async function triggerEmailLeadDatabaseActionPipeline(index) {
       actionBtn.style.display = "none";
       
       nestedWorkspace.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--border);">
-          <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--accent);">
-            ➕ OPEN ACCOUNT ENTRY FORM:
-          </span>
-        </div>
         <div id="nested-email-creation-form-mount-${index}" style="width: 100%;"></div>
       `;
       nestedWorkspace.style.display = "block";
