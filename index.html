@@ -311,7 +311,7 @@
           </div>
           <input type="file" id="gate-invoice-file" accept="image/*,application/pdf" hidden onchange="handleGateFileSelectionChange(this, 'gate-invoice-box', 'Invoice Attached ✅')" />
           <input type="file" id="gate-challan-file" accept="image/*,application/pdf" hidden onchange="handleGateFileSelectionChange(this, 'gate-challan-box', 'Challan Attached ✅')" />
-          <button class="btn btn-ai" id="gate-parse-ai-btn" onclick="parseGateDocumentsWithAI()">Parse Documents with AI</button>
+          <button class="btn btn-ai" id="gate-parse-ai-btn" onclick="parseGateDocumentsWithAI()">Process Documents with AI</button>
         </div>
 
         <div id="gate-ai-verification-workspace" style="display: none; margin-top: 15px; border-top: 1px dashed var(--border); padding-top: 15px;">
@@ -589,7 +589,7 @@
       </div>
       <input type="file" id="boq-upload-file-raw" accept="image/*,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden onchange="handleBOQFileSelection(this, 'boq-upload-file-dropzone')" />
 
-      <button class="btn btn-sub" id="boq-upload-submit-action-btn" onclick="executeBOQDocumentUploadSubmit('NEW')" style="background:var(--brand); font-weight:700; padding:12px;">Parse BOQ Document</button>
+      <button class="btn btn-sub" id="boq-upload-submit-action-btn" onclick="executeBOQDocumentUploadSubmit('NEW')" style="background:var(--brand); font-weight:700; padding:12px;">Process BOQ Document</button>
     </div>
 
     <div id="canvas-module-design-update" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
@@ -643,7 +643,7 @@
           </div>
           <input type="file" id="card-front" accept="image/*" hidden />
           <input type="file" id="card-back" accept="image/*" hidden />
-          <button class="btn btn-ai" id="parse-btn" onclick="parseCard()">Parse Card with AI</button>
+          <button class="btn btn-ai" id="parse-btn" onclick="parseCard()">Process Card with AI</button>
           
           <label class="field-label">Company Name *</label><input type="text" id="f-company" placeholder="Enter Company Name..." />
           <label class="field-label">Contact Person Name</label><input type="text" id="f-name" />
@@ -1539,7 +1539,7 @@ async function parseCard() {
   } finally {
     btn.disabled = false;
     btn.classList.remove("loading");
-    btn.textContent = "Parse Card with AI";
+    btn.textContent = "Process Card with AI";
   }
 }
 
@@ -6168,7 +6168,7 @@ async function parseGateDocumentsWithAI() {
   } catch(e) { 
     alert("AI extraction pipeline failed: " + e.message); 
   } finally { 
-    btn.disabled = false; btn.textContent = "Parse Documents with AI"; 
+    btn.disabled = false; btn.textContent = "Process Documents with AI"; 
   }
 }
 
@@ -6177,7 +6177,7 @@ async function commitGateEntryRecordsToBackend() {
   const banner = document.getElementById('store-gate-runtime-feedback-banner');
   const uploadWrapperBlock = document.getElementById('gate-upload-fields-wrapper-group');
   
-  if (!activeParsedGatePayloadCache || !activeParsedGatePayloadCache.lineItems) return alert("Parse data missing.");
+  if (!activeParsedGatePayloadCache || !activeParsedGatePayloadCache.lineItems) return alert("Process data missing.");
   
   btn.disabled = true; 
   btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Generating Gate Entry...';
@@ -7038,17 +7038,17 @@ async function executeBOQDocumentUploadSubmit(modeString) {
     else {
       alert("Processing Error: " + (data.error || "The server rejected this document structure layout format parameters."));
       btn.disabled = false;
-      btn.textContent = isNew ? "Parse BOQ Document" : "Commit BOQ Change";
+      btn.textContent = isNew ? "Process BOQ Document" : "Commit BOQ Change";
     }
   } catch (error) {
     alert("Network request execution failure: " + error.message);
     btn.disabled = false;
-    btn.textContent = isNew ? "Parse BOQ Document" : "Commit BOQ Change";
+    btn.textContent = isNew ? "Process BOQ Document" : "Commit BOQ Change";
   } finally {
     // Failsafe rollback button state visibility styles if parsing drops connections out mid-way
     if (btn.disabled && !targetBOQUploadFileRawObject) {
       btn.disabled = false;
-      btn.textContent = isNew ? "Parse BOQ Document" : "Commit BOQ Change";
+      btn.textContent = isNew ? "Process BOQ Document" : "Commit BOQ Change";
     }
   }
 }
@@ -7084,7 +7084,7 @@ function resetBOQUploadWorkspaceToInitialState(modeString) {
     if (btn) {
       btn.style.display = "block";
       btn.disabled = false;
-      btn.textContent = "Parse BOQ Document";
+      btn.textContent = "Process BOQ Document";
     }
   } else {
     const dropzone = document.getElementById("boq-revision-file-dropzone");
