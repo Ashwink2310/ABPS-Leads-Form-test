@@ -325,7 +325,7 @@
           <div style="margin-bottom: 16px; overflow-x: auto;">
             <table class="store-basket-data-table" style="width: 100%;">
               <thead>
-                <tr><th>Item Code Number</th><th>Description of Material</th><th>Standard Material Name</th><th style="width: 140px;">Invoice Quantity</th></tr>
+                <tr><th>Item Code Number</th><th>Description of Material</th><th>Standard Material Name</th><th style="width: 140px; font-size:1.05rem; color:var(--brand);">Invoice Quantity</th></tr>
               </thead>
               <tbody id="gate-verification-table-body"></tbody>
             </table>
@@ -1233,7 +1233,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwoLqRLNX06a8n989NJWDrOPJQXRrXJnsT-30AQwGZJaTeGiScZ-1YeUfoeiVVsWfO4wg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyaKuESsV4OzxJQbGxMy5Yp6o-NpabUh9bjjsOA3PZvad2qUeyeaHgjjYSCckz6cpHtwQ/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -4210,7 +4210,12 @@ async function executeLeadMatrixFilterSearch() {
   } catch(e) {
     alert("Leads matrix execution request dropped: " + e.message);
   } finally {
-    btn.classList.remove("loading"); btn.textContent = "Run Leads Search";
+    if (btn.classList.contains("loading")) {
+      btn.classList.remove("loading");
+    }
+    if (btn.textContent !== "Run Leads Search") {
+      btn.textContent = "Run Leads Search";
+    }
   }
 }
 
@@ -6161,7 +6166,7 @@ async function parseGateDocumentsWithAI() {
         <td style="width:160px;"><input type="text" class="gate-row-item-code-input" value="${item.itemCode || ""}" placeholder="Item Code..." style="font-size:0.85rem; padding:4px; font-weight:700; border:1px solid var(--border); text-align:center;"></td>
         <td style="text-align:left; padding:8px; font-size:0.82rem; color:var(--muted);">${item.rawDescriptionLine || "Line Item Description"}</td>
         <td style="padding:6px;"><input type="text" class="gate-row-material-name-input" value="${(item.mappedMaterialName || item.rawDescriptionLine || "").replace(/"/g, '&quot;')}" style="font-weight:600; color:var(--brand); font-size:0.88rem; padding:5px; border:1.5px solid var(--brand); border-radius:3px; width:100%;"></td>
-        <td style="font-family:monospace; font-weight:700; text-align:center; width:140px;">${item.extractedQuantity}</td>
+        <td style="font-family:monospace; font-weight:800; font-size:1.1rem; text-align:center; color:var(--brand);">${item.extractedQuantity}</td>
       </tr>`;
     });
     document.getElementById('gate-ai-verification-workspace').style.display = "block";
@@ -6276,11 +6281,12 @@ async function initializeStoreEntryWorkspaceQueue() {
       let trs = "";
       item.lineItems.forEach((line, idx) => {
         trs += `<tr>
-          <td style="width:160px; padding:6px;"><input type="text" class="se-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCode || ""}" placeholder="Item Code" style="padding:6px; font-weight:700; border-color:var(--brand); text-align:center;"></td>
+        <td style="width:160px; padding:6px;"><input type="text" class="se-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCode || ""}" placeholder="Item Code" style="padding:6px; font-weight:700; border-color:var(--brand); text-align:center;"></td>
           <td style="font-weight:600; color:var(--text); text-align:left; padding:6px; word-wrap:break-word; white-space:normal;">${line.materialName}</td>
           <td style="font-family:monospace; font-weight:700; text-align:center; width:100px; padding:6px;">${line.gateQuantity}</td>
           <td style="text-align:center; width:180px; padding:6px;"><input type="number" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.gateQuantity}" style="width:100px; font-weight:700; text-align:center; border: 1.5px solid var(--brand); padding:6px;"></td>
           <td style="padding:6px;"><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Reason for short / missing supply..." style="font-size:0.85rem; padding:6px;"></td>
+          <td style="text-align:center; width:130px; padding:6px;"><select class="se-material-type-${item.gateNumber}" data-idx="${idx}" style="padding:5px; font-weight:600; font-size:0.82rem; width:100%;"><option value="">— Type —</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="Others">Others</option></select></td>
         </tr>`;
       });
       
@@ -6316,7 +6322,7 @@ async function initializeStoreEntryWorkspaceQueue() {
         </div>
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
           <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
-            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Description of Material</th><th style="text-align:center; width:100px;">Billed Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Reason for Short Supply</th></tr></thead>
+            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Description of Material</th><th style="text-align:center; width:100px;">Billed Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Reason for Short Supply</th><th style="width:130px; text-align:center;">Type of Material</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
           <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--accent);" onclick="commitStoreEntryVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Generate Raw Materials Store Entry</button></div>
@@ -6344,6 +6350,9 @@ async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
   });
   document.querySelectorAll(`.se-damage-desc-${gateNum}`).forEach(inp => {
     itemData.lineItems[parseInt(inp.dataset.idx, 10)].reasonForShortSupply = inp.value.trim() || "No Short Supply";
+  });
+  document.querySelectorAll(`.se-material-type-${gateNum}`).forEach(inp => {
+    itemData.lineItems[parseInt(inp.dataset.idx, 10)].materialType = inp.value.trim() || "";
   });
   
   try {
@@ -6407,12 +6416,12 @@ async function initializeStoreGrnWorkspaceQueue() {
         
         trs += `<tr>
           <td style="width:140px; padding:5px;"><input type="text" class="grn-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCode || ""}" placeholder="CODE *" style="padding:4px; font-weight:700; border:1.5px solid var(--brand); background:#fffef0; text-align:center;"></td>
-          <td style="font-weight:600; color:var(--text); text-align:left; padding:6px; word-wrap:break-word; white-space:normal; font-size:0.82rem;">${line.materialName}</td>
+          <td style="padding:5px; min-width:150px;"><input type="text" class="grn-mat-name-${item.gateNumber}" data-idx="${idx}" value="${line.materialName || ""}" style="font-size:0.82rem; padding:5px; font-weight:600; border:1.5px solid var(--brand); width:100%;"></td>
           <td style="font-family:monospace; font-weight:700; text-align:center; width:80px; padding:6px;">${activeReceivedQtyCount}</td>
           <td style="text-align:center; width:80px; padding:5px;"><select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:4px; font-weight:700; font-size:0.82rem;"><option value="No" selected>No</option><option value="Yes">Yes</option></select></td>
           <td style="text-align:center; width:100px; padding:5px;"><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${activeReceivedQtyCount}" value="${activeReceivedQtyCount}" style="width:80px; border-color:var(--brand); font-weight:700; text-align:center;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
           <td style="text-align:center; width:80px; padding:5px;"><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:65px; background:#f1f5f9; text-align:center; font-weight:700;" readonly></td>
-          <td style="text-align:right; width:100px; padding:5px;"><input type="number" class="grn-rate-${item.gateNumber}" data-idx="${idx}" value="${line.ratePerQuantity || 0}" style="width:90px; text-align:right; background:#f8fafc; font-weight:600;" readonly></td>
+          <td style="text-align:right; width:100px; padding:5px;"><input type="number" class="grn-rate-${item.gateNumber}" data-idx="${idx}" value="${line.ratePerQuantity || 0}" style="width:90px; text-align:right; background:#fffef0; font-weight:700; border:1.5px solid var(--brand);" oninput="updateGrnRowAmounts('${item.gateNumber}', ${idx})"></td>
           <td style="text-align:center; width:55px; padding:5px;"><input type="number" class="grn-gst-${item.gateNumber}" data-idx="${idx}" value="18" min="0" max="100" style="width:48px; text-align:center; padding:4px;" oninput="updateGrnRowAmounts('${item.gateNumber}', ${idx})"></td>
           <td style="text-align:right; width:110px; padding:5px;"><input type="number" class="grn-total-basic-${item.gateNumber}" data-idx="${idx}" value="0" style="width:100px; text-align:right; background:#e0f2fe; font-weight:700; color:#0369a1;" readonly></td>
           <td style="text-align:right; width:120px; padding:5px;"><input type="number" class="grn-total-invoice-${item.gateNumber}" data-idx="${idx}" value="0" style="width:110px; text-align:right; background:#dcfce7; font-weight:700; color:#15803d;" readonly></td>
@@ -6549,6 +6558,7 @@ async function commitGrnVerificationToBackend(gateNum, encodedItem) {
     if (qa !== "Yes")            qaIncomplete = true;
     if (ok + notOk !== line.gateQuantity) validationError = true;
     
+    line.materialName                = document.querySelector(`.grn-mat-name-${gateNum}[data-idx="${idx}"]`)?.value?.trim() || line.materialName || "";
     line.itemCode                    = itemCodeVal;
     line.qaDoneOption                = qa;
     line.okQuantity                  = ok;
