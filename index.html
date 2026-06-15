@@ -302,7 +302,7 @@
     </div>
 
     <div id="canvas-module-store-gate-entry" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2 style="margin-bottom: 16px;">Store Gate Entry</h2>
+      <h2 style="margin-bottom: 16px;">Raw Materials Store Gate Entry</h2>
       <div id="store-gate-runtime-feedback-banner" style="display:none; padding:12px; font-size:0.88rem; font-weight:700; border-radius:var(--radius); margin-bottom:12px; border-left:4px solid;"></div>
       
       <div class="section" style="padding: 16px;">
@@ -325,12 +325,12 @@
             <input type="hidden" id="gate-meta-time" value="" />
           </div>
           <div style="margin-bottom: 16px; overflow-x: auto;">
-            <table class="store-basket-data-table" style="width:100%; table-layout:fixed;">  
+            <table class="store-basket-data-table" style="width:100%; table-layout:fixed; word-wrap:break-word;">
               <thead>
                 <tr>
                   <th style="width:160px;">Item Code Number</th>
-                  <th>Description of Material</th>
-                  <th>Standard Material Name</th>
+                  <th style="min-width:280px;">Description of Material</th>
+                  <th style="min-width:280px;">Standard Material Name</th>
                   <th style="width:120px; text-align:center; color:#64748b; font-size:0.75rem; font-weight:700; text-transform:uppercase;">Invoice Quantity</th>
                 </tr>
               </thead>
@@ -6152,7 +6152,7 @@ async function parseGateDocumentsWithAI() {
       tbody.innerHTML += `<tr>
         <td style="width:160px; padding:6px;"><input type="text" class="gate-row-item-code-input" value="${item.itemCode || ""}" placeholder="Item Code..." style="font-size:0.85rem; padding:4px; font-weight:700; border:1px solid var(--border); text-align:center; width:100%;"></td>
         <td style="padding:8px; font-size:0.82rem; color:#64748b; white-space:normal; word-wrap:break-word; overflow-wrap:break-word;">${item.rawDescriptionLine || "Line Item Description"}</td>
-        <td style="padding:6px;"><input type="text" class="gate-row-material-name-input" value="${(item.mappedMaterialName || item.rawDescriptionLine || "").replace(/"/g, '&quot;')}" style="font-weight:600; color:var(--brand); font-size:0.88rem; padding:5px; border:1.5px solid var(--brand); border-radius:3px; width:100%;"></td>
+        <td style="padding:6px;"><textarea class="gate-row-material-name-input" style="font-weight:600; color:var(--brand); font-size:0.88rem; padding:5px; border:1.5px solid var(--brand); border-radius:3px; width:100%; min-height:38px; resize:vertical; font-family:inherit;">${(item.mappedMaterialName || item.rawDescriptionLine || "").replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea></td>
         <td style="text-align:center; color:#64748b; font-weight:700; vertical-align:middle;">${item.extractedQuantity}</td>
       </tr>`;
     });
