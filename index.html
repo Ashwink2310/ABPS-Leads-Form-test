@@ -6268,10 +6268,10 @@ async function initializeStoreEntryWorkspaceQueue() {
       let trs = "";
       item.lineItems.forEach((line, idx) => {
         trs += `<tr>
-        <td style="width:160px; padding:6px;"><input type="text" class="se-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCode || ""}" placeholder="Item Code" style="padding:6px; font-weight:700; border-color:var(--brand); text-align:center;"></td>
-          <td style="font-weight:600; color:var(--text); text-align:left; padding:6px; word-wrap:break-word; white-space:normal;">${line.materialName}</td>
-          <td style="font-family:monospace; font-weight:700; text-align:center; width:100px; padding:6px;">${line.gateQuantity}</td>
-          <td style="text-align:center; width:180px; padding:6px;"><input type="number" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.gateQuantity}" style="width:100px; font-weight:700; text-align:center; border: 1.5px solid var(--brand); padding:6px;"></td>
+          <td style="width:160px; padding:6px;"><input type="text" class="se-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCode || ""}" placeholder="Item Code" style="padding:6px; font-weight:700; border-color:var(--brand); text-align:center; width:100%;"></td>
+          <td style="padding:6px;"><input type="text" class="se-mat-name-${item.gateNumber}" data-idx="${idx}" value="${line.materialName || ""}" style="font-weight:600; color:var(--brand); font-size:0.88rem; padding:5px; border:1.5px solid var(--brand); border-radius:3px; width:100%;"></td>
+          <td style="font-family:monospace; font-weight:700; text-align:center; width:100px; padding:6px; font-size:1.1rem; color:#64748b;">${line.gateQuantity}</td>
+          <td style="text-align:center; width:180px; padding:6px;"><input type="number" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.gateQuantity}" style="width:100px; font-weight:700; text-align:center; border:1.5px solid var(--brand); padding:6px; font-size:1.1rem;"></td>
           <td style="padding:6px;"><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Reason for short / missing supply..." style="font-size:0.85rem; padding:6px;"></td>
           <td style="text-align:center; width:130px; padding:6px;"><select class="se-material-type-${item.gateNumber}" data-idx="${idx}" style="padding:5px; font-weight:600; font-size:0.82rem; width:100%;"><option value="">— Type —</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="Others">Others</option></select></td>
         </tr>`;
@@ -6309,7 +6309,7 @@ async function initializeStoreEntryWorkspaceQueue() {
         </div>
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
           <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
-            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Description of Material</th><th style="text-align:center; width:100px;">Billed Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Reason for Short Supply</th><th style="width:130px; text-align:center;">Type of Material</th></tr></thead>
+            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Standard Material Name</th><th style="text-align:center; width:100px;">Invoice Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Reason for Short Supply</th><th style="width:130px; text-align:center;">Type of Material</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
           <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--accent);" onclick="commitStoreEntryVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Generate Raw Materials Store Entry</button></div>
@@ -6331,6 +6331,9 @@ async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
   // Capture Item Code inputs and physically received quantities from the active table row coordinates
   document.querySelectorAll(`.se-item-code-${gateNum}`).forEach(inp => {
     itemData.lineItems[parseInt(inp.dataset.idx, 10)].itemCodeNumber = inp.value.trim(); // Must match itemCodeNumber
+  });
+  document.querySelectorAll(`.se-mat-name-${gateNum}`).forEach(inp => {
+    itemData.lineItems[parseInt(inp.dataset.idx, 10)].materialName = inp.value.trim();
   });
   document.querySelectorAll(`.se-phys-qty-${gateNum}`).forEach(inp => {
     itemData.lineItems[parseInt(inp.dataset.idx, 10)].verifiedPhysicalQuantity = parseInt(inp.value, 10) || 0;
@@ -7206,7 +7209,7 @@ async function initializeFinishedGoodsAddWorkspace(department, canvasId) {
   if (!canvas) return;
 
   canvas.innerHTML = `
-    <h2 style="margin-bottom:20px; color:var(--brand);">${department}: Add to Finished Goods Store</h2>
+    <h2 style="margin-bottom:20px; color:var(--brand);">${department} Department: Add Material to Finished Goods Store</h2>
     <div id="fg-feedback-${canvasId}" style="display:none; padding:16px; border-radius:var(--radius); margin-bottom:16px; border-left:4px solid;"></div>
     <div id="fg-form-${canvasId}">
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
@@ -7238,12 +7241,12 @@ async function initializeFinishedGoodsAddWorkspace(department, canvasId) {
         </div>
         <div>
           <label class="field-label">Product Rating</label>
-          <input type="text" id="fg-rating-${canvasId}" placeholder="e.g. 1190kvar @ 13KV" style="padding:9px;" />
+          <input type="text" id="fg-rating-${canvasId}" style="padding:9px;" />
         </div>
       </div>
       <div style="margin-bottom:14px;">
         <label class="field-label">Product Details</label>
-        <textarea id="fg-details-${canvasId}" style="padding:9px; min-height:50px;" placeholder="Additional product details..."></textarea>
+        <textarea id="fg-details-${canvasId}" style="padding:9px; min-height:50px;" ></textarea>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
         <div>
