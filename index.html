@@ -6341,10 +6341,20 @@ async function commitStoreEntryVerificationToBackend(gateNum, encodedItem) {
   document.querySelectorAll(`.se-damage-desc-${gateNum}`).forEach(inp => {
     itemData.lineItems[parseInt(inp.dataset.idx, 10)].reasonForShortSupply = inp.value.trim() || "No Short Supply";
   });
+
+  let materialTypeMissing = false;
   document.querySelectorAll(`.se-material-type-${gateNum}`).forEach(inp => {
-    itemData.lineItems[parseInt(inp.dataset.idx, 10)].materialType = inp.value.trim() || "";
+    const val = inp.value.trim();
+    if (!val) materialTypeMissing = true;
+    itemData.lineItems[parseInt(inp.dataset.idx, 10)].materialType = val;
   });
-  
+  if (materialTypeMissing) {
+    alert("Compulsory Field Missing: Every line item must have a Type of Material selected before submitting Store Entry.");
+    btn.disabled = false;
+    btn.textContent = "Verify & Generate Raw Materials Store Entry";
+    return;
+  }
+
   try {
     const res = await fetch(GAS_URL, {
       method: "POST",
