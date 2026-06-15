@@ -251,8 +251,10 @@
 
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
         <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Finished Goods Store</div>
-        <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 12px; padding: 0;">
-          <div class="menu-card" id="mod-finished-goods-add" onclick="switchActiveDashboardModule('finished-goods-add')">Add to Finished Goods Store</div>
+        <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
+          <div class="menu-card" id="mod-fg-reactor"   style="display:none;" onclick="switchActiveDashboardModule('fg-add-reactor')">Reactor: Add to FG Store</div>
+          <div class="menu-card" id="mod-fg-capacitor" style="display:none;" onclick="switchActiveDashboardModule('fg-add-capacitor')">Capacitor: Add to FG Store</div>
+          <div class="menu-card" id="mod-fg-panel"     style="display:none;" onclick="switchActiveDashboardModule('fg-add-panel')">Panel: Add to FG Store</div>
         </div>
       </div>
 
@@ -453,103 +455,9 @@
       <div class="dashboard-grid" id="dashboard-finished-goods-live-inventory-mount-zone" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important; gap:10px; padding:0;"></div>
     </div>
 
-    <div id="canvas-module-finished-goods-add" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <h2 style="margin-bottom: 20px; color: var(--brand);">Add to Finished Goods Store</h2>
-      <div id="finished-goods-add-feedback-banner" style="display:none; padding: 16px; border-radius: var(--radius); margin-bottom: 16px; border-left: 4px solid;"></div>
-
-      <div id="finished-goods-add-form-wrapper">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
-          <div>
-            <label class="field-label">Department *</label>
-            <select id="fg-add-department" style="padding:9px; font-weight:600;">
-              <option value="">— Select Department —</option>
-              <option value="Reactor">Reactor</option>
-              <option value="Capacitor">Capacitor</option>
-              <option value="Panel">Panel</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label">Date *</label>
-            <input type="date" id="fg-add-date" style="padding:9px;" />
-          </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
-          <div>
-            <label class="field-label">Project ID *</label>
-            <select id="fg-add-project-id" onchange="handleFGProjectIdChange(this.value)" style="padding:9px; font-weight:600;">
-              <option value="">— Select Project ID —</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label">Customer Name</label>
-            <input type="text" id="fg-add-customer-name" readonly style="padding:9px; background:#f1f5f9; color:var(--muted); cursor:not-allowed;" placeholder="Auto-filled from Project ID" />
-          </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
-          <div>
-            <label class="field-label">Product Number</label>
-            <input type="text" id="fg-add-product-number" style="padding:9px;" />
-          </div>
-          <div>
-            <label class="field-label">Product Serial Number</label>
-            <input type="text" id="fg-add-serial-number" style="padding:9px;" />
-          </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
-          <div>
-            <label class="field-label">Product Identification Number</label>
-            <input type="text" id="fg-add-identification-number" style="padding:9px;" />
-          </div>
-          <div>
-            <label class="field-label">Product Rating</label>
-            <input type="text" id="fg-add-product-rating" placeholder="e.g. 1190kvar @ 13KV" style="padding:9px;" />
-          </div>
-        </div>
-
-        <div style="margin-bottom:14px;">
-          <label class="field-label">Product Name / Details *</label>
-          <input type="text" id="fg-add-material-name" placeholder="Enter full product description..." style="padding:9px;" />
-        </div>
-
-        <div style="margin-bottom:14px;">
-          <label class="field-label">Product Details</label>
-          <textarea id="fg-add-product-details" style="padding:9px; min-height:50px;" placeholder="Additional product details..."></textarea>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
-          <div>
-            <label class="field-label">Product Quantity *</label>
-            <input type="number" id="fg-add-total-stock" min="1" placeholder="Enter quantity" style="padding:9px;" />
-          </div>
-          <div>
-            <label class="field-label">Production Department Responsible Person</label>
-            <select id="fg-add-prod-responsible" style="padding:9px; font-weight:600;">
-              <option value="">— Select Person —</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
-          <div>
-            <label class="field-label">Finished Goods Store Incharge Person *</label>
-            <select id="fg-add-store-incharge" style="padding:9px; font-weight:600;">
-              <option value="">— Select Person —</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label">Additional Remarks</label>
-            <input type="text" id="fg-add-additional-remarks" style="padding:9px;" placeholder="Any notes..." />
-          </div>
-        </div>
-
-        <button class="btn btn-sub" id="fg-add-submit-btn" onclick="submitFinishedGoodsAddEntry()" style="background: var(--accent); padding: 12px; font-weight: 700;">
-          Add to Finished Goods Store
-        </button>
-      </div>
-    </div>
+    <div id="canvas-module-fg-reactor"   class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;"></div>
+    <div id="canvas-module-fg-capacitor" class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;"></div>
+    <div id="canvas-module-fg-panel"     class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;"></div> 
 
     <div id="canvas-module-store-history-matrix" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       
@@ -1291,7 +1199,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzdSsnLzrSaHOPrNyf4u_oCAa9DZ2wz1yn7HQpYrbl0Kgxw0LyYtZpvcqMwzxBlbGp78Q/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwkwLRfufOiCL0kWOaYEwJgU4ZibDZkm-xfMGa53olYdDuEz2DRWa7rmbFeU8pA-6SIKw/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -2165,7 +2073,9 @@ function returnToDashboard() {
   
   // FIXED REDIRECT RUNTIME REMOVES: Clear out the newly mounted Finished Goods view container as well
   if(document.getElementById("canvas-module-store-finished-goods-live-stock")) document.getElementById("canvas-module-store-finished-goods-live-stock").style.display = "none";
-  if(document.getElementById("canvas-module-finished-goods-add")) document.getElementById("canvas-module-finished-goods-add").style.display = "none";
+  if(document.getElementById("canvas-module-fg-reactor"))   document.getElementById("canvas-module-fg-reactor").style.display   = "none";
+  if(document.getElementById("canvas-module-fg-capacitor")) document.getElementById("canvas-module-fg-capacitor").style.display = "none";
+  if(document.getElementById("canvas-module-fg-panel"))     document.getElementById("canvas-module-fg-panel").style.display     = "none";
 
   document.getElementById("module-workspace-container").style.display = "none";
   document.getElementById("dashboard-view").style.display = "block"; 
@@ -4725,7 +4635,9 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   const canSearchStoreMat          = userPermissionsObject.storeAdminMatrix === true;
 
   // 3. EXTRACT FINISHED GOODS & DESIGN PRIVILEGES MATRIX MATRICES
-  const canAddToFinishedGoods      = userPermissionsObject.addFinishedGoods === true;
+  const canAddFGReactor   = userPermissionsObject.addFGReactor   === true;
+  const canAddFGCapacitor = userPermissionsObject.addFGCapacitor === true;
+  const canAddFGPanel     = userPermissionsObject.addFGPanel     === true;
   const canViewLiveFinishedStock   = userPermissionsObject.liveFinishedGoodsStoreStock === true;
   const canUploadBOQ               = userPermissionsObject.uploadBOQ === true;
   const canUpdateBOQ               = userPermissionsObject.updateBOQ === true;
@@ -4776,9 +4688,11 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   if (document.getElementById("mod-store-ticket")) {
     document.getElementById("mod-store-ticket").style.display = canCreateTicket ? "block" : "none";
   }
-  if (document.getElementById("mod-finished-goods-add")) {
-    document.getElementById("mod-finished-goods-add").style.display = userPermissionsObject.addFinishedGoods === true ? "block" : "none";
-  }
+  
+  if (document.getElementById("mod-fg-reactor"))   document.getElementById("mod-fg-reactor").style.display   = canAddFGReactor   ? "block" : "none";
+  if (document.getElementById("mod-fg-capacitor")) document.getElementById("mod-fg-capacitor").style.display = canAddFGCapacitor ? "block" : "none";
+  if (document.getElementById("mod-fg-panel"))     document.getElementById("mod-fg-panel").style.display     = canAddFGPanel     ? "block" : "none";
+
   if (document.getElementById("mod-store-approvals")) {
     document.getElementById("mod-store-approvals").style.display = canReleaseTicket ? "block" : "none";
   }
@@ -4790,9 +4704,6 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   }
   
   // Finished Goods Card visibility state markers bindings
-  if (document.getElementById("mod-finished-goods-add")) {
-    document.getElementById("mod-finished-goods-add").style.display = canAddToFinishedGoods ? "block" : "none";
-  }
   if (document.getElementById("mod-live-finished-store-stock")) {
     document.getElementById("mod-live-finished-store-stock").style.display = canViewLiveFinishedStock ? "block" : "none";
   }
@@ -4813,7 +4724,7 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
 
   const storeHeaderBlock = document.getElementById("dashboard-store-department-header-block");
   if (storeHeaderBlock) {
-    storeHeaderBlock.style.display = (canViewLiveStock || canCreateTicket || canReleaseTicket || canSearchStoreMat || userPermissionsObject.gateEntry === true || userPermissionsObject.storeEntry === true || userPermissionsObject.grnNote === true || canViewLiveFinishedStock || canAddToFinishedGoods) ? "block" : "none";
+    storeHeaderBlock.style.display = (canViewLiveStock || canCreateTicket || canReleaseTicket || canSearchStoreMat || userPermissionsObject.gateEntry === true || userPermissionsObject.storeEntry === true || userPermissionsObject.grnNote === true || canViewLiveFinishedStock || canAddFGReactor || canAddFGCapacitor || canAddFGPanel) ? "block" : "none";
   }
 
   const designHeaderBlock = document.getElementById("dashboard-design-department-header-block");
@@ -5366,7 +5277,9 @@ function navigateToStoreWorkspacePanel(targetPanelModuleId) {
   if (document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
   if (document.getElementById("canvas-module-store-live-stock")) document.getElementById("canvas-module-store-live-stock").style.display = "none";
   if (document.getElementById("canvas-module-store-finished-goods-live-stock")) document.getElementById("canvas-module-store-finished-goods-live-stock").style.display = "none";
-  if (document.getElementById("canvas-module-finished-goods-add")) document.getElementById("canvas-module-finished-goods-add").style.display = "none";
+  if (document.getElementById("canvas-module-fg-reactor"))   document.getElementById("canvas-module-fg-reactor").style.display   = "none";
+  if (document.getElementById("canvas-module-fg-capacitor")) document.getElementById("canvas-module-fg-capacitor").style.display = "none";
+  if (document.getElementById("canvas-module-fg-panel"))     document.getElementById("canvas-module-fg-panel").style.display     = "none";
   if (document.getElementById("canvas-module-store-gate-entry")) document.getElementById("canvas-module-store-gate-entry").style.display = "none";
   if (document.getElementById("canvas-module-store-entry")) document.getElementById("canvas-module-store-entry").style.display = "none";
   if (document.getElementById("canvas-module-store-grn")) document.getElementById("canvas-module-store-grn").style.display = "none";
@@ -5434,6 +5347,9 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
   if (document.getElementById("canvas-module-store-manager-approvals")) document.getElementById("canvas-module-store-manager-approvals").style.display = "none";
   if (document.getElementById("canvas-module-store-live-stock")) document.getElementById("canvas-module-store-live-stock").style.display = "none";
   if (document.getElementById("canvas-module-store-finished-goods-live-stock")) document.getElementById("canvas-module-store-finished-goods-live-stock").style.display = "none";
+  if (document.getElementById("canvas-module-fg-reactor"))   document.getElementById("canvas-module-fg-reactor").style.display   = "none";
+  if (document.getElementById("canvas-module-fg-capacitor")) document.getElementById("canvas-module-fg-capacitor").style.display = "none";
+  if (document.getElementById("canvas-module-fg-panel"))     document.getElementById("canvas-module-fg-panel").style.display     = "none";
   if (document.getElementById("canvas-module-store-history-matrix")) document.getElementById("canvas-module-store-history-matrix").style.display = "none";
   
   // 3. Hide all design engineering sub-module views panels
@@ -5497,16 +5413,27 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
     navigateToDesignWorkspacePanel('design-upload');
   } else if (targetCanvasModuleId === 'design-update') {
     navigateToDesignWorkspacePanel('design-update');
-  } else if (targetCanvasModuleId === 'finished-goods-add') {
+  } else if (targetCanvasModuleId === 'fg-add-reactor' || targetCanvasModuleId === 'fg-add-capacitor' || targetCanvasModuleId === 'fg-add-panel') {
+    const deptMap = { 'fg-add-reactor': 'Reactor', 'fg-add-capacitor': 'Capacitor', 'fg-add-panel': 'Panel' };
+    const canvasMap = { 'fg-add-reactor': 'canvas-module-fg-reactor', 'fg-add-capacitor': 'canvas-module-fg-capacitor', 'fg-add-panel': 'canvas-module-fg-panel' };
     document.getElementById("module-store-workspace-enclosure-panel").style.display = "block";
-    document.getElementById("canvas-module-finished-goods-add").style.display = "block";
-    initializeFinishedGoodsAddWorkspace();
+    // Hide all three first
+    ["canvas-module-fg-reactor","canvas-module-fg-capacitor","canvas-module-fg-panel"].forEach(id => {
+      document.getElementById(id).style.display = "none";
+    });
+    const targetCanvas = document.getElementById(canvasMap[targetCanvasModuleId]);
+    targetCanvas.style.display = "block";
+    initializeFinishedGoodsAddWorkspace(deptMap[targetCanvasModuleId], canvasMap[targetCanvasModuleId]);
   }
 }
 
 function exitStoreWorkspacePanelBackToMenu() {
   document.getElementById("module-store-workspace-enclosure-panel").style.display = "none";
   enforceDynamicModuleRoleGateways(userPermissions);
+
+  if(document.getElementById("canvas-module-fg-reactor"))   document.getElementById("canvas-module-fg-reactor").style.display   = "none";
+  if(document.getElementById("canvas-module-fg-capacitor")) document.getElementById("canvas-module-fg-capacitor").style.display = "none";
+  if(document.getElementById("canvas-module-fg-panel"))     document.getElementById("canvas-module-fg-panel").style.display     = "none";
 
   document.getElementById("dashboard-view").style.display = "flex"; 
   triggerCompanyDropdownArrayFetch(); 
@@ -7220,53 +7147,53 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
 
 async function triggerLiveFinishedGoodsStoreStockMetricsSync() {
   const mountZone = document.getElementById("dashboard-finished-goods-live-inventory-mount-zone");
-  const syncBtn = document.getElementById("live-stock-sync-btn");
+  const syncBtn   = document.getElementById("live-stock-sync-btn");
   if (!mountZone) return;
 
-  if (syncBtn) {
-    syncBtn.disabled = true;
-    syncBtn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Syncing...';
-  }
+  if (syncBtn) { syncBtn.disabled = true; syncBtn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Syncing...'; }
 
   try {
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })
-    });
+    const res = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") }) });
     const data = await res.json();
-    
+
     if (data.success && data.finishedGoodsInventory) {
+      const fgData = data.finishedGoodsInventory;
       mountZone.innerHTML = "";
-      data.finishedGoodsInventory.forEach(item => {
-        const metricCard = document.createElement("div");
-        metricCard.style.cssText = "background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);";
 
-        let colorProfileStyle = "color: #15803d; background: #dcfce7;"; 
-        if (Number(item.availableStock) === 0) {
-          colorProfileStyle = "color: #b91c1c; background: #fee2e2;"; 
-        } else if (Number(item.availableStock) <= Number(item.reorderLevel)) {
-          colorProfileStyle = "color: #b45309; background: #fef3c7;"; 
+      ["reactor","capacitor","panel"].forEach(dept => {
+        const rows = fgData[dept] || [];
+        const deptLabel = dept.charAt(0).toUpperCase() + dept.slice(1);
+
+        const section = document.createElement("div");
+        section.style.cssText = "grid-column: 1 / -1; margin-bottom:20px;";
+        section.innerHTML = `<div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--brand); background:var(--highlight-bg); padding:6px 12px; border-radius:4px; margin-bottom:10px; letter-spacing:0.5px;">${deptLabel} Finished Goods</div>`;
+
+        if (rows.length === 0) {
+          section.innerHTML += `<p style="font-size:0.82rem; color:var(--muted); padding:8px;">No items in ${deptLabel} FG Store.</p>`;
+        } else {
+          const table = document.createElement("table");
+          table.className = "store-basket-data-table";
+          table.style.width = "100%";
+
+          const cols = ["Date","Product Serial Number","Job Card Number","Product Rating","Product Details","Product Quantity","Project ID","Customer Name","Production Department Responsible Person","Finished Goods Store Incharge Person","Additional Remarks"];
+          table.innerHTML = `<thead><tr>${cols.map(c => `<th style="text-align:left; white-space:nowrap;">${c}</th>`).join("")}</tr></thead>`;
+
+          const tbody = document.createElement("tbody");
+          rows.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = cols.map(c => `<td style="font-size:0.8rem; white-space:normal; word-break:break-word;">${row[c] || ""}</td>`).join("");
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+          section.appendChild(table);
         }
-
-        metricCard.innerHTML = `
-          <div style="font-size: 0.82rem; font-weight: 700; color: #334155; line-height: 1.4; white-space: normal; word-break: break-word; min-height: 36px;">
-            ${item.materialName}
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 4px;">
-            <span style="font-family: monospace; font-size: 1.15rem; font-weight: 800; color: var(--text);">${item.availableStock}</span>
-            <span style="font-size: 0.68rem; font-weight: 700; padding: 2px 6px; border-radius: 3px; ${colorProfileStyle}">${item.unitType.toUpperCase()}</span>
-          </div>
-        `;
-        mountZone.appendChild(metricCard);
+        mountZone.appendChild(section);
       });
     }
-  } catch (error) {
-    mountZone.innerHTML = `<p style="font-size: 0.8rem; color: var(--warn); grid-column: 1 / -1; text-align: center; padding:20px;">⚠️ Sync Exception: Couldn't fetch Finished Goods balances matrix logs.</p>`;
+  } catch(err) {
+    mountZone.innerHTML = `<p style="color:var(--warn); grid-column:1/-1; text-align:center; padding:20px;">⚠️ Sync failed: ${err.message}</p>`;
   } finally {
-    if (syncBtn) { 
-      syncBtn.disabled = false; 
-      syncBtn.innerHTML = "🔄 Sync Stock Balances"; 
-    }
+    if (syncBtn) { syncBtn.disabled = false; syncBtn.innerHTML = "🔄 Sync Stock"; }
   }
 }
 
@@ -7274,28 +7201,96 @@ async function triggerLiveFinishedGoodsStoreStockMetricsSync() {
  * INITIALIZE FINISHED GOODS ADD WORKSPACE
  * Populates engineer dropdown from cached staff list.
  */
-async function initializeFinishedGoodsAddWorkspace() {
-  const banner   = document.getElementById("finished-goods-add-feedback-banner");
-  const formWrap = document.getElementById("finished-goods-add-form-wrapper");
-  const submitBtn= document.getElementById("fg-add-submit-btn");
+async function initializeFinishedGoodsAddWorkspace(department, canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
 
-  if (banner)    { banner.style.display = "none"; banner.innerHTML = ""; }
-  if (formWrap)  formWrap.style.display = "block";
-  if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Add to Finished Goods Store"; }
+  canvas.innerHTML = `
+    <h2 style="margin-bottom:20px; color:var(--brand);">${department}: Add to Finished Goods Store</h2>
+    <div id="fg-feedback-${canvasId}" style="display:none; padding:16px; border-radius:var(--radius); margin-bottom:16px; border-left:4px solid;"></div>
+    <div id="fg-form-${canvasId}">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div>
+          <label class="field-label">Date *</label>
+          <input type="date" id="fg-date-${canvasId}" style="padding:9px;" />
+        </div>
+        <div>
+          <label class="field-label">Project ID *</label>
+          <select id="fg-project-${canvasId}" onchange="handleFGProjectIdChange(this.value, '${canvasId}')" style="padding:9px; font-weight:600;">
+            <option value="">Loading...</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div>
+          <label class="field-label">Customer Name</label>
+          <input type="text" id="fg-customer-${canvasId}" readonly style="padding:9px; background:#f1f5f9; color:var(--muted); cursor:not-allowed;" placeholder="Auto-filled from Project ID" />
+        </div>
+        <div>
+          <label class="field-label">Product Serial Number</label>
+          <input type="text" id="fg-serial-${canvasId}" style="padding:9px;" />
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div>
+          <label class="field-label">Job Card Number</label>
+          <input type="text" id="fg-jobcard-${canvasId}" style="padding:9px;" />
+        </div>
+        <div>
+          <label class="field-label">Product Rating</label>
+          <input type="text" id="fg-rating-${canvasId}" placeholder="e.g. 1190kvar @ 13KV" style="padding:9px;" />
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label class="field-label">Product Details</label>
+        <textarea id="fg-details-${canvasId}" style="padding:9px; min-height:50px;" placeholder="Additional product details..."></textarea>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div>
+          <label class="field-label">Product Quantity *</label>
+          <input type="number" id="fg-qty-${canvasId}" min="1" placeholder="Enter quantity" style="padding:9px;" />
+        </div>
+        <div>
+          <label class="field-label">Production Department Responsible Person</label>
+          <select id="fg-prod-${canvasId}" style="padding:9px; font-weight:600;">
+            <option value="">— Select Person —</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div>
+          <label class="field-label">Finished Goods Store Incharge Person *</label>
+          <select id="fg-store-${canvasId}" style="padding:9px; font-weight:600;">
+            <option value="">— Select Person —</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Additional Remarks</label>
+          <input type="text" id="fg-remarks-${canvasId}" style="padding:9px;" placeholder="Any notes..." />
+        </div>
+      </div>
+      <button class="btn btn-sub" id="fg-submit-${canvasId}" onclick="submitFinishedGoodsAddEntry('${department}', '${canvasId}')" style="background:var(--accent); padding:12px; font-weight:700;">
+        Add to Finished Goods Store
+      </button>
+    </div>
+  `;
 
-  // Fetch projects, staff in parallel
+  // Set today as default date
+  const dateEl = document.getElementById(`fg-date-${canvasId}`);
+  if (dateEl) dateEl.value = new Date().toISOString().split("T")[0];
+
+  // Fetch projects and staff in parallel
   const [projRes, staffRes] = await Promise.all([
-    fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") }) }),
-    fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getStoreOperatorsList",     sessionToken: localStorage.getItem("sessionToken") }) })
+    fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") }) }),
+    fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"getStoreOperatorsList",     sessionToken: localStorage.getItem("sessionToken") }) })
   ]);
   const projData  = await projRes.json();
   const staffData = await staffRes.json();
 
-  // Cache project meta for customer name auto-fill
   window.fgProjectMetaCache = projData.projectMeta || {};
 
-  // Project ID dropdown
-  const projDrop = document.getElementById("fg-add-project-id");
+  // Populate project dropdown
+  const projDrop = document.getElementById(`fg-project-${canvasId}`);
   if (projDrop) {
     projDrop.innerHTML = '<option value="">— Select Project ID —</option>';
     (projData.projects || []).forEach(code => {
@@ -7305,13 +7300,11 @@ async function initializeFinishedGoodsAddWorkspace() {
     });
   }
 
-  // Production Department Responsible Person — Production or Admin only
-  const prodDrop = document.getElementById("fg-add-prod-responsible");
+  // Production — Production or Admin
+  const prodDrop = document.getElementById(`fg-prod-${canvasId}`);
   if (prodDrop) {
-    prodDrop.innerHTML = '<option value="">— Select Person —</option>';
-    const allowed = ["production", "admin"];
     (staffData.fullPersonnelDataRecordsTree || [])
-      .filter(u => u.departmentsList.some(d => allowed.includes(d.toLowerCase().trim())))
+      .filter(u => u.departmentsList.some(d => ["production","admin"].includes(d.toLowerCase().trim())))
       .forEach(u => {
         const opt = document.createElement("option");
         opt.value = u.fullName; opt.textContent = u.fullName;
@@ -7319,62 +7312,44 @@ async function initializeFinishedGoodsAddWorkspace() {
       });
   }
 
-  // Finished Goods Store Incharge — Store or Admin only
-  const storeDrop = document.getElementById("fg-add-store-incharge");
+  // Store Incharge — Store or Admin
+  const storeDrop = document.getElementById(`fg-store-${canvasId}`);
   if (storeDrop) {
-    storeDrop.innerHTML = '<option value="">— Select Person —</option>';
-    const allowed = ["store", "admin"];
     (staffData.fullPersonnelDataRecordsTree || [])
-      .filter(u => u.departmentsList.some(d => allowed.includes(d.toLowerCase().trim())))
+      .filter(u => u.departmentsList.some(d => ["store","admin"].includes(d.toLowerCase().trim())))
       .forEach(u => {
         const opt = document.createElement("option");
         opt.value = u.fullName; opt.textContent = u.fullName;
         storeDrop.appendChild(opt);
       });
-    // Default to logged in user if they qualify
     if (appActiveOperatorIdentityString) storeDrop.value = appActiveOperatorIdentityString;
   }
-
-  // Reset all fields
-  ["fg-add-department","fg-add-product-number","fg-add-date","fg-add-serial-number",
-   "fg-add-identification-number","fg-add-product-rating","fg-add-product-details",
-   "fg-add-total-stock","fg-add-material-name","fg-add-additional-remarks",
-   "fg-add-customer-name"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-
-  // Set today's date as default
-  const dateEl = document.getElementById("fg-add-date");
-  if (dateEl) dateEl.value = new Date().toISOString().split("T")[0];
 }
 
 /**
  * SUBMIT FINISHED GOODS ADD ENTRY
  */
-async function submitFinishedGoodsAddEntry() {
-  const department           = document.getElementById("fg-add-department").value.trim();
-  const productNumber        = document.getElementById("fg-add-product-number").value.trim();
-  const entryDate            = document.getElementById("fg-add-date").value.trim();
-  const serialNumber         = document.getElementById("fg-add-serial-number").value.trim();
-  const identificationNumber = document.getElementById("fg-add-identification-number").value.trim();
-  const productRating        = document.getElementById("fg-add-product-rating").value.trim();
-  const materialName         = document.getElementById("fg-add-material-name").value.trim();
-  const productDetails       = document.getElementById("fg-add-product-details").value.trim();
-  const totalStock           = parseInt(document.getElementById("fg-add-total-stock").value, 10);
-  const projectId            = document.getElementById("fg-add-project-id").value.trim();
-  const customerName         = document.getElementById("fg-add-customer-name").value.trim();
-  const prodResponsible      = document.getElementById("fg-add-prod-responsible").value.trim();
-  const storeIncharge        = document.getElementById("fg-add-store-incharge").value.trim();
-  const additionalRemarks    = document.getElementById("fg-add-additional-remarks").value.trim();
-  const banner               = document.getElementById("finished-goods-add-feedback-banner");
-  const submitBtn            = document.getElementById("fg-add-submit-btn");
+async function submitFinishedGoodsAddEntry(department, canvasId) {
+  const get = (id) => { const el = document.getElementById(`${id}-${canvasId}`); return el ? el.value.trim() : ""; };
 
-  if (!department)   return alert("Department is required.");
-  if (!materialName) return alert("Product Name / Details is required.");
+  const entryDate     = get("fg-date");
+  const projectId     = get("fg-project");
+  const customerName  = get("fg-customer");
+  const serialNumber  = get("fg-serial");
+  const jobCardNumber = get("fg-jobcard");
+  const productRating = get("fg-rating");
+  const productDetails= get("fg-details");
+  const totalStock    = parseInt(get("fg-qty"), 10);
+  const prodResponsible = get("fg-prod");
+  const storeIncharge = get("fg-store");
+  const additionalRemarks = get("fg-remarks");
+
+  const banner    = document.getElementById(`fg-feedback-${canvasId}`);
+  const submitBtn = document.getElementById(`fg-submit-${canvasId}`);
+
+  if (!projectId)              return alert("Project ID is required.");
   if (!totalStock || totalStock <= 0) return alert("Product Quantity must be greater than 0.");
-  if (!projectId)    return alert("Project ID is required.");
-  if (!storeIncharge) return alert("Finished Goods Store Incharge Person is required.");
+  if (!storeIncharge)          return alert("Finished Goods Store Incharge Person is required.");
 
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Saving...';
@@ -7383,44 +7358,31 @@ async function submitFinishedGoodsAddEntry() {
     const res = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({
-        action:                "addFinishedGoodsStoreItem",
-        sessionToken:          localStorage.getItem("sessionToken"),
-        activeEngineer:        appActiveOperatorIdentityString,
-        department,
-        productNumber,
-        entryDate,
-        serialNumber,
-        identificationNumber,
-        productRating,
-        materialName,
-        productDetails,
-        totalStock,
-        projectId,
-        customerName,
-        prodResponsible,
-        storeIncharge,
-        additionalRemarks
+        action:           "addFinishedGoodsStoreItem",
+        sessionToken:     localStorage.getItem("sessionToken"),
+        activeEngineer:   appActiveOperatorIdentityString,
+        department, entryDate, serialNumber, jobCardNumber,
+        productRating, productDetails, totalStock, projectId,
+        customerName, prodResponsible, storeIncharge, additionalRemarks
       })
     });
     const data = await res.json();
 
     if (data.success) {
-      document.getElementById("finished-goods-add-form-wrapper").style.display = "none";
+      document.getElementById(`fg-form-${canvasId}`).style.display = "none";
       banner.style.cssText = "display:block; background:#dcfce7; border-left:4px solid #15803d; color:#15803d; padding:16px; border-radius:var(--radius); margin-bottom:15px; text-align:left;";
       banner.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
-            <strong style="font-size:1rem;">${data.mode === "incremented" ? "Stock Updated Successfully." : "Item Added to Finished Goods Store."}</strong><br/>
-            <span style="font-size:0.88rem; font-weight:600;">
-              Project: <strong>${projectId}</strong> · ${materialName} · Qty: ${totalStock}
-            </span>
+            <strong>Added to ${department} Finished Goods Store.</strong><br/>
+            <span style="font-size:0.88rem; font-weight:600;">Project: <strong>${projectId}</strong> · Customer: ${customerName} · Qty: ${totalStock}</span>
           </div>
-          <button class="nav-btn-styled" onclick="initializeFinishedGoodsAddWorkspace()" style="background:#15803d; color:white; padding:10px 18px; font-weight:700;">
+          <button class="nav-btn-styled" onclick="initializeFinishedGoodsAddWorkspace('${department}', '${canvasId}')" style="background:#15803d; color:white; padding:10px 18px; font-weight:700;">
             + Add Another Item
           </button>
         </div>`;
     } else {
-      alert("Submission failed: " + (data.error || "Unknown server error."));
+      alert("Submission failed: " + (data.error || "Unknown error."));
       submitBtn.disabled = false;
       submitBtn.textContent = "Add to Finished Goods Store";
     }
@@ -7430,7 +7392,6 @@ async function submitFinishedGoodsAddEntry() {
     submitBtn.textContent = "Add to Finished Goods Store";
   }
 }
-
 
 async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
   const mount = scopeNode.querySelector(".doc-info-mount-point");
@@ -7530,15 +7491,12 @@ async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
   }
 }
 
-function handleFGProjectIdChange(selectedProjectId) {
-  const customerInput = document.getElementById("fg-add-customer-name");
+function handleFGProjectIdChange(selectedProjectId, canvasId) {
+  const customerInput = document.getElementById(`fg-customer-${canvasId}`);
   if (!customerInput) return;
-  if (!selectedProjectId || !window.fgProjectMetaCache) {
-    customerInput.value = "";
-    return;
-  }
+  if (!selectedProjectId || !window.fgProjectMetaCache) { customerInput.value = ""; return; }
   const meta = window.fgProjectMetaCache[selectedProjectId];
-  customerInput.value = meta ? (meta.companyName || meta.customerName || "") : "";
+  customerInput.value = meta ? (meta.companyName || "") : "";
 }
 
 </script>
