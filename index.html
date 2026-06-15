@@ -458,39 +458,92 @@
       <div id="finished-goods-add-feedback-banner" style="display:none; padding: 16px; border-radius: var(--radius); margin-bottom: 16px; border-left: 4px solid;"></div>
 
       <div id="finished-goods-add-form-wrapper">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
-            <label class="field-label" style="color: var(--brand);">Item Code Number *</label>
-            <input type="text" id="fg-add-item-code" placeholder="e.g. FG1396" style="padding: 9px;" />
+            <label class="field-label">Department *</label>
+            <select id="fg-add-department" style="padding:9px; font-weight:600;">
+              <option value="">— Select Department —</option>
+              <option value="Reactor">Reactor</option>
+              <option value="Capacitor">Capacitor</option>
+              <option value="Panel">Panel</option>
+            </select>
           </div>
           <div>
-            <label class="field-label" style="color: var(--brand);">Unit Type *</label>
-            <input type="text" id="fg-add-unit-type" placeholder="e.g. NOS, KG, MTR, SET" style="padding: 9px;" />
+            <label class="field-label">Date *</label>
+            <input type="date" id="fg-add-date" style="padding:9px;" />
           </div>
         </div>
 
-        <div style="margin-bottom: 14px;">
-          <label class="field-label" style="color: var(--brand);">Material Name *</label>
-          <input type="text" id="fg-add-material-name" placeholder="Enter full material / product description..." style="padding: 9px;" />
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
-            <label class="field-label" style="color: var(--brand);">Total Stock *</label>
-            <input type="number" id="fg-add-total-stock" min="1" placeholder="Enter quantity" style="padding: 9px;" />
+            <label class="field-label">Project ID *</label>
+            <select id="fg-add-project-id" onchange="handleFGProjectIdChange(this.value)" style="padding:9px; font-weight:600;">
+              <option value="">— Select Project ID —</option>
+            </select>
           </div>
           <div>
-            <label class="field-label" style="color: var(--brand);">Engineer Name *</label>
-            <select id="fg-add-engineer-name" style="padding: 9px; font-weight: 600;">
-              <option value="">— Select Engineer —</option>
+            <label class="field-label">Customer Name</label>
+            <input type="text" id="fg-add-customer-name" readonly style="padding:9px; background:#f1f5f9; color:var(--muted); cursor:not-allowed;" placeholder="Auto-filled from Project ID" />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label">Product Number</label>
+            <input type="text" id="fg-add-product-number" style="padding:9px;" />
+          </div>
+          <div>
+            <label class="field-label">Product Serial Number</label>
+            <input type="text" id="fg-add-serial-number" style="padding:9px;" />
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label">Product Identification Number</label>
+            <input type="text" id="fg-add-identification-number" style="padding:9px;" />
+          </div>
+          <div>
+            <label class="field-label">Product Rating</label>
+            <input type="text" id="fg-add-product-rating" placeholder="e.g. 1190kvar @ 13KV" style="padding:9px;" />
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label class="field-label">Product Name / Details *</label>
+          <input type="text" id="fg-add-material-name" placeholder="Enter full product description..." style="padding:9px;" />
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label class="field-label">Product Details</label>
+          <textarea id="fg-add-product-details" style="padding:9px; min-height:50px;" placeholder="Additional product details..."></textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label">Product Quantity *</label>
+            <input type="number" id="fg-add-total-stock" min="1" placeholder="Enter quantity" style="padding:9px;" />
+          </div>
+          <div>
+            <label class="field-label">Production Department Responsible Person</label>
+            <select id="fg-add-prod-responsible" style="padding:9px; font-weight:600;">
+              <option value="">— Select Person —</option>
             </select>
           </div>
         </div>
 
-        <!-- <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; margin-bottom: 20px; font-size: 0.78rem; color: var(--muted);">
-          <strong style="color: var(--text);">Auto-filled on submit:</strong>
-          Reserved Stock = 0 &nbsp;·&nbsp; Available Stock = Total Stock &nbsp;·&nbsp; Reorder Level = N/A &nbsp;·&nbsp; Unit Price = N/A &nbsp;·&nbsp; BOQ Active = YES
-        </div> -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label">Finished Goods Store Incharge Person *</label>
+            <select id="fg-add-store-incharge" style="padding:9px; font-weight:600;">
+              <option value="">— Select Person —</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Additional Remarks</label>
+            <input type="text" id="fg-add-additional-remarks" style="padding:9px;" placeholder="Any notes..." />
+          </div>
+        </div>
 
         <button class="btn btn-sub" id="fg-add-submit-btn" onclick="submitFinishedGoodsAddEntry()" style="background: var(--accent); padding: 12px; font-weight: 700;">
           Add to Finished Goods Store
@@ -1238,7 +1291,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyaKuESsV4OzxJQbGxMy5Yp6o-NpabUh9bjjsOA3PZvad2qUeyeaHgjjYSCckz6cpHtwQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzdSsnLzrSaHOPrNyf4u_oCAa9DZ2wz1yn7HQpYrbl0Kgxw0LyYtZpvcqMwzxBlbGp78Q/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -7221,56 +7274,107 @@ async function triggerLiveFinishedGoodsStoreStockMetricsSync() {
  * INITIALIZE FINISHED GOODS ADD WORKSPACE
  * Populates engineer dropdown from cached staff list.
  */
-function initializeFinishedGoodsAddWorkspace() {
-  const engDrop = document.getElementById("fg-add-engineer-name");
-  if (!engDrop) return;
+async function initializeFinishedGoodsAddWorkspace() {
+  const banner   = document.getElementById("finished-goods-add-feedback-banner");
+  const formWrap = document.getElementById("finished-goods-add-form-wrapper");
+  const submitBtn= document.getElementById("fg-add-submit-btn");
 
-  engDrop.innerHTML = '<option value="">— Select Engineer —</option>';
+  if (banner)    { banner.style.display = "none"; banner.innerHTML = ""; }
+  if (formWrap)  formWrap.style.display = "block";
+  if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Add to Finished Goods Store"; }
 
-  // Use cached staff list, filter for Design/Store/Admin
-  const allowedRoles = ["design", "store", "admin", "production"];
-  const staffList = (globalOperatorsDatabasePayloadCache || []).filter(user =>
-    user.departmentsList.some(d => allowedRoles.includes(d.toLowerCase().trim()))
-  );
+  // Fetch projects, staff in parallel
+  const [projRes, staffRes] = await Promise.all([
+    fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") }) }),
+    fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getStoreOperatorsList",     sessionToken: localStorage.getItem("sessionToken") }) })
+  ]);
+  const projData  = await projRes.json();
+  const staffData = await staffRes.json();
 
-  staffList.forEach(user => {
-    const opt = document.createElement("option");
-    opt.value = user.fullName;
-    opt.textContent = user.fullName;
-    engDrop.appendChild(opt);
+  // Cache project meta for customer name auto-fill
+  window.fgProjectMetaCache = projData.projectMeta || {};
+
+  // Project ID dropdown
+  const projDrop = document.getElementById("fg-add-project-id");
+  if (projDrop) {
+    projDrop.innerHTML = '<option value="">— Select Project ID —</option>';
+    (projData.projects || []).forEach(code => {
+      const opt = document.createElement("option");
+      opt.value = code; opt.textContent = code;
+      projDrop.appendChild(opt);
+    });
+  }
+
+  // Production Department Responsible Person — Production or Admin only
+  const prodDrop = document.getElementById("fg-add-prod-responsible");
+  if (prodDrop) {
+    prodDrop.innerHTML = '<option value="">— Select Person —</option>';
+    const allowed = ["production", "admin"];
+    (staffData.fullPersonnelDataRecordsTree || [])
+      .filter(u => u.departmentsList.some(d => allowed.includes(d.toLowerCase().trim())))
+      .forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u.fullName; opt.textContent = u.fullName;
+        prodDrop.appendChild(opt);
+      });
+  }
+
+  // Finished Goods Store Incharge — Store or Admin only
+  const storeDrop = document.getElementById("fg-add-store-incharge");
+  if (storeDrop) {
+    storeDrop.innerHTML = '<option value="">— Select Person —</option>';
+    const allowed = ["store", "admin"];
+    (staffData.fullPersonnelDataRecordsTree || [])
+      .filter(u => u.departmentsList.some(d => allowed.includes(d.toLowerCase().trim())))
+      .forEach(u => {
+        const opt = document.createElement("option");
+        opt.value = u.fullName; opt.textContent = u.fullName;
+        storeDrop.appendChild(opt);
+      });
+    // Default to logged in user if they qualify
+    if (appActiveOperatorIdentityString) storeDrop.value = appActiveOperatorIdentityString;
+  }
+
+  // Reset all fields
+  ["fg-add-department","fg-add-product-number","fg-add-date","fg-add-serial-number",
+   "fg-add-identification-number","fg-add-product-rating","fg-add-product-details",
+   "fg-add-total-stock","fg-add-material-name","fg-add-additional-remarks",
+   "fg-add-customer-name"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
   });
 
-  // Default to logged-in user if present in list
-  if (appActiveOperatorIdentityString) engDrop.value = appActiveOperatorIdentityString;
-
-  // Reset form to clean state
-  document.getElementById("fg-add-item-code").value = "";
-  document.getElementById("fg-add-material-name").value = "";
-  document.getElementById("fg-add-total-stock").value = "";
-  document.getElementById("fg-add-unit-type").value = "";
-  document.getElementById("finished-goods-add-feedback-banner").style.display = "none";
-  document.getElementById("finished-goods-add-form-wrapper").style.display = "block";
-  const submitBtn = document.getElementById("fg-add-submit-btn");
-  if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "Add to Finished Goods Store"; }
+  // Set today's date as default
+  const dateEl = document.getElementById("fg-add-date");
+  if (dateEl) dateEl.value = new Date().toISOString().split("T")[0];
 }
 
 /**
  * SUBMIT FINISHED GOODS ADD ENTRY
  */
 async function submitFinishedGoodsAddEntry() {
-  const itemCode     = document.getElementById("fg-add-item-code").value.trim();
-  const materialName = document.getElementById("fg-add-material-name").value.trim();
-  const totalStock   = parseInt(document.getElementById("fg-add-total-stock").value, 10);
-  const unitType     = document.getElementById("fg-add-unit-type").value.trim();
-  const engineerName = document.getElementById("fg-add-engineer-name").value;
-  const banner       = document.getElementById("finished-goods-add-feedback-banner");
-  const submitBtn    = document.getElementById("fg-add-submit-btn");
+  const department           = document.getElementById("fg-add-department").value.trim();
+  const productNumber        = document.getElementById("fg-add-product-number").value.trim();
+  const entryDate            = document.getElementById("fg-add-date").value.trim();
+  const serialNumber         = document.getElementById("fg-add-serial-number").value.trim();
+  const identificationNumber = document.getElementById("fg-add-identification-number").value.trim();
+  const productRating        = document.getElementById("fg-add-product-rating").value.trim();
+  const materialName         = document.getElementById("fg-add-material-name").value.trim();
+  const productDetails       = document.getElementById("fg-add-product-details").value.trim();
+  const totalStock           = parseInt(document.getElementById("fg-add-total-stock").value, 10);
+  const projectId            = document.getElementById("fg-add-project-id").value.trim();
+  const customerName         = document.getElementById("fg-add-customer-name").value.trim();
+  const prodResponsible      = document.getElementById("fg-add-prod-responsible").value.trim();
+  const storeIncharge        = document.getElementById("fg-add-store-incharge").value.trim();
+  const additionalRemarks    = document.getElementById("fg-add-additional-remarks").value.trim();
+  const banner               = document.getElementById("finished-goods-add-feedback-banner");
+  const submitBtn            = document.getElementById("fg-add-submit-btn");
 
-  if (!itemCode)     return alert("Item Code Number is required.");
-  if (!materialName) return alert("Material Name is required.");
-  if (!totalStock || totalStock <= 0) return alert("Total Stock must be greater than 0.");
-  if (!unitType)     return alert("Unit Type is required.");
-  if (!engineerName) return alert("Please select an Engineer Name.");
+  if (!department)   return alert("Department is required.");
+  if (!materialName) return alert("Product Name / Details is required.");
+  if (!totalStock || totalStock <= 0) return alert("Product Quantity must be greater than 0.");
+  if (!projectId)    return alert("Project ID is required.");
+  if (!storeIncharge) return alert("Finished Goods Store Incharge Person is required.");
 
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Saving...';
@@ -7279,47 +7383,54 @@ async function submitFinishedGoodsAddEntry() {
     const res = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({
-        action: "addFinishedGoodsStoreItem",
-        sessionToken: localStorage.getItem("sessionToken"),
-        activeEngineer: appActiveOperatorIdentityString,
-        itemCode, materialName, totalStock, unitType, engineerName
+        action:                "addFinishedGoodsStoreItem",
+        sessionToken:          localStorage.getItem("sessionToken"),
+        activeEngineer:        appActiveOperatorIdentityString,
+        department,
+        productNumber,
+        entryDate,
+        serialNumber,
+        identificationNumber,
+        productRating,
+        materialName,
+        productDetails,
+        totalStock,
+        projectId,
+        customerName,
+        prodResponsible,
+        storeIncharge,
+        additionalRemarks
       })
     });
     const data = await res.json();
 
     if (data.success) {
-      const isIncrement = data.mode === "incremented";
       document.getElementById("finished-goods-add-form-wrapper").style.display = "none";
-
-      banner.style.cssText = "display: block; background: #dcfce7; border-left: 4px solid #15803d; color: #15803d; padding: 16px; border-radius: var(--radius); margin-bottom: 15px; text-align: left;";
+      banner.style.cssText = "display:block; background:#dcfce7; border-left:4px solid #15803d; color:#15803d; padding:16px; border-radius:var(--radius); margin-bottom:15px; text-align:left;";
       banner.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
           <div>
-            <strong style="font-size: 1rem;">
-              ${isIncrement ? "Stock Updated Successfully." : "Item Added to Finished Goods Store."}
-            </strong><br/>
-            <span style="font-size: 0.88rem; font-weight: 600;">
-              <span style="font-family: monospace; background: #fff; padding: 1px 6px; border-radius: 4px; border: 1px solid #15803d; color: #111827;">${itemCode}</span>
-              &nbsp;${materialName}&nbsp;·&nbsp;
-              ${isIncrement ? "New total: " + data.newTotal : totalStock} ${unitType}
+            <strong style="font-size:1rem;">${data.mode === "incremented" ? "Stock Updated Successfully." : "Item Added to Finished Goods Store."}</strong><br/>
+            <span style="font-size:0.88rem; font-weight:600;">
+              Project: <strong>${projectId}</strong> · ${materialName} · Qty: ${totalStock}
             </span>
           </div>
-          <button class="nav-btn-styled" onclick="initializeFinishedGoodsAddWorkspace()" style="background: #15803d; color: white; padding: 10px 18px; font-weight: 700;">
-            + Add Another Material
+          <button class="nav-btn-styled" onclick="initializeFinishedGoodsAddWorkspace()" style="background:#15803d; color:white; padding:10px 18px; font-weight:700;">
+            + Add Another Item
           </button>
-        </div>
-      `;
+        </div>`;
     } else {
       alert("Submission failed: " + (data.error || "Unknown server error."));
       submitBtn.disabled = false;
       submitBtn.textContent = "Add to Finished Goods Store";
     }
-  } catch (err) {
+  } catch(err) {
     alert("Network error: " + err.message);
     submitBtn.disabled = false;
     submitBtn.textContent = "Add to Finished Goods Store";
   }
 }
+
 
 async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
   const mount = scopeNode.querySelector(".doc-info-mount-point");
@@ -7417,6 +7528,17 @@ async function renderIsolatedDocumentInfoSection(leadRef, leadId, scopeNode) {
   } catch(e) {
     mount.innerHTML = '';
   }
+}
+
+function handleFGProjectIdChange(selectedProjectId) {
+  const customerInput = document.getElementById("fg-add-customer-name");
+  if (!customerInput) return;
+  if (!selectedProjectId || !window.fgProjectMetaCache) {
+    customerInput.value = "";
+    return;
+  }
+  const meta = window.fgProjectMetaCache[selectedProjectId];
+  customerInput.value = meta ? (meta.companyName || meta.customerName || "") : "";
 }
 
 </script>
