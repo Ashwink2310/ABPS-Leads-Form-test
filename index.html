@@ -6269,7 +6269,7 @@ async function initializeStoreEntryWorkspaceQueue() {
       item.lineItems.forEach((line, idx) => {
         trs += `<tr>
           <td style="width:160px; padding:6px;"><input type="text" class="se-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCode || ""}" placeholder="Item Code" style="padding:6px; font-weight:700; border-color:var(--brand); text-align:center; width:100%;"></td>
-          <td style="padding:6px;"><input type="text" class="se-mat-name-${item.gateNumber}" data-idx="${idx}" value="${line.materialName || ""}" style="font-weight:600; color:var(--brand); font-size:0.88rem; padding:5px; border:1.5px solid var(--brand); border-radius:3px; width:100%;"></td>
+          <td style="padding:6px;"><textarea class="se-mat-name-${item.gateNumber}" data-idx="${idx}" style="font-weight:600; color:var(--brand); font-size:0.88rem; padding:5px; border:1.5px solid var(--brand); border-radius:3px; width:100%; min-height:38px; resize:vertical; font-family:inherit;">${(line.materialName || "").replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea></td>
           <td style="font-family:monospace; font-weight:700; text-align:center; width:100px; padding:6px; font-size:1.1rem; color:#64748b;">${line.gateQuantity}</td>
           <td style="text-align:center; width:180px; padding:6px;"><input type="number" class="se-phys-qty-${item.gateNumber}" data-idx="${idx}" value="${line.gateQuantity}" style="width:100px; font-weight:700; text-align:center; border:1.5px solid var(--brand); padding:6px; font-size:1.1rem;"></td>
           <td style="padding:6px;"><input type="text" class="se-damage-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Reason for short / missing supply..." style="font-size:0.85rem; padding:6px;"></td>
@@ -6309,7 +6309,7 @@ async function initializeStoreEntryWorkspaceQueue() {
         </div>
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
           <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
-            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Standard Material Name</th><th style="text-align:center; width:100px;">Invoice Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Reason for Short Supply</th><th style="width:130px; text-align:center;">Type of Material</th></tr></thead>
+            <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Standard Material Name</th><th style="text-align:center; width:100px;">Invoice Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Reason for Short Supply</th><th style="width:130px; text-align:center;">Type of Material *</th></tr></thead>
             <tbody>${trs}</tbody>
           </table>
           <div style="display:flex;justify-content:flex-end;"><button class="nav-btn-styled" style="background:var(--accent);" onclick="commitStoreEntryVerificationToBackend('${item.gateNumber}', \`${encodeURIComponent(JSON.stringify(item))}\`)">Verify & Generate Raw Materials Store Entry</button></div>
@@ -6475,7 +6475,7 @@ async function initializeStoreGrnWorkspaceQueue() {
             <thead>
               <tr>
                 <th style="width:140px; text-align:center;">Item Code</th>
-                <th style="text-align:left;">Standard Material Name</th>
+                <th style="text-align:left; min-width:260px;">Standard Material Name</th>
                 <th style="width:80px; text-align:center;">Received Qty</th>
                 <th style="width:80px; text-align:center;">Q/A Done</th>
                 <th style="width:100px; text-align:center;">OK Qty *</th>
