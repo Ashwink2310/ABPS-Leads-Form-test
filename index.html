@@ -1199,7 +1199,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyCvGCLDPcuJbPgUKnL9bw_dT9SiD2JoYNC6Rd-oT-yhIGeT1unpwtGt5lEUWH63jMq0Q/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxUyB0aCwHcjh4HErs4uGa_5RCPJKq9HjffhOHxdMpCLYv9nbxA3ZIGyK47SmCWTeXLHQ/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -6126,7 +6126,9 @@ async function parseGateDocumentsWithAI() {
         action: "storeProcessAIInvoiceBlob", 
         sessionToken: localStorage.getItem("sessionToken"), 
         imageBlobBase64: inv64 || ch64,
+        invoiceMimeType: targetGateInvoiceFileObj ? targetGateInvoiceFileObj.type : "image/jpeg",
         challanImageBase64: (inv64 && ch64) ? ch64 : null,
+        challanMimeType: targetGateChallanFileObj ? targetGateChallanFileObj.type : "image/jpeg",
         canonicalMaterialsCatalog: existingMaterialNamesList 
       })
     });
