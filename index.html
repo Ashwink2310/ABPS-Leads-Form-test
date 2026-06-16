@@ -6341,8 +6341,8 @@ async function initializeStoreEntryWorkspaceQueue() {
           </div>
         </div>
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
-          <div style="overflow-x:auto; margin-bottom:12px;">
-            <table class="store-basket-data-table" style="width:100%; table-layout:auto; min-width:1200px;">
+          <div style="overflow-x:auto; margin-bottom:12px; border:1px solid var(--border); border-radius:var(--radius);">
+            <table class="store-basket-data-table" style="width:100%; table-layout:auto; min-width:1400px; border-collapse:collapse;">
             <thead><tr><th style="width:160px; text-align:center;">Item Code Number</th><th style="text-align:left;">Standard Material Name</th><th style="text-align:center; width:100px;">Invoice Quantity</th><th style="text-align:center; width:180px;">Physically Received Quantity *</th><th>Reason for Short Supply</th><th style="width:130px; text-align:center;">Type of Material *</th></tr></thead>
             <tbody>${trs}</tbody>
             </table>
@@ -6449,20 +6449,46 @@ async function initializeStoreGrnWorkspaceQueue() {
       item.lineItems.forEach((line, idx) => {
         const activeReceivedQtyCount = parseInt(line.gateQuantity, 10) || 0;
         
-        trs += `<tr>
-          <td style="width:140px; padding:5px;"><input type="text" class="grn-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCode || ""}" placeholder="CODE *" style="padding:4px; font-weight:700; border:1.5px solid var(--brand); background:#fffef0; text-align:center;"></td>
-          <td style="padding:5px;"><div class="grn-mat-name-display-${item.gateNumber}" style="font-size:0.82rem; padding:5px; font-weight:600; color:var(--brand); white-space:normal; word-break:break-word; line-height:1.4; min-height:38px;">${(line.materialName || "").replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div><input type="hidden" class="grn-mat-name-${item.gateNumber}" data-idx="${idx}" value="${(line.materialName || "").replace(/"/g,'&quot;')}" /></td>
-          <td style="font-family:monospace; font-weight:700; text-align:center; width:80px; padding:6px;">${activeReceivedQtyCount}</td>
-          <td style="text-align:center; width:80px; padding:5px;"><select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:4px; font-weight:700; font-size:0.82rem;"><option value="No" selected>No</option><option value="Yes">Yes</option></select></td>
-          <td style="text-align:center; width:100px; padding:5px;"><input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${activeReceivedQtyCount}" value="${activeReceivedQtyCount}" style="width:80px; border-color:var(--brand); font-weight:700; text-align:center;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})"></td>
-          <td style="text-align:center; width:80px; padding:5px;"><input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:65px; background:#f1f5f9; text-align:center; font-weight:700;" readonly></td>
-          <td style="text-align:right; width:85px; padding:5px;"><input type="number" class="grn-rate-${item.gateNumber}" data-idx="${idx}" value="${line.ratePerQuantity || ''}" placeholder="Enter rate" style="width:90px; text-align:right; background:${line.ratePerQuantity > 0 ? '#fffef0' : '#fff3cd'}; font-weight:700; border:1.5px solid ${line.ratePerQuantity > 0 ? 'var(--brand)' : '#f59e0b'};" oninput="updateGrnRowAmounts('${item.gateNumber}', ${idx}); this.style.background='#fffef0'; this.style.borderColor='var(--brand)';"></td>
-          <td style="text-align:center; width:55px; padding:5px;"><input type="number" class="grn-gst-${item.gateNumber}" data-idx="${idx}" value="${line.gstPercent || 18}" min="0" max="100" style="width:48px; text-align:center; padding:4px;" oninput="updateGrnRowAmounts('${item.gateNumber}', ${idx})"></td>
-          <td style="text-align:right; width:110px; padding:5px;"><input type="number" class="grn-total-basic-${item.gateNumber}" data-idx="${idx}" value="0" style="width:100px; text-align:right; background:#e0f2fe; font-weight:700; color:#0369a1;" readonly></td>
-          <td style="text-align:right; width:120px; padding:5px;"><input type="number" class="grn-total-invoice-${item.gateNumber}" data-idx="${idx}" value="0" style="width:110px; text-align:right; background:#dcfce7; font-weight:700; color:#15803d;" readonly></td>
-          <td style="padding:5px;"><input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Rejection details..." style="font-size:0.82rem; padding:5px; min-width:130px;"></td>
-          <td style="padding:5px; min-width:210px;">
-            <select class="grn-action-${item.gateNumber}" data-idx="${idx}" style="width:100%; font-size:0.8rem; padding:4px; margin-bottom:3px;" onchange="handleGrnActionChange(this, '${item.gateNumber}', ${idx})">
+        trs += `<tr style="border-bottom:1px solid #f1f5f9;">
+          <td style="padding:6px 8px; vertical-align:middle;">
+            <input type="text" class="grn-item-code-${item.gateNumber}" data-idx="${idx}" value="${line.itemCode || ""}" placeholder="CODE *" style="padding:5px 6px; font-weight:700; border:1.5px solid var(--brand); background:#fffef0; text-align:center; width:100%; min-width:100px; font-size:0.82rem;">
+          </td>
+          <td style="padding:6px 8px; vertical-align:top; min-width:240px;">
+            <div class="grn-mat-name-display-${item.gateNumber}" style="font-size:0.82rem; padding:4px 2px; font-weight:600; color:var(--brand); white-space:normal; word-break:break-word; line-height:1.5; min-height:36px;">${(line.materialName || "").replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+            <input type="hidden" class="grn-mat-name-${item.gateNumber}" data-idx="${idx}" value="${(line.materialName || "").replace(/"/g,'&quot;')}" />
+          </td>
+          <td style="padding:6px 8px; font-family:monospace; font-weight:700; text-align:center; vertical-align:middle; font-size:0.9rem; white-space:nowrap;">
+            ${activeReceivedQtyCount}
+          </td>
+          <td style="padding:6px 4px; text-align:center; vertical-align:middle;">
+            <select class="grn-qa-${item.gateNumber}" data-idx="${idx}" style="padding:4px 2px; font-weight:700; font-size:0.82rem; width:100%; min-width:65px;">
+              <option value="No" selected>No</option>
+              <option value="Yes">Yes</option>
+            </select>
+          </td>
+          <td style="padding:6px 4px; text-align:center; vertical-align:middle;">
+            <input type="number" min="0" class="grn-ok-${item.gateNumber}" data-idx="${idx}" data-max="${activeReceivedQtyCount}" value="${activeReceivedQtyCount}" style="width:68px; border:1.5px solid var(--brand); font-weight:700; text-align:center; padding:5px 4px; font-size:0.85rem;" onchange="autoBalanceGrnQuantities(this, '${item.gateNumber}', ${idx})">
+          </td>
+          <td style="padding:6px 4px; text-align:center; vertical-align:middle;">
+            <input type="number" min="0" class="grn-notok-${item.gateNumber}" data-idx="${idx}" value="0" style="width:55px; background:#f1f5f9; text-align:center; font-weight:700; padding:5px 4px; font-size:0.85rem; border:1px solid var(--border);" readonly>
+          </td>
+          <td style="padding:6px 4px; text-align:right; vertical-align:middle;">
+            <input type="number" class="grn-rate-${item.gateNumber}" data-idx="${idx}" value="${line.ratePerQuantity || ''}" placeholder="Enter rate" style="width:90px; text-align:right; background:${line.ratePerQuantity > 0 ? '#fffef0' : '#fff3cd'}; font-weight:700; border:1.5px solid ${line.ratePerQuantity > 0 ? 'var(--brand)' : '#f59e0b'}; padding:5px 4px; font-size:0.85rem;" oninput="updateGrnRowAmounts('${item.gateNumber}', ${idx}); this.style.background='#fffef0'; this.style.borderColor='var(--brand)';">
+          </td>
+          <td style="padding:6px 4px; text-align:center; vertical-align:middle;">
+            <input type="number" class="grn-gst-${item.gateNumber}" data-idx="${idx}" value="${line.gstPercent || 18}" min="0" max="100" style="width:50px; text-align:center; padding:5px 4px; font-size:0.85rem; border:1px solid var(--border);" oninput="updateGrnRowAmounts('${item.gateNumber}', ${idx})">
+          </td>
+          <td style="padding:6px 4px; text-align:right; vertical-align:middle;">
+            <input type="number" class="grn-total-basic-${item.gateNumber}" data-idx="${idx}" value="0.00" style="width:100px; text-align:right; background:#e0f2fe; font-weight:700; color:#0369a1; padding:5px 4px; font-size:0.85rem; border:1px solid #bae6fd;" readonly>
+          </td>
+          <td style="padding:6px 4px; text-align:right; vertical-align:middle;">
+            <input type="number" class="grn-total-invoice-${item.gateNumber}" data-idx="${idx}" value="0.00" style="width:100px; text-align:right; background:#dcfce7; font-weight:700; color:#15803d; padding:5px 4px; font-size:0.85rem; border:1px solid #86efac;" readonly>
+          </td>
+          <td style="padding:6px 4px; vertical-align:middle;">
+            <input type="text" class="grn-rej-desc-${item.gateNumber}" data-idx="${idx}" placeholder="Rejection details..." style="font-size:0.8rem; padding:5px 4px; width:100%; min-width:130px; border:1px solid var(--border);">
+          </td>
+          <td style="padding:6px 4px; vertical-align:middle; min-width:160px;">
+            <select class="grn-action-${item.gateNumber}" data-idx="${idx}" style="width:100%; font-size:0.78rem; padding:4px; margin-bottom:3px; border:1px solid var(--border);" onchange="handleGrnActionChange(this, '${item.gateNumber}', ${idx})">
               <option value="">— N/A —</option>
               <option value="Return to Vendor for Replacement">Return to Vendor for Replacement</option>
               <option value="Return to Vendor for Repair">Return to Vendor for Repair</option>
@@ -6470,7 +6496,7 @@ async function initializeStoreGrnWorkspaceQueue() {
               <option value="Ask ABPS to Repair at ABPS">Ask ABPS to Repair at ABPS</option>
               <option value="Others">Others</option>
             </select>
-            <input type="text" class="grn-action-others-${item.gateNumber}" data-idx="${idx}" placeholder="Specify action..." style="display:none; width:100%; font-size:0.8rem; padding:4px;">
+            <input type="text" class="grn-action-others-${item.gateNumber}" data-idx="${idx}" placeholder="Specify action..." style="display:none; width:100%; font-size:0.78rem; padding:4px; border:1px solid var(--border);">
           </td>
         </tr>`;
       });
@@ -6508,19 +6534,19 @@ async function initializeStoreGrnWorkspaceQueue() {
         <div style="display:none; padding-top:14px; border-top:1px dashed var(--border); margin-top:12px;">
           <table class="store-basket-data-table" style="width:100%; margin-bottom:12px; table-layout:fixed;">
             <thead>
-              <tr>
-                <th style="width:120px; text-align:center; white-space:nowrap;">Item Code</th>
-                <th style="width:220px; text-align:left;">Standard Material Name</th>
-                <th style="width:65px; text-align:center; white-space:nowrap;">Rcvd Qty</th>
-                <th style="width:70px; text-align:center; white-space:nowrap;">Q/A Done</th>
-                <th style="width:75px; text-align:center; white-space:nowrap;">OK Qty *</th>
-                <th style="width:55px; text-align:center; white-space:nowrap;">Not OK</th>
-                <th style="width:85px; text-align:right; white-space:nowrap;">Rate/Unit (₹)</th>
-                <th style="width:45px; text-align:center; white-space:nowrap;">GST%</th>
-                <th style="width:70px; text-align:right; white-space:nowrap;">Basic Amt (₹)</th>
-                <th style="width:70px; text-align:right; white-space:nowrap;">Incl GST (₹)</th>
-                <th style="width:120px; white-space:nowrap;">Rejection Details</th>
-                <th style="width:140px; white-space:nowrap;">Action for Rejected</th>
+              <tr style="background:#f8fafc;">
+                <th style="min-width:130px; text-align:center; white-space:nowrap; padding:8px 6px;">Item Code</th>
+                <th style="min-width:240px; text-align:left; padding:8px 6px;">Standard Material Name</th>
+                <th style="min-width:70px; text-align:center; white-space:nowrap; padding:8px 6px;">Rcvd<br/>Qty</th>
+                <th style="min-width:80px; text-align:center; white-space:nowrap; padding:8px 6px;">Q/A<br/>Done</th>
+                <th style="min-width:80px; text-align:center; white-space:nowrap; padding:8px 6px;">OK<br/>Qty *</th>
+                <th style="min-width:65px; text-align:center; white-space:nowrap; padding:8px 6px;">Not<br/>OK</th>
+                <th style="min-width:100px; text-align:right; white-space:nowrap; padding:8px 6px;">Rate/Unit<br/>(₹)</th>
+                <th style="min-width:55px; text-align:center; white-space:nowrap; padding:8px 6px;">GST<br/>%</th>
+                <th style="min-width:110px; text-align:right; white-space:nowrap; padding:8px 6px;">Basic Amt<br/>(₹)</th>
+                <th style="min-width:110px; text-align:right; white-space:nowrap; padding:8px 6px;">Incl GST<br/>(₹)</th>
+                <th style="min-width:150px; white-space:nowrap; padding:8px 6px;">Rejection Details</th>
+                <th style="min-width:160px; white-space:nowrap; padding:8px 6px;">Action for Rejected</th>
               </tr>
             </thead>
             <tbody>${trs}</tbody>
