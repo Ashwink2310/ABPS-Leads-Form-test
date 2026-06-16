@@ -5917,11 +5917,9 @@ async function triggerLiveWarehouseStockMetricsSync() {
         return ai - bi;
       });
 
-      const typeLabels = { "A": "Type A — Critical Materials", "B": "Type B — Regular Materials", "C": "Type C — Consumables", "D": "Type D — Miscellaneous", "Others": "Others", "Uncategorized": "Uncategorized" };
-
       sortedTypes.forEach(type => {
         const items = typeGroups[type];
-        const label = typeLabels[type] || ("Type " + type);
+        const label = type === "Uncategorized" ? "Uncategorized" : ("Type " + type);
         const sectionId = "rm-section-body-" + type.replace(/\s+/g, '_');
         const isCollapsed = localStorage.getItem("rm_section_" + type) === "collapsed";
 
@@ -5958,7 +5956,7 @@ async function triggerLiveWarehouseStockMetricsSync() {
         // Section body — grid of cards
         const bodyDiv = document.createElement("div");
         bodyDiv.id = sectionId;
-        bodyDiv.style.cssText = `display:${isCollapsed ? 'none' : 'grid'}; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; padding:14px;`;
+        bodyDiv.style.cssText = `display:${isCollapsed ? 'none' : 'flex'}; flex-wrap:wrap; gap:10px; padding:14px;`;
 
         items.forEach(item => {
           let stockStyle = "color:#15803d; background:#dcfce7;";
@@ -5969,16 +5967,18 @@ async function triggerLiveWarehouseStockMetricsSync() {
           }
 
           const card = document.createElement("div");
-          card.style.cssText = "background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:var(--radius); display:flex; flex-direction:column; justify-content:space-between; gap:8px; box-shadow:0 1px 3px rgba(0,0,0,0.02);";
+          card.style.cssText = "background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:var(--radius); display:flex; flex-direction:column; justify-content:space-between; gap:8px; box-shadow:0 1px 3px rgba(0,0,0,0.02); width:180px; height:160px; flex-shrink:0; overflow:hidden;";
           card.innerHTML = `
-            <div style="font-size:0.82rem; font-weight:700; color:#334155; line-height:1.4; word-break:break-word; min-height:36px;">
+            <div style="font-size:0.78rem; font-weight:700; color:#334155; line-height:1.35; word-break:break-word; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; flex:1;">
               ${item.materialName}
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px dashed #e2e8f0; padding-top:8px; margin-top:4px;">
-              <span style="font-family:monospace; font-size:1.15rem; font-weight:800; color:var(--text);">${item.availableStock}</span>
-              <span style="font-size:0.68rem; font-weight:700; padding:2px 6px; border-radius:3px; ${stockStyle}">${(item.unitType || "PCS").toUpperCase()}</span>
+            <div style="border-top:1px dashed #e2e8f0; padding-top:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-family:monospace; font-size:1.2rem; font-weight:800; color:var(--text);">${item.availableStock}</span>
+                <span style="font-size:0.65rem; font-weight:700; padding:2px 6px; border-radius:3px; ${stockStyle}">${(item.unitType || "PCS").toUpperCase()}</span>
+              </div>
+              ${item.reservedStock > 0 ? `<div style="font-size:0.65rem; color:var(--muted); font-weight:600; margin-top:2px;">Reserved: ${item.reservedStock}</div>` : ""}
             </div>
-            ${item.reservedStock > 0 ? `<div style="font-size:0.68rem; color:var(--muted); font-weight:600;">Reserved: ${item.reservedStock} ${(item.unitType || "PCS").toUpperCase()}</div>` : ""}
           `;
           bodyDiv.appendChild(card);
         });
