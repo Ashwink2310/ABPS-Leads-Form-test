@@ -5882,7 +5882,7 @@ async function triggerLiveWarehouseStockMetricsSync() {
       body: JSON.stringify({ action: "pullLiveInventoryCounts", sessionToken: localStorage.getItem("sessionToken") })
     });
     const data = await res.json();
-    
+
     if (data.success && data.inventory) {
       cachedInventoryStockCollection = data.inventory;
       mountZone.innerHTML = "";
@@ -5897,32 +5897,100 @@ async function triggerLiveWarehouseStockMetricsSync() {
         return;
       }
 
+      // Group items by Type of Material
+      const typeGroups = {};
+      const typeOrder = ["A", "B", "C", "D", "Others", ""];
+      
       cachedInventoryStockCollection.forEach(item => {
-        const metricCard = document.createElement("div");
-        metricCard.style.cssText = "background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);";
+        const type = (item.typeOfMaterial || item.typematerial || "").toString().trim() || "Uncategorized";
+        if (!typeGroups[type]) typeGroups[type] = [];
+        typeGroups[type].push(item);
+      });
 
-        let colorProfileStyle = "color: #15803d; background: #dcfce7;"; 
-        if (item.availableStock === 0) {
-          colorProfileStyle = "color: #b91c1c; background: #fee2e2;"; 
-        } else if (item.availableStock <= item.reorderLevel) {
-          colorProfileStyle = "color: #b45309; background: #fef3c7;"; 
-        }
+      // Sort groups by typeOrder
+      const sortedTypes = Object.keys(typeGroups).sort((a, b) => {
+        const ai = typeOrder.indexOf(a); 
+        const bi = typeOrder.indexOf(b);
+        if (ai === -1 && bi === -1) return a.localeCompare(b);
+        if (ai === -1) return 1;
+        if (bi === -1) return -1;
+        return ai - bi;
+      });
 
-        metricCard.innerHTML = `
-          <div style="font-size: 0.82rem; font-weight: 700; color: #334155; line-height: 1.4; white-space: normal; word-break: break-word; min-height: 36px;">
-            ${item.materialName}
+      const typeLabels = { "A": "Type A — Critical Materials", "B": "Type B — Regular Materials", "C": "Type C — Consumables", "D": "Type D — Miscellaneous", "Others": "Others", "Uncategorized": "Uncategorized" };
+
+      sortedTypes.forEach(type => {
+        const items = typeGroups[type];
+        const label = typeLabels[type] || ("Type " + type);
+        const sectionId = "rm-section-body-" + type.replace(/\s+/g, '_');
+        const isCollapsed = localStorage.getItem("rm_section_" + type) === "collapsed";
+
+        // Section wrapper
+        const section = document.createElement("div");
+        section.style.cssText = "grid-column:1/-1; margin-bottom:16px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.04);";
+
+        // Section header
+        const headerDiv = document.createElement("div");
+        headerDiv.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:var(--highlight-bg); border-bottom:1px solid var(--border); cursor:pointer; user-select:none;";
+        headerDiv.onclick = () => {
+          const body = document.getElementById(sectionId);
+          const btn  = document.getElementById("rm-toggle-btn-" + type.replace(/\s+/g,'_'));
+          if (body.style.display === "none") {
+            body.style.display = "block";
+            btn.textContent = "▲ Collapse";
+            localStorage.setItem("rm_section_" + type, "expanded");
+          } else {
+            body.style.display = "none";
+            btn.textContent = "▼ Expand";
+            localStorage.setItem("rm_section_" + type, "collapsed");
+          }
+        };
+        headerDiv.innerHTML = `
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--brand); letter-spacing:0.5px;">${label}</span>
+            <span style="font-size:0.72rem; font-weight:700; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:10px;">${items.length} ${items.length === 1 ? 'item' : 'items'}</span>
           </div>
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed #e2e8f0; padding-top: 8px; margin-top: 4px;">
-            <span style="font-family: monospace; font-size: 1.15rem; font-weight: 800; color: var(--text);">${item.availableStock}</span>
-            <span style="font-size: 0.68rem; font-weight: 700; padding: 2px 6px; border-radius: 3px; ${colorProfileStyle}">${item.unitType.toUpperCase()}</span>
-          </div>
+          <button id="rm-toggle-btn-${type.replace(/\s+/g,'_')}" style="background:transparent; border:1px solid var(--border); color:var(--brand); font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:4px; cursor:pointer;">
+            ${isCollapsed ? '▼ Expand' : '▲ Collapse'}
+          </button>
         `;
-        mountZone.appendChild(metricCard);
+
+        // Section body — grid of cards
+        const bodyDiv = document.createElement("div");
+        bodyDiv.id = sectionId;
+        bodyDiv.style.cssText = `display:${isCollapsed ? 'none' : 'grid'}; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px; padding:14px;`;
+
+        items.forEach(item => {
+          let stockStyle = "color:#15803d; background:#dcfce7;";
+          if (item.availableStock === 0) {
+            stockStyle = "color:#b91c1c; background:#fee2e2;";
+          } else if (item.availableStock <= 5) {
+            stockStyle = "color:#b45309; background:#fef3c7;";
+          }
+
+          const card = document.createElement("div");
+          card.style.cssText = "background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:var(--radius); display:flex; flex-direction:column; justify-content:space-between; gap:8px; box-shadow:0 1px 3px rgba(0,0,0,0.02);";
+          card.innerHTML = `
+            <div style="font-size:0.82rem; font-weight:700; color:#334155; line-height:1.4; word-break:break-word; min-height:36px;">
+              ${item.materialName}
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; border-top:1px dashed #e2e8f0; padding-top:8px; margin-top:4px;">
+              <span style="font-family:monospace; font-size:1.15rem; font-weight:800; color:var(--text);">${item.availableStock}</span>
+              <span style="font-size:0.68rem; font-weight:700; padding:2px 6px; border-radius:3px; ${stockStyle}">${(item.unitType || "PCS").toUpperCase()}</span>
+            </div>
+            ${item.reservedStock > 0 ? `<div style="font-size:0.68rem; color:var(--muted); font-weight:600;">Reserved: ${item.reservedStock} ${(item.unitType || "PCS").toUpperCase()}</div>` : ""}
+          `;
+          bodyDiv.appendChild(card);
+        });
+
+        section.appendChild(headerDiv);
+        section.appendChild(bodyDiv);
+        mountZone.appendChild(section);
       });
     }
   } catch (error) {
     console.error(error);
-    mountZone.innerHTML = `<p style="font-size: 0.8rem; color: var(--warn); grid-column: 1 / -1; text-align: center; padding:20px;">⚠️ Sync Exception: Couldn't refresh active inventory balances.</p>`;
+    mountZone.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--warn);">⚠️ Sync Exception: Couldn't refresh active inventory balances.</div>`;
   } finally {
     if (syncBtn) { syncBtn.disabled = false; syncBtn.innerHTML = "🔄 Sync Stock Balances"; }
   }
