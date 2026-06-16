@@ -535,7 +535,7 @@
   <div id="module-design-workspace-enclosure-panel" class="workspace-panel" style="display: none; padding: 12px 10px;">
     <div class="navigation-action-header-row" style="margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
       <div></div>
-      <button class="nav-btn-styled" onclick="exitDesignWorkspacePanelBackToMenu()" style="background:#4a5568;">Return to Main Dashboard</button>
+      <button class="nav-btn-styled" onclick="exitDesignWorkspacePanelBackToMenu()">Return to Main Dashboard</button>
     </div>
 
     <div id="canvas-module-design-upload" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
@@ -1200,7 +1200,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwB8_gtK_DagdcMANWoHG8xr6C3W6piMDrTDgN05Asym08d_PzR-4MYOifnJK8RJCNCnQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxOr4M5tdcTsgkTDG8bAWTg9k6vnE_GL59S2P9bOrZvdNB-E7A_WNLXgceXmJa182HzOw/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1440,7 +1440,7 @@ async function parseCard() {
   
   btn.disabled = true;
   btn.classList.add("loading");
-  btn.textContent = "AI Parsing Card";
+  btn.textContent = "AI Processing Card";
   
   try {
     // 1. Convert files into Base64 formats strings parameters
@@ -1470,7 +1470,7 @@ async function parseCard() {
     
     // 3. Drill down into the Gemini API raw response text node wrapper
     if (data && data.error) {
-      alert("AI Parsing failed: " + data.error.message);
+      alert("AI Processing failed: " + data.error.message);
       return;
     }
     if (data && data.candidates && data.candidates[0].content.parts[0].text) {
@@ -1499,10 +1499,10 @@ async function parseCard() {
       if (document.getElementById("f-country")) document.getElementById("f-country").value = resultData.country || "";
       
     } else {
-      alert("AI Parsing failed");
+      alert("AI Processing failed");
     }
   } catch (e) {
-    alert("Card parsing network execution crash: " + e.message);
+    alert("Card Processing network execution crash: " + e.message);
   } finally {
     btn.disabled = false;
     btn.classList.remove("loading");
@@ -6065,7 +6065,7 @@ async function executeMarketingOperationsDocumentCommit(opsFlagTypeString) {
   
   if (targetBtn) {
     targetBtn.disabled = true;
-    targetBtn.innerHTML = '<div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div> AI Parsing & Matching Document...';
+    targetBtn.innerHTML = '<div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div> AI Processing & Matching Document...';
   }
 
   try {
@@ -6202,7 +6202,7 @@ function resetGateEntryWorkspaceState() {
 async function parseGateDocumentsWithAI() {
   const btn = document.getElementById('gate-parse-ai-btn');
   if (!targetGateInvoiceFileObj && !targetGateChallanFileObj) return alert("Please select at least one document (Invoice or Challan) before processing.");
-  btn.disabled = true; btn.innerHTML = 'AI Parsing...';
+  btn.disabled = true; btn.innerHTML = 'AI Processing...';
   try {
     const convertToBase64 = file => new Promise(res => {
       if (!file) return res(null); const r = new FileReader();
@@ -6229,7 +6229,7 @@ async function parseGateDocumentsWithAI() {
       })
     });
     const data = await res.json();
-    if (!data.success) return alert("AI parsing failed: " + data.error);
+    if (!data.success) return alert("AI Processing failed: " + data.error);
     activeParsedGatePayloadCache = data.extractedData;
     
     document.getElementById('gate-meta-invoice').value = activeParsedGatePayloadCache.invoiceNumber || "";
@@ -6964,7 +6964,7 @@ function navigateToDesignWorkspacePanel(targetModuleId) {
   targetBOQUploadFileRawObject = null;
 
   // 5. STRICT ROUTING INTERCEPT SWEEP
-  // Fixed mapping triggers to avoid string parsing dropouts or uppercase mismatch locks
+  // Fixed mapping triggers to avoid string Processing dropouts or uppercase mismatch locks
   if (targetModuleId === 'design-upload' || targetModuleId === 'mod-design-upload') {
     if (uploadSubCanvas) {
       uploadSubCanvas.style.display = "block";
@@ -7071,11 +7071,11 @@ async function executeBOQProjectQueryLookupSearch() {
     data.records.forEach(r => {
       tbody.innerHTML += `
         <tr>
-          <td style="text-align:left; font-weight:bold; color:#475569;">${r.department}</td>
+          <td style="text-align:left; font-weight:bold; color:#475569;">${r.department || "—"}</td>
           <td style="text-align:left; font-weight:600;">${r.productName}</td>
           <td style="font-family:monospace; color:var(--brand);">${r.productRating}</td>
           <td style="font-family:monospace; font-weight:700;">${r.itemCode || "UNCODED"}</td>
-          <td style="font-family:monospace; font-weight:800; text-align:right; padding-right:12px;">${r.totalRequirement} Pcs</td>
+          <td style="font-family:monospace; font-weight:800; text-align:right; padding-right:12px;">${r.quantity || r.totalQty} ${r.unitType || "NOS"}</td>
         </tr>`;
     });
   } else {
@@ -7110,7 +7110,7 @@ async function executeBOQDocumentUploadSubmit(modeString) {
   btn.disabled = true;
   btn.innerHTML = `
     <div class="spinner" style="display:inline-block; width:12px; height:12px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.6s linear infinite; margin-right:6px; vertical-align:middle;"></div>
-    <span>AI Parsing BOQ sheets...</span>
+    <span>AI Processing BOQ sheets...</span>
   `;
   
   // 2. CONVERT UPLOADED FILE TO BASE64 DATA STREAM STRING
@@ -7191,7 +7191,7 @@ async function executeBOQDocumentUploadSubmit(modeString) {
     btn.disabled = false;
     btn.textContent = isNew ? "Process BOQ Document" : "Commit BOQ Change";
   } finally {
-    // Failsafe rollback button state visibility styles if parsing drops connections out mid-way
+    // Failsafe rollback button state visibility styles if Processing drops connections out mid-way
     if (btn.disabled && !targetBOQUploadFileRawObject) {
       btn.disabled = false;
       btn.textContent = isNew ? "Process BOQ Document" : "Commit BOQ Change";
