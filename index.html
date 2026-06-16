@@ -1209,7 +1209,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyt3Tpg-5WIPoucIXSASWrsE6wuFbCZiF_7BIrtrE9PDQ3R6kOnGqRL8fI1e9_tzgFc-g/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz74cNDFdVcZ2CL-IU2JA7o7zW7OPKb3w5kRiMkQnF7UayBaMfzqSZ7MXqArTPpYJRO/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -4983,11 +4983,43 @@ async function updateSelectedLiveStockPillCounter() {
   if (!selectedMaterial || !projectId) {
     counterZone.innerHTML = ""; return;
   }
-  
+
+  const activeStoreScope = document.getElementById("ticket-selected-store-scope-toggle")?.value || "Raw Materials Store";
+
+  // --- FINISHED GOODS STORE: show FG item details ---
+  if (activeStoreScope === "Finished Goods Store") {
+    const fgCache = window.cachedFinishedGoodsStoreStockCollection || {};
+    const allFGItems = [
+      ...(fgCache.reactor   || []),
+      ...(fgCache.capacitor || []),
+      ...(fgCache.panel     || [])
+    ];
+    const fgItem = allFGItems.find(i => {
+      const serial  = (i["Product Serial Number"] || "").toString().trim();
+      const details = (i["Product Details"]        || "").toString().trim();
+      return serial === selectedMaterial || details === selectedMaterial;
+    });
+    if (fgItem) {
+      const qty = parseInt(fgItem["Product Quantity"]) || 0;
+      const styleClass = qty === 0 ? "pill-stock-empty" : qty <= 2 ? "pill-stock-low" : "pill-stock-healthy";
+      counterZone.innerHTML = `
+        <div style="margin:8px 0 4px; font-size:0.88rem; font-weight:700; color:var(--text);">
+          Available in Finished Goods Store:
+          <span class="live-counter-pill ${styleClass}" style="font-size:1rem; padding:3px 8px; margin-left:4px;">${qty} NOS</span>
+          <span style="font-size:0.75rem; color:var(--muted); margin-left:8px;">
+            Rating: ${fgItem["Product Rating"] || "—"} | Customer: ${fgItem["Customer Name"] || "—"}
+          </span>
+        </div>`;
+    } else {
+      counterZone.innerHTML = `<span style="color:var(--warn); font-size:0.8rem;">⚠️ Item details not found in FG inventory.</span>`;
+    }
+    return;
+  }
+
+  // --- RAW MATERIALS STORE: show inventory + BOQ allocation ---
   counterZone.innerHTML = `<span style="font-size:0.75rem; color:var(--brand); font-weight:700;">🔄 Evaluating Real-Time Project BOQ Allocations...</span>`;
   
   try {
-    // Call the unified server reporting channel path to cross-reference stock and metrics balances
     const response = await fetch(GAS_URL, {
       method: "POST",
       body: JSON.stringify({
@@ -4999,44 +5031,57 @@ async function updateSelectedLiveStockPillCounter() {
     const boqData = await response.json();
     
     const cleanSearchKey = selectedMaterial.replace(/\s+/g, '').toLowerCase();
+    
     const inventoryMatch = cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey)
-    || cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase().includes(cleanSearchKey.substring(0, 20)))
-    || cachedInventoryStockCollection.find(i => cleanSearchKey.includes(i.materialName.replace(/\s+/g, '').toLowerCase().substring(0, 20)));
-    const boqMatch = (boqData.records || []).find(r => r.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+      || cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase().includes(cleanSearchKey.substring(0, 20)))
+      || cachedInventoryStockCollection.find(i => cleanSearchKey.includes(i.materialName.replace(/\s+/g, '').toLowerCase().substring(0, 20)));
+
+    const boqMatch = (boqData.records || []).find(r => r.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey)
+      || (boqData.records || []).find(r => r.materialName.replace(/\s+/g, '').toLowerCase().includes(cleanSearchKey.substring(0, 20)))
+      || (boqData.records || []).find(r => cleanSearchKey.includes(r.materialName.replace(/\s+/g, '').toLowerCase().substring(0, 20)));
     
     if (inventoryMatch && boqMatch) {
       let styleClass = "pill-stock-healthy";
       const availableCount = Number(inventoryMatch.availableStock) || 0;
-      const reservedCount = Number(inventoryMatch.reservedStock) || 0;
-      const unitToken = inventoryMatch.unitType || "Pcs";
+      const reservedCount  = Number(inventoryMatch.reservedStock)  || 0;
+      const unitToken = (inventoryMatch.unitType || "NOS").toUpperCase();
       
-      if (availableCount === 0) styleClass = "pill-stock-empty";
+      if (availableCount === 0)  styleClass = "pill-stock-empty";
       else if (availableCount <= 5) styleClass = "pill-stock-low";
       
-      // Render the comprehensive tracking indicators pill interface zone row block
       counterZone.innerHTML = `
-        <div style="margin: 12px 0 4px; font-size: 0.88rem; font-weight: 700; color: var(--text); text-align:left; line-height:1.6;">
+        <div style="margin:12px 0 4px; font-size:0.88rem; font-weight:700; color:var(--text); text-align:left; line-height:1.6;">
           <div>
-            Real-time Warehouse Count: 
-            <span class="live-counter-pill ${styleClass}" style="font-size: 1rem; padding: 3px 8px; margin-left: 4px;">
-              ${availableCount} ${unitToken.toUpperCase()} AVAILABLE
-            </span> 
-            <span style="font-size: 0.78rem; color: var(--muted); margin-left: 6px; font-weight: normal;">
+            Real-time Warehouse Count:
+            <span class="live-counter-pill ${styleClass}" style="font-size:1rem; padding:3px 8px; margin-left:4px;">
+              ${availableCount} ${unitToken} AVAILABLE
+            </span>
+            <span style="font-size:0.78rem; color:var(--muted); margin-left:6px; font-weight:normal;">
               (Reserved: ${reservedCount} ${unitToken})
             </span>
           </div>
-          <div style="margin-top: 6px; display: flex; gap: 8px; flex-wrap: wrap;">
-            <span style="font-size: 0.72rem; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px;">ALLOTTED BOQ: ${boqMatch.totalQty || 0} ${unitToken}</span>
-            <span style="font-size: 0.72rem; font-weight: 700; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px;">USED BOQ: ${boqMatch.usedQty || 0} ${unitToken}</span>
-            <span style="font-size: 0.72rem; font-weight: 700; background: #dcfce7; color: #166534; padding: 2px 6px; border-radius: 4px;">REMAINING BOQ: ${boqMatch.remainingQty || 0} ${unitToken}</span>
+          <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;">
+            <span style="font-size:0.72rem; font-weight:700; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">ALLOTTED BOQ: ${boqMatch.totalQty || 0} ${unitToken}</span>
+            <span style="font-size:0.72rem; font-weight:700; background:#fee2e2; color:#991b1b; padding:2px 6px; border-radius:4px;">USED BOQ: ${boqMatch.usedQty || 0} ${unitToken}</span>
+            <span style="font-size:0.72rem; font-weight:700; background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px;">REMAINING BOQ: ${boqMatch.remainingQty || 0} ${unitToken}</span>
           </div>
         </div>
       `;
+    } else if (inventoryMatch && !boqMatch) {
+      const availableCount = Number(inventoryMatch.availableStock) || 0;
+      const unitToken = (inventoryMatch.unitType || "NOS").toUpperCase();
+      let styleClass = availableCount === 0 ? "pill-stock-empty" : availableCount <= 5 ? "pill-stock-low" : "pill-stock-healthy";
+      counterZone.innerHTML = `
+        <div style="margin:8px 0 4px; font-size:0.88rem; font-weight:700; color:var(--text);">
+          Warehouse: <span class="live-counter-pill ${styleClass}" style="font-size:1rem; padding:3px 8px; margin-left:4px;">${availableCount} ${unitToken}</span>
+          <span style="font-size:0.75rem; color:var(--warn); margin-left:8px;">⚠️ Not in BOQ for this project</span>
+        </div>`;
     } else {
-      counterZone.innerHTML = `<span style="color:var(--warn); font-size:0.8rem;">⚠️ Selected item missing configuration parameters mappings.</span>`;
+      counterZone.innerHTML = `<span style="color:var(--warn); font-size:0.8rem;">⚠️ Selected item missing configuration parameters.</span>`;
     }
   } catch(err) {
     console.error("Pill allocation tracking crash:", err);
+    counterZone.innerHTML = "";
   }
 }
 
@@ -6991,7 +7036,6 @@ async function handleCreateTicketProjectChange(chosenProjectVal) {
     const activeStoreScope = document.getElementById("ticket-selected-store-scope-toggle")?.value || "Raw Materials Store";
 
     if (activeStoreScope === "Finished Goods Store") {
-      // For FG Store — populate from cached FG inventory directly, no BOQ needed
       const fgCache = window.cachedFinishedGoodsStoreStockCollection || {};
       const allFGItems = [
         ...(fgCache.reactor   || []),
@@ -6999,27 +7043,35 @@ async function handleCreateTicketProjectChange(chosenProjectVal) {
         ...(fgCache.panel     || [])
       ];
 
-      itemDrop.innerHTML = '<option value="">— Select FG Item —</option>';
+      // Find matching item by serial number or product details
+      const fgItem = allFGItems.find(i => {
+        const serial = (i["Product Serial Number"] || "").toString().trim();
+        const details = (i["Product Details"] || "").toString().trim();
+        return serial === materialName || details === materialName;
+      });
 
-      if (allFGItems.length === 0) {
-        itemDrop.innerHTML = '<option value="">⚠️ No items in Finished Goods Store</option>';
+      const availableQty = fgItem ? (parseInt(fgItem["Product Quantity"]) || 0) : 0;
+      const unitType = "NOS";
+
+      const existingLineItem = dynamicTicketShoppingBasketArray.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+      let totalRequestedQuantity = quantity;
+      if (existingLineItem) {
+        totalRequestedQuantity += existingLineItem.quantity;
+        existingLineItem.quantity = totalRequestedQuantity;
+        existingLineItem.requiresBOQIncreaseFlag = totalRequestedQuantity > availableQty;
+        existingLineItem.allottedRemainingLimit = availableQty;
       } else {
-        let seen = {};
-        allFGItems.forEach(item => {
-          const name = (item["Product Details"] || item["Product Serial Number"] || "").toString().trim();
-          if (name && !seen[name]) {
-            seen[name] = true;
-            const opt = document.createElement("option");
-            opt.value = name;
-            opt.textContent = name;
-            itemDrop.appendChild(opt);
-          }
+        dynamicTicketShoppingBasketArray.push({
+          materialName: materialName,
+          quantity: totalRequestedQuantity,
+          unitType: unitType,
+          availableQty: availableQty,
+          requiresBOQIncreaseFlag: totalRequestedQuantity > availableQty,
+          allottedRemainingLimit: availableQty
         });
       }
-
-      addZone.style.opacity = "1";
-      itemDrop.disabled = false; qtyInp.disabled = false; addBtn.disabled = false;
-      addBtn.style.cursor = "pointer";
+      qtyInput.value = "";
+      renderDraftBasketTableViewportRows();
       return;
     }
 
@@ -7272,7 +7324,8 @@ async function executeBOQDocumentUploadSubmit(modeString) {
       designEngineer: designEngineerName,
       projectId: projectId, 
       fileData64: fileBase64Raw,
-      mimeType: fileMimeType
+      mimeType: fileMimeType,
+      isUpdate: !isNew
     };
     
     const response = await fetch(GAS_URL, {
