@@ -4756,7 +4756,7 @@ async function initializeMaterialRequestWorkspace() {
   if (storeScopeDropdown) {
     storeScopeDropdown.value = "";
   }
-
+  
   clearFullBasketDraftState();
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
 
@@ -7268,6 +7268,7 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
 
   if (!chosenStoreValue) {
+    // No store selected — keep department locked
     deptDropdown.disabled = true;
     deptDropdown.style.opacity = "0.5";
     deptDropdown.style.cursor = "not-allowed";
@@ -7276,15 +7277,18 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
     return;
   }
 
-  if (chosenStoreValue === "Finished Goods Store") {
-    // Rebuild department options WITH Dispatch for FG Store
+  if (!chosenStoreValue) {
+    deptDropdown.disabled = true;
+    deptDropdown.style.opacity = "0.5";
+    deptDropdown.style.cursor = "not-allowed";
+    deptDropdown.value = "";
+    deptDropdown.options[0].text = "— Choose Store First —";
+    return;
+  } else if (chosenStoreValue === "Finished Goods Store") {
+    // Rebuild dropdown with only Panel and Dispatch options
     deptDropdown.innerHTML = `
       <option value="">— Select Department —</option>
-      <option value="Reactor">Reactor</option>
-      <option value="Capacitor">Capacitor</option>
       <option value="Panel">Panel</option>
-      <option value="Processing">Processing</option>
-      <option value="Service">Service</option>
       <option value="Dispatch">Dispatch</option>
     `;
     deptDropdown.disabled = false;
@@ -7292,7 +7296,7 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
     deptDropdown.style.cursor = "pointer";
     deptDropdown.value = "";
   } else {
-    // Raw Materials Store — no Dispatch option
+    // Restore full department options for Raw Materials Store
     deptDropdown.innerHTML = `
       <option value="">— Select Department —</option>
       <option value="Reactor">Reactor</option>
@@ -7305,7 +7309,6 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
     deptDropdown.style.opacity = "1";
     deptDropdown.style.cursor = "pointer";
     deptDropdown.value = "";
-    deptDropdown.options[0].text = "— Select Department —";
   }
 }
 
