@@ -1200,7 +1200,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyRt-V1O60xv292ZIji47F4hvyea8wQ50Dzp7TxOi3fra9bhFzr6zK0oj4xZzbKhaxwiA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyt3Tpg-5WIPoucIXSASWrsE6wuFbCZiF_7BIrtrE9PDQ3R6kOnGqRL8fI1e9_tzgFc-g/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -4990,7 +4990,9 @@ async function updateSelectedLiveStockPillCounter() {
     const boqData = await response.json();
     
     const cleanSearchKey = selectedMaterial.replace(/\s+/g, '').toLowerCase();
-    const inventoryMatch = cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+    const inventoryMatch = cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey)
+    || cachedInventoryStockCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase().includes(cleanSearchKey.substring(0, 20)))
+    || cachedInventoryStockCollection.find(i => cleanSearchKey.includes(i.materialName.replace(/\s+/g, '').toLowerCase().substring(0, 20)));
     const boqMatch = (boqData.records || []).find(r => r.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
     
     if (inventoryMatch && boqMatch) {
@@ -5056,14 +5058,23 @@ async function addItemToShoppingBasketRow() {
      activeCacheCollection = window.cachedFinishedGoodsStoreStockCollection || [];
   }
   
-  const itemData = activeCacheCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+  const itemData = activeCacheCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey)
+    || activeCacheCollection.find(i => i.materialName.replace(/\s+/g, '').toLowerCase().includes(cleanSearchKey.substring(0, 20)))
+    || activeCacheCollection.find(i => cleanSearchKey.includes(i.materialName.replace(/\s+/g, '').toLowerCase().substring(0, 20)));
   
   // Pull design data to validate if request total breaks allocation boundaries
   const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "fetchActiveBOQRecordsByProject", sessionToken: localStorage.getItem("sessionToken"), projectId: projectId }) });
   const boqData = await res.json();
   const boqMatch = (boqData.records || []).find(r => r.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
   
-  if (!itemData || !boqMatch) return alert("Selected material target lookup dropped.");
+  if (!itemData) {
+    alert("Material not found in inventory catalog. Please sync stock first.");
+    return;
+  }
+  if (!boqMatch) {
+    alert("This material is not in the BOQ for project " + projectId + ". Please select the correct project or check the BOQ.");
+    return;
+  }
   
   const existingLineItem = dynamicTicketShoppingBasketArray.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
   let totalRequestedQuantity = quantity;
