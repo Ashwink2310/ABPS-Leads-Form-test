@@ -375,6 +375,7 @@
           <div>
             <label class="field-label" style="font-weight: 700; color: var(--brand);">Choose Store *</label>
             <select id="ticket-selected-store-scope-toggle" onchange="handleTicketStoreScopeSelectionChange(this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600;">
+              <option value="">— Choose Store —</option>
               <option value="Raw Materials Store">Raw Materials Store</option>
               <option value="Finished Goods Store">Finished Goods Store</option>
             </select>
@@ -4749,6 +4750,13 @@ async function initializeMaterialRequestWorkspace() {
   // Enforce pristine starting conditions across cascading lock states parameters
   deptDropdown.value = ""; 
   resetMaterialRequestCascadingLockState();
+
+  // Reset store scope to blank default
+  const storeScopeDropdown = document.getElementById("ticket-selected-store-scope-toggle");
+  if (storeScopeDropdown) {
+    storeScopeDropdown.value = "";
+  }
+  
   clearFullBasketDraftState();
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
 
@@ -4819,13 +4827,8 @@ async function initializeMaterialRequestWorkspace() {
         matchedDefault = "Panel";
       }
       
-      if (matchedDefault) {
-        deptDropdown.value = matchedDefault;
-        handleCreateTicketDepartmentChange(matchedDefault); 
-      } else {
-        deptDropdown.value = "";
-        resetMaterialRequestCascadingLockState();
-      }
+      deptDropdown.value = "";
+      resetMaterialRequestCascadingLockState();
     }
   } catch (error) { 
     console.error("Critical Matrix Load Failure:", error); 
@@ -6830,8 +6833,6 @@ function handleCreateTicketDepartmentChange(chosenDepartmentVal) {
 
   titleLbl.style.color = "var(--brand)";
   staffDrop.disabled = false;
-
-  if (appActiveOperatorIdentityString) staffDrop.value = appActiveOperatorIdentityString;
 }
 
 /**
@@ -7276,15 +7277,20 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
     return;
   }
 
-  if (chosenStoreValue === "Finished Goods Store") {
-    // Lock department to Panel only
+  if (!chosenStoreValue) {
+    deptDropdown.disabled = true;
+    deptDropdown.style.opacity = "0.5";
+    deptDropdown.style.cursor = "not-allowed";
+    deptDropdown.value = "";
+    deptDropdown.options[0].text = "— Choose Store First —";
+    return;
+  } else if (chosenStoreValue === "Finished Goods Store") {
     deptDropdown.value = "Panel";
     deptDropdown.disabled = true;
     deptDropdown.style.opacity = "0.6";
     deptDropdown.style.cursor = "not-allowed";
     handleCreateTicketDepartmentChange("Panel");
   } else {
-    // Raw Materials Store — unlock department for free selection
     deptDropdown.disabled = false;
     deptDropdown.style.opacity = "1";
     deptDropdown.style.cursor = "pointer";
