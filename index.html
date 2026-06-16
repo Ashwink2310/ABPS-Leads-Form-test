@@ -1355,9 +1355,8 @@ function initializeGoogleAuthPlatformEngine() {
     google.accounts.id.initialize({
       client_id: "374058137880-64dt8h9eem9impq61bpb0n9iselso76e.apps.googleusercontent.com",
       callback: handleGooglePlatformCredentialResponse,
-      // Forces a prompt layout selection check on mobile browsers every time
-      prompt_parent_id: "google-auth-button-mount-point",
-      ux_mode: "popup" 
+      ux_mode: "popup",
+      use_fedcm_for_prompt: true
     });
     
     // 3. FORCE RENDER THE FRESH IFRAME
@@ -1366,14 +1365,8 @@ function initializeGoogleAuthPlatformEngine() {
       { theme: "outline", size: "large", width: "320" }
     );
     
-    // 4. THE MOBILE BYPASS: Explicitly breaks any silent status lock trapped in mobile memory
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-         console.log("Mobile UI state bypassed: Force-rendering structural login button channel rules.");
-         // If skipped or blocked, kickstart a fresh layout rendering block immediately
-         google.accounts.id.renderButton(freshMountNode, { theme: "outline", size: "large", width: "320" });
-      }
-    });
+    // FedCM compatible — do not call prompt(), rely only on renderButton click
+    console.log("Google Auth: FedCM mode active, button rendered.");
 
   }, 250); 
 }
