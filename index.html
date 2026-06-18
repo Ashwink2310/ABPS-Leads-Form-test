@@ -252,9 +252,7 @@
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
         <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Finished Goods Store</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
-          <div class="menu-card" id="mod-fg-reactor"   style="display:none;" onclick="switchActiveDashboardModule('fg-add-reactor')">Reactor: Add to FG Store</div>
-          <div class="menu-card" id="mod-fg-capacitor" style="display:none;" onclick="switchActiveDashboardModule('fg-add-capacitor')">Capacitor: Add to FG Store</div>
-          <div class="menu-card" id="mod-fg-panel"     style="display:none;" onclick="switchActiveDashboardModule('fg-add-panel')">Panel: Add to FG Store</div>
+          <div class="menu-card" id="mod-fg-add" onclick="switchActiveDashboardModule('fg-add')">Add to Finished Goods Store</div>
         </div>
       </div>
 
@@ -279,11 +277,13 @@
     <div id="dashboard-design-department-header-block" style="display: none;">
       <h2 style="font-size: 1.25rem; font-weight: 700; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid var(--border); padding-bottom: 4px;">Design Department</h2>
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
-        <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Bill of Quantity / Bill of Material</div>
+        <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Bill of Quantity</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
-          <div class="menu-card" id="mod-design-upload" onclick="switchActiveDashboardModule('design-upload')">Upload Bill of Quantity</div>
-          <div class="menu-card" id="mod-design-update" onclick="switchActiveDashboardModule('design-update')">Update Bill of Quantity</div>
-          <div class="menu-card" id="mod-design-itemcode" onclick="switchActiveDashboardModule('design-itemcode')">Add / Check Item Code Number</div>
+          <div class="menu-card" id="mod-design-create-boq"   onclick="switchActiveDashboardModule('design-create-boq')">Create Bill of Quantity</div>
+          <div class="menu-card" id="mod-design-auth-boq"     onclick="switchActiveDashboardModule('design-auth-boq')">Authorize Bill of Quantity</div>
+          <div class="menu-card" id="mod-design-update-boq"   onclick="switchActiveDashboardModule('design-update-boq')">Update Bill of Quantity</div>
+          <div class="menu-card" id="mod-design-auth-boq-upd" onclick="switchActiveDashboardModule('design-auth-boq-upd')">Authorize Bill of Quantity Update</div>
+          <div class="menu-card" id="mod-design-itemcode"     onclick="switchActiveDashboardModule('design-itemcode')">Add / Check Item Code Number</div>
         </div>
       </div>
     </div>
@@ -450,16 +450,178 @@
     </div>
 
     <div id="canvas-module-store-live-stock" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
-      <div class="dashboard-grid" id="dashboard-live-inventory-metrics-mount-zone" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important; gap:10px; padding:0;"></div>
+      
+      <!-- Raw Materials Stock Metrics -->
+      <div class="dashboard-grid" id="dashboard-live-inventory-metrics-mount-zone" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important; gap:10px; padding:0; margin-bottom:24px;"></div>
+
+      <!-- Finished Goods Store Stock -->
+      <div style="margin-top:8px;">
+        <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand); letter-spacing:0.5px; margin-bottom:14px; border-bottom:2px solid var(--border); padding-bottom:6px;">Finished Goods Store Stock</div>
+
+        <!-- Reactor -->
+        <div style="margin-bottom:20px;">
+          <div style="font-size:0.8rem; font-weight:700; color:#1a2332; margin-bottom:8px; padding:6px 10px; background:#f8fafc; border-radius:var(--radius); border-left:3px solid var(--brand);">⚡ Reactor</div>
+          <div style="overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);">
+            <table style="width:100%; border-collapse:collapse; min-width:700px;">
+              <thead>
+                <tr style="background:#f8fafc;">
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Project ID</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Customer Name</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Item Code</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Product Rating</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Product Name</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Unit</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:center; font-weight:700; text-transform:uppercase; color:var(--muted);">Qty (In Stock)</th>
+                </tr>
+              </thead>
+              <tbody id="fg-stock-reactor-rows">
+                <tr><td colspan="7" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Capacitor -->
+        <div style="margin-bottom:20px;">
+          <div style="font-size:0.8rem; font-weight:700; color:#1a2332; margin-bottom:8px; padding:6px 10px; background:#f8fafc; border-radius:var(--radius); border-left:3px solid var(--brand);">🔋 Capacitor</div>
+          <div style="overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);">
+            <table style="width:100%; border-collapse:collapse; min-width:700px;">
+              <thead>
+                <tr style="background:#f8fafc;">
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Project ID</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Customer Name</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Item Code</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Product Rating</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Product Name</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Unit</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:center; font-weight:700; text-transform:uppercase; color:var(--muted);">Qty (In Stock)</th>
+                </tr>
+              </thead>
+              <tbody id="fg-stock-capacitor-rows">
+                <tr><td colspan="7" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Panel -->
+        <div style="margin-bottom:8px;">
+          <div style="font-size:0.8rem; font-weight:700; color:#1a2332; margin-bottom:8px; padding:6px 10px; background:#f8fafc; border-radius:var(--radius); border-left:3px solid var(--brand);">🗄️ Panel</div>
+          <div style="overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);">
+            <table style="width:100%; border-collapse:collapse; min-width:700px;">
+              <thead>
+                <tr style="background:#f8fafc;">
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Project ID</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Customer Name</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Item Code</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Product Rating</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Product Name</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:left; font-weight:700; text-transform:uppercase; color:var(--muted);">Unit</th>
+                  <th style="padding:8px; font-size:0.7rem; text-align:center; font-weight:700; text-transform:uppercase; color:var(--muted);">Qty (In Stock)</th>
+                </tr>
+              </thead>
+              <tbody id="fg-stock-panel-rows">
+                <tr><td colspan="7" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <div id="canvas-module-store-finished-goods-live-stock" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       <div class="dashboard-grid" id="dashboard-finished-goods-live-inventory-mount-zone" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important; gap:10px; padding:0;"></div>
     </div>
 
-    <div id="canvas-module-fg-reactor"   class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;"></div>
-    <div id="canvas-module-fg-capacitor" class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;"></div>
-    <div id="canvas-module-fg-panel"     class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;"></div> 
+    <div id="canvas-module-fg-add" class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;">
+      <h2 style="margin-bottom:16px; color:var(--brand);">Add to Finished Goods Store</h2>
+      <div id="fg-add-feedback" style="display:none; padding:12px; margin-bottom:12px; border-left:4px solid; border-radius:var(--radius);"></div>
+      <div id="fg-add-form">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0;">Department *</label>
+            <select id="fg-add-department" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select —</option>
+              <option value="Panel">Panel</option>
+              <option value="Reactor">Reactor</option>
+              <option value="Capacitor">Capacitor</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" style="margin-top:0;">Project ID *</label>
+            <select id="fg-add-project" onchange="handleFGAddProjectChange(this.value)" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select Project ID —</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0;">Customer Name</label>
+            <input type="text" id="fg-add-customer" readonly style="padding:9px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" placeholder="Auto-filled from Project ID" />
+          </div>
+          <div>
+            <label class="field-label" style="margin-top:0;">Product Name *</label>
+            <div style="position:relative;">
+              <input type="text" id="fg-add-product-search" 
+                placeholder="Type to search product name..." 
+                autocomplete="off"
+                oninput="handleFGProductSearch(this.value)"
+                style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius); width:100%;" />
+              <div id="fg-product-dropdown" style="display:none; position:absolute; top:100%; left:0; right:0; background:#fff; border:1.5px solid var(--brand); border-top:none; border-radius:0 0 var(--radius) var(--radius); max-height:200px; overflow-y:auto; z-index:100; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+            </div>
+            <input type="hidden" id="fg-add-product-name" />
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0;">Item Code Number</label>
+            <input type="text" id="fg-add-item-code" readonly style="padding:9px; background:#e0f2fe; color:var(--brand); font-family:monospace; font-weight:800; cursor:not-allowed; border-radius:var(--radius);" placeholder="Auto-filled from Product Name" />
+          </div>
+          <div>
+            <label class="field-label" style="margin-top:0;">Product Rating</label>
+            <input type="text" id="fg-add-rating" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. 100KVAR 11KV" />
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0;">Job Card Number</label>
+            <input type="text" id="fg-add-jobcard" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="Enter job card number..." />
+          </div>
+          <div>
+            <label class="field-label" style="margin-top:0;">Unit *</label>
+            <select id="fg-add-unit" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="NOS">NOS</option>
+              <option value="KG">KG</option>
+              <option value="MTR">MTR</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0;">Production Department Responsible Person</label>
+            <select id="fg-add-prod-person" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select Person —</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" style="margin-top:0;">Finished Goods Store Incharge Person *</label>
+            <select id="fg-add-store-person" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select Person —</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label class="field-label" style="margin-top:0;">Additional Remarks</label>
+          <input type="text" id="fg-add-remarks" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="Any additional notes..." />
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border); padding-top:14px;">
+          <button class="nav-btn-styled" onclick="resetFGAddForm()" style="background:#718096;">Clear</button>
+          <button class="nav-btn-styled" id="fg-add-submit-btn" onclick="submitFGAddItem()" style="background:var(--accent); padding:8px 24px; font-weight:700;">Add to Finished Goods Store</button>
+        </div>
+      </div>
+    </div>
 
     <div id="canvas-module-store-history-matrix" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
       
@@ -597,6 +759,173 @@
           <input type="file" id="boq-revision-file-raw" accept="image/*,application/pdf,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden onchange="handleBOQFileSelection(this, 'boq-revision-file-dropzone')" />
           <button class="btn btn-sub" id="boq-revision-submit-action-btn" onclick="executeBOQDocumentUploadSubmit('UPDATE')" style="background:var(--accent); font-weight:700;">Commit BOQ Change</button>
         </div>
+      </div>
+    </div>
+
+    <!-- CREATE BOQ -->
+    <div id="canvas-module-design-create-boq" class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;">
+      <h2 style="margin-bottom:6px; color:var(--brand);">Create Bill of Quantity</h2>
+      <p style="font-size:0.82rem; color:var(--muted); margin-bottom:20px;">Fill in the BOQ details and add material rows. Submit when complete — it will go for Authorization.</p>
+      <div id="create-boq-feedback" style="display:none; padding:12px; margin-bottom:12px; border-left:4px solid; border-radius:var(--radius);"></div>
+
+      <!-- Header Fields -->
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:16px;">
+        <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand); margin-bottom:12px; letter-spacing:0.5px;">BOQ Header Information</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0;">Project ID *</label>
+            <select id="cboq-project-id" onchange="handleCBOQProjectChange(this.value)" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select Project ID —</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" style="margin-top:0;">Customer Name</label>
+            <input type="text" id="cboq-customer-name" readonly style="padding:9px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" placeholder="Auto-filled from Project ID" />
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0;">Product Name *</label>
+            <input type="text" id="cboq-product-name" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. HT Capacitor Bank" />
+          </div>
+          <div>
+            <label class="field-label" style="margin-top:0;">Product Rating *</label>
+            <input type="text" id="cboq-product-rating" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. 100KVAR 11KV" />
+          </div>
+          <div>
+            <label class="field-label" style="margin-top:0;">Department *</label>
+            <select id="cboq-department" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select —</option>
+              <option value="Reactor">Reactor</option>
+              <option value="Capacitor">Capacitor</option>
+              <option value="Panel">Panel</option>
+              <option value="Processing">Processing</option>
+              <option value="Service">Service</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0;">Order Quantity (No. of Sets) *</label>
+            <input type="number" id="cboq-order-qty" min="1" value="1" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+          </div>
+          <div>
+            <label class="field-label" style="margin-top:0;">Date</label>
+            <input type="text" id="cboq-date" readonly style="padding:9px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Material Rows -->
+      <div style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand); letter-spacing:0.5px;">Material Rows *</span>
+          <button class="nav-btn-styled" onclick="addCBOQMaterialRow()" style="background:var(--accent); padding:5px 14px; font-size:0.78rem;">+ Add Row</button>
+        </div>
+        <div style="overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);">
+          <table class="store-basket-data-table" style="width:100%; min-width:900px; border-collapse:collapse;">
+            <thead>
+              <tr style="background:#f8fafc;">
+                <th style="width:40px; text-align:center; padding:8px; font-size:0.7rem;">Sr No</th>
+                <th style="width:130px; padding:8px; font-size:0.7rem;">Type of Store *</th>
+                <th style="min-width:220px; padding:8px; font-size:0.7rem;">Description of Material *</th>
+                <th style="width:110px; padding:8px; font-size:0.7rem;">Item Code</th>
+                <th style="width:120px; padding:8px; font-size:0.7rem;">Make</th>
+                <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Qty / Set *</th>
+                <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Unit *</th>
+                <th style="width:40px; padding:8px; font-size:0.7rem; text-align:center;">Del</th>
+              </tr>
+            </thead>
+            <tbody id="cboq-material-rows-body">
+              <tr id="cboq-empty-row">
+                <td colspan="8" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows added yet. Click "+ Add Row" to begin.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Spec Docs -->
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:16px;">
+        <label class="field-label" style="margin-top:0; color:var(--brand);">Specification / Drawing Reference Documents</label>
+        <div class="card-box" id="cboq-spec-doc-dropzone" onclick="document.getElementById('cboq-spec-doc-input').click()" style="padding:20px; border:2px dashed var(--border); font-size:0.85rem; margin-top:6px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+          📎 Click to attach Specification / Drawing Reference files (any type, multiple allowed)
+        </div>
+        <input type="file" id="cboq-spec-doc-input" multiple hidden onchange="handleCBOQSpecDocSelection(this)" />
+        <div id="cboq-spec-doc-list" style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;"></div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border); padding-top:14px;">
+        <button class="nav-btn-styled" onclick="resetCreateBOQForm()" style="background:#718096;">Clear Form</button>
+        <button class="nav-btn-styled" id="cboq-submit-btn" onclick="submitCreateBOQ()" style="background:var(--accent); padding:8px 24px; font-weight:700;">Submit BOQ for Authorization</button>
+      </div>
+    </div>
+
+    <!-- AUTHORIZE BOQ -->
+    <div id="canvas-module-design-auth-boq" class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;">
+      <h2 style="margin-bottom:6px; color:var(--brand);">Authorize Bill of Quantity</h2>
+      <p style="font-size:0.82rem; color:var(--muted); margin-bottom:16px;">Review, edit if needed, and authorize pending BOQs.</p>
+      <div id="auth-boq-feedback" style="display:none; padding:12px; margin-bottom:12px; border-left:4px solid; border-radius:var(--radius);"></div>
+
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:16px;">
+        <label class="field-label" style="margin-top:0; color:var(--brand);">Select BOQ to Authorize *</label>
+        <select id="auth-boq-select" onchange="loadBOQForAuthorization(this.value, 'authorize')" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius); margin-top:4px;">
+          <option value="">— Select Pending BOQ —</option>
+        </select>
+      </div>
+
+      <div id="auth-boq-form" style="display:none;">
+        <!-- reuses shared BOQ edit form rendered by JS -->
+      </div>
+    </div>
+
+    <!-- UPDATE BOQ -->
+    <div id="canvas-module-design-update-boq" class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;">
+      <h2 style="margin-bottom:6px; color:var(--brand);">Update Bill of Quantity</h2>
+      <p style="font-size:0.82rem; color:var(--muted); margin-bottom:16px;">Select a Project ID, then select the BOQ to update. Changes will go for re-authorization.</p>
+      <div id="update-boq-feedback" style="display:none; padding:12px; margin-bottom:12px; border-left:4px solid; border-radius:var(--radius);"></div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:14px;">
+        <div>
+          <label class="field-label" style="margin-top:0; color:var(--brand);">Select Project ID *</label>
+          <select id="update-boq-project" onchange="loadAuthorizedBOQsForProject(this.value)" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <option value="">— Select Project ID —</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0; color:var(--brand);">Select BOQ *</label>
+          <select id="update-boq-select" onchange="loadBOQForUpdate(this.value)" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);" disabled>
+            <option value="">— Select Project First —</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="update-boq-form" style="display:none;">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+
+    <!-- AUTHORIZE BOQ UPDATE -->
+    <div id="canvas-module-design-auth-boq-upd" class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;">
+      <h2 style="margin-bottom:6px; color:var(--brand);">Authorize Bill of Quantity Update</h2>
+      <p style="font-size:0.82rem; color:var(--muted); margin-bottom:16px;">Review changes, see what was updated, edit if needed, then authorize.</p>
+      <div id="auth-boq-upd-feedback" style="display:none; padding:12px; margin-bottom:12px; border-left:4px solid; border-radius:var(--radius);"></div>
+
+      <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:16px;">
+        <label class="field-label" style="margin-top:0; color:var(--brand);">Select BOQ Update to Authorize *</label>
+        <select id="auth-boq-upd-select" onchange="loadBOQForAuthorization(this.value, 'authorize-update')" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius); margin-top:4px;">
+          <option value="">— Select Pending Update BOQ —</option>
+        </select>
+      </div>
+
+      <!-- AI Summary Banner — shown after BOQ is selected -->
+      <div id="auth-boq-upd-summary" style="display:none; background:#fffbeb; border:1.5px solid #f59e0b; border-radius:var(--radius); padding:14px; margin-bottom:16px;">
+        <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:#b45309; margin-bottom:8px; letter-spacing:0.5px;">🔍 AI Change Summary</div>
+        <div id="auth-boq-upd-summary-text" style="font-size:0.85rem; color:#78350f; line-height:1.7; white-space:pre-line;"></div>
+      </div>
+
+      <div id="auth-boq-upd-form" style="display:none;">
+        <!-- rendered by JS -->
       </div>
     </div>
 
@@ -1335,7 +1664,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyQ58mD7NQkPTn4VLaoxiHx08HfBXsaIMsRNneLmTA_SHc68vQLo9YGc3k-rXXES60tgQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxJS92_9iTaaNUURVF6SJpLOoKL8h1rfxEqTn4tfcV-Ke7sC1RIjFev_kM6w_Z4mtY8mg/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1369,6 +1698,11 @@ let targetGateChallanFileObj = null;
 let activeParsedGatePayloadCache = null;
 
 let targetBOQUploadFileRawObject = null;
+let cboqMaterialRows = [];
+let cboqSpecFiles    = [];
+let uboqMaterialRows = [];
+let uboqSpecFiles    = [];
+let uboqCurrentDraft = null;
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken"); 
@@ -2255,9 +2589,7 @@ function returnToDashboard() {
   
   // FIXED REDIRECT RUNTIME REMOVES: Clear out the newly mounted Finished Goods view container as well
   if(document.getElementById("canvas-module-store-finished-goods-live-stock")) document.getElementById("canvas-module-store-finished-goods-live-stock").style.display = "none";
-  if(document.getElementById("canvas-module-fg-reactor"))   document.getElementById("canvas-module-fg-reactor").style.display   = "none";
-  if(document.getElementById("canvas-module-fg-capacitor")) document.getElementById("canvas-module-fg-capacitor").style.display = "none";
-  if(document.getElementById("canvas-module-fg-panel"))     document.getElementById("canvas-module-fg-panel").style.display     = "none";
+  if(document.getElementById("canvas-module-fg-add")) document.getElementById("canvas-module-fg-add").style.display = "none";
 
   document.getElementById("module-workspace-container").style.display = "none";
   document.getElementById("dashboard-view").style.display = "block"; 
@@ -4817,12 +5149,13 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   const canSearchStoreMat          = userPermissionsObject.storeAdminMatrix === true;
 
   // 3. EXTRACT FINISHED GOODS & DESIGN PRIVILEGES MATRIX MATRICES
-  const canAddFGReactor   = userPermissionsObject.addFGReactor   === true;
-  const canAddFGCapacitor = userPermissionsObject.addFGCapacitor === true;
-  const canAddFGPanel     = userPermissionsObject.addFGPanel     === true;
+  const canAddFinishedGoods = userPermissionsObject.addFinishedGoodsStore === true;
+  const canCreateBOQ        = userPermissionsObject.createBOQ        === true;
+  const canAuthorizeBOQ     = userPermissionsObject.authorizeBOQ     === true;
+  const canUpdateBOQ        = userPermissionsObject.updateBOQ        === true;
+  const canAuthorizeBOQUpdate = userPermissionsObject.authorizeBOQUpdate === true;
   const canViewLiveFinishedStock   = userPermissionsObject.liveFinishedGoodsStoreStock === true;
   const canUploadBOQ               = userPermissionsObject.uploadBOQ === true;
-  const canUpdateBOQ               = userPermissionsObject.updateBOQ === true;
 
   // --- SET INDIVIDUAL VISIBILITY FOR MARKETING TARGET CARDS ---
   if (document.getElementById("mod-card")) {
@@ -4871,9 +5204,7 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
     document.getElementById("mod-store-ticket").style.display = canCreateTicket ? "block" : "none";
   }
   
-  if (document.getElementById("mod-fg-reactor"))   document.getElementById("mod-fg-reactor").style.display   = canAddFGReactor   ? "block" : "none";
-  if (document.getElementById("mod-fg-capacitor")) document.getElementById("mod-fg-capacitor").style.display = canAddFGCapacitor ? "block" : "none";
-  if (document.getElementById("mod-fg-panel"))     document.getElementById("mod-fg-panel").style.display     = canAddFGPanel     ? "block" : "none";
+  if (document.getElementById("mod-fg-add")) document.getElementById("mod-fg-add").style.display = canAddFinishedGoods ? "block" : "none";
 
   if (document.getElementById("mod-store-approvals")) {
     document.getElementById("mod-store-approvals").style.display = canReleaseTicket ? "block" : "none";
@@ -4891,18 +5222,22 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   }
 
   // --- SET INDIVIDUAL VISIBILITY FOR DESIGN CARDS ---
-  if (document.getElementById("mod-design-upload")) {
-    document.getElementById("mod-design-upload").style.display = canUploadBOQ ? "block" : "none";
-  }
-  if (document.getElementById("mod-design-update")) {
-    document.getElementById("mod-design-update").style.display = canUpdateBOQ ? "block" : "none";
-  }
+  if (document.getElementById("mod-design-create-boq"))   document.getElementById("mod-design-create-boq").style.display   = canCreateBOQ ? "block" : "none";
+  if (document.getElementById("mod-design-auth-boq"))     document.getElementById("mod-design-auth-boq").style.display     = canAuthorizeBOQ ? "block" : "none";
+  if (document.getElementById("mod-design-update-boq"))   document.getElementById("mod-design-update-boq").style.display   = canUpdateBOQ ? "block" : "none";
+  if (document.getElementById("mod-design-auth-boq-upd")) document.getElementById("mod-design-auth-boq-upd").style.display = canAuthorizeBOQUpdate ? "block" : "none";
   if (document.getElementById("mod-design-itemcode")) {
-    const canSeeItemCode = canUploadBOQ || canUpdateBOQ 
-      || userPermissionsObject.storeEntry === true 
+    const canSeeItemCode = canCreateBOQ || canAuthorizeBOQ || canUpdateBOQ || canAuthorizeBOQUpdate
+      || userPermissionsObject.storeEntry === true
       || userPermissionsObject.grnNote === true
       || userPermissionsObject.itemCodeAccess === true;
     document.getElementById("mod-design-itemcode").style.display = canSeeItemCode ? "block" : "none";
+  }
+
+  // Design block visibility
+  const designHeaderBlock = document.getElementById("dashboard-design-department-header-block");
+  if (designHeaderBlock) {
+    designHeaderBlock.style.display = (canCreateBOQ || canAuthorizeBOQ || canUpdateBOQ || canAuthorizeBOQUpdate || canSeeItemCode) ? "block" : "none";
   }
 
   // --- EVALUATE DEPARTMENT ENCLOSURE OVERLAYS ---
@@ -4913,12 +5248,7 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
 
   const storeHeaderBlock = document.getElementById("dashboard-store-department-header-block");
   if (storeHeaderBlock) {
-    storeHeaderBlock.style.display = (canViewLiveStock || canCreateTicket || canReleaseTicket || canSearchStoreMat || userPermissionsObject.gateEntry === true || userPermissionsObject.storeEntry === true || userPermissionsObject.grnNote === true || canViewLiveFinishedStock || canAddFGReactor || canAddFGCapacitor || canAddFGPanel) ? "block" : "none";
-  }
-
-  const designHeaderBlock = document.getElementById("dashboard-design-department-header-block");
-  if (designHeaderBlock) {
-    designHeaderBlock.style.display = (canUploadBOQ || canUpdateBOQ) ? "block" : "none";
+    storeHeaderBlock.style.display = (canViewLiveStock || canCreateTicket || canReleaseTicket || canSearchStoreMat || userPermissionsObject.gateEntry === true || userPermissionsObject.storeEntry === true || userPermissionsObject.grnNote === true || canViewLiveFinishedStock || canAddFinishedGoods) ? "block" : "none";
   }
 }
 
@@ -5692,29 +6022,24 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
     triggerLiveFinishedGoodsStoreStockMetricsSync();
   } else if (targetCanvasModuleId === 'store-history-matrix') {
     navigateToStoreWorkspacePanel('store-history-matrix');
-  } else if (targetCanvasModuleId === 'design-upload') {
-    navigateToDesignWorkspacePanel('design-upload');
-  } else if (targetCanvasModuleId === 'design-update') {
-    navigateToDesignWorkspacePanel('design-update');
   } else if (targetCanvasModuleId === 'design-itemcode') {
     navigateToDesignWorkspacePanel('design-itemcode');
-  } else if (targetCanvasModuleId === 'fg-add-reactor' || targetCanvasModuleId === 'fg-add-capacitor' || targetCanvasModuleId === 'fg-add-panel') {
-    const deptMap   = { 'fg-add-reactor': 'Reactor', 'fg-add-capacitor': 'Capacitor', 'fg-add-panel': 'Panel' };
-    const canvasMap = { 'fg-add-reactor': 'canvas-module-fg-reactor', 'fg-add-capacitor': 'canvas-module-fg-capacitor', 'fg-add-panel': 'canvas-module-fg-panel' };
+  } else if (targetCanvasModuleId === 'design-create-boq') {
+    navigateToDesignWorkspacePanel('design-create-boq');
+  } else if (targetCanvasModuleId === 'design-auth-boq') {
+    navigateToDesignWorkspacePanel('design-auth-boq');
+  } else if (targetCanvasModuleId === 'design-update-boq') {
+    navigateToDesignWorkspacePanel('design-update-boq');
+  } else if (targetCanvasModuleId === 'design-auth-boq-upd') {
+    navigateToDesignWorkspacePanel('design-auth-boq-upd');
+  } else if (targetCanvasModuleId === 'fg-add') {
     document.getElementById("module-store-workspace-enclosure-panel").style.display = "block";
-
-    // HIDE header sync controls — not relevant for FG Add workspace
     const leftControls = document.getElementById("store-panel-left-controls");
     const centerTitle  = document.getElementById("store-panel-center-title");
     if (leftControls) leftControls.style.visibility = "hidden";
     if (centerTitle)  centerTitle.style.visibility  = "hidden";
-
-    ["canvas-module-fg-reactor","canvas-module-fg-capacitor","canvas-module-fg-panel"].forEach(id => {
-      document.getElementById(id).style.display = "none";
-    });
-    const targetCanvas = document.getElementById(canvasMap[targetCanvasModuleId]);
-    targetCanvas.style.display = "block";
-    initializeFinishedGoodsAddWorkspace(deptMap[targetCanvasModuleId], canvasMap[targetCanvasModuleId]);
+    document.getElementById("canvas-module-fg-add").style.display = "block";
+    initializeFGAddWorkspace();
   }
 }
 
@@ -7342,36 +7667,40 @@ async function handleCreateTicketProjectChange(chosenProjectVal) {
         ...(fgCache.reactor   || []),
         ...(fgCache.capacitor || []),
         ...(fgCache.panel     || [])
-      ];
+      ].filter(row => (row["Status"] || "").trim() === "In Stock");
 
-      // Filter to items matching this project
       const projectItems = allFGItems.filter(i =>
         (i["Project ID"] || "").toString().trim().toLowerCase() === chosenProjectVal.toLowerCase()
       );
 
       if (projectItems.length === 0) {
-        itemDrop.innerHTML = '<option value="">⚠️ No Finished Goods found for this Project</option>';
-        alert("No Finished Goods items found for Project ID: " + chosenProjectVal);
+        itemDrop.innerHTML = '<option value="">⚠️ No In-Stock Finished Goods found for this Project</option>';
+        addZone.style.opacity = "0.5";
         return;
       }
 
+      // Group by Product Name + Rating + Item Code to show unique options
+      const seen = {};
       itemDrop.innerHTML = '<option value="">— Select Item from Finished Goods Store —</option>';
       projectItems.forEach(i => {
-        const serial  = (i["Product Serial Number"] || "").toString().trim();
-        const rating  = (i["Product Rating"] || "").toString().trim();
-        const details = (i["Product Details"] || "").toString().trim();
-        const qty     = (i["Product Quantity"] || "0").toString().trim();
-        const label   = [serial, rating, details].filter(Boolean).join(" | ") + " (Qty: " + qty + ")";
-        let opt = document.createElement("option");
-        opt.value = serial || details;
+        const pname  = (i["Product Name"]    || "").trim();
+        const rating = (i["Product Rating"]  || "").trim();
+        const code   = (i["Item Code Number"]|| "").trim();
+        const key    = pname + "||" + rating + "||" + code;
+        if (seen[key]) return;
+        seen[key] = true;
+        const label = [pname, rating, code].filter(Boolean).join(" | ");
+        const opt   = document.createElement("option");
+        opt.value   = pname;
         opt.textContent = label;
         itemDrop.appendChild(opt);
       });
 
       addZone.style.opacity = "1";
-      itemDrop.disabled = false; qtyInp.disabled = false; addBtn.disabled = false;
+      itemDrop.disabled = false;
+      qtyInp.disabled   = false;
+      addBtn.disabled   = false;
       addBtn.style.cursor = "pointer";
-
     } else {
       // Raw Materials Store — fetch from BOQ
       const res = await fetch(GAS_URL, {
@@ -7431,13 +7760,19 @@ function navigateToDesignWorkspacePanel(targetModuleId) {
   }
   
   // 3. Isolate child views to prevent element draw overlap anomalies
-  const uploadSubCanvas = document.getElementById("canvas-module-design-upload");
-  const updateSubCanvas = document.getElementById("canvas-module-design-update");
-  
-  if (uploadSubCanvas) uploadSubCanvas.style.display = "none";
-  if (updateSubCanvas) updateSubCanvas.style.display = "none";
-  const itemcodeCanvas = document.getElementById("canvas-module-design-itemcode");
-  if (itemcodeCanvas) itemcodeCanvas.style.display = "none";
+  const allDesignCanvases = [
+    "canvas-module-design-upload",
+    "canvas-module-design-update",
+    "canvas-module-design-itemcode",
+    "canvas-module-design-create-boq",
+    "canvas-module-design-auth-boq",
+    "canvas-module-design-update-boq",
+    "canvas-module-design-auth-boq-upd"
+  ];
+  allDesignCanvases.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
   
   // 4. Wipe operational dropzone feedback notes caches
   const dropzoneUpload = document.getElementById("boq-upload-file-dropzone");
@@ -7474,7 +7809,6 @@ function navigateToDesignWorkspacePanel(targetModuleId) {
     const itemcodeCanvas = document.getElementById("canvas-module-design-itemcode");
     if (itemcodeCanvas) {
       itemcodeCanvas.style.display = "block";
-      // Reset state on each open
       document.getElementById("itemcode-search-input").value = "";
       document.getElementById("itemcode-search-results-zone").style.display   = "none";
       document.getElementById("itemcode-no-results-zone").style.display       = "none";
@@ -7482,6 +7816,18 @@ function navigateToDesignWorkspacePanel(targetModuleId) {
       document.getElementById("itemcode-create-form-zone").style.display      = "none";
       document.getElementById("itemcode-feedback-banner").style.display       = "none";
     }
+  } else if (targetModuleId === 'design-create-boq') {
+    const el = document.getElementById("canvas-module-design-create-boq");
+    if (el) { el.style.display = "block"; initializeCreateBOQPanel(); }
+  } else if (targetModuleId === 'design-auth-boq') {
+    const el = document.getElementById("canvas-module-design-auth-boq");
+    if (el) { el.style.display = "block"; initializeAuthorizeBOQPanel('authorize'); }
+  } else if (targetModuleId === 'design-update-boq') {
+    const el = document.getElementById("canvas-module-design-update-boq");
+    if (el) { el.style.display = "block"; initializeUpdateBOQPanel(); }
+  } else if (targetModuleId === 'design-auth-boq-upd') {
+    const el = document.getElementById("canvas-module-design-auth-boq-upd");
+    if (el) { el.style.display = "block"; initializeAuthorizeBOQPanel('authorize-update'); }
   } else {
     console.warn("Design routing gateway parameter fallback unmapped: ", targetModuleId);
   }
@@ -8549,6 +8895,1197 @@ function selectStoreEntryItemCodeMatch(gateNum, idx, itemCode, productName, type
     clickedEl.style.border    = "2px solid var(--accent)";
     clickedEl.style.background = "#f0fdf4";
   }
+}
+
+// ═══════════════════════════════════════════════════════
+// CREATE BOQ
+// ═══════════════════════════════════════════════════════
+
+async function initializeCreateBOQPanel() {
+  // Set today's date
+  const today = new Date().toLocaleDateString('en-CA');
+  document.getElementById("cboq-date").value = today;
+
+  // Load project IDs
+  const projDrop = document.getElementById("cboq-project-id");
+  projDrop.innerHTML = '<option value="">Loading projects...</option>';
+  try {
+    const res  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") }) });
+    const data = await res.json();
+    projDrop.innerHTML = '<option value="">— Select Project ID —</option>';
+    (data.projects || []).forEach(code => {
+      const opt = document.createElement("option"); opt.value = code; opt.textContent = code; projDrop.appendChild(opt);
+    });
+    window.cboqProjectMeta = data.projectMeta || {};
+  } catch(e) {
+    projDrop.innerHTML = '<option value="">Error loading projects</option>';
+  }
+
+  // Reset form
+  cboqMaterialRows = [];
+  cboqSpecFiles    = [];
+  renderCBOQMaterialRows();
+  document.getElementById("cboq-customer-name").value = "";
+  document.getElementById("cboq-product-name").value  = "";
+  document.getElementById("cboq-product-rating").value= "";
+  document.getElementById("cboq-department").value    = "";
+  document.getElementById("cboq-order-qty").value     = "1";
+  document.getElementById("cboq-spec-doc-list").innerHTML = "";
+  document.getElementById("cboq-feedback").style.display = "none";
+}
+
+function handleCBOQProjectChange(projectId) {
+  const meta = window.cboqProjectMeta && window.cboqProjectMeta[projectId];
+  document.getElementById("cboq-customer-name").value = meta ? (meta.companyName || "") : "";
+}
+
+function addCBOQMaterialRow() {
+  cboqMaterialRows.push({ typeOfStore: "Raw Materials Store", descriptionOfMaterial: "", itemCode: "", make: "", quantityFor1Set: "", unit: "NOS" });
+  renderCBOQMaterialRows();
+}
+
+function deleteCBOQMaterialRow(idx) {
+  cboqMaterialRows.splice(idx, 1);
+  renderCBOQMaterialRows();
+}
+
+function renderCBOQMaterialRows() {
+  const tbody = document.getElementById("cboq-material-rows-body");
+  if (cboqMaterialRows.length === 0) {
+    tbody.innerHTML = '<tr id="cboq-empty-row"><td colspan="8" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows added yet. Click "+ Add Row" to begin.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = "";
+  cboqMaterialRows.forEach((row, idx) => {
+    const tr = document.createElement("tr");
+    tr.style.borderBottom = "1px solid #f1f5f9";
+    tr.innerHTML = `
+      <td style="text-align:center; padding:6px; font-weight:700; color:var(--muted);">${idx + 1}</td>
+      <td style="padding:4px;">
+        <select onchange="cboqMaterialRows[${idx}].typeOfStore=this.value" style="padding:4px; font-size:0.8rem; width:100%;">
+          <option value="Raw Materials Store" ${row.typeOfStore==="Raw Materials Store"?"selected":""}>Raw Materials Store</option>
+          <option value="Finished Goods Store" ${row.typeOfStore==="Finished Goods Store"?"selected":""}>Finished Goods Store</option>
+        </select>
+      </td>
+      <td style="padding:4px; position:relative;">
+        <input type="text" value="${row.descriptionOfMaterial || ""}" 
+          placeholder="Type to search..." autocomplete="off"
+          oninput="handleBOQRowMaterialSearch(this.value, ${idx}, 'cboq')"
+          onfocus="handleBOQRowMaterialSearch(this.value, ${idx}, 'cboq')"
+          style="padding:5px; font-size:0.82rem; width:100%; border:1px solid var(--border); border-radius:3px;" />
+        <div id="cboq-mat-dropdown-${idx}" style="display:none; position:absolute; top:100%; left:0; right:0; background:#fff; border:1.5px solid var(--brand); border-top:none; border-radius:0 0 4px 4px; max-height:160px; overflow-y:auto; z-index:200; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+      </td>
+      <td style="padding:4px;">
+        <input type="text" value="${row.itemCode || ""}" readonly 
+          style="padding:5px; font-size:0.78rem; font-family:monospace; font-weight:700; background:#e0f2fe; color:var(--brand); cursor:not-allowed; border-radius:3px; border:1px solid #bae6fd; width:100%;" />
+      </td>
+      <td style="padding:4px;">
+        <input type="text" value="${row.make || ""}" placeholder="Make..."
+          oninput="cboqMaterialRows[${idx}].make=this.value"
+          style="padding:5px; font-size:0.82rem; width:100%; border:1px solid var(--border); border-radius:3px;" />
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <input type="number" value="${row.quantityFor1Set || ""}" min="0" placeholder="0"
+          oninput="cboqMaterialRows[${idx}].quantityFor1Set=parseFloat(this.value)||0"
+          style="padding:5px; font-size:0.85rem; text-align:center; width:100%; border:1px solid var(--border); border-radius:3px;" />
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <select onchange="cboqMaterialRows[${idx}].unit=this.value" style="padding:4px; font-size:0.8rem; width:100%;">
+          <option value="NOS" ${row.unit==="NOS"?"selected":""}>NOS</option>
+          <option value="KG" ${row.unit==="KG"?"selected":""}>KG</option>
+          <option value="MTR" ${row.unit==="MTR"?"selected":""}>MTR</option>
+          <option value="SET" ${row.unit==="SET"?"selected":""}>SET</option>
+          <option value="LTR" ${row.unit==="LTR"?"selected":""}>LTR</option>
+          <option value="PKT" ${row.unit==="PKT"?"selected":""}>PKT</option>
+        </select>
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <button onclick="deleteCBOQMaterialRow(${idx})" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:0.75rem; font-weight:700;">✕</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// Shared typeahead for BOQ material rows
+function handleBOQRowMaterialSearch(query, rowIdx, formPrefix) {
+  const dropdownId = formPrefix + "-mat-dropdown-" + rowIdx;
+  const dropdown   = document.getElementById(dropdownId);
+  if (!dropdown) return;
+
+  const catalog = window.itemCodeCatalogCache || [];
+  if (!query || query.trim().length < 1) {
+    dropdown.style.display = "none";
+    return;
+  }
+
+  const q = query.toLowerCase();
+  const matches = catalog.filter(item => (item.productName || "").toLowerCase().includes(q)).slice(0, 10);
+
+  if (matches.length === 0) {
+    dropdown.style.display = "block";
+    dropdown.innerHTML = `<div style="padding:10px 12px; font-size:0.8rem; color:#b91c1c; font-weight:600;">
+      No matching product found. 
+      <a href="#" onclick="switchActiveDashboardModule('design-itemcode'); return false;" style="color:var(--brand);">Create Item Code first →</a>
+    </div>`;
+    return;
+  }
+
+  dropdown.innerHTML = matches.map(item => `
+    <div onclick="selectBOQRowMaterial(${rowIdx}, '${item.productName.replace(/'/g,"\\'")}', '${item.itemCode}', '${formPrefix}')"
+      style="padding:8px 12px; cursor:pointer; border-bottom:1px solid #f1f5f9; font-size:0.82rem;"
+      onmouseover="this.style.background='var(--highlight-bg)'" onmouseout="this.style.background='#fff'">
+      <span style="font-family:monospace; color:var(--brand); font-weight:700; margin-right:8px;">${item.itemCode}</span>
+      ${item.productName}
+      <span style="font-size:0.7rem; color:var(--muted); margin-left:6px;">(${item.typeOfMaterial})</span>
+    </div>`).join("");
+  dropdown.style.display = "block";
+}
+
+function selectBOQRowMaterial(rowIdx, productName, itemCode, formPrefix) {
+  if (formPrefix === 'cboq') {
+    cboqMaterialRows[rowIdx].descriptionOfMaterial = productName;
+    cboqMaterialRows[rowIdx].itemCode = itemCode;
+  } else if (formPrefix === 'eboq') {
+    eboqMaterialRows[rowIdx].descriptionOfMaterial = productName;
+    eboqMaterialRows[rowIdx].itemCode = itemCode;
+  }
+
+  const dropdown = document.getElementById(formPrefix + "-mat-dropdown-" + rowIdx);
+  if (dropdown) dropdown.style.display = "none";
+
+  // Re-render to reflect selection
+  if (formPrefix === 'cboq') renderCBOQMaterialRows();
+  else renderEBOQMaterialRows();
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener("click", function(e) {
+  if (!e.target.closest("[id*='-mat-dropdown-']") && !e.target.closest("input")) {
+    document.querySelectorAll("[id*='-mat-dropdown-']").forEach(d => d.style.display = "none");
+  }
+  if (!e.target.closest("#fg-product-dropdown") && !e.target.closest("#fg-add-product-search")) {
+    const d = document.getElementById("fg-product-dropdown");
+    if (d) d.style.display = "none";
+  }
+});
+
+function handleCBOQSpecDocSelection(input) {
+  Array.from(input.files).forEach(file => cboqSpecFiles.push(file));
+  renderCBOQSpecDocList();
+  input.value = ""; // reset so same file can be re-added if needed
+}
+
+function renderCBOQSpecDocList() {
+  const container = document.getElementById("cboq-spec-doc-list");
+  container.innerHTML = "";
+  cboqSpecFiles.forEach((file, idx) => {
+    const tag = document.createElement("div");
+    tag.style.cssText = "display:inline-flex; align-items:center; gap:6px; background:#e0f2fe; color:#0369a1; padding:3px 10px; border-radius:4px; font-size:0.75rem; font-weight:600;";
+    tag.innerHTML = `📎 ${file.name} <button onclick="cboqSpecFiles.splice(${idx},1); renderCBOQSpecDocList();" style="background:none; border:none; cursor:pointer; color:#b91c1c; font-weight:800; font-size:0.8rem; padding:0 2px;">✕</button>`;
+    container.appendChild(tag);
+  });
+  if (cboqSpecFiles.length > 0) {
+    document.getElementById("cboq-spec-doc-dropzone").textContent = cboqSpecFiles.length + " file(s) attached ✅";
+    document.getElementById("cboq-spec-doc-dropzone").classList.add("done");
+  } else {
+    document.getElementById("cboq-spec-doc-dropzone").textContent = "📎 Click to attach Specification / Drawing Reference files (any type, multiple allowed)";
+    document.getElementById("cboq-spec-doc-dropzone").classList.remove("done");
+  }
+}
+
+function resetCreateBOQForm() {
+  cboqMaterialRows = [];
+  cboqSpecFiles    = [];
+  renderCBOQMaterialRows();
+  renderCBOQSpecDocList();
+  ["cboq-project-id","cboq-department"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
+  ["cboq-customer-name","cboq-product-name","cboq-product-rating"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
+  document.getElementById("cboq-order-qty").value = "1";
+  document.getElementById("cboq-feedback").style.display = "none";
+}
+
+async function submitCreateBOQ() {
+  const btn      = document.getElementById("cboq-submit-btn");
+  const banner   = document.getElementById("cboq-feedback");
+  const projectId   = document.getElementById("cboq-project-id").value.trim();
+  const productName = document.getElementById("cboq-product-name").value.trim();
+  const productRating=document.getElementById("cboq-product-rating").value.trim();
+  const department  = document.getElementById("cboq-department").value.trim();
+  const orderQty    = parseInt(document.getElementById("cboq-order-qty").value) || 0;
+  const customerName= document.getElementById("cboq-customer-name").value.trim();
+
+  if (!projectId)    return showBOQBanner("cboq-feedback", "Project ID is required.", "error");
+  if (!productName)  return showBOQBanner("cboq-feedback", "Product Name is required.", "error");
+  if (!productRating)return showBOQBanner("cboq-feedback", "Product Rating is required.", "error");
+  if (!department)   return showBOQBanner("cboq-feedback", "Department is required.", "error");
+  if (orderQty < 1)  return showBOQBanner("cboq-feedback", "Order Quantity must be at least 1.", "error");
+  if (cboqMaterialRows.length === 0) return showBOQBanner("cboq-feedback", "Add at least one material row.", "error");
+
+  const invalidRow = cboqMaterialRows.find(r => !r.descriptionOfMaterial || !r.quantityFor1Set);
+  if (invalidRow) return showBOQBanner("cboq-feedback", "All material rows must have a Description of Material and Quantity for 1 Set.", "error");
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Submitting...';
+
+  try {
+    // Upload spec docs first if any
+    let specFolderUrl = "";
+    if (cboqSpecFiles.length > 0) {
+      const filesPayload = await Promise.all(cboqSpecFiles.map(async file => {
+        const b64 = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result.split(",")[1]); r.readAsDataURL(file); });
+        return { fileName: file.name, base64Data: b64, mimeType: file.type || "application/octet-stream" };
+      }));
+      const uploadRes  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"uploadSpecDocs", sessionToken: localStorage.getItem("sessionToken"), projectId, files: filesPayload }) });
+      const uploadData = await uploadRes.json();
+      if (uploadData.success) specFolderUrl = uploadData.folderUrl || "";
+    }
+
+    const res  = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "createBOQDraft",
+        sessionToken: localStorage.getItem("sessionToken"),
+        projectId, customerName, productName, productRating,
+        department, orderQuantity: orderQty,
+        materialRowsList: cboqMaterialRows,
+        specDocUrls: specFolderUrl
+      })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showBOQBanner("cboq-feedback",
+        `BOQ Created Successfully! BOQ ID: <strong style="font-family:monospace;">${data.boqId}</strong>. Submitted for Authorization.`,
+        "success");
+      resetCreateBOQForm();
+      await initializeCreateBOQPanel();
+    } else {
+      showBOQBanner("cboq-feedback", data.error || "Submission failed.", "error");
+    }
+  } catch(e) {
+    showBOQBanner("cboq-feedback", "Network error: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Submit BOQ for Authorization";
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SHARED BOQ EDIT FORM (used by Authorize + Authorize Update)
+// ═══════════════════════════════════════════════════════
+
+let eboqMaterialRows = [];
+let eboqSpecFiles    = [];
+let eboqCurrentDraft = null;
+let eboqMode         = ""; // "authorize" or "authorize-update"
+
+async function initializeAuthorizeBOQPanel(mode) {
+  eboqMode = mode;
+  const selectId  = mode === "authorize" ? "auth-boq-select" : "auth-boq-upd-select";
+  const formId    = mode === "authorize" ? "auth-boq-form"   : "auth-boq-upd-form";
+  const feedbackId= mode === "authorize" ? "auth-boq-feedback": "auth-boq-upd-feedback";
+  const status    = mode === "authorize" ? "Pending Authorization" : "Pending Authorization Update";
+
+  document.getElementById(selectId).innerHTML = '<option value="">Loading...</option>';
+  document.getElementById(formId).style.display = "none";
+  document.getElementById(feedbackId).style.display = "none";
+  if (mode === "authorize-update") document.getElementById("auth-boq-upd-summary").style.display = "none";
+
+  try {
+    const res  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"fetchBOQDraftsQueue", sessionToken: localStorage.getItem("sessionToken"), status }) });
+    const data = await res.json();
+    const select = document.getElementById(selectId);
+    select.innerHTML = '<option value="">— Select Pending BOQ —</option>';
+    (data.drafts || []).forEach(draft => {
+      const opt = document.createElement("option");
+      opt.value = draft.boqId;
+      opt.textContent = `${draft.boqId} | ${draft.customerName} | ${draft.productName} | ${draft.productRating} | ${draft.department} | Qty: ${draft.orderQuantity} | ${draft.date} | By: ${draft.preparedBy}`;
+      select.appendChild(opt);
+    });
+  } catch(e) {
+    document.getElementById(selectId).innerHTML = '<option value="">Error loading BOQs</option>';
+  }
+}
+
+async function loadBOQForAuthorization(boqId, mode) {
+  if (!boqId) return;
+  eboqMode = mode;
+  const formId    = mode === "authorize" ? "auth-boq-form"    : "auth-boq-upd-form";
+  const feedbackId= mode === "authorize" ? "auth-boq-feedback" : "auth-boq-upd-feedback";
+
+  document.getElementById(formId).style.display = "none";
+  document.getElementById(feedbackId).style.display = "none";
+
+  const res  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"fetchBOQDraftById", sessionToken: localStorage.getItem("sessionToken"), boqId }) });
+  const data = await res.json();
+  if (!data.success) return showBOQBanner(feedbackId, data.error, "error");
+
+  eboqCurrentDraft = data.draft;
+  eboqMaterialRows = (data.draft.materialRows || []).map(r => ({ ...r }));
+  eboqSpecFiles    = [];
+
+  renderEBOQForm(formId);
+  document.getElementById(formId).style.display = "block";
+
+  // For Authorize Update — fetch AI summary
+  if (mode === "authorize-update") {
+    document.getElementById("auth-boq-upd-summary").style.display = "block";
+    document.getElementById("auth-boq-upd-summary-text").textContent = "Generating change summary...";
+    try {
+      const sumRes  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"generateBOQUpdateSummary", sessionToken: localStorage.getItem("sessionToken"), boqId, updatedRows: eboqMaterialRows }) });
+      const sumData = await sumRes.json();
+      document.getElementById("auth-boq-upd-summary-text").textContent = sumData.summary || "No changes detected.";
+    } catch(e) {
+      document.getElementById("auth-boq-upd-summary-text").textContent = "Could not generate summary.";
+    }
+  }
+}
+
+function renderEBOQForm(containerId) {
+  const draft = eboqCurrentDraft;
+  const container = document.getElementById(containerId);
+  container.innerHTML = `
+    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:16px;">
+      <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand); margin-bottom:12px;">BOQ Header</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label class="field-label" style="margin-top:0;">BOQ ID (auto)</label>
+          <input type="text" id="eboq-boq-id" value="${draft.boqId}" readonly style="padding:8px; font-family:monospace; font-weight:800; background:#e0f2fe; color:var(--brand); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Prepared By (locked)</label>
+          <input type="text" value="${draft.preparedBy}" readonly style="padding:8px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label class="field-label" style="margin-top:0;">Project ID (locked)</label>
+          <input type="text" value="${draft.projectId}" readonly style="padding:8px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Customer Name (locked)</label>
+          <input type="text" value="${draft.customerName}" readonly style="padding:8px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label class="field-label" style="margin-top:0;">Product Name *</label>
+          <input type="text" id="eboq-product-name" value="${draft.productName}" oninput="updateEBOQId()" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Product Rating *</label>
+          <input type="text" id="eboq-product-rating" value="${draft.productRating}" oninput="updateEBOQId()" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Department *</label>
+          <select id="eboq-department" style="padding:8px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <option value="Reactor" ${draft.department==="Reactor"?"selected":""}>Reactor</option>
+            <option value="Capacitor" ${draft.department==="Capacitor"?"selected":""}>Capacitor</option>
+            <option value="Panel" ${draft.department==="Panel"?"selected":""}>Panel</option>
+            <option value="Processing" ${draft.department==="Processing"?"selected":""}>Processing</option>
+            <option value="Service" ${draft.department==="Service"?"selected":""}>Service</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div>
+          <label class="field-label" style="margin-top:0;">Order Quantity (No. of Sets) *</label>
+          <input type="number" id="eboq-order-qty" value="${draft.orderQuantity}" min="1" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Date</label>
+          <input type="text" value="${draft.date}" readonly style="padding:8px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Material Rows -->
+    <div style="margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand);">Material Rows *</span>
+        <button class="nav-btn-styled" onclick="addEBOQMaterialRow()" style="background:var(--accent); padding:5px 14px; font-size:0.78rem;">+ Add Row</button>
+      </div>
+      <div style="overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);">
+        <table class="store-basket-data-table" style="width:100%; min-width:900px; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f8fafc;">
+              <th style="width:40px; text-align:center; padding:8px; font-size:0.7rem;">Sr No</th>
+              <th style="width:130px; padding:8px; font-size:0.7rem;">Type of Store *</th>
+              <th style="min-width:220px; padding:8px; font-size:0.7rem;">Description of Material *</th>
+              <th style="width:110px; padding:8px; font-size:0.7rem;">Item Code</th>
+              <th style="width:120px; padding:8px; font-size:0.7rem;">Make</th>
+              <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Qty / Set *</th>
+              <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Unit *</th>
+              <th style="width:40px; padding:8px; font-size:0.7rem; text-align:center;">Del</th>
+            </tr>
+          </thead>
+          <tbody id="eboq-material-rows-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Spec Docs -->
+    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:16px;">
+      <label class="field-label" style="margin-top:0; color:var(--brand);">Specification / Drawing Reference</label>
+      ${draft.specDocUrls ? `<div style="font-size:0.82rem; margin-top:6px;"><a href="${draft.specDocUrls}" target="_blank" style="color:var(--brand); font-weight:600;">📁 View existing spec docs folder</a></div>` : ""}
+      <div class="card-box" id="eboq-spec-doc-dropzone" onclick="document.getElementById('eboq-spec-doc-input').click()" style="padding:16px; border:2px dashed var(--border); font-size:0.82rem; margin-top:8px; cursor:pointer; text-align:center;">
+        📎 Attach additional Specification / Drawing Reference files
+      </div>
+      <input type="file" id="eboq-spec-doc-input" multiple hidden onchange="handleEBOQSpecDocSelection(this)" />
+      <div id="eboq-spec-doc-list" style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;"></div>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border); padding-top:14px;">
+      <button class="nav-btn-styled" onclick="submitEBOQAuthorize()" style="background:var(--accent); padding:8px 24px; font-weight:700;" id="eboq-submit-btn">
+        ${eboqMode === "authorize" ? "Authorize BOQ" : "Authorize BOQ Update"}
+      </button>
+    </div>
+  `;
+
+  renderEBOQMaterialRows();
+}
+
+function updateEBOQId() {
+  const projectId    = eboqCurrentDraft ? eboqCurrentDraft.projectId : "";
+  const productName  = document.getElementById("eboq-product-name")?.value.trim() || "";
+  const productRating= document.getElementById("eboq-product-rating")?.value.trim() || "";
+  const cleanProduct = productName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+  const cleanRating  = productRating.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+  const newId        = "BOQ-" + projectId + "-" + cleanProduct + "_" + cleanRating;
+  const el = document.getElementById("eboq-boq-id");
+  if (el) el.value = newId;
+}
+
+function addEBOQMaterialRow() {
+  eboqMaterialRows.push({ typeOfStore:"Raw Materials Store", descriptionOfMaterial:"", itemCode:"", make:"", quantityFor1Set:"", unit:"NOS" });
+  renderEBOQMaterialRows();
+}
+
+function deleteEBOQMaterialRow(idx) {
+  eboqMaterialRows.splice(idx, 1);
+  renderEBOQMaterialRows();
+}
+
+function renderEBOQMaterialRows() {
+  const tbody = document.getElementById("eboq-material-rows-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  if (eboqMaterialRows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows. Click "+ Add Row".</td></tr>';
+    return;
+  }
+  eboqMaterialRows.forEach((row, idx) => {
+    const tr = document.createElement("tr");
+    tr.style.borderBottom = "1px solid #f1f5f9";
+    tr.innerHTML = `
+      <td style="text-align:center; padding:6px; font-weight:700; color:var(--muted);">${idx + 1}</td>
+      <td style="padding:4px;">
+        <select onchange="eboqMaterialRows[${idx}].typeOfStore=this.value" style="padding:4px; font-size:0.8rem; width:100%;">
+          <option value="Raw Materials Store" ${row.typeOfStore==="Raw Materials Store"?"selected":""}>Raw Materials Store</option>
+          <option value="Finished Goods Store" ${row.typeOfStore==="Finished Goods Store"?"selected":""}>Finished Goods Store</option>
+        </select>
+      </td>
+      <td style="padding:4px; position:relative;">
+        <input type="text" value="${row.descriptionOfMaterial || ""}" 
+          placeholder="Type to search..." autocomplete="off"
+          oninput="handleBOQRowMaterialSearch(this.value, ${idx}, 'eboq')"
+          onfocus="handleBOQRowMaterialSearch(this.value, ${idx}, 'eboq')"
+          style="padding:5px; font-size:0.82rem; width:100%; border:1px solid var(--border); border-radius:3px;" />
+        <div id="eboq-mat-dropdown-${idx}" style="display:none; position:absolute; top:100%; left:0; right:0; background:#fff; border:1.5px solid var(--brand); border-top:none; border-radius:0 0 4px 4px; max-height:160px; overflow-y:auto; z-index:200; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+      </td>
+      <td style="padding:4px;">
+        <input type="text" value="${row.itemCode || ""}" readonly 
+          style="padding:5px; font-size:0.78rem; font-family:monospace; font-weight:700; background:#e0f2fe; color:var(--brand); cursor:not-allowed; border-radius:3px; border:1px solid #bae6fd; width:100%;" />
+      </td>
+      <td style="padding:4px;">
+        <input type="text" value="${row.make || ""}" placeholder="Make..."
+          oninput="eboqMaterialRows[${idx}].make=this.value"
+          style="padding:5px; font-size:0.82rem; width:100%; border:1px solid var(--border); border-radius:3px;" />
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <input type="number" value="${row.quantityFor1Set || ""}" min="0" placeholder="0"
+          oninput="eboqMaterialRows[${idx}].quantityFor1Set=parseFloat(this.value)||0"
+          style="padding:5px; font-size:0.85rem; text-align:center; width:100%; border:1px solid var(--border); border-radius:3px;" />
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <select onchange="eboqMaterialRows[${idx}].unit=this.value" style="padding:4px; font-size:0.8rem; width:100%;">
+          <option value="NOS" ${row.unit==="NOS"?"selected":""}>NOS</option>
+          <option value="KG"  ${row.unit==="KG" ?"selected":""}>KG</option>
+          <option value="MTR" ${row.unit==="MTR"?"selected":""}>MTR</option>
+          <option value="SET" ${row.unit==="SET"?"selected":""}>SET</option>
+          <option value="LTR" ${row.unit==="LTR"?"selected":""}>LTR</option>
+          <option value="PKT" ${row.unit==="PKT"?"selected":""}>PKT</option>
+        </select>
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <button onclick="deleteEBOQMaterialRow(${idx})" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:0.75rem; font-weight:700;">✕</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function handleEBOQSpecDocSelection(input) {
+  Array.from(input.files).forEach(file => eboqSpecFiles.push(file));
+  const list = document.getElementById("eboq-spec-doc-list");
+  list.innerHTML = "";
+  eboqSpecFiles.forEach((file, idx) => {
+    const tag = document.createElement("div");
+    tag.style.cssText = "display:inline-flex; align-items:center; gap:6px; background:#e0f2fe; color:#0369a1; padding:3px 10px; border-radius:4px; font-size:0.75rem; font-weight:600;";
+    tag.innerHTML = `📎 ${file.name} <button onclick="eboqSpecFiles.splice(${idx},1); handleEBOQSpecDocSelection({files:[]});" style="background:none; border:none; cursor:pointer; color:#b91c1c; font-size:0.8rem;">✕</button>`;
+    list.appendChild(tag);
+  });
+  input.value = "";
+}
+
+async function submitEBOQAuthorize() {
+  const btn        = document.getElementById("eboq-submit-btn");
+  const feedbackId = eboqMode === "authorize" ? "auth-boq-feedback" : "auth-boq-upd-feedback";
+  const action     = eboqMode === "authorize" ? "submitBOQAuthorize" : "submitBOQUpdateAuthorize";
+
+  const productName  = document.getElementById("eboq-product-name")?.value.trim() || "";
+  const productRating= document.getElementById("eboq-product-rating")?.value.trim() || "";
+  const department   = document.getElementById("eboq-department")?.value.trim() || "";
+  const orderQty     = parseInt(document.getElementById("eboq-order-qty")?.value) || 0;
+
+  if (!productName)   return showBOQBanner(feedbackId, "Product Name is required.", "error");
+  if (!productRating) return showBOQBanner(feedbackId, "Product Rating is required.", "error");
+  if (!department)    return showBOQBanner(feedbackId, "Department is required.", "error");
+  if (orderQty < 1)   return showBOQBanner(feedbackId, "Order Quantity must be at least 1.", "error");
+  if (eboqMaterialRows.length === 0) return showBOQBanner(feedbackId, "At least one material row is required.", "error");
+
+  const invalidRow = eboqMaterialRows.find(r => !r.descriptionOfMaterial || !r.quantityFor1Set);
+  if (invalidRow) return showBOQBanner(feedbackId, "All rows must have Description and Quantity.", "error");
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Authorizing...';
+
+  try {
+    // Upload any new spec docs
+    let specFolderUrl = eboqCurrentDraft.specDocUrls || "";
+    if (eboqSpecFiles.length > 0) {
+      const filesPayload = await Promise.all(eboqSpecFiles.map(async file => {
+        const b64 = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result.split(",")[1]); r.readAsDataURL(file); });
+        return { fileName: file.name, base64Data: b64, mimeType: file.type || "application/octet-stream" };
+      }));
+      const uploadRes  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"uploadSpecDocs", sessionToken: localStorage.getItem("sessionToken"), projectId: eboqCurrentDraft.projectId, files: filesPayload }) });
+      const uploadData = await uploadRes.json();
+      if (uploadData.success) specFolderUrl = uploadData.folderUrl || specFolderUrl;
+    }
+
+    const res  = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action,
+        sessionToken: localStorage.getItem("sessionToken"),
+        boqId: eboqCurrentDraft.boqId,
+        productName, productRating, department,
+        orderQuantity: orderQty,
+        materialRowsList: eboqMaterialRows,
+        specDocUrls: specFolderUrl
+      })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      const msg = eboqMode === "authorize"
+        ? `BOQ Authorized Successfully! BOQ ID: <strong style="font-family:monospace;">${data.boqId}</strong>. PDF saved to Drive.`
+        : `BOQ Update Authorized! New version saved. BOQ ID: <strong style="font-family:monospace;">${data.boqId}</strong>.`;
+      showBOQBanner(feedbackId, msg, "success");
+      eboqCurrentDraft = null;
+      eboqMaterialRows = [];
+      const formId = eboqMode === "authorize" ? "auth-boq-form" : "auth-boq-upd-form";
+      document.getElementById(formId).style.display = "none";
+      if (eboqMode === "authorize-update") document.getElementById("auth-boq-upd-summary").style.display = "none";
+      await initializeAuthorizeBOQPanel(eboqMode);
+    } else {
+      showBOQBanner(feedbackId, data.error || "Authorization failed.", "error");
+    }
+  } catch(e) {
+    showBOQBanner(feedbackId, "Network error: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = eboqMode === "authorize" ? "Authorize BOQ" : "Authorize BOQ Update";
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// UPDATE BOQ
+// ═══════════════════════════════════════════════════════
+
+async function initializeUpdateBOQPanel() {
+  const projDrop = document.getElementById("update-boq-project");
+  projDrop.innerHTML = '<option value="">Loading...</option>';
+  document.getElementById("update-boq-select").innerHTML = '<option value="">— Select Project First —</option>';
+  document.getElementById("update-boq-select").disabled  = true;
+  document.getElementById("update-boq-form").style.display = "none";
+  document.getElementById("update-boq-feedback").style.display = "none";
+
+  try {
+    const res  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") }) });
+    const data = await res.json();
+    projDrop.innerHTML = '<option value="">— Select Project ID —</option>';
+    (data.projects || []).forEach(code => {
+      const opt = document.createElement("option"); opt.value = code; opt.textContent = code; projDrop.appendChild(opt);
+    });
+    window.uboqProjectMeta = data.projectMeta || {};
+  } catch(e) {
+    projDrop.innerHTML = '<option value="">Error loading projects</option>';
+  }
+}
+
+async function loadAuthorizedBOQsForProject(projectId) {
+  const boqDrop = document.getElementById("update-boq-select");
+  document.getElementById("update-boq-form").style.display = "none";
+  if (!projectId) { boqDrop.innerHTML = '<option value="">— Select Project First —</option>'; boqDrop.disabled = true; return; }
+
+  boqDrop.innerHTML = '<option value="">Loading...</option>';
+  boqDrop.disabled  = true;
+
+  try {
+    const res  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"fetchAuthorizedBOQsForUpdate", sessionToken: localStorage.getItem("sessionToken"), projectId }) });
+    const data = await res.json();
+    boqDrop.innerHTML = '<option value="">— Select BOQ —</option>';
+    (data.drafts || []).forEach(draft => {
+      const opt = document.createElement("option");
+      opt.value = draft.boqId;
+      opt.textContent = `${draft.boqId} | ${draft.customerName} | ${draft.productName} | ${draft.productRating} | ${draft.department} | Qty: ${draft.orderQuantity} | ${draft.date} | By: ${draft.preparedBy}`;
+      boqDrop.appendChild(opt);
+    });
+    boqDrop.disabled = false;
+  } catch(e) {
+    boqDrop.innerHTML = '<option value="">Error loading BOQs</option>';
+  }
+}
+
+async function loadBOQForUpdate(boqId) {
+  if (!boqId) { document.getElementById("update-boq-form").style.display = "none"; return; }
+
+  const res  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"fetchBOQDraftById", sessionToken: localStorage.getItem("sessionToken"), boqId }) });
+  const data = await res.json();
+  if (!data.success) return showBOQBanner("update-boq-feedback", data.error, "error");
+
+  uboqCurrentDraft = data.draft;
+  uboqMaterialRows = (data.draft.materialRows || []).map(r => ({ ...r }));
+  uboqSpecFiles    = [];
+
+  renderUBOQForm();
+  document.getElementById("update-boq-form").style.display = "block";
+}
+
+function renderUBOQForm() {
+  const draft     = uboqCurrentDraft;
+  const container = document.getElementById("update-boq-form");
+  container.innerHTML = `
+    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:16px;">
+      <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand); margin-bottom:12px;">BOQ Header</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label class="field-label" style="margin-top:0;">BOQ ID</label>
+          <input type="text" value="${draft.boqId}" readonly style="padding:8px; font-family:monospace; font-weight:800; background:#e0f2fe; color:var(--brand); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Prepared By (locked)</label>
+          <input type="text" value="${draft.preparedBy}" readonly style="padding:8px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label class="field-label" style="margin-top:0;">Project ID (locked)</label>
+          <input type="text" value="${draft.projectId}" readonly style="padding:8px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Customer Name (locked)</label>
+          <input type="text" value="${draft.customerName}" readonly style="padding:8px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+          <label class="field-label" style="margin-top:0;">Product Name *</label>
+          <input type="text" id="uboq-product-name" value="${draft.productName}" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Product Rating *</label>
+          <input type="text" id="uboq-product-rating" value="${draft.productRating}" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Department *</label>
+          <select id="uboq-department" style="padding:8px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <option value="Reactor"    ${draft.department==="Reactor"   ?"selected":""}>Reactor</option>
+            <option value="Capacitor"  ${draft.department==="Capacitor" ?"selected":""}>Capacitor</option>
+            <option value="Panel"      ${draft.department==="Panel"     ?"selected":""}>Panel</option>
+            <option value="Processing" ${draft.department==="Processing"?"selected":""}>Processing</option>
+            <option value="Service"    ${draft.department==="Service"   ?"selected":""}>Service</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div>
+          <label class="field-label" style="margin-top:0;">Order Quantity (No. of Sets) *</label>
+          <input type="number" id="uboq-order-qty" value="${draft.orderQuantity}" min="1" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Material Rows -->
+    <div style="margin-bottom:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand);">Material Rows *</span>
+        <button class="nav-btn-styled" onclick="addUBOQMaterialRow()" style="background:var(--accent); padding:5px 14px; font-size:0.78rem;">+ Add Row</button>
+      </div>
+      <div style="overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);">
+        <table class="store-basket-data-table" style="width:100%; min-width:900px; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f8fafc;">
+              <th style="width:40px; text-align:center; padding:8px; font-size:0.7rem;">Sr No</th>
+              <th style="width:130px; padding:8px; font-size:0.7rem;">Type of Store *</th>
+              <th style="min-width:220px; padding:8px; font-size:0.7rem;">Description of Material *</th>
+              <th style="width:110px; padding:8px; font-size:0.7rem;">Item Code</th>
+              <th style="width:120px; padding:8px; font-size:0.7rem;">Make</th>
+              <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Qty / Set *</th>
+              <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Unit *</th>
+              <th style="width:40px; padding:8px; font-size:0.7rem; text-align:center;">Del</th>
+            </tr>
+          </thead>
+          <tbody id="uboq-material-rows-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Spec Docs -->
+    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:16px;">
+      <label class="field-label" style="margin-top:0; color:var(--brand);">Specification / Drawing Reference</label>
+      ${draft.specDocUrls ? `<div style="font-size:0.82rem; margin-top:6px;"><a href="${draft.specDocUrls}" target="_blank" style="color:var(--brand); font-weight:600;">📁 View existing spec docs folder</a></div>` : ""}
+      <div class="card-box" id="uboq-spec-dropzone" onclick="document.getElementById('uboq-spec-input').click()" style="padding:16px; border:2px dashed var(--border); font-size:0.82rem; margin-top:8px; cursor:pointer; text-align:center;">
+        📎 Attach additional Specification / Drawing Reference files
+      </div>
+      <input type="file" id="uboq-spec-input" multiple hidden onchange="handleUBOQSpecDocSelection(this)" />
+      <div id="uboq-spec-doc-list" style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px;"></div>
+    </div>
+
+    <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border); padding-top:14px;">
+      <button class="nav-btn-styled" onclick="submitUpdateBOQ()" style="background:var(--accent); padding:8px 24px; font-weight:700;" id="uboq-submit-btn">Submit BOQ Update for Authorization</button>
+    </div>
+  `;
+
+  renderUBOQMaterialRows();
+}
+
+function addUBOQMaterialRow() {
+  uboqMaterialRows.push({ typeOfStore:"Raw Materials Store", descriptionOfMaterial:"", itemCode:"", make:"", quantityFor1Set:"", unit:"NOS" });
+  renderUBOQMaterialRows();
+}
+
+function deleteUBOQMaterialRow(idx) {
+  uboqMaterialRows.splice(idx, 1);
+  renderUBOQMaterialRows();
+}
+
+function renderUBOQMaterialRows() {
+  const tbody = document.getElementById("uboq-material-rows-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  if (uboqMaterialRows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows. Click "+ Add Row".</td></tr>';
+    return;
+  }
+  uboqMaterialRows.forEach((row, idx) => {
+    const tr = document.createElement("tr");
+    tr.style.borderBottom = "1px solid #f1f5f9";
+    tr.innerHTML = `
+      <td style="text-align:center; padding:6px; font-weight:700; color:var(--muted);">${idx + 1}</td>
+      <td style="padding:4px;">
+        <select onchange="uboqMaterialRows[${idx}].typeOfStore=this.value" style="padding:4px; font-size:0.8rem; width:100%;">
+          <option value="Raw Materials Store" ${row.typeOfStore==="Raw Materials Store"?"selected":""}>Raw Materials Store</option>
+          <option value="Finished Goods Store" ${row.typeOfStore==="Finished Goods Store"?"selected":""}>Finished Goods Store</option>
+        </select>
+      </td>
+      <td style="padding:4px; position:relative;">
+        <input type="text" value="${row.descriptionOfMaterial || ""}"
+          placeholder="Type to search..." autocomplete="off"
+          oninput="handleBOQRowMaterialSearch(this.value, ${idx}, 'uboq')"
+          onfocus="handleBOQRowMaterialSearch(this.value, ${idx}, 'uboq')"
+          style="padding:5px; font-size:0.82rem; width:100%; border:1px solid var(--border); border-radius:3px;" />
+        <div id="uboq-mat-dropdown-${idx}" style="display:none; position:absolute; top:100%; left:0; right:0; background:#fff; border:1.5px solid var(--brand); border-top:none; border-radius:0 0 4px 4px; max-height:160px; overflow-y:auto; z-index:200; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
+      </td>
+      <td style="padding:4px;">
+        <input type="text" value="${row.itemCode || ""}" readonly
+          style="padding:5px; font-size:0.78rem; font-family:monospace; font-weight:700; background:#e0f2fe; color:var(--brand); cursor:not-allowed; border-radius:3px; border:1px solid #bae6fd; width:100%;" />
+      </td>
+      <td style="padding:4px;">
+        <input type="text" value="${row.make || ""}" placeholder="Make..."
+          oninput="uboqMaterialRows[${idx}].make=this.value"
+          style="padding:5px; font-size:0.82rem; width:100%; border:1px solid var(--border); border-radius:3px;" />
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <input type="number" value="${row.quantityFor1Set || ""}" min="0" placeholder="0"
+          oninput="uboqMaterialRows[${idx}].quantityFor1Set=parseFloat(this.value)||0"
+          style="padding:5px; font-size:0.85rem; text-align:center; width:100%; border:1px solid var(--border); border-radius:3px;" />
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <select onchange="uboqMaterialRows[${idx}].unit=this.value" style="padding:4px; font-size:0.8rem; width:100%;">
+          <option value="NOS" ${row.unit==="NOS"?"selected":""}>NOS</option>
+          <option value="KG"  ${row.unit==="KG" ?"selected":""}>KG</option>
+          <option value="MTR" ${row.unit==="MTR"?"selected":""}>MTR</option>
+          <option value="SET" ${row.unit==="SET"?"selected":""}>SET</option>
+          <option value="LTR" ${row.unit==="LTR"?"selected":""}>LTR</option>
+          <option value="PKT" ${row.unit==="PKT"?"selected":""}>PKT</option>
+        </select>
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <button onclick="deleteUBOQMaterialRow(${idx})" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:0.75rem; font-weight:700;">✕</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// Add uboq to selectBOQRowMaterial
+// Find existing selectBOQRowMaterial and add uboq branch:
+function selectBOQRowMaterial(rowIdx, productName, itemCode, formPrefix) {
+  if (formPrefix === 'cboq') {
+    cboqMaterialRows[rowIdx].descriptionOfMaterial = productName;
+    cboqMaterialRows[rowIdx].itemCode = itemCode;
+    renderCBOQMaterialRows();
+  } else if (formPrefix === 'eboq') {
+    eboqMaterialRows[rowIdx].descriptionOfMaterial = productName;
+    eboqMaterialRows[rowIdx].itemCode = itemCode;
+    renderEBOQMaterialRows();
+  } else if (formPrefix === 'uboq') {
+    uboqMaterialRows[rowIdx].descriptionOfMaterial = productName;
+    uboqMaterialRows[rowIdx].itemCode = itemCode;
+    renderUBOQMaterialRows();
+  }
+  const dropdown = document.getElementById(formPrefix + "-mat-dropdown-" + rowIdx);
+  if (dropdown) dropdown.style.display = "none";
+}
+
+function handleUBOQSpecDocSelection(input) {
+  Array.from(input.files).forEach(file => uboqSpecFiles.push(file));
+  const list = document.getElementById("uboq-spec-doc-list");
+  list.innerHTML = "";
+  uboqSpecFiles.forEach((file, idx) => {
+    const tag = document.createElement("div");
+    tag.style.cssText = "display:inline-flex; align-items:center; gap:6px; background:#e0f2fe; color:#0369a1; padding:3px 10px; border-radius:4px; font-size:0.75rem; font-weight:600;";
+    tag.innerHTML = `📎 ${file.name} <button onclick="uboqSpecFiles.splice(${idx},1); handleUBOQSpecDocSelection({files:[]});" style="background:none; border:none; cursor:pointer; color:#b91c1c; font-size:0.8rem;">✕</button>`;
+    list.appendChild(tag);
+  });
+  input.value = "";
+}
+
+async function submitUpdateBOQ() {
+  const btn      = document.getElementById("uboq-submit-btn");
+  const feedbackId = "update-boq-feedback";
+
+  const productName  = document.getElementById("uboq-product-name")?.value.trim() || "";
+  const productRating= document.getElementById("uboq-product-rating")?.value.trim() || "";
+  const department   = document.getElementById("uboq-department")?.value.trim() || "";
+  const orderQty     = parseInt(document.getElementById("uboq-order-qty")?.value) || 0;
+
+  if (!productName)   return showBOQBanner(feedbackId, "Product Name is required.", "error");
+  if (!productRating) return showBOQBanner(feedbackId, "Product Rating is required.", "error");
+  if (!department)    return showBOQBanner(feedbackId, "Department is required.", "error");
+  if (orderQty < 1)   return showBOQBanner(feedbackId, "Order Quantity must be at least 1.", "error");
+  if (uboqMaterialRows.length === 0) return showBOQBanner(feedbackId, "At least one material row is required.", "error");
+
+  const invalidRow = uboqMaterialRows.find(r => !r.descriptionOfMaterial || !r.quantityFor1Set);
+  if (invalidRow) return showBOQBanner(feedbackId, "All rows must have Description and Quantity.", "error");
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Submitting...';
+
+  try {
+    let specFolderUrl = uboqCurrentDraft.specDocUrls || "";
+    if (uboqSpecFiles.length > 0) {
+      const filesPayload = await Promise.all(uboqSpecFiles.map(async file => {
+        const b64 = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result.split(",")[1]); r.readAsDataURL(file); });
+        return { fileName: file.name, base64Data: b64, mimeType: file.type || "application/octet-stream" };
+      }));
+      const uploadRes  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"uploadSpecDocs", sessionToken: localStorage.getItem("sessionToken"), projectId: uboqCurrentDraft.projectId, files: filesPayload }) });
+      const uploadData = await uploadRes.json();
+      if (uploadData.success) specFolderUrl = uploadData.folderUrl || specFolderUrl;
+    }
+
+    const res  = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "submitBOQUpdate",
+        sessionToken: localStorage.getItem("sessionToken"),
+        boqId: uboqCurrentDraft.boqId,
+        productName, productRating, department,
+        orderQuantity: orderQty,
+        materialRowsList: uboqMaterialRows,
+        specDocUrls: specFolderUrl
+      })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showBOQBanner(feedbackId,
+        `BOQ Update submitted for Authorization! BOQ ID: <strong style="font-family:monospace;">${data.boqId}</strong>. Version: v${data.newVersion}.`,
+        "success");
+      uboqCurrentDraft = null;
+      uboqMaterialRows = [];
+      document.getElementById("update-boq-form").style.display = "none";
+      document.getElementById("update-boq-select").innerHTML   = '<option value="">— Select Project First —</option>';
+      document.getElementById("update-boq-select").disabled    = true;
+      document.getElementById("update-boq-project").value      = "";
+    } else {
+      showBOQBanner(feedbackId, data.error || "Update submission failed.", "error");
+    }
+  } catch(e) {
+    showBOQBanner(feedbackId, "Network error: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Submit BOQ Update for Authorization";
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// ADD TO FINISHED GOODS STORE
+// ═══════════════════════════════════════════════════════
+
+async function initializeFGAddWorkspace() {
+  document.getElementById("fg-add-feedback").style.display = "none";
+  await loadItemCodeCatalogIntoCache();
+
+  // Load projects
+  const projDrop = document.getElementById("fg-add-project");
+  projDrop.innerHTML = '<option value="">Loading...</option>';
+  try {
+    const res  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") }) });
+    const data = await res.json();
+    projDrop.innerHTML = '<option value="">— Select Project ID —</option>';
+    (data.projects || []).forEach(code => {
+      const opt = document.createElement("option"); opt.value = code; opt.textContent = code; projDrop.appendChild(opt);
+    });
+    window.fgAddProjectMeta = data.projectMeta || {};
+  } catch(e) {
+    projDrop.innerHTML = '<option value="">Error loading projects</option>';
+  }
+
+  // Load personnel
+  const prodDrop  = document.getElementById("fg-add-prod-person");
+  const storeDrop = document.getElementById("fg-add-store-person");
+  prodDrop.innerHTML  = '<option value="">Loading...</option>';
+  storeDrop.innerHTML = '<option value="">Loading...</option>';
+  try {
+    const res  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken") }) });
+    const data = await res.json();
+    const allPersonnel = data.fullPersonnelDataRecordsTree || [];
+
+    const prodPeople  = allPersonnel.filter(p => p.departmentsList.some(d => d === "production" || d === "admin"));
+    const storePeople = allPersonnel.filter(p => p.departmentsList.some(d => d === "store" || d === "admin"));
+
+    prodDrop.innerHTML  = '<option value="">— Select Person —</option>';
+    storeDrop.innerHTML = '<option value="">— Select Person —</option>';
+
+    prodPeople.forEach(p => {
+      const opt = document.createElement("option"); opt.value = p.fullName; opt.textContent = p.fullName;
+      prodDrop.appendChild(opt);
+    });
+    storePeople.forEach(p => {
+      const opt = document.createElement("option"); opt.value = p.fullName; opt.textContent = p.fullName;
+      storeDrop.appendChild(opt);
+    });
+  } catch(e) {
+    prodDrop.innerHTML  = '<option value="">Error loading personnel</option>';
+    storeDrop.innerHTML = '<option value="">Error loading personnel</option>';
+  }
+
+  resetFGAddForm();
+}
+
+function handleFGAddProjectChange(projectId) {
+  const meta = window.fgAddProjectMeta && window.fgAddProjectMeta[projectId];
+  document.getElementById("fg-add-customer").value = meta ? (meta.companyName || "") : "";
+}
+
+function handleFGProductSearch(query) {
+  const dropdown = document.getElementById("fg-product-dropdown");
+  const catalog  = window.itemCodeCatalogCache || [];
+
+  if (!query || query.trim().length < 1) {
+    dropdown.style.display = "none";
+    document.getElementById("fg-add-product-name").value = "";
+    document.getElementById("fg-add-item-code").value    = "";
+    return;
+  }
+
+  const q = query.toLowerCase();
+  const matches = catalog.filter(item => (item.productName || "").toLowerCase().includes(q)).slice(0, 10);
+
+  if (matches.length === 0) {
+    dropdown.innerHTML = `<div style="padding:10px 12px; font-size:0.8rem; color:#b91c1c; font-weight:600;">
+      No matching product found.
+      <a href="#" onclick="switchActiveDashboardModule('design-itemcode'); return false;" style="color:var(--brand);">Create Item Code first →</a>
+    </div>`;
+    dropdown.style.display = "block";
+    document.getElementById("fg-add-product-name").value = "";
+    document.getElementById("fg-add-item-code").value    = "";
+    return;
+  }
+
+  dropdown.innerHTML = matches.map(item => `
+    <div onclick="selectFGProduct('${item.productName.replace(/'/g,"\\'")}', '${item.itemCode}')"
+      style="padding:8px 12px; cursor:pointer; border-bottom:1px solid #f1f5f9; font-size:0.82rem;"
+      onmouseover="this.style.background='var(--highlight-bg)'" onmouseout="this.style.background='#fff'">
+      <span style="font-family:monospace; color:var(--brand); font-weight:700; margin-right:8px;">${item.itemCode}</span>
+      ${item.productName}
+      <span style="font-size:0.7rem; color:var(--muted); margin-left:6px;">(${item.typeOfMaterial})</span>
+    </div>`).join("");
+  dropdown.style.display = "block";
+}
+
+function selectFGProduct(productName, itemCode) {
+  document.getElementById("fg-add-product-search").value = productName;
+  document.getElementById("fg-add-product-name").value   = productName;
+  document.getElementById("fg-add-item-code").value      = itemCode;
+  document.getElementById("fg-product-dropdown").style.display = "none";
+}
+
+function resetFGAddForm() {
+  ["fg-add-department","fg-add-project","fg-add-prod-person","fg-add-store-person","fg-add-unit"].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = "";
+  });
+  document.getElementById("fg-add-unit").value = "NOS";
+  ["fg-add-customer","fg-add-product-search","fg-add-product-name","fg-add-item-code",
+   "fg-add-rating","fg-add-jobcard","fg-add-remarks"].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = "";
+  });
+  document.getElementById("fg-product-dropdown").style.display = "none";
+  document.getElementById("fg-add-feedback").style.display = "none";
+}
+
+async function submitFGAddItem() {
+  const btn        = document.getElementById("fg-add-submit-btn");
+  const department = document.getElementById("fg-add-department").value.trim();
+  const projectId  = document.getElementById("fg-add-project").value.trim();
+  const customerName=document.getElementById("fg-add-customer").value.trim();
+  const productName= document.getElementById("fg-add-product-name").value.trim();
+  const itemCode   = document.getElementById("fg-add-item-code").value.trim();
+  const rating     = document.getElementById("fg-add-rating").value.trim();
+  const jobCard    = document.getElementById("fg-add-jobcard").value.trim();
+  const unit       = document.getElementById("fg-add-unit").value.trim();
+  const prodPerson = document.getElementById("fg-add-prod-person").value.trim();
+  const storePerson= document.getElementById("fg-add-store-person").value.trim();
+  const remarks    = document.getElementById("fg-add-remarks").value.trim();
+
+  if (!department)  return showBOQBanner("fg-add-feedback", "Department is required.", "error");
+  if (!projectId)   return showBOQBanner("fg-add-feedback", "Project ID is required.", "error");
+  if (!productName) return showBOQBanner("fg-add-feedback", "Product Name is required.", "error");
+  if (!storePerson) return showBOQBanner("fg-add-feedback", "Store Incharge Person is required.", "error");
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Adding...';
+
+  try {
+    const res  = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "addFinishedGoodsItem",
+        sessionToken: localStorage.getItem("sessionToken"),
+        department, projectId, customerName, productName,
+        itemCode, productRating: rating, jobCardNumber: jobCard,
+        unit, prodResponsible: prodPerson,
+        storeIncharge: storePerson, additionalRemarks: remarks
+      })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showBOQBanner("fg-add-feedback", `<strong>${productName}</strong> added to Finished Goods Store (${department}) successfully!`, "success");
+      resetFGAddForm();
+    } else {
+      showBOQBanner("fg-add-feedback", data.error || "Failed to add item.", "error");
+    }
+  } catch(e) {
+    showBOQBanner("fg-add-feedback", "Network error: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Add to Finished Goods Store";
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// LIVE FG STOCK — update triggerLiveFinishedGoodsStoreStockMetricsSync
+// ═══════════════════════════════════════════════════════
+
+async function triggerLiveFinishedGoodsStoreStockMetricsSync() {
+  const cached = window.cachedFinishedGoodsStoreStockCollection;
+  if (!cached) return;
+
+  const depts = [
+    { key: "reactor",   label: "Reactor",   containerId: "fg-stock-reactor-rows"   },
+    { key: "capacitor", label: "Capacitor", containerId: "fg-stock-capacitor-rows" },
+    { key: "panel",     label: "Panel",     containerId: "fg-stock-panel-rows"     }
+  ];
+
+  depts.forEach(dept => {
+    const rows    = (cached[dept.key] || []);
+    const container = document.getElementById(dept.containerId);
+    if (!container) return;
+
+    // Group by Project ID + Product Name + Product Rating
+    const groups = {};
+    rows.forEach(row => {
+      const pid    = (row["Project ID"]   || "").trim();
+      const pname  = (row["Product Name"] || "").trim();
+      const prating= (row["Product Rating"]|| "").trim();
+      const key    = pid + "||" + pname + "||" + prating;
+      if (!groups[key]) {
+        groups[key] = {
+          projectId:    pid,
+          customerName: (row["Customer Name"]   || "").trim(),
+          itemCode:     (row["Item Code Number"] || "").trim(),
+          productRating:prating,
+          productName:  pname,
+          unit:         (row["Unit"]            || "NOS").trim(),
+          jobCards:     [],
+          inStock:      0
+        };
+      }
+      if ((row["Status"] || "").trim() === "In Stock") {
+        groups[key].inStock++;
+        if (row["Job Card Number"]) groups[key].jobCards.push(row["Job Card Number"]);
+      }
+    });
+
+    const groupArr = Object.values(groups);
+
+    if (groupArr.length === 0) {
+      container.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No items in ${dept.label} Finished Goods Store.</td></tr>`;
+      return;
+    }
+
+    container.innerHTML = groupArr.map(g => `
+      <tr style="border-bottom:1px solid #f1f5f9;">
+        <td style="padding:8px; font-weight:700; font-size:0.82rem;">${g.projectId}</td>
+        <td style="padding:8px; font-size:0.82rem;">${g.customerName}</td>
+        <td style="padding:8px; font-family:monospace; font-size:0.78rem; font-weight:700; color:var(--brand);">${g.itemCode || "—"}</td>
+        <td style="padding:8px; font-size:0.82rem;">${g.productRating || "—"}</td>
+        <td style="padding:8px; font-size:0.82rem;">${g.productName}</td>
+        <td style="padding:8px; font-size:0.82rem;">${g.unit}</td>
+        <td style="padding:8px; text-align:center; font-weight:800; font-size:0.9rem; color:${g.inStock > 0 ? "var(--accent)" : "#b91c1c"};">
+          ${g.inStock}
+          ${g.jobCards.length > 0 ? `<div style="font-size:0.65rem; color:var(--muted); font-weight:400; margin-top:2px;">JC: ${g.jobCards.join(", ")}</div>` : ""}
+        </td>
+      </tr>`).join("");
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// SHARED BANNER HELPER
+// ═══════════════════════════════════════════════════════
+
+function showBOQBanner(elementId, message, type) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const isSuccess = type === "success";
+  el.style.borderLeftColor = isSuccess ? "var(--accent)" : "#e53e3e";
+  el.style.background      = isSuccess ? "#f0fff4" : "#fff5f5";
+  el.style.color           = isSuccess ? "#276749" : "#c53030";
+  el.innerHTML  = message;
+  el.style.display = "block";
+  if (isSuccess) setTimeout(() => { el.style.display = "none"; }, 6000);
 }
 
 </script>
