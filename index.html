@@ -627,7 +627,7 @@
         </div>
         <div id="itemcode-suggestions-mount" style="display:flex; flex-direction:column; gap:8px;"></div>
         
-        <div style="margin-top:14px; padding:10px 14px; background:#fffbeb; border:1px solid #f59e0b; border-radius:var(--radius); font-size:0.82rem; color:#92400e; font-weight:600;">
+        <div id="itemcode-none-match-banner" style="margin-top:14px; padding:10px 14px; background:#fffbeb; border:1px solid #f59e0b; border-radius:var(--radius); font-size:0.82rem; color:#92400e; font-weight:600;">
           None of these match your product? 
           <button onclick="revealItemCodeCreateForm()" 
             style="background:var(--brand); color:#fff; border:none; padding:4px 12px; border-radius:4px; font-size:0.78rem; font-weight:700; cursor:pointer; margin-left:8px;">
@@ -639,7 +639,7 @@
       <!-- NO RESULTS ZONE -->
       <div id="itemcode-no-results-zone" style="display:none; margin-bottom:16px; padding:14px; background:#fff5f5; border:1px solid #fca5a5; border-radius:var(--radius); font-size:0.85rem; color:#b91c1c; font-weight:600;">
         No similar products found in the catalog.
-        <button onclick="revealItemCodeCreateForm()" 
+        <button id="itemcode-no-results-create-btn" onclick="revealItemCodeCreateForm()" 
           style="background:var(--brand); color:#fff; border:none; padding:4px 12px; border-radius:4px; font-size:0.78rem; font-weight:700; cursor:pointer; margin-left:10px;">
           Create New Item Code
         </button>
@@ -1335,7 +1335,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx53OamrN595bVgXivjgBnhapvAkP45SDYgup9EY96vcARM24cH2VyHCQhUE0_U6eiRfA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzdoCX1vjnRpC0r7GUPkT-R854Y10qMRWJW71bb6Uc2eFzEpGHLcfS8BdSmL3ocAEgFXw/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -4896,8 +4896,10 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
     document.getElementById("mod-design-update").style.display = canUpdateBOQ ? "block" : "none";
   }
   if (document.getElementById("mod-design-itemcode")) {
-    // Search visible to Design, Store, Procurement — Create only for Design (handled in UI)
-    const canSeeItemCode = canUploadBOQ || canUpdateBOQ || userPermissionsObject.storeEntry === true || userPermissionsObject.grnNote === true;
+    const canSeeItemCode = canUploadBOQ || canUpdateBOQ 
+      || userPermissionsObject.storeEntry === true 
+      || userPermissionsObject.grnNote === true
+      || userPermissionsObject.itemCodeAccess === true;
     document.getElementById("mod-design-itemcode").style.display = canSeeItemCode ? "block" : "none";
   }
 
@@ -8356,6 +8358,12 @@ async function revealItemCodeCreateForm() {
   const nameInput  = document.getElementById("itemcode-new-name");
   const typeSelect = document.getElementById("itemcode-new-type");
   const banner     = document.getElementById("itemcode-feedback-banner");
+
+  // Hide both "Create New Item Code" trigger buttons
+  const noneMatchBanner = document.getElementById("itemcode-none-match-banner");
+  const noResultsBtn    = document.getElementById("itemcode-no-results-create-btn");
+  if (noneMatchBanner) noneMatchBanner.style.display = "none";
+  if (noResultsBtn)    noResultsBtn.style.display    = "none";
 
   // Pre-fill product name from search query
   const query = document.getElementById("itemcode-search-input").value.trim();
