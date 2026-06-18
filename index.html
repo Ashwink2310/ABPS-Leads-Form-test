@@ -1335,7 +1335,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzwBrqYGwJGgxew5mDwde4b0xeBoeYGobq1NGzTO9uMQlVgv5nKTcI9ppTPL9VajPibBA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyQ58mD7NQkPTn4VLaoxiHx08HfBXsaIMsRNneLmTA_SHc68vQLo9YGc3k-rXXES60tgQ/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -8136,8 +8136,13 @@ async function loadItemCodeCatalogIntoCache() {
       })
     });
     const data = await res.json();
+    console.log("ItemCode catalog response:", data);  // ADD THIS
     if (data.success) {
       window.itemCodeCatalogCache = data.catalog;
+      console.log("ItemCode catalog loaded:", data.catalog.length, "items", data.catalog[0]);  // ADD THIS
+    } else {
+      console.error("ItemCode catalog failed:", data.error);  // ADD THIS
+      window.itemCodeCatalogCache = [];
     }
   } catch(e) {
     console.error("ItemCode catalog load failed:", e);
