@@ -8304,7 +8304,6 @@ async function executeItemCodeSearch() {
     const top30 = fuzzyPreFilterCatalog(query, catalogToSearch, 30);
     console.log("Fuzzy pre-filter top30:", top30.length, "items");
 
-    // If fuzzy returns nothing but exact match exists, use exact matches directly
     const candidatesToUse = top30.length > 0 ? top30 : exactMatch;
 
     if (candidatesToUse.length === 0) {
@@ -8312,19 +8311,43 @@ async function executeItemCodeSearch() {
       return;
     }
 
-    // Step 2: Gemini semantic re-rank
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "searchItemCodeSemantic",
-        sessionToken: localStorage.getItem("sessionToken"),
-        query: query,
-        candidates: candidatesToUse
-      })
-    });
-    const data = await res.json();
+    // If catalog is small (≤5 items) or we have very few candidates, skip Gemini
+    // and show direct matches with "high" confidence
+    let finalMatches;
+    if (candidatesToUse.length <= 5) {
+      finalMatches = candidatesToUse.map(c => ({
+        itemCode:       c.itemCode,
+        productName:    c.productName,
+        typeOfMaterial: c.typeOfMaterial,
+        confidence:     "high"
+      }));
+    } else {
+      // Step 2: Gemini semantic re-rank for larger catalogs
+      const res = await fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "searchItemCodeSemantic",
+          sessionToken: localStorage.getItem("sessionToken"),
+          query: query,
+          candidates: candidatesToUse
+        })
+      });
+      const data = await res.json();
 
-    if (!data.success || !data.matches || data.matches.length === 0) {
+      if (!data.success || !data.matches || data.matches.length === 0) {
+        // Gemini failed — fall back to showing direct matches
+        finalMatches = candidatesToUse.slice(0, 5).map(c => ({
+          itemCode:       c.itemCode,
+          productName:    c.productName,
+          typeOfMaterial: c.typeOfMaterial,
+          confidence:     "medium"
+        }));
+      } else {
+        finalMatches = data.matches;
+      }
+    }
+
+    if (!finalMatches || finalMatches.length === 0) {
       noResultsZone.style.display = "block";
       return;
     }
@@ -8336,7 +8359,7 @@ async function executeItemCodeSearch() {
       low:    { bg: "#f1f5f9", color: "#64748b", label: "Weak Match" }
     };
 
-    data.matches.forEach((match, idx) => {
+    finalMatches.forEach((match, idx) => {
       const conf   = confidenceColors[match.confidence] || confidenceColors.low;
       const card   = document.createElement("div");
       card.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:#fff; border:1.5px solid var(--border); border-radius:var(--radius); padding:12px 16px; cursor:pointer; transition:all 0.15s ease;";
