@@ -8291,10 +8291,23 @@ async function executeItemCodeSearch() {
     // Always reload catalog before searching to ensure fresh data
     await loadItemCodeCatalogIntoCache();
 
-    // Step 1: client-side fuzzy pre-filter → top 30
-    const top30 = fuzzyPreFilterCatalog(query, window.itemCodeCatalogCache || [], 30);
+    const catalogToSearch = window.itemCodeCatalogCache || [];
+    console.log("Searching catalog of", catalogToSearch.length, "items for query:", query);
 
-    if (top30.length === 0) {
+    // Direct exact match check first
+    const exactMatch = catalogToSearch.filter(item =>
+      (item.productName || "").toLowerCase().includes(query.toLowerCase())
+    );
+    console.log("Direct includes match:", exactMatch.length, "items");
+
+    // Step 1: client-side fuzzy pre-filter → top 30
+    const top30 = fuzzyPreFilterCatalog(query, catalogToSearch, 30);
+    console.log("Fuzzy pre-filter top30:", top30.length, "items");
+
+    // If fuzzy returns nothing but exact match exists, use exact matches directly
+    const candidatesToUse = top30.length > 0 ? top30 : exactMatch;
+
+    if (candidatesToUse.length === 0) {
       noResultsZone.style.display = "block";
       return;
     }
@@ -8306,7 +8319,7 @@ async function executeItemCodeSearch() {
         action: "searchItemCodeSemantic",
         sessionToken: localStorage.getItem("sessionToken"),
         query: query,
-        candidates: top30
+        candidates: candidatesToUse
       })
     });
     const data = await res.json();
