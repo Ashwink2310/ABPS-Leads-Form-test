@@ -407,16 +407,25 @@
       <div class="section" style="background: var(--card); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius);">
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+          <div id="wrapper-ticket-project-id">
+            <label class="field-label" style="font-weight: 700; color: var(--brand);">Select Project ID *</label>
+            <select id="ticket-project-id-dropdown" onchange="handleCreateTicketProjectChange(this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600;">
+              <option value="">— Select Project ID —</option>
+            </select>
+          </div>
           <div>
-            <label class="field-label" style="font-weight: 700; color: var(--brand);">Choose Store *</label>
-            <select id="ticket-selected-store-scope-toggle" onchange="handleTicketStoreScopeSelectionChange(this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600;">
-              <option value="">— Choose Store —</option>
+            <label class="field-label" id="lbl-store-scope-title" style="font-weight: 700; color: var(--muted);">Choose Store *</label>
+            <select id="ticket-selected-store-scope-toggle" onchange="handleTicketStoreScopeSelectionChange(this.value)" disabled style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600; opacity: 0.5; cursor: not-allowed;">
+              <option value="">— Choose Project First —</option>
               <option value="Raw Materials Store">Raw Materials Store</option>
               <option value="Finished Goods Store">Finished Goods Store</option>
             </select>
           </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
           <div>
-            <label class="field-label" style="font-weight: 700; color: var(--brand);">Production Department / Outgoing Use *</label>
+            <label class="field-label" id="lbl-dept-outgoing-title" style="font-weight: 700; color: var(--muted);">Production Department / Outgoing Use *</label>
             <select id="ticket-department-outgoing-dropdown" onchange="handleCreateTicketDepartmentChange(this.value)" disabled style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600; opacity: 0.5; cursor: not-allowed;">
               <option value="">— Choose Store First —</option>
               <option value="Reactor">Reactor</option>
@@ -426,19 +435,10 @@
               <option value="Service">Service</option>
             </select>
           </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
           <div id="wrapper-ticket-requested-by">
             <label class="field-label" id="lbl-dynamic-operator-signature-title" style="font-weight: 700; color: var(--muted);">Requested By *</label>
             <select id="ticket-requested-by-operator-dropdown" onchange="handleCreateTicketOperatorChange(this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius);" disabled>
               <option value="">— Choose Department First —</option>
-            </select>
-          </div>
-          <div id="wrapper-ticket-project-id">
-            <label class="field-label" style="font-weight: 700; color: var(--muted);">Select Project ID *</label>
-            <select id="ticket-project-id-dropdown" onchange="handleCreateTicketProjectChange(this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius);" disabled>
-              <option value="">— Choose Operator First —</option>
             </select>
           </div>
         </div>
@@ -570,18 +570,18 @@
       <div id="fg-add-form">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
+            <label class="field-label" style="margin-top:0;">Project ID *</label>
+            <select id="fg-add-project" onchange="handleFGAddProjectChange(this.value)" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select Project ID —</option>
+            </select>
+          </div>
+          <div>
             <label class="field-label" style="margin-top:0;">Department *</label>
-            <select id="fg-add-department" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <select id="fg-add-department" disabled style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
               <option value="">— Select —</option>
               <option value="Panel">Panel</option>
               <option value="Reactor">Reactor</option>
               <option value="Capacitor">Capacitor</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label" style="margin-top:0;">Project ID *</label>
-            <select id="fg-add-project" onchange="handleFGAddProjectChange(this.value)" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
-              <option value="">— Select Project ID —</option>
             </select>
           </div>
         </div>
@@ -593,7 +593,7 @@
           <div>
             <label class="field-label" style="margin-top:0;">Product Name *</label>
             <div style="position:relative;">
-              <input type="text" id="fg-add-product-search" 
+              <input type="text" id="fg-add-product-search" disabled
                 placeholder="Type to search product name..." 
                 autocomplete="off"
                 oninput="handleFGProductSearch(this.value)"
@@ -610,17 +610,17 @@
           </div>
           <div>
             <label class="field-label" style="margin-top:0;">Product Rating</label>
-            <input type="text" id="fg-add-rating" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. 100KVAR 11KV" />
+            <input type="text" id="fg-add-rating" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. 100KVAR 11KV" />
           </div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
             <label class="field-label" style="margin-top:0;">Job Card Number</label>
-            <input type="text" id="fg-add-jobcard" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="Enter job card number..." />
+            <input type="text" id="fg-add-jobcard" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="Enter job card number..." />
           </div>
           <div>
             <label class="field-label" style="margin-top:0;">Unit *</label>
-            <select id="fg-add-unit" onchange="document.getElementById('fg-add-unit-other').style.display = this.value === 'Others' ? 'block' : 'none';" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <select id="fg-add-unit" disabled onchange="document.getElementById('fg-add-unit-other').style.display = this.value === 'Others' ? 'block' : 'none';" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
               <option value="NOS">NOS</option>
               <option value="KG">KG</option>
               <option value="MTR">MTR</option>
@@ -632,24 +632,24 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
             <label class="field-label" style="margin-top:0;">Production Department Responsible Person</label>
-            <select id="fg-add-prod-person" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <select id="fg-add-prod-person" disabled style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
               <option value="">— Select Person —</option>
             </select>
           </div>
           <div>
             <label class="field-label" style="margin-top:0;">Finished Goods Store Incharge Person *</label>
-            <select id="fg-add-store-person" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <select id="fg-add-store-person" disabled style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
               <option value="">— Select Person —</option>
             </select>
           </div>
         </div>
         <div style="margin-bottom:16px;">
           <label class="field-label" style="margin-top:0;">Additional Remarks</label>
-          <input type="text" id="fg-add-remarks" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="Any additional notes..." />
+          <input type="text" id="fg-add-remarks" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="Any additional notes..." />
         </div>
         <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border); padding-top:14px;">
           <button class="nav-btn-styled" onclick="resetFGAddForm()" style="background:#718096;">Clear</button>
-          <button class="nav-btn-styled" id="fg-add-submit-btn" onclick="submitFGAddItem()" style="background:var(--accent); padding:8px 24px; font-weight:700;">Add to Finished Goods Store</button>
+          <button class="nav-btn-styled" id="fg-add-submit-btn" disabled onclick="submitFGAddItem()" style="background:var(--accent); padding:8px 24px; font-weight:700; opacity:0.5; cursor:not-allowed;">Add to Finished Goods Store</button>
         </div>
       </div>
     </div>
@@ -817,15 +817,15 @@
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
             <label class="field-label" style="margin-top:0;">Product Name *</label>
-            <input type="text" id="cboq-product-name" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. HT Capacitor Bank" />
+            <input type="text" id="cboq-product-name" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. HT Capacitor Bank" />
           </div>
           <div>
             <label class="field-label" style="margin-top:0;">Product Rating *</label>
-            <input type="text" id="cboq-product-rating" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. 100KVAR 11KV" />
+            <input type="text" id="cboq-product-rating" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. 100KVAR 11KV" />
           </div>
           <div>
             <label class="field-label" style="margin-top:0;">Department *</label>
-            <select id="cboq-department" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <select id="cboq-department" disabled style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
               <option value="">— Select —</option>
               <option value="Reactor">Reactor</option>
               <option value="Capacitor">Capacitor</option>
@@ -838,7 +838,7 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
           <div>
             <label class="field-label" style="margin-top:0;">Order Quantity (No. of Sets) *</label>
-            <input type="number" id="cboq-order-qty" min="1" value="1" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+            <input type="number" id="cboq-order-qty" min="1" value="1" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" />
           </div>
           <div>
             <label class="field-label" style="margin-top:0;">Date</label>
@@ -851,7 +851,7 @@
       <div style="margin-bottom:16px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand); letter-spacing:0.5px;">Material Rows *</span>
-          <button class="nav-btn-styled" onclick="addCBOQMaterialRow()" style="background:var(--accent); padding:5px 14px; font-size:0.78rem;">+ Add Row</button>
+          <button class="nav-btn-styled" id="cboq-add-row-btn" disabled onclick="addCBOQMaterialRow()" style="background:var(--accent); padding:5px 14px; font-size:0.78rem; opacity:0.5; cursor:not-allowed;">+ Add Row</button>
         </div>
         <div style="overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);">
           <table class="store-basket-data-table" style="width:100%; min-width:900px; border-collapse:collapse;">
@@ -878,7 +878,7 @@
 
       <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border); padding-top:14px;">
         <button class="nav-btn-styled" onclick="resetCreateBOQForm()" style="background:#718096;">Clear Form</button>
-        <button class="nav-btn-styled" id="cboq-submit-btn" onclick="submitCreateBOQ()" style="background:var(--accent); padding:8px 24px; font-weight:700;">Submit BOQ for Authorization</button>
+        <button class="nav-btn-styled" id="cboq-submit-btn" disabled onclick="submitCreateBOQ()" style="background:var(--accent); padding:8px 24px; font-weight:700; opacity:0.5; cursor:not-allowed;">Submit BOQ for Authorization</button>
       </div>
     </div>
 
@@ -5322,25 +5322,22 @@ async function initializeMaterialRequestWorkspace() {
   const itemDropdown = document.getElementById("ticket-item-selection-dropdown");
   const storeStaffDropdown = document.getElementById("ticket-requested-by-operator-dropdown");
   const deptDropdown = document.getElementById("ticket-department-outgoing-dropdown");
+  const storeScopeDropdown = document.getElementById("ticket-selected-store-scope-toggle");
   
   if (!projectDropdown || !itemDropdown || !storeStaffDropdown || !deptDropdown) return;
   
   // Enforce pristine starting conditions across cascading lock states parameters
+  projectDropdown.value = "";
   deptDropdown.value = ""; 
+  if (storeScopeDropdown) storeScopeDropdown.value = "";
   resetMaterialRequestCascadingLockState();
-
-  // Reset store scope to blank default
-  const storeScopeDropdown = document.getElementById("ticket-selected-store-scope-toggle");
-  if (storeScopeDropdown) {
-    storeScopeDropdown.value = "";
-  }
   
   clearFullBasketDraftState();
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
 
   projectDropdown.innerHTML = '<option value="">Syncing Active Projects...</option>';
-  itemDropdown.innerHTML = '<option value="">Syncing Material List...</option>';
-  storeStaffDropdown.innerHTML = '<option value="">Loading Authorized Staff List...</option>';
+  itemDropdown.innerHTML = '<option value="">— Select Material —</option>';
+  storeStaffDropdown.innerHTML = '<option value="">— Choose Department First —</option>';
 
   try {
     const [inventoryResponse, projectsResponse, staffResponse] = await Promise.all([
@@ -5355,30 +5352,10 @@ async function initializeMaterialRequestWorkspace() {
     
     if (inventoryData.success && projectsData.success && staffData.success) {
       cachedInventoryStockCollection = inventoryData.inventory;
-      
       window.cachedFinishedGoodsStoreStockCollection = inventoryData.finishedGoodsInventory || [];
-      
-      const activeStoreScope = document.getElementById("ticket-selected-store-scope-toggle")?.value || "Raw Materials Store";
-      let targetedWarehouseCatalogFeed = cachedInventoryStockCollection;
-      
-      if (activeStoreScope === "Finished Goods Store") {
-        targetedWarehouseCatalogFeed = window.cachedFinishedGoodsStoreStockCollection;
-      }
-      
       globalOperatorsDatabasePayloadCache = staffData.fullPersonnelDataRecordsTree || []; 
-      
-      // A. Populate Material Select Catalog
-      itemDropdown.innerHTML = '<option value="">— Select Material from Catalog —</option>';
-      targetedWarehouseCatalogFeed
-        .filter(item => item.boqActive !== "NOT IN ACTIVE BOQ")
-        .forEach(item => {
-          let opt = document.createElement("option"); 
-          opt.value = item.materialName; 
-          opt.textContent = item.materialName; 
-          itemDropdown.appendChild(opt);
-        });
 
-      // B. Seed Active Project Codes
+      // Seed Active Project Codes — entry point of the cascade
       projectDropdown.innerHTML = '<option value="">— Select Project ID —</option>';
       projectsData.projects.forEach(code => {
         let opt = document.createElement("option"); 
@@ -5386,33 +5363,13 @@ async function initializeMaterialRequestWorkspace() {
         opt.textContent = code;
         projectDropdown.appendChild(opt);
       });
-      
-      // C. Process dynamic auto-fill lookups safely off user settings profile records
-      const activeDeptRawString = localStorage.getItem("abps_user_raw_departments") || ""; 
-      const lowerDeptsArray = activeDeptRawString.toLowerCase().split(",").map(d => d.trim());
-      const priorityChecks = ["reactor", "capacitor", "panel"];
-      let matchedDefault = "";
-      
-      for (let check of priorityChecks) {
-        if (lowerDeptsArray.indexOf(check) !== -1) {
-          matchedDefault = check.charAt(0).toUpperCase() + check.slice(1);
-          break;
-        }
-      }
-      
-      // If active store is Finished Goods, ignore user department lookup defaults and force lock to 'Panel'
-      if (activeStoreScope === "Finished Goods Store") {
-        matchedDefault = "Panel";
-      }
-      
-      deptDropdown.value = "";
-      resetMaterialRequestCascadingLockState();
     }
   } catch (error) { 
     console.error("Critical Matrix Load Failure:", error); 
-    deptDropdown.value = "";
-    resetMaterialRequestCascadingLockState();
+    projectDropdown.innerHTML = '<option value="">Error loading projects</option>';
   }
+
+  resetMaterialRequestCascadingLockState();
 }
 
 /**
@@ -7611,24 +7568,17 @@ function autoBalanceGrnQuantities(okInput, gateNum, idx) {
  */
 function resetMaterialRequestCascadingLockState() {
   const staffDrop = document.getElementById("ticket-requested-by-operator-dropdown");
-  const projDrop = document.getElementById("ticket-project-id-dropdown");
   const itemDrop = document.getElementById("ticket-item-selection-dropdown");
   const qtyInp = document.getElementById("ticket-item-quantity-input");
   const addBtn = document.getElementById("ticket-add-item-action-btn");
-  const deptDrop = document.getElementById("ticket-department-outgoing-dropdown"); // Added reference
-  
-  // Ensure the dept dropdown is enabled by default unless locked by logic
-  // deptDrop.disabled = false; 
 
   staffDrop.innerHTML = '<option value="">— Choose Department First —</option>'; 
   staffDrop.disabled = true;
-  projDrop.disabled = true;
   itemDrop.disabled = true; 
   qtyInp.disabled = true; 
   addBtn.disabled = true;
 
   document.getElementById("lbl-dynamic-operator-signature-title").style.color = "var(--muted)";
-  document.getElementById("wrapper-ticket-project-id").querySelector("label").style.color = "var(--muted)";
   document.getElementById("wrapper-ticket-add-item-zone").style.opacity = "0.5";
   addBtn.style.cursor = "not-allowed";
 }
@@ -7665,33 +7615,56 @@ function handleCreateTicketDepartmentChange(chosenDepartmentVal) {
  * STEP 2 CHANGE: Unlocks Step 3 Project Dropdown Field
  */
 function handleCreateTicketOperatorChange(chosenOperatorVal) {
-  const projDrop = document.getElementById("ticket-project-id-dropdown");
-  const projLbl = document.getElementById("wrapper-ticket-project-id").querySelector("label");
+  const itemDrop = document.getElementById("ticket-item-selection-dropdown");
+  const qtyInp = document.getElementById("ticket-item-quantity-input");
+  const addBtn = document.getElementById("ticket-add-item-action-btn");
+  const addZone = document.getElementById("wrapper-ticket-add-item-zone");
 
-  projDrop.disabled = true;
-  document.getElementById("ticket-item-selection-dropdown").disabled = true;
-  document.getElementById("ticket-item-quantity-input").disabled = true;
-  document.getElementById("ticket-add-item-action-btn").disabled = true;
-  document.getElementById("wrapper-ticket-add-item-zone").style.opacity = "0.5";
-  document.getElementById("ticket-add-item-action-btn").style.cursor = "not-allowed";
-  projLbl.style.color = "var(--muted)";
+  if (!chosenOperatorVal) {
+    itemDrop.disabled = true; qtyInp.disabled = true; addBtn.disabled = true;
+    addZone.style.opacity = "0.5"; addBtn.style.cursor = "not-allowed";
+    return;
+  }
 
-  if (!chosenOperatorVal) return;
-
-  projLbl.style.color = "var(--brand)";
-  projDrop.disabled = false;
+  itemDrop.disabled = false; qtyInp.disabled = false; addBtn.disabled = false;
+  addZone.style.opacity = "1"; addBtn.style.cursor = "pointer";
 }
 
 /**
  * STEP 3 CHANGE: Final cascade tier unlocks Step 4 Add Item Canvas Zone Box
  */
 // --- LOCATE AND UPDATE THE PROJECT CHANGE HANDLER INSIDE index.html ---
-async function handleCreateTicketProjectChange(chosenProjectVal) {
+function handleCreateTicketProjectChange(chosenProjectVal) {
+  const storeScopeDropdown = document.getElementById("ticket-selected-store-scope-toggle");
+  const storeScopeLabel = document.getElementById("lbl-store-scope-title");
+
+  // Reset everything downstream
+  resetMaterialRequestCascadingLockState();
+  storeScopeDropdown.value = "";
+
+  if (!chosenProjectVal) {
+    storeScopeDropdown.disabled = true;
+    storeScopeDropdown.style.opacity = "0.5";
+    storeScopeDropdown.style.cursor = "not-allowed";
+    storeScopeDropdown.innerHTML = '<option value="">— Choose Project First —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option>';
+    if (storeScopeLabel) storeScopeLabel.style.color = "var(--muted)";
+    return;
+  }
+
+  storeScopeDropdown.disabled = false;
+  storeScopeDropdown.style.opacity = "1";
+  storeScopeDropdown.style.cursor = "pointer";
+  storeScopeDropdown.innerHTML = '<option value="">— Choose Store —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option>';
+  if (storeScopeLabel) storeScopeLabel.style.color = "var(--brand)";
+}
+
+async function loadItemCatalogForSelectedProjectAndStore() {
   const itemDrop = document.getElementById("ticket-item-selection-dropdown");
   const qtyInp = document.getElementById("ticket-item-quantity-input");
   const addBtn = document.getElementById("ticket-add-item-action-btn");
   const addZone = document.getElementById("wrapper-ticket-add-item-zone");
   const feedbackBanner = document.getElementById("store-ticket-runtime-inline-feedback-banner");
+  const chosenProjectVal = document.getElementById("ticket-project-id-dropdown").value;
 
   if (!chosenProjectVal) {
     itemDrop.disabled = true; qtyInp.disabled = true; addBtn.disabled = true;
@@ -8154,6 +8127,7 @@ function resetBOQUploadWorkspaceToInitialState(modeString) {
 
 function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
   const deptDropdown = document.getElementById("ticket-department-outgoing-dropdown");
+  const deptLabel = document.getElementById("lbl-dept-outgoing-title");
   
   // Clear basket and reset cascading locks whenever store changes
   clearFullBasketDraftState();
@@ -8161,21 +8135,12 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
   document.getElementById("ticket-live-counter-pill-zone").innerHTML = "";
 
   if (!chosenStoreValue) {
-    // No store selected — keep department locked
     deptDropdown.disabled = true;
     deptDropdown.style.opacity = "0.5";
     deptDropdown.style.cursor = "not-allowed";
     deptDropdown.value = "";
     deptDropdown.options[0].text = "— Choose Store First —";
-    return;
-  }
-
-  if (!chosenStoreValue) {
-    deptDropdown.disabled = true;
-    deptDropdown.style.opacity = "0.5";
-    deptDropdown.style.cursor = "not-allowed";
-    deptDropdown.value = "";
-    deptDropdown.options[0].text = "— Choose Store First —";
+    if (deptLabel) deptLabel.style.color = "var(--muted)";
     return;
   } else if (chosenStoreValue === "Finished Goods Store") {
     // Rebuild dropdown with only Panel and Dispatch options
@@ -8203,6 +8168,10 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
     deptDropdown.style.cursor = "pointer";
     deptDropdown.value = "";
   }
+  if (deptLabel) deptLabel.style.color = "var(--brand)";
+
+  // Pre-load item catalog now that store scope is known
+  loadItemCatalogForSelectedProjectAndStore();
 }
 
 /**
@@ -8877,6 +8846,20 @@ async function initializeCreateBOQPanel() {
 function handleCBOQProjectChange(projectId) {
   const meta = window.cboqProjectMeta && window.cboqProjectMeta[projectId];
   document.getElementById("cboq-customer-name").value = meta ? (meta.companyName || "") : "";
+
+  const fieldsToToggle = ["cboq-product-name", "cboq-product-rating", "cboq-department", "cboq-order-qty"];
+  const addRowBtn = document.getElementById("cboq-add-row-btn");
+  const submitBtn = document.getElementById("cboq-submit-btn");
+
+  if (projectId) {
+    fieldsToToggle.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = false; });
+    if (addRowBtn) { addRowBtn.disabled = false; addRowBtn.style.opacity = "1"; addRowBtn.style.cursor = "pointer"; }
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = "1"; submitBtn.style.cursor = "pointer"; }
+  } else {
+    fieldsToToggle.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = true; });
+    if (addRowBtn) { addRowBtn.disabled = true; addRowBtn.style.opacity = "0.5"; addRowBtn.style.cursor = "not-allowed"; }
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = "0.5"; submitBtn.style.cursor = "not-allowed"; }
+  }
 }
 
 function addCBOQMaterialRow() {
@@ -9016,6 +8999,7 @@ function resetCreateBOQForm() {
   ["cboq-customer-name","cboq-product-name","cboq-product-rating"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
   document.getElementById("cboq-order-qty").value = "1";
   document.getElementById("cboq-feedback").style.display = "none";
+  handleCBOQProjectChange(""); // re-lock fields
 }
 
 async function submitCreateBOQ() {
@@ -9785,6 +9769,17 @@ async function initializeFGAddWorkspace() {
 function handleFGAddProjectChange(projectId) {
   const meta = window.fgAddProjectMeta && window.fgAddProjectMeta[projectId];
   document.getElementById("fg-add-customer").value = meta ? (meta.companyName || "") : "";
+
+  const fieldsToToggle = ["fg-add-department","fg-add-product-search","fg-add-rating","fg-add-jobcard","fg-add-unit","fg-add-prod-person","fg-add-store-person","fg-add-remarks"];
+  const submitBtn = document.getElementById("fg-add-submit-btn");
+
+  if (projectId) {
+    fieldsToToggle.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = false; });
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = "1"; submitBtn.style.cursor = "pointer"; }
+  } else {
+    fieldsToToggle.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = true; });
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = "0.5"; submitBtn.style.cursor = "not-allowed"; }
+  }
 }
 
 function handleFGProductSearch(query) {
@@ -9843,6 +9838,7 @@ function resetFGAddForm() {
   });
   document.getElementById("fg-product-dropdown").style.display = "none";
   document.getElementById("fg-add-feedback").style.display = "none";
+  handleFGAddProjectChange(""); // re-lock fields
 }
 
 async function submitFGAddItem() {
