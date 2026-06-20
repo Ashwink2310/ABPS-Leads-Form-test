@@ -290,7 +290,7 @@
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-live-store-stock" onclick="switchActiveDashboardModule('store-live-stock')">Live Raw Materials Store Stock</div>
           <div class="menu-card" id="mod-live-finished-store-stock" onclick="switchActiveDashboardModule('store-live-finished-goods')">Live Finished Goods Store Stock</div>
-          <div class="menu-card" id="mod-live-spare-store-stock" onclick="switchActiveDashboardModule('coming-soon')">Live Spare Store Stock</div>
+          <div class="menu-card" id="mod-live-spare-store-stock" onclick="switchActiveDashboardModule('store-live-spare')">Live Spare Store Stock</div>
         </div>
       </div>
     </div>
@@ -418,6 +418,7 @@
               <option value="">— Choose Project First —</option>
               <option value="Raw Materials Store">Raw Materials Store</option>
               <option value="Finished Goods Store">Finished Goods Store</option>
+              <option value="Spare Store">Spare Store</option>
             </select>
           </div>
         </div>
@@ -451,11 +452,12 @@
             </div>
             <div style="width: 100px;">
               <label class="field-label" style="font-size: 0.75rem;">Quantity</label>
-              <input type="number" id="ticket-item-quantity-input" min="1" placeholder="Qty" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius);" disabled>
+              <input type="number" id="ticket-item-quantity-input" min="1" placeholder="Qty" oninput="checkSpareStoreSuggestion()" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius);" disabled>
             </div>
             <button class="nav-btn-styled" id="ticket-add-item-action-btn" onclick="addItemToShoppingBasketRow()" style="width: 15%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); transition: all 0.15s ease;" disabled>+ Add</button>
           </div>
           <div id="ticket-live-counter-pill-zone" style="margin-top: 8px; font-size: 0.8rem; min-height: 20px;"></div>
+          <div id="spare-store-suggestion-banner" style="display:none; margin-top:8px; padding:8px 12px; background:#fffbeb; border:1.5px solid #f59e0b; border-radius:4px; font-size:0.8rem; color:#92400e; font-weight:600;"></div>
         </div>
 
         <div style="margin-bottom: 20px; overflow-x: auto;">
@@ -561,6 +563,10 @@
         </div>
 
       </div>
+    </div>
+
+    <div id="canvas-module-store-live-spare" class="workspace-panel" style="display:none; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px;">
+      <div class="dashboard-grid" id="dashboard-live-spare-inventory-metrics-mount-zone" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important; gap:10px; padding:0;"></div>
     </div>
 
     <div id="canvas-module-fg-add" class="workspace-panel" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px;">
@@ -878,7 +884,7 @@
             </select>
           </div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
             <label class="field-label" style="margin-top:0;">Order Quantity (No. of Sets) *</label>
             <input type="number" id="cboq-order-qty" min="1" value="1" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" />
@@ -886,6 +892,14 @@
           <div>
             <label class="field-label" style="margin-top:0;">Date</label>
             <input type="text" id="cboq-date" readonly style="padding:9px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0;">Prepared By *</label>
+            <select id="cboq-prepared-by" disabled style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select Person —</option>
+            </select>
           </div>
         </div>
       </div>
@@ -5662,6 +5676,36 @@ async function updateSelectedLiveStockPillCounter() {
   }
 }
 
+function checkSpareStoreSuggestion() {
+  const banner = document.getElementById("spare-store-suggestion-banner");
+  if (!banner) return;
+
+  const activeStoreScope = document.getElementById("ticket-selected-store-scope-toggle")?.value || "";
+  if (activeStoreScope !== "Raw Materials Store") {
+    banner.style.display = "none";
+    return;
+  }
+
+  const selectedMaterial = document.getElementById("ticket-item-selection-dropdown").value;
+  const qty = parseInt(document.getElementById("ticket-item-quantity-input").value, 10);
+
+  if (!selectedMaterial || !qty || qty <= 0) {
+    banner.style.display = "none";
+    return;
+  }
+
+  const cleanSearchKey = selectedMaterial.replace(/\s+/g, '').toLowerCase();
+  const spareCache = window.cachedSpareStoreStock || [];
+  const spareMatch = spareCache.find(item => (item.materialName || "").replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+
+  if (spareMatch && spareMatch.availableStock >= qty) {
+    banner.innerHTML = `⚠️ ${spareMatch.availableStock} ${spareMatch.unitType} of <strong>${selectedMaterial}</strong> already available in Spare Store. Consider requesting from Spare Store instead of opening a new packet in Raw Materials Store.`;
+    banner.style.display = "block";
+  } else {
+    banner.style.display = "none";
+  }
+}
+
 /**
  * 3. ADD LINE ITEM TO BASKET STREAM
  * Validates against ghost-stock limitations and formats rows inside the view viewport
@@ -6060,6 +6104,15 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
     navigateToStoreWorkspacePanel('store-live-stock');
   } else if (targetCanvasModuleId === 'store-live-finished-goods' || targetCanvasModuleId === 'live-finished-goods') {
     navigateToStoreWorkspacePanel('store-live-stock');
+  } else if (targetCanvasModuleId === 'store-live-spare') {
+    document.getElementById("module-store-workspace-enclosure-panel").style.display = "block";
+    document.querySelectorAll("#module-store-workspace-enclosure-panel .workspace-panel").forEach(p => p.style.display = "none");
+    const leftControls = document.getElementById("store-panel-left-controls");
+    const centerTitle  = document.getElementById("store-panel-center-title");
+    if (leftControls) leftControls.style.visibility = "hidden";
+    if (centerTitle)  centerTitle.style.visibility  = "hidden";
+    document.getElementById("canvas-module-store-live-spare").style.display = "block";
+    triggerLiveSpareStoreStockMetricsSync();
   } else if (targetCanvasModuleId === 'store-history-matrix') {
     navigateToStoreWorkspacePanel('store-history-matrix');
   } else if (targetCanvasModuleId === 'design-itemcode') {
@@ -6680,6 +6733,59 @@ async function triggerLiveWarehouseStockMetricsSync() {
     mountZone.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--warn);">⚠️ Sync Exception: Couldn't refresh active inventory balances.</div>`;
   } finally {
     if (syncBtn) { syncBtn.disabled = false; syncBtn.innerHTML = "🔄 Sync Stock Balances"; }
+  }
+}
+
+async function triggerLiveSpareStoreStockMetricsSync() {
+  const mountZone = document.getElementById("dashboard-live-spare-inventory-metrics-mount-zone");
+  if (!mountZone) return;
+
+  mountZone.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--muted);"><div class="spinner" style="display:inline-block; width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin 0.8s linear infinite; margin-right:8px; vertical-align:middle;"></div>Loading Spare Store...</div>`;
+
+  try {
+    const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getSpareStoreStock", sessionToken: localStorage.getItem("sessionToken") }) });
+    const data = await res.json();
+
+    if (!data.success || !data.stock || data.stock.length === 0) {
+      mountZone.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px 20px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius);"><div style="font-size:2rem; margin-bottom:10px;">📦</div><div style="font-size:0.95rem; font-weight:700; color:var(--muted);">Spare Store is Empty</div></div>`;
+      return;
+    }
+
+    const typeGroups = {};
+    data.stock.forEach(item => {
+      const type = item.typeOfMaterial || "Uncategorized";
+      if (!typeGroups[type]) typeGroups[type] = [];
+      typeGroups[type].push(item);
+    });
+
+    mountZone.innerHTML = "";
+    Object.keys(typeGroups).sort().forEach(type => {
+      const items = typeGroups[type];
+      const section = document.createElement("div");
+      section.style.cssText = "grid-column:1/-1; margin-bottom:16px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;";
+      section.innerHTML = `
+        <div style="padding:10px 16px; background:var(--highlight-bg); border-bottom:1px solid var(--border);">
+          <span style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--brand);">${type}</span>
+          <span style="font-size:0.72rem; font-weight:700; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:10px; margin-left:8px;">${items.length} items</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; padding:14px;">
+          ${items.map(item => {
+            let stockStyle = "color:#15803d; background:#dcfce7;";
+            if (item.availableStock === 0) stockStyle = "color:#b91c1c; background:#fee2e2;";
+            else if (item.availableStock <= 5) stockStyle = "color:#b45309; background:#fef3c7;";
+            return `<div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:var(--radius); width:180px; display:flex; flex-direction:column; gap:8px;">
+              <div style="font-size:0.78rem; font-weight:700; color:#334155; line-height:1.35;">${item.materialName}</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #e2e8f0; padding-top:8px;">
+                <span style="font-family:monospace; font-size:1.2rem; font-weight:800;">${item.availableStock}</span>
+                <span style="font-size:0.65rem; font-weight:700; padding:2px 6px; border-radius:3px; ${stockStyle}">${item.unitType}</span>
+              </div>
+            </div>`;
+          }).join("")}
+        </div>`;
+      mountZone.appendChild(section);
+    });
+  } catch(e) {
+    mountZone.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:20px; color:var(--warn);">⚠️ Sync failed: ${e.message}</div>`;
   }
 }
 
@@ -7678,6 +7784,7 @@ function handleCreateTicketOperatorChange(chosenOperatorVal) {
  * STEP 3 CHANGE: Final cascade tier unlocks Step 4 Add Item Canvas Zone Box
  */
 // --- LOCATE AND UPDATE THE PROJECT CHANGE HANDLER INSIDE index.html ---
+
 function handleCreateTicketProjectChange(chosenProjectVal) {
   const storeScopeDropdown = document.getElementById("ticket-selected-store-scope-toggle");
   const storeScopeLabel = document.getElementById("lbl-store-scope-title");
@@ -7690,7 +7797,7 @@ function handleCreateTicketProjectChange(chosenProjectVal) {
     storeScopeDropdown.disabled = true;
     storeScopeDropdown.style.opacity = "0.5";
     storeScopeDropdown.style.cursor = "not-allowed";
-    storeScopeDropdown.innerHTML = '<option value="">— Choose Project First —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option>';
+    storeScopeDropdown.innerHTML = '<option value="">— Choose Project First —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option><option value="Spare Store">Spare Store</option>';
     if (storeScopeLabel) storeScopeLabel.style.color = "var(--muted)";
     return;
   }
@@ -7698,8 +7805,7 @@ function handleCreateTicketProjectChange(chosenProjectVal) {
   storeScopeDropdown.disabled = false;
   storeScopeDropdown.style.opacity = "1";
   storeScopeDropdown.style.cursor = "pointer";
-  storeScopeDropdown.innerHTML = '<option value="">— Choose Store —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option>';
-  if (storeScopeLabel) storeScopeLabel.style.color = "var(--brand)";
+  storeScopeDropdown.innerHTML = '<option value="">— Choose Store —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option><option value="Spare Store">Spare Store</option>';
 }
 
 async function loadItemCatalogForSelectedProjectAndStore() {
@@ -7722,6 +7828,30 @@ async function loadItemCatalogForSelectedProjectAndStore() {
   const activeStoreScope = document.getElementById("ticket-selected-store-scope-toggle")?.value || "Raw Materials Store";
 
   try {
+    if (activeStoreScope === "Spare Store") {
+      const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getSpareStoreStock", sessionToken: localStorage.getItem("sessionToken") }) });
+      const data = await res.json();
+      window.cachedSpareStoreStock = data.stock || [];
+
+      if (window.cachedSpareStoreStock.length === 0) {
+        itemDrop.innerHTML = '<option value="">⚠️ Spare Store is empty</option>';
+        addZone.style.opacity = "0.5";
+        return;
+      }
+
+      itemDrop.innerHTML = '<option value="">— Select Material from Spare Store —</option>';
+      window.cachedSpareStoreStock.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.materialName;
+        opt.textContent = `${item.materialName} (${item.availableStock} ${item.unitType} available)`;
+        itemDrop.appendChild(opt);
+      });
+
+      addZone.style.opacity = "1";
+      itemDrop.disabled = false; qtyInp.disabled = false; addBtn.disabled = false;
+      addBtn.style.cursor = "pointer";
+      return;
+    }
     if (activeStoreScope === "Finished Goods Store") {
       const fgCache = window.cachedFinishedGoodsStoreStockCollection || {};
       const allFGItems = [
@@ -7763,6 +7893,10 @@ async function loadItemCatalogForSelectedProjectAndStore() {
       addBtn.disabled   = false;
       addBtn.style.cursor = "pointer";
     } else {
+      // Pre-fetch spare store stock for the suggestion banner
+      fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getSpareStoreStock", sessionToken: localStorage.getItem("sessionToken") }) })
+        .then(r => r.json()).then(d => { window.cachedSpareStoreStock = d.stock || []; }).catch(() => {});
+
       // Raw Materials Store — fetch from BOQ
       const res = await fetch(GAS_URL, {
         method: "POST",
@@ -8187,11 +8321,23 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
     if (deptLabel) deptLabel.style.color = "var(--muted)";
     return;
   } else if (chosenStoreValue === "Finished Goods Store") {
-    // Rebuild dropdown with only Panel and Dispatch options
     deptDropdown.innerHTML = `
       <option value="">— Select Department —</option>
       <option value="Panel">Panel</option>
       <option value="Dispatch">Dispatch</option>
+    `;
+    deptDropdown.disabled = false;
+    deptDropdown.style.opacity = "1";
+    deptDropdown.style.cursor = "pointer";
+    deptDropdown.value = "";
+  } else if (chosenStoreValue === "Spare Store") {
+    deptDropdown.innerHTML = `
+      <option value="">— Select Department —</option>
+      <option value="Reactor">Reactor</option>
+      <option value="Capacitor">Capacitor</option>
+      <option value="Panel">Panel</option>
+      <option value="Processing">Processing</option>
+      <option value="Service">Service</option>
     `;
     deptDropdown.disabled = false;
     deptDropdown.style.opacity = "1";
@@ -8443,6 +8589,27 @@ async function loadItemCodeCatalogIntoCache() {
   } catch(e) {
     console.error("ItemCode catalog load failed:", e);
     window.itemCodeCatalogCache = [];
+  }
+}
+
+async function loadDesignPersonnelIntoSelect(selectId) {
+  const selectEl = document.getElementById(selectId);
+  if (!selectEl) return;
+  selectEl.innerHTML = '<option value="">Loading...</option>';
+
+  try {
+    const res = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken") }) });
+    const data = await res.json();
+    const allPersonnel = data.fullPersonnelDataRecordsTree || [];
+    const designPeople = allPersonnel.filter(p => p.departmentsList.some(d => d.toLowerCase().trim().includes("design")));
+
+    selectEl.innerHTML = '<option value="">— Select Person —</option>';
+    designPeople.forEach(p => {
+      const opt = document.createElement("option"); opt.value = p.fullName; opt.textContent = p.fullName;
+      selectEl.appendChild(opt);
+    });
+  } catch(e) {
+    selectEl.innerHTML = '<option value="">Error loading personnel</option>';
   }
 }
 
@@ -8858,6 +9025,7 @@ async function initializeCreateBOQPanel() {
 
   // Ensure item code catalog is fresh before any material row search
   await loadItemCodeCatalogIntoCache();
+  await loadDesignPersonnelIntoSelect("cboq-prepared-by");
 
   // Load project IDs
   const projDrop = document.getElementById("cboq-project-id");
@@ -8891,7 +9059,7 @@ function handleCBOQProjectChange(projectId) {
   const meta = window.cboqProjectMeta && window.cboqProjectMeta[projectId];
   document.getElementById("cboq-customer-name").value = meta ? (meta.companyName || "") : "";
 
-  const fieldsToToggle = ["cboq-product-name", "cboq-product-rating", "cboq-department", "cboq-order-qty"];
+  const fieldsToToggle = ["cboq-product-name", "cboq-product-rating", "cboq-department", "cboq-order-qty", "cboq-prepared-by"];
   const addRowBtn = document.getElementById("cboq-add-row-btn");
   const submitBtn = document.getElementById("cboq-submit-btn");
 
@@ -9057,7 +9225,7 @@ function resetCreateBOQForm() {
   cboqMaterialRows = [];
   renderCBOQMaterialRows();
   ["cboq-project-id","cboq-department"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
-  ["cboq-customer-name","cboq-product-name","cboq-product-rating"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
+  ["cboq-customer-name","cboq-product-name","cboq-product-rating","cboq-prepared-by"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
   document.getElementById("cboq-order-qty").value = "1";
   document.getElementById("cboq-feedback").style.display = "none";
   handleCBOQProjectChange(""); // re-lock fields
@@ -9072,12 +9240,14 @@ async function submitCreateBOQ() {
   const department  = document.getElementById("cboq-department").value.trim();
   const orderQty    = parseInt(document.getElementById("cboq-order-qty").value) || 0;
   const customerName= document.getElementById("cboq-customer-name").value.trim();
+  const preparedBy  = document.getElementById("cboq-prepared-by").value.trim();
 
   if (!projectId)    return showBOQBanner("cboq-feedback", "Project ID is required.", "error");
   if (!productName)  return showBOQBanner("cboq-feedback", "Product Name is required.", "error");
   if (!productRating)return showBOQBanner("cboq-feedback", "Product Rating is required.", "error");
   if (!department)   return showBOQBanner("cboq-feedback", "Department is required.", "error");
   if (orderQty < 1)  return showBOQBanner("cboq-feedback", "Order Quantity must be at least 1.", "error");
+  if (!preparedBy)   return showBOQBanner("cboq-feedback", "Prepared By is required.", "error");
   if (cboqMaterialRows.length === 0) return showBOQBanner("cboq-feedback", "Add at least one material row.", "error");
 
   const invalidRow = cboqMaterialRows.find(r => !r.descriptionOfMaterial || !r.quantityFor1Set);
@@ -9094,7 +9264,8 @@ async function submitCreateBOQ() {
         sessionToken: localStorage.getItem("sessionToken"),
         projectId, customerName, productName, productRating,
         department, orderQuantity: orderQty,
-        materialRowsList: cboqMaterialRows
+        materialRowsList: cboqMaterialRows,
+        preparedBy
       })
     });
     const data = await res.json();
@@ -9335,6 +9506,10 @@ function renderEBOQForm(containerId) {
   `;
 
   renderEBOQMaterialRows();
+
+  if (eboqMode === "authorize") {
+    loadDesignPersonnelIntoSelect("eboq-authorized-by");
+  }
 }
 
 function updateEBOQId() {
@@ -9425,12 +9600,14 @@ async function submitEBOQAuthorize() {
   const productRating= document.getElementById("eboq-product-rating")?.value.trim() || "";
   const department   = document.getElementById("eboq-department")?.value.trim() || "";
   const orderQty     = parseInt(document.getElementById("eboq-order-qty")?.value) || 0;
+  const authorizedBy = eboqMode === "authorize" ? (document.getElementById("eboq-authorized-by")?.value.trim() || "") : "";
 
   if (!productName)   return showBOQBanner(feedbackId, "Product Name is required.", "error");
   if (!productRating) return showBOQBanner(feedbackId, "Product Rating is required.", "error");
   if (!department)    return showBOQBanner(feedbackId, "Department is required.", "error");
   if (orderQty < 1)   return showBOQBanner(feedbackId, "Order Quantity must be at least 1.", "error");
   if (eboqMaterialRows.length === 0) return showBOQBanner(feedbackId, "At least one material row is required.", "error");
+  if (eboqMode === "authorize" && !authorizedBy) return showBOQBanner(feedbackId, "Authorized By is required.", "error");
 
   const invalidRow = eboqMaterialRows.find(r => !r.descriptionOfMaterial || !r.quantityFor1Set);
   if (invalidRow) return showBOQBanner(feedbackId, "All rows must have Description and Quantity.", "error");
@@ -9447,7 +9624,8 @@ async function submitEBOQAuthorize() {
         boqId: eboqCurrentDraft.boqId,
         productName, productRating, department,
         orderQuantity: orderQty,
-        materialRowsList: eboqMaterialRows
+        materialRowsList: eboqMaterialRows,
+        authorizedBy
       })
     });
     const data = await res.json();
@@ -9583,12 +9761,25 @@ function renderUBOQForm() {
           </select>
         </div>
       </div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
         <div>
           <label class="field-label" style="margin-top:0;">Order Quantity (No. of Sets) *</label>
-          <input type="number" id="uboq-order-qty" value="${draft.orderQuantity}" min="1" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+          <input type="number" id="eboq-order-qty" value="${draft.orderQuantity}" min="1" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Date</label>
+          <input type="text" value="${draft.date}" readonly style="padding:8px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
         </div>
       </div>
+      ${eboqMode === "authorize" ? `
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div>
+          <label class="field-label" style="margin-top:0;">Authorized By *</label>
+          <select id="eboq-authorized-by" style="padding:8px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <option value="">Loading...</option>
+          </select>
+        </div>
+      </div>` : ``}
     </div>
 
     <!-- Material Rows -->
@@ -9819,7 +10010,7 @@ async function initializeFGAddWorkspace() {
       storeDrop.appendChild(opt);
     });
 
-    const qaPeople = allPersonnel.filter(p => p.departmentsList.some(d => d.toLowerCase().trim().includes("qa")));
+    const qaPeople = allPersonnel.filter(p => p.departmentsList.some(d => d.toLowerCase().trim().includes("quality assurance")));
     const qaDrop = document.getElementById("fg-add-qa-person");
     qaDrop.innerHTML = '<option value="">— Select Person —</option>';
     qaPeople.forEach(p => {
