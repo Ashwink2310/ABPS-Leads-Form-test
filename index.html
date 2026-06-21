@@ -300,7 +300,7 @@
       <div class="nav-department-group-wrapper" style="margin-bottom: 16px;">
         <div class="nav-group-title-label" style="font-size:0.8rem; color:var(--brand); font-weight:800; margin-bottom:6px;">Job Card Number</div>
         <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0;">
-          <div class="menu-card" id="mod-create-job-card" onclick="switchActiveDashboardModule('coming-soon')">Create Job Card Number</div>
+          <div class="menu-card" id="mod-create-job-card" onclick="switchActiveDashboardModule('create-job-card')">Create Job Card Number</div>
         </div>
       </div>
 
@@ -412,9 +412,18 @@
             </select>
           </div>
           <div>
+            <label class="field-label" id="lbl-job-card-title" style="font-weight: 700; color: var(--muted);">Select Job Card Number *</label>
+            <select id="ticket-job-card-dropdown" onchange="handleTicketJobCardChange(this.value)" disabled style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600; opacity: 0.5; cursor: not-allowed;">
+              <option value="">— Choose Project First —</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+          <div>
             <label class="field-label" id="lbl-store-scope-title" style="font-weight: 700; color: var(--muted);">Choose Store *</label>
             <select id="ticket-selected-store-scope-toggle" onchange="handleTicketStoreScopeSelectionChange(this.value)" disabled style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius); font-weight: 600; opacity: 0.5; cursor: not-allowed;">
-              <option value="">— Choose Project First —</option>
+              <option value="">— Choose Job Card First —</option>
               <option value="Raw Materials Store">Raw Materials Store</option>
               <option value="Finished Goods Store">Finished Goods Store</option>
               <option value="Spare Store">Spare Store</option>
@@ -608,13 +617,15 @@
           </div>
           <div>
             <label class="field-label" style="margin-top:0;">Product Rating</label>
-            <input type="text" id="fg-add-rating" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. 100KVAR 11KV" />
+            <input type="text" id="fg-add-rating" disabled oninput="triggerFGBOQValidation()" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="e.g. 100KVAR 11KV" />
           </div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
-            <label class="field-label" style="margin-top:0;">Job Card Number</label>
-            <input type="text" id="fg-add-jobcard" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" placeholder="Enter job card number..." />
+            <label class="field-label" style="margin-top:0;">Job Card Number *</label>
+            <select id="fg-add-jobcard" onchange="handleFGJobCardChange(this.value)" disabled style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select Project First —</option>
+            </select>
           </div>
           <div>
             <label class="field-label" style="margin-top:0;">Product Serial Number</label>
@@ -633,6 +644,8 @@
             <input type="text" id="fg-add-unit-other" placeholder="Specify unit..." style="display:none; margin-top:6px; padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" />
           </div>
         </div>
+
+        <div id="fg-boq-validation-zone" style="display:none; margin-bottom:16px;"></div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
             <label class="field-label" style="margin-top:0;">Production Department Responsible Person</label>
@@ -1156,6 +1169,41 @@
       <div style="font-size: 3rem; margin-bottom: 16px;">🚧</div>
       <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--brand); margin-bottom: 8px;">Coming Soon</h2>
       <p style="font-size: 0.9rem; color: var(--muted);">This feature is currently under development and will be available soon.</p>
+    </div>
+
+    <div id="workspace-create-job-card" class="workspace-panel" style="display: none; padding: 16px;">
+      <h2 style="margin-bottom:6px; color:var(--brand);">Create Job Card Number</h2>
+      <p style="font-size:0.82rem; color:var(--muted); margin-bottom:16px;">Select a Project ID, then assign Job Card Numbers to each unit of every authorized product.</p>
+      <div id="job-card-feedback" style="display:none; padding:12px; margin-bottom:12px; border-left:4px solid; border-radius:var(--radius);"></div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:14px;">
+        <div>
+          <label class="field-label" style="margin-top:0; color:var(--brand);">Select Project ID *</label>
+          <select id="job-card-project" onchange="handleJobCardProjectChange(this.value)" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+            <option value="">— Select Project ID —</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" style="margin-top:0;">Customer Name</label>
+          <input type="text" id="job-card-customer" readonly style="padding:9px; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:var(--radius);" />
+        </div>
+      </div>
+
+      <div id="job-card-boq-groups-mount" style="display:none;"></div>
+
+      <div id="job-card-bottom-controls" style="display:none; margin-top:16px;">
+        <div style="display:grid; grid-template-columns:1fr; gap:14px; margin-bottom:16px; background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:14px;">
+          <div>
+            <label class="field-label" style="margin-top:0; color:var(--brand);">Job Card Number Created By *</label>
+            <select id="job-card-created-by" style="padding:9px; font-weight:600; border:1.5px solid var(--border); border-radius:var(--radius);">
+              <option value="">— Select Person —</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="nav-btn-styled" id="job-card-submit-btn" onclick="submitJobCardForm()" style="background:var(--accent); padding:8px 24px; font-weight:700;">Save Job Card Numbers</button>
+        </div>
+      </div>
     </div>
     
     <div id="workspace-cardDetails" class="workspace-panel" style="display: none;">
@@ -1758,7 +1806,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx3pB80JqOPoA6BSuYKluOLJyXuekFxNgLsBM5iZQ8fcWKZadKhXE95b2gv_JTdY3H6oQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxIc8CE9i10U_QT72R3Qioaof9UuyJEbZy7piK72BUacF3U-leWG75YkeU6lkrBn6lY_w/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -1799,6 +1847,9 @@ let uploadDrawingsSelectedFile = null;
 
 let fgQATestCertFile = null;
 let fgQAInspectionFile = null;
+
+let jobCardBOQGroups = [];
+let jobCardExisting = {};
 
 window.onload = function() {
   const token = localStorage.getItem("sessionToken"); 
@@ -5390,6 +5441,12 @@ async function initializeMaterialRequestWorkspace() {
   projectDropdown.value = "";
   deptDropdown.value = ""; 
   if (storeScopeDropdown) storeScopeDropdown.value = "";
+  const jobCardDropdown = document.getElementById("ticket-job-card-dropdown");
+  if (jobCardDropdown) {
+    jobCardDropdown.value = "";
+    jobCardDropdown.disabled = true;
+    jobCardDropdown.innerHTML = '<option value="">— Choose Project First —</option>';
+  }
   resetMaterialRequestCascadingLockState();
   
   clearFullBasketDraftState();
@@ -5473,6 +5530,14 @@ async function submitMaterialRequestTicketToBackend() {
     }
     return;
   }
+
+  if (!document.getElementById("ticket-job-card-dropdown")?.value) {
+    if (feedbackBanner) {
+      feedbackBanner.style.cssText = "display: block; background: #fff3c7; border-color: #b45309; color: #b45309; padding: 10px; margin-bottom: 12px; border-left: 4px solid #b45309; text-align: left;";
+      feedbackBanner.innerHTML = `<strong>Compulsory Input Missing:</strong> Please select a Job Card Number.`;
+    }
+    return;
+  }
   
   if (dynamicTicketShoppingBasketArray.length === 0) {
     if (feedbackBanner) {
@@ -5494,11 +5559,13 @@ async function submitMaterialRequestTicketToBackend() {
   }
   
   try {
+    const jobCardNumberVal = document.getElementById("ticket-job-card-dropdown")?.value || "";
     const payload = {
       action: "submitEngineerMaterialTicket",
       sessionToken: localStorage.getItem("sessionToken"),
       activeEngineer: operatorSignatureName,
       projectId: projectId,
+      jobCardNumber: jobCardNumberVal,
       departmentOutgoing: departmentVal,
       ticketTypeCommandString: ticketTypeVal,
       storeTargetScope: chosenStoreTargetScopeStr, 
@@ -5736,8 +5803,44 @@ async function addItemToShoppingBasketRow() {
   
   const cleanSearchKey = materialName.replace(/\s+/g, '').toLowerCase();
 
+  // --- SPARE STORE: block if requested qty exceeds available spare stock ---
+  if (activeStoreScope === "Spare Store") {
+    const spareCache = window.cachedSpareStoreStock || [];
+    const spareMatch = spareCache.find(item => (item.materialName || "").replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+    const availableQty = spareMatch ? spareMatch.availableStock : 0;
+
+    if (quantity > availableQty) {
+      alert(`Spare Store Lockout: Only ${availableQty} ${spareMatch ? spareMatch.unitType : 'units'} of ${materialName} available in Spare Store. Please request from Raw Materials Store instead — this material is not currently available in sufficient quantity in Spare Store.`);
+      return;
+    }
+
+    const existingLineItem = dynamicTicketShoppingBasketArray.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
+    let totalRequestedQuantity = quantity;
+    if (existingLineItem) {
+      totalRequestedQuantity += existingLineItem.quantity;
+      if (totalRequestedQuantity > availableQty) {
+        alert(`Spare Store Lockout: Combined requested quantity (${totalRequestedQuantity}) exceeds available Spare Store stock (${availableQty}) for ${materialName}. Please request the remainder from Raw Materials Store instead.`);
+        return;
+      }
+      existingLineItem.quantity = totalRequestedQuantity;
+    } else {
+      dynamicTicketShoppingBasketArray.push({
+        materialName: materialName,
+        itemCode: spareMatch ? spareMatch.itemCode : "",
+        quantity: totalRequestedQuantity,
+        unitType: spareMatch ? spareMatch.unitType : "NOS",
+        requiresBOQIncreaseFlag: false,
+        allottedRemainingLimit: availableQty
+      });
+    }
+    qtyInput.value = "";
+    renderDraftBasketTableViewportRows();
+    return;
+  }
+
   // --- FINISHED GOODS STORE: no BOQ check, no inventory catalog check ---
   if (activeStoreScope === "Finished Goods Store") {
+
     const existingLineItem = dynamicTicketShoppingBasketArray.find(i => i.materialName.replace(/\s+/g, '').toLowerCase() === cleanSearchKey);
     let totalRequestedQuantity = quantity;
     if (existingLineItem) {
@@ -5946,6 +6049,7 @@ async function executeBOQLimitIncreaseRequestTransmissionPipeline() {
       sessionToken: localStorage.getItem("sessionToken"),
       activeEngineer: operatorName,
       projectId: projectId,
+      jobCardNumber: document.getElementById("ticket-job-card-dropdown")?.value || "",
       departmentOutgoing: departmentVal,
       justificationNotesText: notesField.value.trim(),
       itemsClusterArray: dynamicTicketShoppingBasketArray
@@ -6159,6 +6263,12 @@ function switchActiveDashboardModule(targetCanvasModuleId) {
     document.getElementById("module-workspace-container").style.display = "block";
     document.querySelectorAll("#module-workspace-container .workspace-panel").forEach(p => p.style.display = "none");
     document.getElementById("workspace-coming-soon").style.display = "block";
+  } else if (targetCanvasModuleId === 'create-job-card') {
+    document.getElementById("dashboard-view").style.display = "none";
+    document.getElementById("module-workspace-container").style.display = "block";
+    document.querySelectorAll("#module-workspace-container .workspace-panel").forEach(p => p.style.display = "none");
+    document.getElementById("workspace-create-job-card").style.display = "block";
+    initializeJobCardPanel();
   }
 }
 
@@ -7803,27 +7913,50 @@ function handleCreateTicketOperatorChange(chosenOperatorVal) {
  */
 // --- LOCATE AND UPDATE THE PROJECT CHANGE HANDLER INSIDE index.html ---
 
-function handleCreateTicketProjectChange(chosenProjectVal) {
+async function handleCreateTicketProjectChange(chosenProjectVal) {
+  const jobCardDropdown = document.getElementById("ticket-job-card-dropdown");
+  const jobCardLabel = document.getElementById("lbl-job-card-title");
   const storeScopeDropdown = document.getElementById("ticket-selected-store-scope-toggle");
   const storeScopeLabel = document.getElementById("lbl-store-scope-title");
 
   // Reset everything downstream
   resetMaterialRequestCascadingLockState();
   storeScopeDropdown.value = "";
+  jobCardDropdown.value = "";
+
+  storeScopeDropdown.disabled = true;
+  storeScopeDropdown.style.opacity = "0.5";
+  storeScopeDropdown.style.cursor = "not-allowed";
+  storeScopeDropdown.innerHTML = '<option value="">— Choose Job Card First —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option><option value="Spare Store">Spare Store</option>';
+  if (storeScopeLabel) storeScopeLabel.style.color = "var(--muted)";
 
   if (!chosenProjectVal) {
-    storeScopeDropdown.disabled = true;
-    storeScopeDropdown.style.opacity = "0.5";
-    storeScopeDropdown.style.cursor = "not-allowed";
-    storeScopeDropdown.innerHTML = '<option value="">— Choose Project First —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option><option value="Spare Store">Spare Store</option>';
-    if (storeScopeLabel) storeScopeLabel.style.color = "var(--muted)";
+    jobCardDropdown.disabled = true;
+    jobCardDropdown.style.opacity = "0.5";
+    jobCardDropdown.style.cursor = "not-allowed";
+    jobCardDropdown.innerHTML = '<option value="">— Choose Project First —</option>';
+    if (jobCardLabel) jobCardLabel.style.color = "var(--muted)";
     return;
   }
 
-  storeScopeDropdown.disabled = false;
-  storeScopeDropdown.style.opacity = "1";
-  storeScopeDropdown.style.cursor = "pointer";
-  storeScopeDropdown.innerHTML = '<option value="">— Choose Store —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option><option value="Spare Store">Spare Store</option>';
+  jobCardDropdown.innerHTML = '<option value="">Loading...</option>';
+  try {
+    const res = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"fetchJobCardsForProject", sessionToken: localStorage.getItem("sessionToken"), projectId: chosenProjectVal }) });
+    const data = await res.json();
+    jobCardDropdown.innerHTML = '<option value="">— Select Job Card Number —</option>';
+    (data.jobCards || []).forEach(jc => {
+      const opt = document.createElement("option");
+      opt.value = jc.jobCardNumber;
+      opt.textContent = `${jc.jobCardNumber} | ${jc.productName} ${jc.productRating}`;
+      jobCardDropdown.appendChild(opt);
+    });
+    jobCardDropdown.disabled = false;
+    jobCardDropdown.style.opacity = "1";
+    jobCardDropdown.style.cursor = "pointer";
+    if (jobCardLabel) jobCardLabel.style.color = "var(--brand)";
+  } catch(e) {
+    jobCardDropdown.innerHTML = '<option value="">Error loading job cards</option>';
+  }
 }
 
 async function loadItemCatalogForSelectedProjectAndStore() {
@@ -8380,6 +8513,29 @@ function handleTicketStoreScopeSelectionChange(chosenStoreValue) {
 
   // Pre-load item catalog now that store scope is known
   loadItemCatalogForSelectedProjectAndStore();
+}
+
+function handleTicketJobCardChange(chosenJobCard) {
+  const storeScopeDropdown = document.getElementById("ticket-selected-store-scope-toggle");
+  const storeScopeLabel = document.getElementById("lbl-store-scope-title");
+
+  resetMaterialRequestCascadingLockState();
+  storeScopeDropdown.value = "";
+
+  if (!chosenJobCard) {
+    storeScopeDropdown.disabled = true;
+    storeScopeDropdown.style.opacity = "0.5";
+    storeScopeDropdown.style.cursor = "not-allowed";
+    storeScopeDropdown.innerHTML = '<option value="">— Choose Job Card First —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option><option value="Spare Store">Spare Store</option>';
+    if (storeScopeLabel) storeScopeLabel.style.color = "var(--muted)";
+    return;
+  }
+
+  storeScopeDropdown.disabled = false;
+  storeScopeDropdown.style.opacity = "1";
+  storeScopeDropdown.style.cursor = "pointer";
+  storeScopeDropdown.innerHTML = '<option value="">— Choose Store —</option><option value="Raw Materials Store">Raw Materials Store</option><option value="Finished Goods Store">Finished Goods Store</option><option value="Spare Store">Spare Store</option>';
+  if (storeScopeLabel) storeScopeLabel.style.color = "var(--brand)";
 }
 
 /**
@@ -10153,19 +10309,39 @@ async function initializeFGAddWorkspace() {
   fgAddWorkspaceInitInProgress = false;
 }
 
-function handleFGAddProjectChange(projectId) {
+async function handleFGAddProjectChange(projectId) {
   const meta = window.fgAddProjectMeta && window.fgAddProjectMeta[projectId];
   document.getElementById("fg-add-customer").value = meta ? (meta.companyName || "") : "";
 
-  const fieldsToToggle = ["fg-add-department","fg-add-product-search","fg-add-rating","fg-add-jobcard","fg-add-serial","fg-add-unit","fg-add-prod-person","fg-add-store-person","fg-add-remarks"];
+  const fieldsToToggle = ["fg-add-department","fg-add-product-search","fg-add-rating","fg-add-serial","fg-add-unit","fg-add-prod-person","fg-add-store-person","fg-add-remarks"];
   const submitBtn = document.getElementById("fg-add-submit-btn");
+  const jobCardDrop = document.getElementById("fg-add-jobcard");
 
   if (projectId) {
     fieldsToToggle.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = false; });
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = "1"; submitBtn.style.cursor = "pointer"; }
+    // Submit button stays locked until BOQ validation passes
+
+    jobCardDrop.innerHTML = '<option value="">Loading...</option>';
+    jobCardDrop.disabled = true;
+    try {
+      const res = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"fetchJobCardsForProject", sessionToken: localStorage.getItem("sessionToken"), projectId }) });
+      const data = await res.json();
+      jobCardDrop.innerHTML = '<option value="">— Select Job Card Number —</option>';
+      (data.jobCards || []).forEach(jc => {
+        const opt = document.createElement("option");
+        opt.value = jc.jobCardNumber;
+        opt.textContent = `${jc.jobCardNumber} | ${jc.productName} ${jc.productRating}`;
+        jobCardDrop.appendChild(opt);
+      });
+      jobCardDrop.disabled = false;
+    } catch(e) {
+      jobCardDrop.innerHTML = '<option value="">Error loading job cards</option>';
+    }
   } else {
     fieldsToToggle.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = true; });
     if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = "0.5"; submitBtn.style.cursor = "not-allowed"; }
+    jobCardDrop.innerHTML = '<option value="">— Select Project First —</option>';
+    jobCardDrop.disabled = true;
   }
 }
 
@@ -10210,6 +10386,99 @@ function selectFGProduct(productName, itemCode) {
   document.getElementById("fg-add-product-name").value   = productName;
   document.getElementById("fg-add-item-code").value      = itemCode;
   document.getElementById("fg-product-dropdown").style.display = "none";
+  triggerFGBOQValidation();
+}
+
+function handleFGJobCardChange(jobCardNumber) {
+  triggerFGBOQValidation();
+}
+
+async function triggerFGBOQValidation() {
+  const zone = document.getElementById("fg-boq-validation-zone");
+  const projectId    = document.getElementById("fg-add-project").value.trim();
+  const jobCardNumber= document.getElementById("fg-add-jobcard").value.trim();
+  const productName  = document.getElementById("fg-add-product-name").value.trim();
+  const productRating= document.getElementById("fg-add-rating").value.trim();
+
+  if (!projectId || !jobCardNumber || !productName) {
+    zone.style.display = "none";
+    zone.innerHTML = "";
+    window.fgBOQValidationPassed = false;
+    updateFGSubmitButtonState();
+    return;
+  }
+
+  zone.style.display = "block";
+  zone.innerHTML = `<div style="text-align:center; padding:14px; color:var(--muted); font-size:0.85rem;">Checking BOQ material consumption for this Job Card...</div>`;
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "validateJobCardBOQConsumption",
+        sessionToken: localStorage.getItem("sessionToken"),
+        projectId, jobCardNumber, productName, productRating
+      })
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      zone.innerHTML = `<div style="padding:12px; background:#fff5f5; border:1.5px solid #fca5a5; border-radius:var(--radius); color:#b91c1c; font-size:0.85rem; font-weight:600;">⚠️ ${data.error || "Validation failed."}</div>`;
+      window.fgBOQValidationPassed = false;
+      updateFGSubmitButtonState();
+      return;
+    }
+
+    if (!data.details || data.details.length === 0) {
+      zone.innerHTML = `<div style="padding:12px; background:#fff5f5; border:1.5px solid #fca5a5; border-radius:var(--radius); color:#b91c1c; font-size:0.85rem; font-weight:600;">⚠️ No BOQ found for Product Name <strong>${productName}</strong> ${productRating}. Contact Design department to create/authorize the BOQ for this product.</div>`;
+      window.fgBOQValidationPassed = false;
+      updateFGSubmitButtonState();
+      return;
+    }
+
+    const rowsHtml = data.details.map(d => {
+      const statusColor = d.matched ? { bg: "#dcfce7", color: "#15803d", icon: "✅" } : { bg: "#fee2e2", color: "#b91c1c", icon: "❌" };
+      return `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:${statusColor.bg}; border-radius:4px; margin-bottom:4px;">
+        <div style="font-size:0.8rem; font-weight:600; color:#1e293b;">${statusColor.icon} ${d.materialName} <span style="font-size:0.68rem; color:var(--muted); font-weight:400;">(${d.typeOfStore})</span></div>
+        <div style="font-size:0.78rem; font-weight:700; color:${statusColor.color};">Required: ${d.required} ${d.unitType} | Consumed: ${d.consumed} ${d.unitType}</div>
+      </div>`;
+    }).join("");
+
+    window.fgBOQValidationPassed = data.matched;
+
+    if (data.matched) {
+      zone.innerHTML = `
+        <div style="padding:10px 12px; background:#f0fdf4; border:1.5px solid #86efac; border-radius:var(--radius) var(--radius) 0 0; color:#15803d; font-size:0.85rem; font-weight:700;">✅ BOQ material consumption matches for this Job Card.</div>
+        <div style="border:1px solid var(--border); border-top:none; padding:10px; border-radius:0 0 var(--radius) var(--radius);">${rowsHtml}</div>`;
+    } else {
+      zone.innerHTML = `
+        <div style="padding:10px 12px; background:#fff5f5; border:1.5px solid #fca5a5; border-radius:var(--radius) var(--radius) 0 0; color:#b91c1c; font-size:0.85rem; font-weight:700;">❌ Material consumption mismatch for ${productName} ${productRating}. Contact Design department to update the BOQ for this product, or correct material requests/returns for this Job Card.</div>
+        <div style="border:1px solid var(--border); border-top:none; padding:10px; border-radius:0 0 var(--radius) var(--radius);">${rowsHtml}</div>`;
+    }
+
+    updateFGSubmitButtonState();
+  } catch(e) {
+    zone.innerHTML = `<div style="padding:12px; background:#fff5f5; border:1.5px solid #fca5a5; border-radius:var(--radius); color:#b91c1c; font-size:0.85rem;">Network error checking BOQ: ${e.message}</div>`;
+    window.fgBOQValidationPassed = false;
+    updateFGSubmitButtonState();
+  }
+}
+
+function updateFGSubmitButtonState() {
+  const btn = document.getElementById("fg-add-submit-btn");
+  if (!btn) return;
+  const projectId = document.getElementById("fg-add-project").value.trim();
+  if (!projectId) return; // still locked by project, no change needed
+
+  if (window.fgBOQValidationPassed) {
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
+  } else {
+    btn.disabled = true;
+    btn.style.opacity = "0.5";
+    btn.style.cursor = "not-allowed";
+  }
 }
 
 function resetFGAddForm() {
@@ -10233,6 +10502,9 @@ function resetFGAddForm() {
   if (inspBox) { inspBox.textContent = "📎 Click to attach Inspection Clearance"; inspBox.classList.remove("done"); }
   document.getElementById("fg-product-dropdown").style.display = "none";
   document.getElementById("fg-add-feedback").style.display = "none";
+  const validationZone = document.getElementById("fg-boq-validation-zone");
+  if (validationZone) { validationZone.style.display = "none"; validationZone.innerHTML = ""; }
+  window.fgBOQValidationPassed = false;
   handleFGAddProjectChange(""); // re-lock fields
 }
 
@@ -10258,6 +10530,7 @@ async function submitFGAddItem() {
   if (!projectId)   return showBOQBanner("fg-add-feedback", "Project ID is required.", "error");
   if (!productName) return showBOQBanner("fg-add-feedback", "Product Name is required.", "error");
   if (!storePerson) return showBOQBanner("fg-add-feedback", "Store Incharge Person is required.", "error");
+  if (!window.fgBOQValidationPassed) return showBOQBanner("fg-add-feedback", "Material consumption for this Job Card does not match the BOQ. Resolve the mismatch before submitting.", "error");
   if (!qaPersonName) return showBOQBanner("fg-add-feedback", "Q/A Person is required.", "error");
   if (qaDone !== "Yes") return showBOQBanner("fg-add-feedback", "Q/A Done must be set to Yes before this item can be submitted.", "error");
 
@@ -10521,6 +10794,193 @@ async function submitUploadDrawing() {
   } finally {
     btn.disabled = false;
     btn.textContent = "Upload Document";
+  }
+}
+
+async function initializeJobCardPanel() {
+  const projDrop = document.getElementById("job-card-project");
+  projDrop.innerHTML = '<option value="">Loading...</option>';
+  document.getElementById("job-card-customer").value = "";
+  document.getElementById("job-card-boq-groups-mount").style.display = "none";
+  document.getElementById("job-card-boq-groups-mount").innerHTML = "";
+  document.getElementById("job-card-bottom-controls").style.display = "none";
+  document.getElementById("job-card-feedback").style.display = "none";
+
+  try {
+    const res  = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"pullLiveActiveProjectCodes", sessionToken: localStorage.getItem("sessionToken") }) });
+    const data = await res.json();
+    projDrop.innerHTML = '<option value="">— Select Project ID —</option>';
+    (data.projects || []).forEach(code => {
+      const opt = document.createElement("option"); opt.value = code; opt.textContent = code; projDrop.appendChild(opt);
+    });
+    window.jobCardProjectMeta = data.projectMeta || {};
+  } catch(e) {
+    projDrop.innerHTML = '<option value="">Error loading projects</option>';
+  }
+
+  // Load Production personnel
+  const createdByDrop = document.getElementById("job-card-created-by");
+  createdByDrop.innerHTML = '<option value="">Loading...</option>';
+  try {
+    const res = await fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"getStoreOperatorsList", sessionToken: localStorage.getItem("sessionToken") }) });
+    const data = await res.json();
+    const allPersonnel = data.fullPersonnelDataRecordsTree || [];
+    const prodPeople = filterOutPureAdminPersonnel(allPersonnel.filter(p => p.departmentsList.some(d => d.toLowerCase().trim() === "production" || d.toLowerCase().trim() === "admin")));
+    createdByDrop.innerHTML = '<option value="">— Select Person —</option>';
+    prodPeople.forEach(p => {
+      const opt = document.createElement("option"); opt.value = p.fullName; opt.textContent = p.fullName;
+      createdByDrop.appendChild(opt);
+    });
+  } catch(e) {
+    createdByDrop.innerHTML = '<option value="">Error loading personnel</option>';
+  }
+}
+
+function handleJobCardProjectChange(projectId) {
+  const meta = window.jobCardProjectMeta && window.jobCardProjectMeta[projectId];
+  document.getElementById("job-card-customer").value = meta ? (meta.companyName || "") : "";
+
+  const mount = document.getElementById("job-card-boq-groups-mount");
+  const bottomControls = document.getElementById("job-card-bottom-controls");
+
+  if (!projectId) {
+    mount.style.display = "none";
+    mount.innerHTML = "";
+    bottomControls.style.display = "none";
+    return;
+  }
+
+  loadJobCardBOQGroups(projectId);
+}
+
+async function loadJobCardBOQGroups(projectId) {
+  const mount = document.getElementById("job-card-boq-groups-mount");
+  const bottomControls = document.getElementById("job-card-bottom-controls");
+  mount.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted);">Loading...</div>`;
+  mount.style.display = "block";
+
+  try {
+    const [boqRes, jcRes] = await Promise.all([
+      fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"fetchBOQProductsForJobCard", sessionToken: localStorage.getItem("sessionToken"), projectId }) }),
+      fetch(GAS_URL, { method:"POST", body: JSON.stringify({ action:"fetchJobCardsForProject", sessionToken: localStorage.getItem("sessionToken"), projectId }) })
+    ]);
+    const boqData = await boqRes.json();
+    const jcData  = await jcRes.json();
+
+    jobCardBOQGroups = boqData.boqGroups || [];
+
+    // Map existing job cards: key = boqId_setNumber
+    jobCardExisting = {};
+    (jcData.jobCards || []).forEach(jc => {
+      jobCardExisting[`${jc.boqId}_${jc.setNumber}`] = jc.jobCardNumber;
+    });
+
+    if (jobCardBOQGroups.length === 0) {
+      mount.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted); font-size:0.9rem; background:#fff; border:1px solid var(--border); border-radius:6px;">No authorized BOQ found for this project.</div>`;
+      bottomControls.style.display = "none";
+      return;
+    }
+
+    mount.innerHTML = "";
+    jobCardBOQGroups.forEach(group => {
+      const safeBoqId = group.boqId.replace(/[^a-zA-Z0-9]/g, '_');
+      const section = document.createElement("div");
+      section.style.cssText = "margin-bottom:18px; background:#fff; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;";
+
+      let rowsHtml = "";
+      for (let setNum = 1; setNum <= group.orderQuantity; setNum++) {
+        const existingVal = jobCardExisting[`${group.boqId}_${setNum}`] || "";
+        rowsHtml += `
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:8px; text-align:center; font-weight:700; color:var(--muted);">${setNum}</td>
+            <td style="padding:8px;">
+              <input type="text" 
+                data-boqid="${group.boqId}" data-setnum="${setNum}"
+                data-project="${group.boqId ? '' : ''}"
+                class="job-card-input-${safeBoqId}"
+                value="${existingVal}"
+                placeholder="Enter Job Card Number..."
+                style="padding:7px; font-weight:600; width:100%; border:1.5px solid var(--border); border-radius:4px;" />
+            </td>
+          </tr>`;
+      }
+
+      section.innerHTML = `
+        <div style="padding:10px 16px; background:var(--highlight-bg); border-bottom:1px solid var(--border);">
+          <span style="font-family:monospace; font-weight:800; background:var(--brand); color:#fff; font-size:0.72rem; padding:3px 6px;">${group.boqId}</span>
+          <span style="margin-left:8px; font-weight:700; color:var(--text);">${group.productName} ${group.productRating}</span>
+          <span style="font-size:0.72rem; color:var(--muted); margin-left:8px;">Order Qty: ${group.orderQuantity}</span>
+        </div>
+        <table style="width:100%; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f8fafc;">
+              <th style="padding:8px; font-size:0.7rem; text-transform:uppercase; color:var(--muted); width:60px;">Set No.</th>
+              <th style="padding:8px; font-size:0.7rem; text-transform:uppercase; color:var(--muted); text-align:left;">Job Card Number *</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
+      mount.appendChild(section);
+    });
+
+    bottomControls.style.display = "block";
+  } catch(e) {
+    mount.innerHTML = `<div style="text-align:center; padding:20px; color:var(--warn);">Error: ${e.message}</div>`;
+  }
+}
+
+async function submitJobCardForm() {
+  const projectId = document.getElementById("job-card-project").value;
+  const customerName = document.getElementById("job-card-customer").value;
+  const createdBy = document.getElementById("job-card-created-by").value.trim();
+  const btn = document.getElementById("job-card-submit-btn");
+
+  if (!createdBy) return showBOQBanner("job-card-feedback", "Job Card Number Created By is required.", "error");
+
+  let entries = [];
+  let hasEmptyField = false;
+
+  jobCardBOQGroups.forEach(group => {
+    const safeBoqId = group.boqId.replace(/[^a-zA-Z0-9]/g, '_');
+    document.querySelectorAll(`.job-card-input-${safeBoqId}`).forEach(input => {
+      const val = input.value.trim();
+      if (!val) { hasEmptyField = true; }
+      entries.push({
+        projectId, customerName,
+        productName: group.productName,
+        productRating: group.productRating,
+        boqId: group.boqId,
+        setNumber: parseInt(input.dataset.setnum, 10),
+        jobCardNumber: val
+      });
+    });
+  });
+
+  if (hasEmptyField) return showBOQBanner("job-card-feedback", "All Job Card Number fields must be filled in before saving.", "error");
+  if (entries.length === 0) return showBOQBanner("job-card-feedback", "No entries to save.", "error");
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;margin-right:6px;vertical-align:middle;"></div> Saving...';
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "submitJobCardNumbers", sessionToken: localStorage.getItem("sessionToken"), entries, createdBy, projectId })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showBOQBanner("job-card-feedback", `${data.count} Job Card Number(s) saved successfully.`, "success");
+      await loadJobCardBOQGroups(projectId);
+    } else {
+      showBOQBanner("job-card-feedback", data.error || "Failed to save job cards.", "error");
+    }
+  } catch(e) {
+    showBOQBanner("job-card-feedback", "Network error: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Save Job Card Numbers";
   }
 }
 
