@@ -245,10 +245,9 @@
           <div class="menu-card" id="mod-design-itemcode"        onclick="switchActiveDashboardModule('design-itemcode')">Add / Check Item Code Number</div>
           <div class="menu-card" id="mod-design-upload-drawings" onclick="switchActiveDashboardModule('design-upload-drawings')">Upload Drawings</div>
         </div>
-        <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 0;">
+        <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0;">
           <div class="menu-card" id="mod-design-create-boq"   onclick="switchActiveDashboardModule('design-create-boq')">Create Bill of Quantity</div>
           <div class="menu-card" id="mod-design-auth-boq"     onclick="switchActiveDashboardModule('design-auth-boq')">Authorize Bill of Quantity</div>
-          <div class="menu-card" id="mod-design-boq-costing"  onclick="switchActiveDashboardModule('coming-soon')">Bill of Quantity Costing</div>
           <div class="menu-card" id="mod-design-update-boq"   onclick="switchActiveDashboardModule('design-update-boq')">Update Bill of Quantity</div>
           <div class="menu-card" id="mod-design-auth-boq-upd" onclick="switchActiveDashboardModule('design-auth-boq-upd')">Authorize Bill of Quantity Update</div>
         </div>
@@ -879,7 +878,7 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
           <div>
             <label class="field-label" style="margin-top:0;">Order Quantity (No. of Sets) *</label>
-            <input type="number" id="cboq-order-qty" min="1" value="1" disabled style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+            <input type="number" id="cboq-order-qty" min="1" value="1" disabled oninput="updateCBOQTotals()" style="padding:9px; border:1.5px solid var(--border); border-radius:var(--radius);" />
           </div>
           <div>
             <label class="field-label" style="margin-top:0;">Date</label>
@@ -908,11 +907,13 @@
               <tr style="background:#f8fafc;">
                 <th style="width:40px; text-align:center; padding:8px; font-size:0.7rem;">Sr No</th>
                 <th style="width:130px; padding:8px; font-size:0.7rem;">Type of Store *</th>
-                <th style="min-width:220px; padding:8px; font-size:0.7rem;">Description of Material *</th>
-                <th style="width:110px; padding:8px; font-size:0.7rem;">Item Code</th>
-                <th style="width:120px; padding:8px; font-size:0.7rem;">Make</th>
-                <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Qty / Set *</th>
-                <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Unit *</th>
+                <th style="min-width:200px; padding:8px; font-size:0.7rem;">Description of Material *</th>
+                <th style="width:100px; padding:8px; font-size:0.7rem;">Item Code</th>
+                <th style="width:100px; padding:8px; font-size:0.7rem;">Make</th>
+                <th style="width:70px; padding:8px; font-size:0.7rem; text-align:center;">Qty / Set *</th>
+                <th style="width:70px; padding:8px; font-size:0.7rem; text-align:center;">Unit *</th>
+                <th style="width:100px; padding:8px; font-size:0.7rem; text-align:center;">Design Rate / Qty</th>
+                <th style="width:100px; padding:8px; font-size:0.7rem; text-align:center;">Total Material Rate</th>
                 <th style="width:40px; padding:8px; font-size:0.7rem; text-align:center;">Del</th>
               </tr>
             </thead>
@@ -922,6 +923,17 @@
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:var(--radius); padding:14px; margin-bottom:16px; display:flex; justify-content:flex-end; gap:32px;">
+        <div style="text-align:right;">
+          <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--muted);">Total BOQ Cost Per Set</div>
+          <div id="cboq-total-per-set" style="font-size:1.1rem; font-weight:800; color:var(--accent);">₹0.00</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--muted);">Total BOQ Cost</div>
+          <div id="cboq-total-cost" style="font-size:1.1rem; font-weight:800; color:var(--accent);">₹0.00</div>
         </div>
       </div>
 
@@ -1746,7 +1758,7 @@
 
 <script>
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwCzAz6A_cw58hgSNf2CMl1F6lIvvszGBIQGhBuKhfSP7NclGL9Rdy_UgZCR3RkXhtRWw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx3pB80JqOPoA6BSuYKluOLJyXuekFxNgLsBM5iZQ8fcWKZadKhXE95b2gv_JTdY3H6oQ/exec";
 const CLOUD_NAME   = "dcdhahrhz";              
 const UPLOAD_PRESET = "ABPS Leads Form";
 
@@ -5241,7 +5253,6 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   const canViewLiveFinishedStock   = userPermissionsObject.liveFinishedGoodsStoreStock === true;
   const canUploadBOQ               = userPermissionsObject.uploadBOQ === true;
   const canUploadDrawings = userPermissionsObject.uploadDrawings === true;
-  const canBoqCosting = userPermissionsObject.boqCosting === true;
   const canPurchaseRequestNote = userPermissionsObject.purchaseRequestNote === true;
   const canUploadRMPurchaseOrder = userPermissionsObject.uploadRMPurchaseOrder === true;
   const canCreateJobCardNumber = userPermissionsObject.createJobCardNumber === true;
@@ -5314,7 +5325,6 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   // --- SET INDIVIDUAL VISIBILITY FOR DESIGN CARDS ---
   if (document.getElementById("mod-design-create-boq"))   document.getElementById("mod-design-create-boq").style.display   = canCreateBOQ ? "block" : "none";
   if (document.getElementById("mod-design-auth-boq"))     document.getElementById("mod-design-auth-boq").style.display     = canAuthorizeBOQ ? "block" : "none";
-  if (document.getElementById("mod-design-boq-costing"))  document.getElementById("mod-design-boq-costing").style.display  = canBoqCosting ? "block" : "none";
   if (document.getElementById("mod-design-update-boq"))   document.getElementById("mod-design-update-boq").style.display   = canUpdateBOQ ? "block" : "none";
   if (document.getElementById("mod-design-auth-boq-upd")) document.getElementById("mod-design-auth-boq-upd").style.display = canAuthorizeBOQUpdate ? "block" : "none";
   if (document.getElementById("mod-design-upload-drawings")) document.getElementById("mod-design-upload-drawings").style.display = canUploadDrawings ? "block" : "none";
@@ -5329,7 +5339,7 @@ function enforceDynamicModuleRoleGateways(userPermissionsObject) {
   // Design block visibility
   const designHeaderBlock = document.getElementById("dashboard-design-department-header-block");
   if (designHeaderBlock) {
-    designHeaderBlock.style.display = (canCreateBOQ || canAuthorizeBOQ || canBoqCosting || canUpdateBOQ || canAuthorizeBOQUpdate || canUploadDrawings || canSeeItemCode) ? "block" : "none";
+    designHeaderBlock.style.display = (canCreateBOQ || canAuthorizeBOQ || canUpdateBOQ || canAuthorizeBOQUpdate || canUploadDrawings || canSeeItemCode) ? "block" : "none";
   }
 
   // Purchase Department block visibility
@@ -9083,7 +9093,7 @@ function handleCBOQProjectChange(projectId) {
 }
 
 function addCBOQMaterialRow() {
-  cboqMaterialRows.push({ typeOfStore: "Raw Materials Store", descriptionOfMaterial: "", itemCode: "", make: "", quantityFor1Set: "", unit: "NOS" });
+  cboqMaterialRows.push({ typeOfStore: "Raw Materials Store", descriptionOfMaterial: "", itemCode: "", make: "", quantityFor1Set: "", unit: "NOS", designRatePerQuantity: "" });
   renderCBOQMaterialRows();
 }
 
@@ -9095,18 +9105,21 @@ function deleteCBOQMaterialRow(idx) {
 function renderCBOQMaterialRows() {
   const tbody = document.getElementById("cboq-material-rows-body");
   if (cboqMaterialRows.length === 0) {
-    tbody.innerHTML = '<tr id="cboq-empty-row"><td colspan="8" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows added yet. Click "+ Add Row" to begin.</td></tr>';
+    tbody.innerHTML = '<tr id="cboq-empty-row"><td colspan="10" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows added yet. Click "+ Add Row" to begin.</td></tr>';
+    updateCBOQTotals();
     return;
   }
   tbody.innerHTML = "";
   cboqMaterialRows.forEach((row, idx) => {
+    const isRawMaterial = row.typeOfStore === "Raw Materials Store";
+    const totalMaterialRate = isRawMaterial ? ((Number(row.quantityFor1Set) || 0) * (Number(row.designRatePerQuantity) || 0)) : 0;
     const tr = document.createElement("tr");
     tr.style.borderBottom = "1px solid #f1f5f9";
     tr.innerHTML = `
       <td style="text-align:center; padding:6px; font-weight:700; color:var(--muted);">${idx + 1}</td>
       <td style="padding:4px;">
-        <select onchange="cboqMaterialRows[${idx}].typeOfStore=this.value" style="padding:4px; font-size:0.8rem; width:100%;">
-          <option value="Raw Materials Store" ${row.typeOfStore==="Raw Materials Store"?"selected":""}>Raw Materials</option>
+        <select onchange="cboqMaterialRows[${idx}].typeOfStore=this.value; renderCBOQMaterialRows();" style="padding:4px; font-size:0.8rem; width:100%;">
+          <option value="Raw Materials Store" ${row.typeOfStore==="Raw Materials Store"?"selected":""}>Raw Material</option>
           <option value="Finished Goods Store" ${row.typeOfStore==="Finished Goods Store"?"selected":""}>Finished Goods</option>
         </select>
       </td>
@@ -9129,7 +9142,7 @@ function renderCBOQMaterialRows() {
       </td>
       <td style="padding:4px; text-align:center;">
         <input type="number" value="${row.quantityFor1Set || ""}" min="0" placeholder="0"
-          oninput="cboqMaterialRows[${idx}].quantityFor1Set=parseFloat(this.value)||0"
+          oninput="cboqMaterialRows[${idx}].quantityFor1Set=parseFloat(this.value)||0; renderCBOQMaterialRows();"
           style="padding:5px; font-size:0.85rem; text-align:center; width:100%; border:1px solid var(--border); border-radius:3px;" />
       </td>
       <td style="padding:4px; text-align:center;">
@@ -9143,10 +9156,36 @@ function renderCBOQMaterialRows() {
         </select>
       </td>
       <td style="padding:4px; text-align:center;">
+        ${isRawMaterial ? `
+        <input type="number" value="${row.designRatePerQuantity || ""}" min="0" step="0.01" placeholder="0.00"
+          oninput="cboqMaterialRows[${idx}].designRatePerQuantity=parseFloat(this.value)||0; renderCBOQMaterialRows();"
+          style="padding:5px; font-size:0.85rem; text-align:center; width:100%; border:1px solid var(--border); border-radius:3px;" />
+        ` : `<input type="text" value="—" readonly style="padding:5px; font-size:0.85rem; text-align:center; width:100%; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:3px; border:1px solid var(--border);" />`}
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <input type="text" value="${isRawMaterial ? totalMaterialRate.toFixed(2) : '—'}" readonly
+          style="padding:5px; font-size:0.85rem; font-weight:700; text-align:center; width:100%; background:#f0fdf4; color:var(--accent); cursor:not-allowed; border-radius:3px; border:1px solid #86efac;" />
+      </td>
+      <td style="padding:4px; text-align:center;">
         <button onclick="deleteCBOQMaterialRow(${idx})" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:0.75rem; font-weight:700;">✕</button>
       </td>`;
     tbody.appendChild(tr);
   });
+  updateCBOQTotals();
+}
+
+function updateCBOQTotals() {
+  const totalPerSet = cboqMaterialRows.reduce((sum, row) => {
+    if (row.typeOfStore !== "Raw Materials Store") return sum;
+    return sum + ((Number(row.quantityFor1Set) || 0) * (Number(row.designRatePerQuantity) || 0));
+  }, 0);
+  const orderQty = parseInt(document.getElementById("cboq-order-qty")?.value) || 0;
+  const totalCost = totalPerSet * orderQty;
+
+  const perSetEl = document.getElementById("cboq-total-per-set");
+  const totalEl  = document.getElementById("cboq-total-cost");
+  if (perSetEl) perSetEl.textContent = "₹" + totalPerSet.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (totalEl)  totalEl.textContent  = "₹" + totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 // Shared typeahead for BOQ material rows
@@ -9485,22 +9524,35 @@ function renderEBOQForm(containerId) {
         <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand);">Material Rows *</span>
         <button class="nav-btn-styled" onclick="addEBOQMaterialRow()" style="background:var(--accent); padding:5px 14px; font-size:0.78rem;">+ Add Row</button>
       </div>
-      <div style="overflow-x:auto; overflow-y:visible; border:1px solid var(--border); border-radius:var(--radius); position:relative;">
-        <table class="store-basket-data-table" style="width:100%; min-width:900px; border-collapse:collapse;">
+      <div style="overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);">
+        <table class="store-basket-data-table" style="width:100%; min-width:1050px; border-collapse:collapse;">
           <thead>
             <tr style="background:#f8fafc;">
               <th style="width:40px; text-align:center; padding:8px; font-size:0.7rem;">Sr No</th>
               <th style="width:130px; padding:8px; font-size:0.7rem;">Type of Store *</th>
-              <th style="min-width:220px; padding:8px; font-size:0.7rem;">Description of Material *</th>
-              <th style="width:110px; padding:8px; font-size:0.7rem;">Item Code</th>
-              <th style="width:120px; padding:8px; font-size:0.7rem;">Make</th>
-              <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Qty / Set *</th>
-              <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Unit *</th>
+              <th style="min-width:200px; padding:8px; font-size:0.7rem;">Description of Material *</th>
+              <th style="width:100px; padding:8px; font-size:0.7rem;">Item Code</th>
+              <th style="width:100px; padding:8px; font-size:0.7rem;">Make</th>
+              <th style="width:70px; padding:8px; font-size:0.7rem; text-align:center;">Qty / Set *</th>
+              <th style="width:70px; padding:8px; font-size:0.7rem; text-align:center;">Unit *</th>
+              <th style="width:100px; padding:8px; font-size:0.7rem; text-align:center;">Design Rate / Qty</th>
+              <th style="width:100px; padding:8px; font-size:0.7rem; text-align:center;">Total Material Rate</th>
               <th style="width:40px; padding:8px; font-size:0.7rem; text-align:center;">Del</th>
             </tr>
           </thead>
           <tbody id="eboq-material-rows-body"></tbody>
         </table>
+      </div>
+    </div>
+
+    <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:var(--radius); padding:14px; margin-bottom:16px; display:flex; justify-content:flex-end; gap:32px;">
+      <div style="text-align:right;">
+        <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--muted);">Total BOQ Cost Per Set</div>
+        <div id="eboq-total-per-set" style="font-size:1.1rem; font-weight:800; color:var(--accent);">₹0.00</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--muted);">Total BOQ Cost</div>
+        <div id="eboq-total-cost" style="font-size:1.1rem; font-weight:800; color:var(--accent);">₹0.00</div>
       </div>
     </div>
 
@@ -9530,7 +9582,7 @@ function updateEBOQId() {
 }
 
 function addEBOQMaterialRow() {
-  eboqMaterialRows.push({ typeOfStore:"Raw Materials Store", descriptionOfMaterial:"", itemCode:"", make:"", quantityFor1Set:"", unit:"NOS" });
+  eboqMaterialRows.push({ typeOfStore:"Raw Materials Store", descriptionOfMaterial:"", itemCode:"", make:"", quantityFor1Set:"", unit:"NOS", designRatePerQuantity:"" });
   renderEBOQMaterialRows();
 }
 
@@ -9544,17 +9596,20 @@ function renderEBOQMaterialRows() {
   if (!tbody) return;
   tbody.innerHTML = "";
   if (eboqMaterialRows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows. Click "+ Add Row".</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows. Click "+ Add Row".</td></tr>';
+    updateEBOQTotals();
     return;
   }
   eboqMaterialRows.forEach((row, idx) => {
+    const isRawMaterial = row.typeOfStore === "Raw Materials Store";
+    const totalMaterialRate = isRawMaterial ? ((Number(row.quantityFor1Set) || 0) * (Number(row.designRatePerQuantity) || 0)) : 0;
     const tr = document.createElement("tr");
     tr.style.borderBottom = "1px solid #f1f5f9";
     tr.innerHTML = `
       <td style="text-align:center; padding:6px; font-weight:700; color:var(--muted);">${idx + 1}</td>
       <td style="padding:4px;">
-        <select onchange="eboqMaterialRows[${idx}].typeOfStore=this.value" style="padding:4px; font-size:0.8rem; width:100%;">
-          <option value="Raw Materials Store" ${row.typeOfStore==="Raw Materials Store"?"selected":""}>Raw Materials</option>
+        <select onchange="eboqMaterialRows[${idx}].typeOfStore=this.value; renderEBOQMaterialRows();" style="padding:4px; font-size:0.8rem; width:100%;">
+          <option value="Raw Materials Store" ${row.typeOfStore==="Raw Materials Store"?"selected":""}>Raw Material</option>
           <option value="Finished Goods Store" ${row.typeOfStore==="Finished Goods Store"?"selected":""}>Finished Goods</option>
         </select>
       </td>
@@ -9577,7 +9632,7 @@ function renderEBOQMaterialRows() {
       </td>
       <td style="padding:4px; text-align:center;">
         <input type="number" value="${row.quantityFor1Set || ""}" min="0" placeholder="0"
-          oninput="eboqMaterialRows[${idx}].quantityFor1Set=parseFloat(this.value)||0"
+          oninput="eboqMaterialRows[${idx}].quantityFor1Set=parseFloat(this.value)||0; renderEBOQMaterialRows();"
           style="padding:5px; font-size:0.85rem; text-align:center; width:100%; border:1px solid var(--border); border-radius:3px;" />
       </td>
       <td style="padding:4px; text-align:center;">
@@ -9591,10 +9646,36 @@ function renderEBOQMaterialRows() {
         </select>
       </td>
       <td style="padding:4px; text-align:center;">
+        ${isRawMaterial ? `
+        <input type="number" value="${row.designRatePerQuantity || ""}" min="0" step="0.01" placeholder="0.00"
+          oninput="eboqMaterialRows[${idx}].designRatePerQuantity=parseFloat(this.value)||0; renderEBOQMaterialRows();"
+          style="padding:5px; font-size:0.85rem; text-align:center; width:100%; border:1px solid var(--border); border-radius:3px;" />
+        ` : `<input type="text" value="—" readonly style="padding:5px; font-size:0.85rem; text-align:center; width:100%; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:3px; border:1px solid var(--border);" />`}
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <input type="text" value="${isRawMaterial ? totalMaterialRate.toFixed(2) : '—'}" readonly
+          style="padding:5px; font-size:0.85rem; font-weight:700; text-align:center; width:100%; background:#f0fdf4; color:var(--accent); cursor:not-allowed; border-radius:3px; border:1px solid #86efac;" />
+      </td>
+      <td style="padding:4px; text-align:center;">
         <button onclick="deleteEBOQMaterialRow(${idx})" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:0.75rem; font-weight:700;">✕</button>
       </td>`;
     tbody.appendChild(tr);
   });
+  updateEBOQTotals();
+}
+
+function updateEBOQTotals() {
+  const totalPerSet = eboqMaterialRows.reduce((sum, row) => {
+    if (row.typeOfStore !== "Raw Materials Store") return sum;
+    return sum + ((Number(row.quantityFor1Set) || 0) * (Number(row.designRatePerQuantity) || 0));
+  }, 0);
+  const orderQty = parseInt(document.getElementById("eboq-order-qty")?.value) || 0;
+  const totalCost = totalPerSet * orderQty;
+
+  const perSetEl = document.getElementById("eboq-total-per-set");
+  const totalEl  = document.getElementById("eboq-total-cost");
+  if (perSetEl) perSetEl.textContent = "₹" + totalPerSet.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (totalEl)  totalEl.textContent  = "₹" + totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 async function submitEBOQAuthorize() {
@@ -9768,7 +9849,7 @@ function renderUBOQForm() {
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
         <div>
           <label class="field-label" style="margin-top:0;">Order Quantity (No. of Sets) *</label>
-          <input type="number" id="eboq-order-qty" value="${draft.orderQuantity}" min="1" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
+          <input type="number" id="uboq-order-qty" value="${draft.orderQuantity}" min="1" oninput="updateUBOQTotals()" style="padding:8px; border:1.5px solid var(--border); border-radius:var(--radius);" />
         </div>
         <div>
           <label class="field-label" style="margin-top:0;">Date</label>
@@ -9792,22 +9873,35 @@ function renderUBOQForm() {
         <span style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--brand);">Material Rows *</span>
         <button class="nav-btn-styled" onclick="addUBOQMaterialRow()" style="background:var(--accent); padding:5px 14px; font-size:0.78rem;">+ Add Row</button>
       </div>
-      <div style="overflow-x:auto; overflow-y:visible; border:1px solid var(--border); border-radius:var(--radius); position:relative;">
-        <table class="store-basket-data-table" style="width:100%; min-width:900px; border-collapse:collapse;">
+      <div style="overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);">
+        <table class="store-basket-data-table" style="width:100%; min-width:1050px; border-collapse:collapse;">
           <thead>
             <tr style="background:#f8fafc;">
               <th style="width:40px; text-align:center; padding:8px; font-size:0.7rem;">Sr No</th>
               <th style="width:130px; padding:8px; font-size:0.7rem;">Type of Store *</th>
-              <th style="min-width:220px; padding:8px; font-size:0.7rem;">Description of Material *</th>
-              <th style="width:110px; padding:8px; font-size:0.7rem;">Item Code</th>
-              <th style="width:120px; padding:8px; font-size:0.7rem;">Make</th>
-              <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Qty / Set *</th>
-              <th style="width:80px; padding:8px; font-size:0.7rem; text-align:center;">Unit *</th>
+              <th style="min-width:200px; padding:8px; font-size:0.7rem;">Description of Material *</th>
+              <th style="width:100px; padding:8px; font-size:0.7rem;">Item Code</th>
+              <th style="width:100px; padding:8px; font-size:0.7rem;">Make</th>
+              <th style="width:70px; padding:8px; font-size:0.7rem; text-align:center;">Qty / Set *</th>
+              <th style="width:70px; padding:8px; font-size:0.7rem; text-align:center;">Unit *</th>
+              <th style="width:100px; padding:8px; font-size:0.7rem; text-align:center;">Design Rate / Qty</th>
+              <th style="width:100px; padding:8px; font-size:0.7rem; text-align:center;">Total Material Rate</th>
               <th style="width:40px; padding:8px; font-size:0.7rem; text-align:center;">Del</th>
             </tr>
           </thead>
           <tbody id="uboq-material-rows-body"></tbody>
         </table>
+      </div>
+    </div>
+
+    <div style="background:#f0fdf4; border:1.5px solid #86efac; border-radius:var(--radius); padding:14px; margin-bottom:16px; display:flex; justify-content:flex-end; gap:32px;">
+      <div style="text-align:right;">
+        <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--muted);">Total BOQ Cost Per Set</div>
+        <div id="uboq-total-per-set" style="font-size:1.1rem; font-weight:800; color:var(--accent);">₹0.00</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--muted);">Total BOQ Cost</div>
+        <div id="uboq-total-cost" style="font-size:1.1rem; font-weight:800; color:var(--accent);">₹0.00</div>
       </div>
     </div>
 
@@ -9820,7 +9914,7 @@ function renderUBOQForm() {
 }
 
 function addUBOQMaterialRow() {
-  uboqMaterialRows.push({ typeOfStore:"Raw Materials Store", descriptionOfMaterial:"", itemCode:"", make:"", quantityFor1Set:"", unit:"NOS" });
+  uboqMaterialRows.push({ typeOfStore:"Raw Materials Store", descriptionOfMaterial:"", itemCode:"", make:"", quantityFor1Set:"", unit:"NOS", designRatePerQuantity:"" });
   renderUBOQMaterialRows();
 }
 
@@ -9834,17 +9928,20 @@ function renderUBOQMaterialRows() {
   if (!tbody) return;
   tbody.innerHTML = "";
   if (uboqMaterialRows.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows. Click "+ Add Row".</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--muted); font-size:0.82rem;">No material rows. Click "+ Add Row".</td></tr>';
+    updateUBOQTotals();
     return;
   }
   uboqMaterialRows.forEach((row, idx) => {
+    const isRawMaterial = row.typeOfStore === "Raw Materials Store";
+    const totalMaterialRate = isRawMaterial ? ((Number(row.quantityFor1Set) || 0) * (Number(row.designRatePerQuantity) || 0)) : 0;
     const tr = document.createElement("tr");
     tr.style.borderBottom = "1px solid #f1f5f9";
     tr.innerHTML = `
       <td style="text-align:center; padding:6px; font-weight:700; color:var(--muted);">${idx + 1}</td>
       <td style="padding:4px;">
-        <select onchange="uboqMaterialRows[${idx}].typeOfStore=this.value" style="padding:4px; font-size:0.8rem; width:100%;">
-          <option value="Raw Materials Store" ${row.typeOfStore==="Raw Materials Store"?"selected":""}>Raw Materials</option>
+        <select onchange="uboqMaterialRows[${idx}].typeOfStore=this.value; renderUBOQMaterialRows();" style="padding:4px; font-size:0.8rem; width:100%;">
+          <option value="Raw Materials Store" ${row.typeOfStore==="Raw Materials Store"?"selected":""}>Raw Material</option>
           <option value="Finished Goods Store" ${row.typeOfStore==="Finished Goods Store"?"selected":""}>Finished Goods</option>
         </select>
       </td>
@@ -9867,7 +9964,7 @@ function renderUBOQMaterialRows() {
       </td>
       <td style="padding:4px; text-align:center;">
         <input type="number" value="${row.quantityFor1Set || ""}" min="0" placeholder="0"
-          oninput="uboqMaterialRows[${idx}].quantityFor1Set=parseFloat(this.value)||0"
+          oninput="uboqMaterialRows[${idx}].quantityFor1Set=parseFloat(this.value)||0; renderUBOQMaterialRows();"
           style="padding:5px; font-size:0.85rem; text-align:center; width:100%; border:1px solid var(--border); border-radius:3px;" />
       </td>
       <td style="padding:4px; text-align:center;">
@@ -9881,10 +9978,36 @@ function renderUBOQMaterialRows() {
         </select>
       </td>
       <td style="padding:4px; text-align:center;">
+        ${isRawMaterial ? `
+        <input type="number" value="${row.designRatePerQuantity || ""}" min="0" step="0.01" placeholder="0.00"
+          oninput="uboqMaterialRows[${idx}].designRatePerQuantity=parseFloat(this.value)||0; renderUBOQMaterialRows();"
+          style="padding:5px; font-size:0.85rem; text-align:center; width:100%; border:1px solid var(--border); border-radius:3px;" />
+        ` : `<input type="text" value="—" readonly style="padding:5px; font-size:0.85rem; text-align:center; width:100%; background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-radius:3px; border:1px solid var(--border);" />`}
+      </td>
+      <td style="padding:4px; text-align:center;">
+        <input type="text" value="${isRawMaterial ? totalMaterialRate.toFixed(2) : '—'}" readonly
+          style="padding:5px; font-size:0.85rem; font-weight:700; text-align:center; width:100%; background:#f0fdf4; color:var(--accent); cursor:not-allowed; border-radius:3px; border:1px solid #86efac;" />
+      </td>
+      <td style="padding:4px; text-align:center;">
         <button onclick="deleteUBOQMaterialRow(${idx})" style="background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:3px 8px; border-radius:3px; cursor:pointer; font-size:0.75rem; font-weight:700;">✕</button>
       </td>`;
     tbody.appendChild(tr);
   });
+  updateUBOQTotals();
+}
+
+function updateUBOQTotals() {
+  const totalPerSet = uboqMaterialRows.reduce((sum, row) => {
+    if (row.typeOfStore !== "Raw Materials Store") return sum;
+    return sum + ((Number(row.quantityFor1Set) || 0) * (Number(row.designRatePerQuantity) || 0));
+  }, 0);
+  const orderQty = parseInt(document.getElementById("uboq-order-qty")?.value) || 0;
+  const totalCost = totalPerSet * orderQty;
+
+  const perSetEl = document.getElementById("uboq-total-per-set");
+  const totalEl  = document.getElementById("uboq-total-cost");
+  if (perSetEl) perSetEl.textContent = "₹" + totalPerSet.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (totalEl)  totalEl.textContent  = "₹" + totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 // Add uboq to selectBOQRowMaterial
